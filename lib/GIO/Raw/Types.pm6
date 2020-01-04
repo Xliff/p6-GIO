@@ -2,6 +2,9 @@ use v6;
 
 use CompUnit::Util :re-export;
 
+use GLib::Raw::Exports;
+use GIO::Raw::Exports;
+
 unit package GIO::Raw::Types;
 
 need GLib::Raw::Definitions;
@@ -17,7 +20,5 @@ need GIO::Raw::Subs;
 need GIO::Raw::Exports;
 
 BEGIN {
-  re-export($_) for
-    |@GLib::Raw::Exports::glib-exports,
-    |@GIO::Raw::Exports::gio-exports;
+  re-export($_) for |@glib-exports, |@gio-exports;
 }
