@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 role GIO::Roles::Initable {
   has GInitable $!i;
@@ -15,7 +15,7 @@ role GIO::Roles::Initable {
     $!i = cast(GInitable, i.get_value(self) );
   }
 
-  method GLib::Raw::Types::GInitable
+  method GIO::Raw::Types::GInitable
     is also<GInitable>
   { $!i }
 

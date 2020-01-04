@@ -1,6 +1,6 @@
 use v6.c;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::MenuModel;
 
 class GIO::MenuAttributeIter {

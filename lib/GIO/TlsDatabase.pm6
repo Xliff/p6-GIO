@@ -4,8 +4,8 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
-use GTK::Compat::FileTypes;
+use GIO::Raw::Types;
+
 
 use GIO::Raw::TlsDatabase;
 
@@ -24,7 +24,7 @@ class GIO::TlsDatabase {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GTlsDatabase
+  method GIO::Raw::Types::GTlsDatabase
     is also<GTlsDatabase>
   { $!td }
 

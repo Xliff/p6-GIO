@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 use GLib::Roles::Object;
 use GIO::DBus::Roles::Signals::AuthObserver;
@@ -21,7 +21,7 @@ class GIO::DBus::AuthObserver {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GDbusAuthObserver
+  method GIO::Raw::Types::GDbusAuthObserver
     is also<GDBusAuthObserver>
   { $!dao }
 

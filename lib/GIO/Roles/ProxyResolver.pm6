@@ -4,10 +4,10 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::ProxyResolver;
 
-use GTK::Raw::Utils;
+
 
 role GIO::ProxyResolver {
   has GProxyResolver $!pr;
@@ -22,7 +22,7 @@ role GIO::ProxyResolver {
     $!pr = cast( GProxyResolver, i.get-value(self) );
   }
 
-  method GLib::Raw::Types::GProxyResolver
+  method GIO::Raw::Types::GProxyResolver
     is also<GProxyResolver>
   { $!pr }
 

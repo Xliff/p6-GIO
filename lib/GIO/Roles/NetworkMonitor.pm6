@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::NetworkMonitor;
 
 role GIO::Roles::NetworkMonitor {
@@ -20,7 +20,7 @@ role GIO::Roles::NetworkMonitor {
     $!nm = cast( GNetworkMonitor, i.get_value(self) );
   }
 
-  method GLib::Raw::Types::GNetworkMonitor
+  method GIO::Raw::Types::GNetworkMonitor
     is also<GNetworkMonitor>
   { $!nm }
 

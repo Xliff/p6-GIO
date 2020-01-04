@@ -4,15 +4,11 @@ use Method::Also;
 
 use NativeCall;
 
-use GTK::Raw::Utils;
-
-use GLib::Raw::Types;
-use GTK::Compat::FileTypes;
-
+use GIO::Raw::Types;
 use GIO::Raw::AppInfo;
 
 use GLib::Roles::Object;
-use GTK::Roles::Signals::Generic;
+use GLib::Roles::Signals::Generic;
 
 class GIO::Roles::AppInfo {
   has GAppInfo $!ai;
@@ -27,7 +23,7 @@ class GIO::Roles::AppInfo {
     $!ai = cast( GAppInfo, i.get_value(self) );
   }
 
-  method GLib::Raw::Types::GAppInfo
+  method GIO::Raw::Types::GAppInfo
     is also<GAppInfo>
   { $!ai }
 
@@ -436,7 +432,7 @@ class GIO::Roles::AppInfo {
 # A bit small for its own compunit?
 class GIO::AppInfoMonitor {
   also does GLib::Roles::Object;
-  also does GTK::Roles::Signals::Generic;
+  also does GLib::Roles::Signals::Generic;
 
   has GAppInfoMonitor $!aim;
 
@@ -446,7 +442,7 @@ class GIO::AppInfoMonitor {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GAppInfoMonitor
+  method GIO::Raw::Types::GAppInfoMonitor
     is also<GAppInfoMonitor>
   { $!aim }
 

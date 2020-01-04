@@ -2,10 +2,10 @@ use v6.c;
 
 use Method::Also;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::VFS;
 
-use GTK::Raw::Utils;
+
 
 use GLib::Roles::Object;
 
@@ -20,7 +20,7 @@ class GIO::VFS {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GVfs
+  method GIO::Raw::Types::GVfs
     is also<GVfs>
   { $!fs }
 

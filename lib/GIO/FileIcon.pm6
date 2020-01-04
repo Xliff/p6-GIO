@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 use GLib::Roles::Object;
 use GIO::Roles::GFile;
@@ -30,7 +30,7 @@ class GIO::FileIcon {
     #say "FI: $!fi";
   }
 
-  method GLib::Raw::Types::GFileIcon
+  method GIO::Raw::Types::GFileIcon
     is also<GFileIcon>
   { $!fi }
 

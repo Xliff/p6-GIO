@@ -2,7 +2,7 @@ use v6.c;
 
 use Method::Also;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::DBus::Raw::Types;
 
 use GIO::DBus::Raw::ObjectManager;
@@ -16,7 +16,7 @@ role GIO::DBus::Roles::ObjectManager {
     $!dom = cast( GDBusObjectManager, i.get_value(self) );
   }
 
-  method GLib::Raw::Types::GDBusObjectManager
+  method GIO::Raw::Types::GDBusObjectManager
     is also<GDBusObjectManager>
   { $!dom }
 

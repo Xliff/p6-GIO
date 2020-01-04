@@ -4,17 +4,17 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::Cancellable;
 
 use GLib::Source;
 
 use GLib::Roles::Object;
-use GTK::Roles::Signals::Generic;
+use GLib::Roles::Signals::Generic;
 
 class GIO::Cancellable {
   also does GLib::Roles::Object;
-  also does GTK::Roles::Signals::Generic;
+  also does GLib::Roles::Signals::Generic;
 
   has GCancellable $!c is implementor;
 
@@ -24,7 +24,7 @@ class GIO::Cancellable {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GCancellable
+  method GIO::Raw::Types::GCancellable
     is also<GCancellable>
   { $!c }
 

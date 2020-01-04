@@ -2,9 +2,9 @@ use v6.c;
 
 use NativeCall;
 
-use GTK::Raw::ReturnedValue;
+use GLib::Raw::ReturnedValue;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 role GIO::DBus::Roles::Signals::AuthObserver {
   has %!signals-dao;

@@ -3,6 +3,8 @@ use v6.c;
 use NativeCall;
 
 use GLib::Raw::Types;
+use GLib::Raw::Struct_Subs;
+use GIO::Raw::Definitions;
 
 unit package GIO::Raw::Structs;
 
@@ -122,7 +124,7 @@ class GActionEntry is repr('CStruct') does GLib::Roles::Pointers is export {
 
 }
 
-sub sprintf-SaVp(
+sub sprintf-SaVP(
   Blob,
   Str,
   & (GSimpleAction, GVariant, gpointer),

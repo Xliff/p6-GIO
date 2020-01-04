@@ -2,18 +2,18 @@ use v6.c;
 
 use Method::Also;
 
-use GLib::Raw::Types;
-use GTK::Compat::FileTypes;
+use GIO::Raw::Types;
+
 
 use GIO::Raw::FileMonitor;
 
 use GLib::Value;
 
-use GTK::Roles::Properties;
+use GLib::Roles::Properties;
 use GIO::Roles::Signals::FileMonitor;
 
 class GIO::FileMonitor {
-  also does GTK::Roles::Properties;
+  also does GLib::Roles::Properties;
   also does GIO::Roles::Signals::FileMonitor;
 
   has GFileMonitor $!m is implementor;
@@ -24,7 +24,7 @@ class GIO::FileMonitor {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GFileMonitor
+  method GIO::Raw::Types::GFileMonitor
     is also<GFileMonitor>
   { $!m }
 

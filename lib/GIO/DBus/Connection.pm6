@@ -3,7 +3,7 @@ use v6.c;
 use NativeCall;
 use Method::Also;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::DBus::Raw::Types;
 
 use GIO::DBus::Raw::Connection;
@@ -13,11 +13,11 @@ use GLib::Variant;
 use GIO::DBus::Message;
 
 use GIO::Roles::AsyncInitable;
-use GTK::Roles::Properties;
+use GLib::Roles::Properties;
 use GIO::DBus::Roles::Signals::Connection;
 
 class GIO::DBus::Connection {
-  also does GTK::Roles::Properties;
+  also does GLib::Roles::Properties;
 
   has GDBusConnection $!dc is implementor;
 
@@ -28,7 +28,7 @@ class GIO::DBus::Connection {
     self.roleInit-AsyncInitable;
   }
 
-  method GLib::Raw::Types::GDBusConnection
+  method GIO::Raw::Types::GDBusConnection
     is also<GDBusConnection>
   { $!dc }
 

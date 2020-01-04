@@ -2,10 +2,10 @@ use v6.c;
 
 use NativeCall;
 
-use GTK::Raw::ReturnedValue;
+use GLib::Raw::ReturnedValue;
 
-use GLib::Raw::Types;
-use GTK::Compat::FileTypes;
+use GIO::Raw::Types;
+
 
 role GIO::Roles::Signals::TlsConnection {
   has %!signals-tc;

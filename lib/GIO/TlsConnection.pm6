@@ -3,10 +3,10 @@ use v6.c;
 use NativeCall;
 use Method::Also;
 
-use GLib::Raw::Types;
-use GTK::Compat::FileTypes;
+use GIO::Raw::Types;
 
-use GTK::Raw::Utils;
+
+
 use GIO::Raw::TlsConnection;
 
 use GLib::Value;
@@ -54,7 +54,7 @@ class GIO::TlsConnection is GIO::Stream {
     self.setIOStream($to-parent);
   }
 
-  method GLib::Raw::Types::GTlsConnection
+  method GIO::Raw::Types::GTlsConnection
     is also<GTlsConnection>
   { $!tc }
 

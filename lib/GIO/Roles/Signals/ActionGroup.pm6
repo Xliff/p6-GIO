@@ -2,9 +2,9 @@ use v6.c;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
-use GTK::Roles::Signals::Generic;
+use GLib::Roles::Signals::Generic;
 
 role GIO::Roles::Signals::ActionGroup {
   has %!signals-ag;

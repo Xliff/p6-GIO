@@ -2,7 +2,7 @@ use v6.c;
 
 use Method::Also;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::VolumeMonitor;
 
 use GLib::Roles::Object;
@@ -24,7 +24,7 @@ class GIO::VolumeMonitor {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GVolumeMonitor
+  method GIO::Raw::Types::GVolumeMonitor
     is also<GVolumeMonitor>
   { $!vm }
 

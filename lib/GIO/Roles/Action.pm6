@@ -3,14 +3,14 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 use GIO::Raw::Action;
 
-use GTK::Roles::Properties;
+use GLib::Roles::Properties;
 
 role GIO::Roles::Action {
-  also does GTK::Roles::Properties;
+  also does GLib::Roles::Properties;
 
   has GAction $!a;
 
@@ -26,7 +26,7 @@ role GIO::Roles::Action {
     $!a = cast( GAction, i.get_value(self) );
   }
 
-  method GLib::Raw::Types::GAction
+  method GIO::Raw::Types::GAction
     is also<Action>
   { $!a }
 

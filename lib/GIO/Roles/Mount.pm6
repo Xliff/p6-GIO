@@ -3,13 +3,13 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
-use GLib::Raw::Types;
-use GTK::Compat::FileTypes;
+use GIO::Raw::Types;
+
 use GIO::Raw::Mount;
 
-use GTK::Raw::Utils;
 
-use GTK::Roles::Signals::Generic;
+
+use GLib::Roles::Signals::Generic;
 use GIO::Roles::GFile;
 use GIO::Roles::Icon;
 use GIO::Roles::Volume;
@@ -28,7 +28,7 @@ role GIO::Roles::Mount {
     $!m = cast(GMount, i.get_value(self) );
   }
 
-  method GLib::Raw::Types::GMount
+  method GIO::Raw::Types::GMount
     is also<GMount>
   { $!m }
 

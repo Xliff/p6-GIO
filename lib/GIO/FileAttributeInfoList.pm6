@@ -2,8 +2,8 @@ use v6.c;
 
 use Method::Also;
 
-use GLib::Raw::Types;
-use GTK::Compat::FileTypes;
+use GIO::Raw::Types;
+
 
 use GIO::Raw::FileAttributeInfoList;
 
@@ -17,7 +17,7 @@ class GIO::FileAttributeInfoList {
     $!fail = $list;
   }
 
-  method GLib::Raw::Types::GFileAttributeInfoList
+  method GIO::Raw::Types::GFileAttributeInfoList
     is also<GFileAttributeInfoList>
   { $!fail }
 

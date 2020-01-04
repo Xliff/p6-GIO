@@ -3,7 +3,7 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::Menu;
 
 use GLib::Variant;
@@ -19,7 +19,7 @@ class GIO::MenuItem {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GMenuItem
+  method GIO::Raw::Types::GMenuItem
     is also<
       GMenuItem
       MenuItem

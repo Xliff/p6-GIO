@@ -2,7 +2,7 @@ use v6.c;
 
 use Method::Also;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::FileInfo;
 
 # BOXED!
@@ -13,7 +13,7 @@ class GIO::FileAttributeMatcher {
     $!fam = $matcher;
   }
 
-  method GLib::Raw::Types::GFileAttributeMatcher
+  method GIO::Raw::Types::GFileAttributeMatcher
     is also<GFileAttributeMatcher>
   { $!fam }
 

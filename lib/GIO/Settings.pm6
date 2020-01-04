@@ -4,19 +4,19 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
-use GTK::Compat::FileTypes;
+use GIO::Raw::Types;
 
-use GTK::Raw::Utils;
+
+
 use GIO::Raw::Settings;
 
 use GLib::Value;
 
-use GTK::Roles::Properties;
+use GLib::Roles::Properties;
 use GIO::Roles::Signals::Settings;
 
 class GIO::Settings {
-  also does GTK::Roles::Properties;
+  also does GLib::Roles::Properties;
   also does GIO::Roles::Signals::Settings;
 
   has GSettings $!s is implementor;
@@ -27,7 +27,7 @@ class GIO::Settings {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GSettings
+  method GIO::Raw::Types::GSettings
     is also<GSettings>
   { $!s }
 

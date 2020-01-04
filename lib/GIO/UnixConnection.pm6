@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::UnixConnection;
 
 use GIO::Credentials;
@@ -47,7 +47,7 @@ class GIO::UnixConnection is GIO::SocketConnection {
     self.setSocketConnection($to-parent);
   }
 
-  method GLib::Raw::Types::GUnixConnection
+  method GIO::Raw::Types::GUnixConnection
     is also<GUnixConnection>
   { $!uc }
 

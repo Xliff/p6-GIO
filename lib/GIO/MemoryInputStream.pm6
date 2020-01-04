@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::MemoryInputStream;
 
 use GIO::InputStream;
@@ -66,7 +66,7 @@ class GIO::MemoryInputStream is GIO::InputStream {
     self.setInputStream($to-parent);
   }
 
-  method GLib::Raw::Types::GMemoryInputStream
+  method GIO::Raw::Types::GMemoryInputStream
     is also<GMemoryInputStream>
   { $!mis }
 

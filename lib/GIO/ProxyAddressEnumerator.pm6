@@ -2,17 +2,17 @@ use v6.c;
 
 use Method::Also;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 use GLib::Value;
 
-use GTK::Roles::Properties;
+use GLib::Roles::Properties;
 
 use GIO::Roles::ProxyResolver;
 use GIO::Roles::SocketConnectable;
 
 class GIO::ProxyAddressEnumerator {
-  also does GTK::Roles::Properties;
+  also does GLib::Roles::Properties;
 
   has GProxyAddressEnumerator $!pae is implementor;
 
@@ -22,7 +22,7 @@ class GIO::ProxyAddressEnumerator {
     self.roleInit-Properties;
   }
 
-  method GLib::Raw::Types::GProxyAddressEnumerator
+  method GIO::Raw::Types::GProxyAddressEnumerator
     is also<GProxyAddressEnumerator>
   { $!pae }
 

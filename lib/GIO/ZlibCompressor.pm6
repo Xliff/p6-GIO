@@ -4,15 +4,15 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 use GLib::Value;
 
-use GTK::Roles::Properties;
+use GLib::Roles::Properties;
 use GIO::Roles::Converter;
 
 class GIO::ZlibCompressor {
-  also does GTK::Roles::Properties;
+  also does GLib::Roles::Properties;
   also does GIO::Roles::Converter;
 
   has GZlibCompressor $!zc is implementor;
@@ -24,7 +24,7 @@ class GIO::ZlibCompressor {
     self.roleInit-Converter;
   }
 
-  method GLib::Raw::Types::GZlibCompressor
+  method GIO::Raw::Types::GZlibCompressor
     is also<GZlibCompressor>
   { $!zc }
 

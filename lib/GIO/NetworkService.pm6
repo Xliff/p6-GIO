@@ -2,7 +2,7 @@ use v6.c;
 
 use Method::Also;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::NetworkService;
 
 use GLib::Roles::Object;
@@ -20,7 +20,7 @@ class GIO::NetworkService {
     self.roleInit-SocketConnectable;
   }
 
-  method GLib::Raw::Types::GNetworkService
+  method GIO::Raw::Types::GNetworkService
   { $!s }
 
   method new (Str() $service, Str() $protocol, Str() $domain) {

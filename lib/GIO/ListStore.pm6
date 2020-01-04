@@ -2,16 +2,16 @@ use v6.c;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 use GIO::Raw::ListStore;
 
 use GLib::Value;
 
-use GTK::Roles::Properties;
+use GLib::Roles::Properties;
 
 class GIO::ListStore {
-  also does GTK::Roles::Properties;
+  also does GLib::Roles::Properties;
 
   has GListStore $!ls is implementor;
 
@@ -21,7 +21,7 @@ class GIO::ListStore {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GListStore
+  method GIO::Raw::Types::GListStore
   { $!ls }
 
   method new (Int() $type) {

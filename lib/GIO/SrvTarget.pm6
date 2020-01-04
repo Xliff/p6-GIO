@@ -2,7 +2,7 @@ use v6.c;
 
 use Method::Also;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::SrvTarget;
 
 use GLib::GList;
@@ -17,7 +17,7 @@ class GIO::SrvTarget {
     $!st = $srv;
   }
 
-  method GLib::Raw::Types::GSrvTarget
+  method GIO::Raw::Types::GSrvTarget
     is also<GSrvTarget>
   { $!st }
 

@@ -2,12 +2,12 @@ use v6.c;
 
 use Method::Also;
 
-use GLib::Raw::Types;
-use GTK::Compat::FileTypes;
+use GIO::Raw::Types;
+
 
 use GIO::Raw::FileInfo;
 
-use GTK::Raw::Utils;
+
 
 use GLib::DateTime;
 
@@ -24,7 +24,7 @@ class GIO::FileInfo {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GFileInfo
+  method GIO::Raw::Types::GFileInfo
     is also<GFileInfo>
   { $!fi }
 

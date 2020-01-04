@@ -2,7 +2,7 @@ use v6.c;
 
 use Method::Also;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 use GIO::Raw::Notification;
 
@@ -19,7 +19,7 @@ class GIO::Notification {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GNotification
+  method GIO::Raw::Types::GNotification
     is also<GNotification>
   { $!n }
 

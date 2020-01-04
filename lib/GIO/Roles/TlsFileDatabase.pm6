@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 use GLib::Value;
 
@@ -12,8 +12,8 @@ role GIO::Roles::TlsFileDatabase {
   has GTlsFileDatabase $!tfd;
 
   method roleInit-TlsFileDatabase is also<roleInit_TlsFileDatabase> {
-    die 'Must use GTK::Roles::Properties!'
-      unless self ~~ GTK::Roles::Properties;
+    die 'Must use GLib::Roles::Properties!'
+      unless self ~~ GLib::Roles::Properties;
 
     my \i = findProperImplementor(self.^attributes);
 
@@ -37,7 +37,7 @@ role GIO::Roles::TlsFileDatabase {
     self.bless( :$file-database );
   }
 
-  method GLib::Raw::Types::GTlsFileDatabase
+  method GIO::Raw::Types::GTlsFileDatabase
   { $!tfd }
 
   # Type: gchar

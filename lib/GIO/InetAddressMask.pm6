@@ -3,7 +3,7 @@ use v6.c;
 use NativeCall;
 use Method::Also;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::InetAddressMask;
 
 use GIO::InetAddress;
@@ -21,7 +21,7 @@ class GIO::InetAddressMask {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GInetAddressMask
+  method GIO::Raw::Types::GInetAddressMask
     is also<GInetAddressMask>
   { $!iam }
 

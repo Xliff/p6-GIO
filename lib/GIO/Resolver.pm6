@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::Resolver;
 
 use GLib::GList;
@@ -13,11 +13,11 @@ use GIO::InetAddress;
 use GLib::Roles::ListData;
 
 use GLib::Roles::Object;
-use GTK::Roles::Signals::Generic;
+use GLib::Roles::Signals::Generic;
 
 class GIO::Resolver {
   also does GLib::Roles::Object;
-  also does GTK::Roles::Signals::Generic;
+  also does GLib::Roles::Signals::Generic;
 
   has GResolver $!r is implementor;
 
@@ -27,7 +27,7 @@ class GIO::Resolver {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GResolver
+  method GIO::Raw::Types::GResolver
     is also<GResolver>
   { $!r }
 

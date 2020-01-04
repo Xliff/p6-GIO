@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::Task;
 
 use GLib::MainContext;
@@ -52,7 +52,7 @@ class GIO::Task {
     self.roleInit-AsyncResult;
   }
 
-  method GLib::Raw::Types::GTask
+  method GIO::Raw::Types::GTask
     is also<GTask>
   { $!t }
 

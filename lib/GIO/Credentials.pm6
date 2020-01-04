@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::Credentials;
 
 use GLib::Roles::Object;
@@ -16,7 +16,7 @@ class GIO::Credentials {
     $!c = $credentials;
   }
 
-  method GLib::Raw::Types::GCredentials
+  method GIO::Raw::Types::GCredentials
     is also<GCredentials>
   { $!c }
 

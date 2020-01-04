@@ -2,18 +2,18 @@ use v6.c;
 
 use Method::Also;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::DBus::Raw::Types;
 
 use GIO::DBus::Raw::ObjectSkeleton;
 
 use GLib::Value;
 
-use GTK::Roles::Properties;
+use GLib::Roles::Properties;
 use GIO::DBus::Roles::Object;
 
 class GIO::DBus::ObjectSkeleton {
-  also does GTK::Roles::Properties;
+  also does GLib::Roles::Properties;
   also does GIO::DBus::Roles::Object;
 
   has GDBusObjectSkeleton $!dos is implementor;

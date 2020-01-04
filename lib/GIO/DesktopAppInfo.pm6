@@ -4,10 +4,10 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
-use GTK::Compat::FileTypes;
+use GIO::Raw::Types;
 
-use GTK::Raw::Utils;
+
+
 
 use GIO::Raw::DesktopAppInfo;
 
@@ -26,7 +26,7 @@ class GIO::DesktopAppInfo {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GDesktopAppInfo
+  method GIO::Raw::Types::GDesktopAppInfo
     is also<GDesktopAppInfo>
   { $!dai }
 

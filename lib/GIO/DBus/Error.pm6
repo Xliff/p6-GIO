@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::DBus::Raw::Types;
 
 use GIO::DBus::Raw::Error;

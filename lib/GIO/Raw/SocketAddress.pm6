@@ -2,7 +2,7 @@ use v6.c;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 unit package GIO::Raw::SocketAddress;
 

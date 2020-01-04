@@ -3,14 +3,12 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
-use GTK::Raw::Utils;
-
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 role GIO::Roles::ActionMap {
   has GActionMap $!actmap;
 
-  method GLib::Raw::Types::GActionMap
+  method GIO::Raw::Types::GActionMap
     is also<GActionMap>
   { $!actmap }
 
@@ -55,7 +53,7 @@ role GIO::Roles::ActionMap {
     Int() $n_entries,
     gpointer $user_data = Pointer
   ) {
-    my gint $n = resolve-int($n_entries);
+    my gint $n = $n_entries;
 
     g_action_map_add_action_entries($!actmap, $entries, $n, $user_data);
   }

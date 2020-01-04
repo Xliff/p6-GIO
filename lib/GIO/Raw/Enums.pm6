@@ -257,13 +257,6 @@ our enum GIOStreamSpliceFlagsEnum        is export (
   G_IO_STREAM_SPLICE_WAIT_FOR_BOTH => (1 +< 2)
 );
 
-constant GModuleFlags                    is export := guint;
-our enum GModuleFlagsEnum                is export (
-  G_MODULE_BIND_LAZY    => 1,
-  G_MODULE_BIND_LOCAL   => 1 +< 1,
-  G_MODULE_BIND_MASK    => 0x03
-);
-
 constant GMountMountFlags                is export := guint;
 our enum GMountMountFlagsEnum            is export (
   G_MOUNT_MOUNT_NONE => 0

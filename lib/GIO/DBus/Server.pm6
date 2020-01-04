@@ -3,7 +3,7 @@ use v6.c;
 use NativeCall;
 use Method::Also;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::DBus::Raw::Types;
 
 use GIO::DBus::Raw::Server;
@@ -11,11 +11,11 @@ use GIO::DBus::Raw::Server;
 use GLib::Value;
 use GIO::DBus::AuthObserver;
 
-use GTK::Roles::Properties;
+use GLib::Roles::Properties;
 use GIO::DBus::Roles::Signals::Server;
 
 class GIO::DBus::Server {
-  also does GTK::Roles::Properties;
+  also does GLib::Roles::Properties;
   also does GIO::DBus::Roles::Signals::Server;
 
   has GDBusServer $!ds is implementor;
@@ -26,7 +26,7 @@ class GIO::DBus::Server {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GDBusServer
+  method GIO::Raw::Types::GDBusServer
     is also<GDBusServer>
   { $!ds }
 

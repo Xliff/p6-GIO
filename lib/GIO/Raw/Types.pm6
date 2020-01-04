@@ -8,21 +8,16 @@ need GLib::Raw::Definitions;
 need GLib::Raw::Enums;
 need GLib::Raw::Structs;
 need GLib::Raw::Subs;
+need GLib::Raw::Exports;
 need GIO::DBus::Raw::Types;
 need GIO::Raw::Definitions;
 need GIO::Raw::Enums;
 need GIO::Raw::Structs;
 need GIO::Raw::Subs;
-
-our @gio-exports is export;
+need GIO::Raw::Exports;
 
 BEGIN {
-  @glib-exports = <
-    GIO::Raw::Definitions
-    GIO::Raw::Enums
-    GIO::Raw::Structs
-    GIO::Raw::Subs
-    GIO::DBus::Raw::Types
-  >;
-  re-export($_) for |@glib-exports, |@gio-exports;
+  re-export($_) for
+    |@GLib::Raw::Exports::glib-exports,
+    |@GIO::Raw::Exports::gio-exports;
 }

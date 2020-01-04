@@ -4,9 +4,9 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
-use GTK::Raw::Utils;
+
 
 use GIO::Raw::SettingsBackend;
 
@@ -23,7 +23,7 @@ class GIO::SettingsBackend {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GSettingsBackend
+  method GIO::Raw::Types::GSettingsBackend
     is also<GSettingsBackend>
   { $!sb }
 

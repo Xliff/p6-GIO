@@ -2,7 +2,7 @@ use v6.c;
 
 use Method::Also;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 use GIO::Raw::ListModel;
 
@@ -24,7 +24,7 @@ role GIO::Roles::ListModel {
     $!lm = cast( GListModel, i.get_value(self) );
   }
 
-  method GLib::Raw::Types::GListModel
+  method GIO::Raw::Types::GListModel
     is also<GListModel>
   { $!lm }
 

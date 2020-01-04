@@ -4,17 +4,17 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::CharsetConverter;
 
 use GLib::Value;
 
-use GTK::Roles::Properties;
+use GLib::Roles::Properties;
 use GIO::Roles::Converter;
 use GIO::Roles::Initable;
 
 class GIO::CharsetConverter {
-  also does GTK::Roles::Properties;
+  also does GLib::Roles::Properties;
   also does GIO::Roles::Converter;
   also does GIO::Roles::Initable;
 

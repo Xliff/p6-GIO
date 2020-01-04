@@ -2,7 +2,7 @@ use v6.c;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 role GIO::Roles::Signals::MountOperation {
   has %!signals-mo;

@@ -4,10 +4,8 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::InputStream;
-
-use GTK::Raw::Utils;
 
 use GLib::Roles::Object;
 
@@ -26,7 +24,7 @@ class GIO::InputStream {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GInputStream
+  method GIO::Raw::Types::GInputStream
     is also<GInputStream>
   { $!is }
 
@@ -63,7 +61,7 @@ class GIO::InputStream {
     &callback,
     gpointer $user_data = Pointer
   ) {
-    my int32 $io = resolve-int($io_priority);
+    my int32 $io = $io_priority;
 
     g_input_stream_close_async(
       $!is,
@@ -107,7 +105,7 @@ class GIO::InputStream {
     CArray[Pointer[GError]] $error = gerror
   ) {
     clear_error;
-    my uint64 $c = resolve-uint64($count);
+    my uint64 $c = $count;
     my $rc = g_input_stream_read($!is, $buffer, $count, $cancellable, $error);
     set_error($error);
     $rc;
@@ -122,7 +120,7 @@ class GIO::InputStream {
   )
     is also<read-all>
   {
-    my gsize ($c, $b) = resolve-uint64($count, $bytes_read);
+    my gsize ($c, $b) = $count, $bytes_read;
     clear_error;
     my $rc = so g_input_stream_read_all(
       $!is,
@@ -165,8 +163,8 @@ class GIO::InputStream {
     &callback,
     gpointer $user_data = Pointer
   ) {
-    my int32 $io = resolve-int($io_priority);
-    my gsize $c = resolve-uint64($count);
+    my int32 $io = $io_priority;
+    my gsize $c = $count;
 
     g_input_stream_read_all_async(
       $!is,
@@ -186,7 +184,7 @@ class GIO::InputStream {
   )
     is also<read-all-finish>
   {
-    my gsize $b = resolve-uint64($bytes_read);
+    my gsize $b = $bytes_read;
     clear_error;
     my $rc = so g_input_stream_read_all_finish($!is, $result, $b, $error);
     set_error($error);
@@ -222,8 +220,8 @@ class GIO::InputStream {
     &callback,
     gpointer $user_data
   ) {
-    my gsize $c = resolve-uint64($count);
-    my guint $io = resolve-uint($io_priority);
+    my gsize $c = $count;
+    my guint $io = $io_priority;
 
     g_input_stream_read_async(
       $!is,
@@ -243,7 +241,7 @@ class GIO::InputStream {
   )
     is also<read-bytes>
   {
-    my gsize $c = resolve-uint64($count);
+    my gsize $c = $count;
     clear_error;
     my $rc = so g_input_stream_read_bytes($!is, $c, $cancellable, $error);
     set_error($error);
@@ -270,8 +268,8 @@ class GIO::InputStream {
     &callback,
     gpointer $user_data
   ) {
-    my uint32 $io = resolve-uint($io_priority);
-    my gsize $c = resolve-uint64($count);
+    my uint32 $io = $io_priority;
+    my gsize $c = $count;
 
     g_input_stream_read_bytes_async(
       $!is,
@@ -321,7 +319,7 @@ class GIO::InputStream {
     GCancellable() $cancellable    = GCancellable,
     CArray[Pointer[GError]] $error = gerror
   ) {
-    my gsize $c = resolve-uint64($count);
+    my gsize $c = $count;
     clear_error;
     my $rc = g_input_stream_skip($!is, $c, $cancellable, $error);
     set_error($error);
@@ -348,8 +346,8 @@ class GIO::InputStream {
     &callback,
     gpointer $user_data = Pointer
   ) {
-    my uint32 $io = resolve-uint($io_priority);
-    my gsize $c = resolve-uint64($count);
+    my uint32 $io = $io_priority;
+    my gsize $c = $count;
 
     g_input_stream_skip_async(
       $!is,

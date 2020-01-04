@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 use GIO::SocketConnection;
 
@@ -45,7 +45,7 @@ class GIO::TcpConnection is GIO::SocketConnection {
     self.setSocketConnection($to-parent);
   }
 
-  method GLib::Raw::Types::GTcpConnection
+  method GIO::Raw::Types::GTcpConnection
     is also<GTcpConnection>
   { $!tc }
 

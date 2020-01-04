@@ -4,18 +4,18 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::SimpleProxyResolver;
 
-use GTK::Raw::Utils;
+
 
 use GLib::Value;
 
-use GTK::Roles::Properties;
+use GLib::Roles::Properties;
 use GIO::Roles::ProxyResolver;
 
 class GIO::SimpleProxyResolver {
-  also does GTK::Roles::Properties;
+  also does GLib::Roles::Properties;
 
   has GSimpleProxyResolver $!spr is implementor;
 
@@ -25,7 +25,7 @@ class GIO::SimpleProxyResolver {
     self.roleInit-ProxyResolver;
   }
 
-  method GLib::Raw::Types::GSimpleProxyResolver
+  method GIO::Raw::Types::GSimpleProxyResolver
     is also<GSimpleProxyResolver>
   { $!spr }
 

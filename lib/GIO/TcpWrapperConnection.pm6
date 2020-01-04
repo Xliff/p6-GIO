@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 use GIO::Stream;
 use GIO::TcpConnection;
@@ -42,7 +42,7 @@ class GIO::TcpWrapperConnection is GIO::TcpConnection {
     }
   }
 
-  method GLib::Raw::Types::GTcpWrapperConnection
+  method GIO::Raw::Types::GTcpWrapperConnection
     is also<GTcpWrapperConnection>
   { $!twc }
 

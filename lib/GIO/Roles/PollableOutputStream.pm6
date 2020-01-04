@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::PollableOutputStream;
 
 use GLib::Source;
@@ -22,7 +22,7 @@ role GIO::Roles::PollableOutputStream {
     $!pos = cast( GPollableOutputStream, i.get_value(self) );
   }
 
-  method GLib::Raw::Types::GPollableOutputStream
+  method GIO::Raw::Types::GPollableOutputStream
     is also<GPollableOutputStream>
   { $!pos }
 

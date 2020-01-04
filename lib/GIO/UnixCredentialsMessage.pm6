@@ -2,7 +2,7 @@ use v6.c;
 
 use Method::Also;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::UnixCredentialsMessage;
 
 use GIO::SocketControlMessage;
@@ -43,7 +43,7 @@ class GIO::UnixCredentialsMessage is GIO::SocketControlMessage {
     }
   }
 
-  method GLib::Raw::Types::GUnixCredentialsMessage
+  method GIO::Raw::Types::GUnixCredentialsMessage
     is also<GUnixCredentialsMessage>
   { $!cm }
 

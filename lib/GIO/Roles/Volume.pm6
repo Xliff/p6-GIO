@@ -4,19 +4,19 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
-use GTK::Compat::FileTypes;
+use GIO::Raw::Types;
+
 use GIO::Raw::Volume;
 
-use GTK::Raw::Utils;
+
 
 use GIO::Roles::GFile;
 use GIO::Roles::Icon;
 
-use GTK::Roles::Signals::Generic;
+use GLib::Roles::Signals::Generic;
 
 role GIO::Roles::Volume {
-  also does GTK::Roles::Signals::Generic;
+  also does GLib::Roles::Signals::Generic;
 
   has GVolume $!v;
 
@@ -30,7 +30,7 @@ role GIO::Roles::Volume {
     $!v = cast( GVolume, i.get_value(self) );
   }
 
-  method GLib::Raw::Types::GVolume
+  method GIO::Raw::Types::GVolume
   { $!v }
 
   method new-volume-obj (GVolume :$volume) is also<new_volume_obj> {

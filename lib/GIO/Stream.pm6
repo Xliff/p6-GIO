@@ -3,17 +3,17 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::Stream;
 
 use GIO::InputStream;
 use GIO::OutputStream;
 
 # Due to subclass need.
-use GTK::Roles::Properties;
+use GLib::Roles::Properties;
 
 class GIO::Stream {
-  also does GTK::Roles::Properties;
+  also does GLib::Roles::Properties;
 
   has GIOStream $!ios is implementor;
 
@@ -31,7 +31,7 @@ class GIO::Stream {
     self.bless( :$stream );
   }
 
-  method GLib::Raw::Types::GIOStream
+  method GIO::Raw::Types::GIOStream
     is also<GIOStream>
   { $!ios }
 

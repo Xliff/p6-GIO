@@ -3,7 +3,7 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 use GIO::Raw::MenuModel;
 
@@ -44,7 +44,7 @@ class GIO::MenuModel {
     self.bless( :$model );
   }
 
-  method GLib::Raw::Types::GMenuModel
+  method GIO::Raw::Types::GMenuModel
     is also<GMenuModel>
   { $!mm }
 

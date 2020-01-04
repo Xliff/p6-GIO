@@ -4,9 +4,9 @@ use Method::Also;
 
 use NativeCall;
 
-use GTK::Raw::Utils;
 
-use GLib::Raw::Types;
+
+use GIO::Raw::Types;
 use GIO::DBus::Raw::Types;
 
 use GIO::DBus::Raw::Proxy;
@@ -35,7 +35,7 @@ class GIO::DBus::Proxy {
     self.roleInit-AsyncInitable;
   }
 
-  method GLib::Raw::Types::GDBusProxy
+  method GIO::Raw::Types::GDBusProxy
     is also<GDBusProxy>
   { $!dp }
 

@@ -2,7 +2,7 @@ use v6.c;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::DBus::Raw::Types;
 
 use GIO::DBus::Raw::Message;
@@ -24,7 +24,7 @@ class GIO::DBus::Message {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GDBusMessage
+  method GIO::Raw::Types::GDBusMessage
   { $!dm }
 
   proto method new (|)

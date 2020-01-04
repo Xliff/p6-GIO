@@ -3,8 +3,8 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
-use GLib::Raw::Types;
-use GTK::Compat::FileTypes;
+use GIO::Raw::Types;
+
 
 use GIO::Raw::DataOutputStream;
 
@@ -37,7 +37,7 @@ class GIO::DataOutputStream is GIO::FilterOutputStream {
     }
   }
 
-  method GLib::Raw::Types::GDataOutputStream
+  method GIO::Raw::Types::GDataOutputStream
     is also<GDataOutputStream>
   { $!dos }
 

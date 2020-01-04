@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::MemoryOutputStream;
 
 use GIO::OutputStream;
@@ -67,7 +67,7 @@ class GIO::MemoryOutputStream is GIO::OutputStream {
     self.RoleInit-PollableOutputStream unless $!pos;
   }
 
-  method GLib::Raw::Types::GMemoryOutputStream
+  method GIO::Raw::Types::GMemoryOutputStream
     is also<GMemoryOutputStream>
   { $!mos }
 

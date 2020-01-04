@@ -3,10 +3,10 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 use GIO::Raw::SimpleAction;
-use GTK::Raw::Utils;
+
 
 use GLib::Value;
 
@@ -25,7 +25,7 @@ class GTK::Compat::SimpleAction {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GSimpleAction
+  method GIO::Raw::Types::GSimpleAction
     is also<GSimpleAction>
   { $!sa }
 

@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 use GIO::Raw::AsyncInitable;
 
@@ -19,7 +19,7 @@ role GIO::Roles::AsyncInitable {
     $!ai = cast(GAsyncInitable, i.get_value(self) );
   }
 
-  method GLib::Raw::Types::GAsyncInitable
+  method GIO::Raw::Types::GAsyncInitable
     is also<GAsyncInitable>
   { $!ai; }
 

@@ -3,9 +3,7 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
-use GLib::Raw::Types;
-
-use GTK::Raw::Utils;
+use GIO::Raw::Types;
 
 use GIO::InputStream;
 
@@ -22,7 +20,7 @@ role GIO::Roles::LoadableIcon {
     $!li = cast( GLoadableIcon, i.get_value(self) );
   }
 
-  method GLib::Raw::Types::GLoadableIcon
+  method GIO::Raw::Types::GLoadableIcon
     is also<GLoadableIcon>
   { $!li }
 
@@ -49,7 +47,7 @@ role GIO::Roles::LoadableIcon {
     :$all = False,
     :$raw = False
   ) {
-    my gint $s = resolve-int($size);
+    my gint $s = $size;
     my $t = CArray[Str].new;
     $t[0] = Str;
 
@@ -84,7 +82,7 @@ role GIO::Roles::LoadableIcon {
     &callback,
     gpointer $user_data = Pointer
   ) {
-    my gint $s = resolve-int($size);
+    my gint $s = $size;
 
     g_loadable_icon_load_async($!li, $s, $cancellable, &callback, $user_data);
   }

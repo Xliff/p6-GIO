@@ -4,18 +4,18 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::ThemedIcon;
 
-use GTK::Raw::Utils;
+
 
 use GLib::Value;
 
-use GTK::Roles::Properties;
+use GLib::Roles::Properties;
 use GIO::Roles::Icon;
 
 class GIO::ThemedIcon {
-  also does GTK::Roles::Properties;
+  also does GLib::Roles::Properties;
   also does GIO::Roles::Icon;
 
   has GThemedIcon $!ti is implementor;
@@ -27,7 +27,7 @@ class GIO::ThemedIcon {
     self.roleInit-Icon;
   }
 
-  method GLib::Raw::Types::GThemedIcon
+  method GIO::Raw::Types::GThemedIcon
   { $!ti }
 
   method new (Str() $icon-name) {

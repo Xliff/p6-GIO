@@ -26,9 +26,7 @@ class GAppInfoMonitor          is repr('CPointer') is export does GLib::Roles::P
 class GAppLaunchContext        is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GApplication             is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GAsyncInitable           is repr('CPointer') is export does GLib::Roles::Pointers { }
-class GAsyncQueue              is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GAsyncResult             is repr('CPointer') is export does GLib::Roles::Pointers { }
-class GBookmarkFile            is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GBufferedInputStream     is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GBufferedOutputStream    is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GBytesIcon               is repr('CPointer') is export does GLib::Roles::Pointers { }
@@ -84,7 +82,6 @@ class GInetAddressMask         is repr('CPointer') is export does GLib::Roles::P
 class GInetSocketAddress       is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GInitable                is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GInputStream             is repr('CPointer') is export does GLib::Roles::Pointers { }
-class GIOChannel               is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GIOStream                is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GListModel               is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GListStore               is repr('CPointer') is export does GLib::Roles::Pointers { }
@@ -105,10 +102,8 @@ class GNotification            is repr('CPointer') is export does GLib::Roles::P
 class GOptionEntry             is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GOptionGroup             is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GOutputStream            is repr('CPointer') is export does GLib::Roles::Pointers { }
-class GPatternSpec             is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GPollableInputStream     is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GPollableOutputStream    is repr('CPointer') is export does GLib::Roles::Pointers { }
-class GPrivate                 is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GPropertyAction          is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GProxy                   is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GProxyAddress            is repr('CPointer') is export does GLib::Roles::Pointers { }
@@ -116,11 +111,6 @@ class GProxyAddressEnumerator  is repr('CPointer') is export does GLib::Roles::P
 class GProxyResolver           is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GResource                is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GRemoteActionGroup       is repr('CPointer') is export does GLib::Roles::Pointers { }
-# To be converted into CStruct when I'm not so scurred of it.
-# It has bits.... BITS! -- See https://stackoverflow.com/questions/1490092/c-c-force-bit-field-order-and-alignment
-class GScannerConfig           is repr('CPointer') is export does GLib::Roles::Pointers { }
-# Also has a CStruct representation, and should be converted.
-class GScanner                 is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GSettings                is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GSettingsBackend         is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GSettingsSchema          is repr('CPointer') is export does GLib::Roles::Pointers { }

@@ -3,9 +3,9 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
-use GTK::Raw::Utils;
 
-use GLib::Raw::Types;
+
+use GIO::Raw::Types;
 use GIO::Raw::AppInfo;
 
 class GTK::Compat::LaunchContext {

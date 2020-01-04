@@ -2,8 +2,8 @@ use v6.c;
 
 use NativeCall;
 
-use GLib::Raw::Types;
-use GTK::Compat::FileTypes;
+use GIO::Raw::Types;
+
 
 role GIO::Roles::Signals::FileMonitor {
   has %signals-m;

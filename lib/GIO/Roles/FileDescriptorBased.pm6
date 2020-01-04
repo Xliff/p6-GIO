@@ -4,12 +4,12 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 role GIO::Roles::FileDescriptorBased {
   has GFileDescriptorBased $!fdb;
 
-  method GLib::Raw::Types::GFileDescriptorBased
+  method GIO::Raw::Types::GFileDescriptorBased
     is also<GFileDescriptorBased>
   { $!fdb }
 

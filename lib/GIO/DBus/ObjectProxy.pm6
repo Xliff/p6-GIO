@@ -4,16 +4,16 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::DBus::Raw::Types;
 
 use GLib::Value;
 use GIO::DBus::Connection;
 
-use GTK::Roles::Properties;
+use GLib::Roles::Properties;
 
 class GIO::DBus::ObjectProperty {
-  also does GTK::Roles::Properties;
+  also does GLib::Roles::Properties;
 
   has GDBusObjectProxy $!dop is implementor;
 
@@ -23,7 +23,7 @@ class GIO::DBus::ObjectProperty {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GDBusObjectProxy
+  method GIO::Raw::Types::GDBusObjectProxy
     is also<GDBusObjectProxy>
   { $!dop }
 

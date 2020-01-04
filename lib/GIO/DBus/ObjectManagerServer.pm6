@@ -1,6 +1,6 @@
 use v6.c;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 use GIO::DBus::Raw::ObjectManagerServer;
 
@@ -19,7 +19,7 @@ class GIO::DBus::ObjectManagerServer {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GDBusObjectManagerServer
+  method GIO::Raw::Types::GDBusObjectManagerServer
   { $!doms }
 
   multi method new (GDBusObjectManagerServer $server) {

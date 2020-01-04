@@ -4,9 +4,9 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
-use GTK::Raw::Utils;
+
 
 use GIO::Raw::SettingsSchema;
 

@@ -4,8 +4,8 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
-use GTK::Compat::FileTypes;
+use GIO::Raw::Types;
+
 
 use GIO::Raw::TlsCertificate;
 
@@ -14,10 +14,10 @@ use GLib::Value;
 use GLib::GList;
 
 use GLib::Roles::ListData;
-use GTK::Roles::Properties;
+use GLib::Roles::Properties;
 
 class GIO::TlsCertificate {
-  also does GTK::Roles::Properties;
+  also does GLib::Roles::Properties;
 
   has GTlsCertificate $!c is implementor;
 
@@ -27,7 +27,7 @@ class GIO::TlsCertificate {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GTlsCertificate
+  method GIO::Raw::Types::GTlsCertificate
     is also<GTlsCertificate>
   { $!c }
 

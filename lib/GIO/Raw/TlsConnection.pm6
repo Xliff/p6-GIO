@@ -2,8 +2,8 @@ use v6.c;
 
 use NativeCall;
 
-use GLib::Raw::Types;
-use GTK::Compat::FileTypes;
+use GIO::Raw::Types;
+
 
 sub g_tls_connection_emit_accept_certificate (
   GTlsConnection $conn,

@@ -4,10 +4,10 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::FilenameCompleter;
 
-use GTK::Raw::Utils;
+
 
 use GLib::Roles::Object;
 
@@ -22,7 +22,7 @@ class GIO::FilenameCompleter {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GFilenameCompleter
+  method GIO::Raw::Types::GFilenameCompleter
     is also<GFilenameCompleter>
   { $!fc }
 

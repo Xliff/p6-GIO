@@ -2,8 +2,8 @@ use v6.c;
 
 use NativeCall;
 
-use GLib::Raw::Types;
-use GTK::Raw::ReturnedValue;
+use GIO::Raw::Types;
+use GLib::Raw::ReturnedValue;
 
 role GIO::Roles::Signals::SocketService {
   has %!signals-ss;

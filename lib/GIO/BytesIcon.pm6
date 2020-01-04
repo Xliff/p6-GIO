@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 use GLib::Bytes;
 
@@ -27,7 +27,7 @@ class GIO::BytesIcon {
     self.roleInit-LoadableIcon;
   }
 
-  method GLib::Raw::Types::GBytesIcon
+  method GIO::Raw::Types::GBytesIcon
     is also<GBytesIcon>
   { $!bi }
 

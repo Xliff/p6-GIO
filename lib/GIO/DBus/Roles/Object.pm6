@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::DBus::Raw::Types;
 
 use GLib::GList;
@@ -30,7 +30,7 @@ role GIO::DBus::Roles::Object {
     $!do = cast( GDBusObject, i.get_value(self) );
   }
 
-  method GLib::Raw::Types::GDBusObject
+  method GIO::Raw::Types::GDBusObject
     is also<GDBusObject>
   { $!do }
 

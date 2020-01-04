@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 use GIO::Raw::DatagramBased;
 
 use GLib::Source;
@@ -18,7 +18,7 @@ role GIO::Roles::DatagramBased {
     $!d = cast(GDatagramBased, i.get_value(self) );
   }
 
-  method GLib::Raw::Types::GDatagramBased
+  method GIO::Raw::Types::GDatagramBased
     is also<GDatagramBased>
   { $!d }
 

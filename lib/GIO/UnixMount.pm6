@@ -2,13 +2,13 @@ use v6.c;
 
 use Method::Also;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 use GIO::Raw::UnixMount;
 
 use GLib::Roles::Object;
 use GIO::Roles::Icon;
-use GTK::Roles::Signals::Generic;
+use GLib::Roles::Signals::Generic;
 
 class GIO::UnixMountMonitor { ... }
 
@@ -23,7 +23,7 @@ class GIO::UnixMount {
     self.roleInit-Object;
   }
 
-  method GLib::Raw::Types::GUnixMountEntry
+  method GIO::Raw::Types::GUnixMountEntry
     is also<GUnixMountEntry>
   { $!um }
 
@@ -270,7 +270,7 @@ class GIO::UnixMountPoint {
     $!mp = $mount-point;
   }
 
-  method GLib::Raw::Types::GUnixMountPoint
+  method GIO::Raw::Types::GUnixMountPoint
     is also<GUnixMountPoint>
   { $!mp }
 
@@ -414,7 +414,7 @@ class GIO::UnixMountPoint {
 
 # BOXED
 class GIO::UnixMountMonitor {
-  also does GTK::Roles::Signals::Generic;
+  also does GLib::Roles::Signals::Generic;
 
   has GUnixMountMonitor $!mm;
 
@@ -422,7 +422,7 @@ class GIO::UnixMountMonitor {
     $!mm = $monitor;
   }
 
-  method GLib::Raw::Types::GUnixMountMonitor
+  method GIO::Raw::Types::GUnixMountMonitor
     is also<GUnixMountMonitor>
   { $!mm }
 

@@ -4,10 +4,8 @@ use NativeCall;
 use Method::Also;
 
 use GLib::Raw::Types;
-
-use GTK::Raw::Utils;
-
 use GLib::Memory;
+use GIO::Raw::Definitions;
 
 unit package GIO::DBus::Raw::Types;
 

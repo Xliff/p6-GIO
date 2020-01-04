@@ -3,9 +3,9 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
-use GTK::Raw::Utils;
+
 
 use GIO::Raw::Permission;
 
@@ -28,7 +28,7 @@ class GIO::Permission {
     $permission ?? self.bless( :$permission ) !! Nil;
   }
 
-  method GLib::Raw::Types::GPermission
+  method GIO::Raw::Types::GPermission
     is also<GPermission>
   { $!p }
 
@@ -122,7 +122,7 @@ class GIO::Permission {
     is also<impl-update>
   {
     my gboolean ($a, $ca, $cr) =
-      resolve-bool($allowed, $can_acquire, $can_release);
+      ($allowed, $can_acquire, $can_release).map( *.so.Int );
 
     g_permission_impl_update($!p, $a, $ca, $cr);
   }

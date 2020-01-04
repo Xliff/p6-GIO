@@ -4,7 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GIO::Raw::Types;
 
 use GLib::Value;
 use GIO::Roles::Action;
@@ -21,7 +21,7 @@ class GIO::PropertyAction {
     self!roleInit-Action;
   }
 
-  method GLib::Raw::Types::GPropertyAction
+  method GIO::Raw::Types::GPropertyAction
     is also<GPropertyAction>
   { $!pa }
 

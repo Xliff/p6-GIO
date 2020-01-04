@@ -2,8 +2,8 @@ use v6.c;
 
 use Method::Also;
 
-use GLib::Raw::Types;
-use GTK::Compat::FileTypes;
+use GIO::Raw::Types;
+
 use GIO::Raw::Emblem;
 
 use GLib::Roles::Object;
@@ -20,7 +20,7 @@ class GIO::Emblem {
     self.roleInit-Object;
   }
 
-  multi method GLib::Raw::Types::GEmblem
+  multi method GIO::Raw::Types::GEmblem
     is also<GEmblem>
   { $!e }
 
