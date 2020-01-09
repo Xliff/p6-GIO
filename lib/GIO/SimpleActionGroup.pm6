@@ -41,9 +41,11 @@ class GIO::SimpleActionGroup {
     self.bless( :$group );
   }
   multi method new {
-    my $g = g_simple_action_group_new();
-    $g ?? self.bless( group => $g ) !! Nil;
+    my $group = g_simple_action_group_new();
+
+    $group ?? self.bless( :$group ) !! Nil;
   }
+
 
   method get_type is also<get-type> {
     state ($n, $t);

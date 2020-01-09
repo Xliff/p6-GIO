@@ -39,6 +39,6 @@ sub g-connect-items-changed(
   uint32 $connect_flags
 )
   returns uint64
-  is native('gobject-2.0')
+  is native(gobject)
   is symbol('g_signal_connect_object')
 { * }
