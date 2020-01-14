@@ -21,6 +21,7 @@ GLib::Roles::TypedBuffer
 GLib::Source
 GLib::Value
 GLib::Variant
+GLib::VariantDict
 Method::Also
 GIO::Raw::Definitions
 GIO::DBus::Raw::Subs
@@ -47,6 +48,7 @@ GIO::Roles::DTlsServerConnection
 GIO::Roles::FileDescriptorBased
 GIO::Roles::Initable
 GIO::Roles::Signals::ActionGroup
+GIO::Roles::Signals::Application
 GIO::Roles::Signals::DtlsConnection
 GIO::Roles::Signals::FileMonitor
 GIO::Roles::Signals::ListModel
@@ -92,6 +94,8 @@ GIO::DBus::Utils
 GIO::Raw::Action
 GIO::Raw::ActionGroup
 GIO::Raw::AppInfo
+GIO::Raw::Application
+GIO::Raw::ApplicationCommandLine
 GIO::Raw::AsyncInitable
 GIO::Raw::AsyncResult
 GIO::Raw::BufferedInputStream
@@ -260,6 +264,7 @@ GIO::UnixInputStream
 GIO::UnixOutputStream
 GIO::VolumeMonitor
 GIO::ZlibDecompressor
+GIO::ApplicationCommandLine
 GIO::BytesIcon
 GIO::DBus::Address
 GIO::DBus::Connection
@@ -285,6 +290,7 @@ GIO::TcpConnection
 GIO::TcpWrapperConnection
 GIO::ThreadedSocketService
 GIO::UnixConnection
+GIO::Application
 GIO::BufferedInputStream
 GIO::BufferedOutputStream
 GIO::ConverterInputStream
