@@ -25,6 +25,7 @@ class GAppInfo                 is repr('CPointer') is export does GLib::Roles::P
 class GAppInfoMonitor          is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GAppLaunchContext        is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GApplication             is repr('CPointer') is export does GLib::Roles::Pointers { }
+class GApplicationCommandLine  is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GAsyncInitable           is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GAsyncResult             is repr('CPointer') is export does GLib::Roles::Pointers { }
 class GBufferedInputStream     is repr('CPointer') is export does GLib::Roles::Pointers { }
