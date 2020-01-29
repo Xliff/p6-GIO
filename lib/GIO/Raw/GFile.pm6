@@ -15,7 +15,7 @@ sub g_file_append_to (
   returns GFileOutputStream
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_append_to_async (
   GFile $file,
@@ -27,7 +27,7 @@ sub g_file_append_to_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_append_to_finish (
   GFile $file,
@@ -37,7 +37,7 @@ sub g_file_append_to_finish (
   returns GFileOutputStream
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_copy (
   GFile $source,
@@ -51,7 +51,7 @@ sub g_file_copy (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_copy_async (
   GFile $source,
@@ -66,7 +66,7 @@ sub g_file_copy_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_copy_attributes (
   GFile $source,
@@ -78,7 +78,7 @@ sub g_file_copy_attributes (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_copy_finish (
   GFile $file,
@@ -88,7 +88,7 @@ sub g_file_copy_finish (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_create (
   GFile $file,
@@ -99,7 +99,7 @@ sub g_file_create (
   returns GFileOutputStream
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_create_async (
   GFile $file,
@@ -111,7 +111,7 @@ sub g_file_create_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_create_finish (
   GFile $file,
@@ -121,7 +121,7 @@ sub g_file_create_finish (
   returns GFileOutputStream
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_create_readwrite (
   GFile $file,
@@ -132,7 +132,7 @@ sub g_file_create_readwrite (
   returns GFileIOStream
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_create_readwrite_async (
   GFile $file,
@@ -144,7 +144,7 @@ sub g_file_create_readwrite_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_create_readwrite_finish (
   GFile $file,
@@ -154,7 +154,7 @@ sub g_file_create_readwrite_finish (
   returns GFileIOStream
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_delete (
   GFile $file,
@@ -164,7 +164,7 @@ sub g_file_delete (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_delete_async (
   GFile $file,
@@ -175,7 +175,7 @@ sub g_file_delete_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_delete_finish (
   GFile $file,
@@ -185,13 +185,13 @@ sub g_file_delete_finish (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_dup (GFile $file)
   returns GFile
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_eject_mountable_with_operation (
   GFile $file,
@@ -203,7 +203,7 @@ sub g_file_eject_mountable_with_operation (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_eject_mountable_with_operation_finish (
   GFile $file,
@@ -213,7 +213,7 @@ sub g_file_eject_mountable_with_operation_finish (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_enumerate_children (
   GFile $file,
@@ -225,7 +225,7 @@ sub g_file_enumerate_children (
   returns GFileEnumerator
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_enumerate_children_async (
   GFile $file,
@@ -238,7 +238,7 @@ sub g_file_enumerate_children_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_enumerate_children_finish (
   GFile $file,
@@ -248,13 +248,13 @@ sub g_file_enumerate_children_finish (
   returns GFileEnumerator
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_equal (GFile $file1, GFile $file2)
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_find_enclosing_mount (
   GFile $file,
@@ -264,7 +264,7 @@ sub g_file_find_enclosing_mount (
   returns GMount
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_find_enclosing_mount_async (
   GFile $file,
@@ -275,7 +275,7 @@ sub g_file_find_enclosing_mount_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_find_enclosing_mount_finish (
   GFile $file,
@@ -285,19 +285,19 @@ sub g_file_find_enclosing_mount_finish (
   returns GMount
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_get_basename (GFile $file)
   returns Str
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_get_child (GFile $file, Str $name)
   returns GFile
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_get_child_for_display_name (
   GFile $file,
@@ -307,79 +307,79 @@ sub g_file_get_child_for_display_name (
   returns GFile
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_get_parent (GFile $file)
   returns GFile
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_get_parse_name (GFile $file)
   returns Str
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_get_path (GFile $file)
   returns Str
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_get_relative_path (GFile $parent, GFile $descendant)
   returns Str
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_get_type ()
   returns GType
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_get_uri (GFile $file)
   returns Str
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_get_uri_scheme (GFile $file)
   returns Str
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_has_parent (GFile $file, GFile $parent)
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_has_prefix (GFile $file, GFile $prefix)
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_has_uri_scheme (GFile $file, Str $uri_scheme)
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_hash (GFile $file)
   returns guint
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_is_native (GFile $file)
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_load_bytes (
   GFile $file,
@@ -390,7 +390,7 @@ sub g_file_load_bytes (
   returns GBytes
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_load_bytes_async (
   GFile $file,
@@ -400,7 +400,7 @@ sub g_file_load_bytes_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_load_bytes_finish (
   GFile $file,
@@ -411,12 +411,12 @@ sub g_file_load_bytes_finish (
   returns GBytes
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_load_contents (
   GFile $file,
   GCancellable $cancellable,
-  CArray[Str] $contents,
+  CArray[uint8] $contents,
   gsize $length is rw,
   CArray[Str] $etag_out,
   CArray[Pointer[GError]] $error
@@ -424,7 +424,7 @@ sub g_file_load_contents (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_load_contents_async (
   GFile $file,
@@ -434,7 +434,7 @@ sub g_file_load_contents_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_load_contents_finish (
   GFile $file,
@@ -447,7 +447,7 @@ sub g_file_load_contents_finish (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_load_partial_contents_async (
   GFile $file,
@@ -458,7 +458,7 @@ sub g_file_load_partial_contents_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_load_partial_contents_finish (
   GFile $file,
@@ -471,7 +471,7 @@ sub g_file_load_partial_contents_finish (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_make_directory (
   GFile $file,
@@ -481,7 +481,7 @@ sub g_file_make_directory (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_make_directory_async (
   GFile $file,
@@ -492,7 +492,7 @@ sub g_file_make_directory_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_make_directory_finish (
   GFile $file,
@@ -502,7 +502,7 @@ sub g_file_make_directory_finish (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_make_directory_with_parents (
   GFile $file,
@@ -512,7 +512,7 @@ sub g_file_make_directory_with_parents (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_make_symbolic_link (
   GFile $file,
@@ -523,7 +523,7 @@ sub g_file_make_symbolic_link (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_measure_disk_usage (
   GFile $file,
@@ -539,7 +539,7 @@ sub g_file_measure_disk_usage (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_measure_disk_usage_async (
   GFile $file,
@@ -553,7 +553,7 @@ sub g_file_measure_disk_usage_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_measure_disk_usage_finish (
   GFile $file,
@@ -566,7 +566,7 @@ sub g_file_measure_disk_usage_finish (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_monitor (
   GFile $file,
@@ -577,7 +577,7 @@ sub g_file_monitor (
   returns GFileMonitor
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_monitor_directory (
   GFile $file,
@@ -588,7 +588,7 @@ sub g_file_monitor_directory (
   returns GFileMonitor
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_monitor_file (
   GFile $file,
@@ -599,7 +599,7 @@ sub g_file_monitor_file (
   returns GFileMonitor
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_mount_enclosing_volume (
   GFile $location,
@@ -611,7 +611,7 @@ sub g_file_mount_enclosing_volume (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_mount_enclosing_volume_finish (
   GFile $location,
@@ -621,7 +621,7 @@ sub g_file_mount_enclosing_volume_finish (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_mount_mountable (
   GFile $file,
@@ -633,7 +633,7 @@ sub g_file_mount_mountable (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_mount_mountable_finish (
   GFile $file,
@@ -643,7 +643,7 @@ sub g_file_mount_mountable_finish (
   returns GFile
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_move (
   GFile $source,
@@ -657,31 +657,31 @@ sub g_file_move (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_new_for_commandline_arg (Str $arg)
   returns GFile
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_new_for_commandline_arg_and_cwd (Str $arg, Str $cwd)
   returns GFile
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_new_for_path (Str $path)
   returns GFile
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_new_for_uri (Str $uri)
   returns GFile
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_new_tmp (
   Str $tmpl,
@@ -691,7 +691,7 @@ sub g_file_new_tmp (
   returns GFile
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_open_readwrite (
   GFile $file,
@@ -701,7 +701,7 @@ sub g_file_open_readwrite (
   returns GFileIOStream
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_open_readwrite_async (
   GFile $file,
@@ -712,7 +712,7 @@ sub g_file_open_readwrite_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_open_readwrite_finish (
   GFile $file,
@@ -722,19 +722,19 @@ sub g_file_open_readwrite_finish (
   returns GFileIOStream
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_parse_name (Str $parse_name)
   returns GFile
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_peek_path (GFile $file)
   returns Str
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_poll_mountable (
   GFile $file,
@@ -744,7 +744,7 @@ sub g_file_poll_mountable (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_poll_mountable_finish (
   GFile $file,
@@ -754,7 +754,7 @@ sub g_file_poll_mountable_finish (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_query_default_handler (
   GFile $file,
@@ -764,7 +764,7 @@ sub g_file_query_default_handler (
   returns GAppInfo
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_query_default_handler_async (
   GFile $file,
@@ -775,7 +775,7 @@ sub g_file_query_default_handler_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_query_default_handler_finish (
   GFile $file,
@@ -785,13 +785,13 @@ sub g_file_query_default_handler_finish (
   returns GAppInfo
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_query_exists (GFile $file, GCancellable $cancellable)
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_query_file_type (
   GFile $file,
@@ -801,7 +801,7 @@ sub g_file_query_file_type (
   returns uint32 # GFileType
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_query_filesystem_info (
   GFile $file,
@@ -812,7 +812,7 @@ sub g_file_query_filesystem_info (
   returns GFileInfo
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_query_filesystem_info_async (
   GFile $file,
@@ -824,7 +824,7 @@ sub g_file_query_filesystem_info_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_query_filesystem_info_finish (
   GFile $file,
@@ -834,7 +834,7 @@ sub g_file_query_filesystem_info_finish (
   returns GFileInfo
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_query_info (
   GFile $file,
@@ -846,7 +846,7 @@ sub g_file_query_info (
   returns GFileInfo
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_query_info_async (
   GFile $file,
@@ -859,7 +859,7 @@ sub g_file_query_info_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_query_info_finish (
   GFile $file,
@@ -869,7 +869,7 @@ sub g_file_query_info_finish (
   returns GFileInfo
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_query_settable_attributes (
   GFile $file,
@@ -879,7 +879,7 @@ sub g_file_query_settable_attributes (
   returns GFileAttributeInfoList
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_query_writable_namespaces (
   GFile $file,
@@ -889,7 +889,7 @@ sub g_file_query_writable_namespaces (
   returns GFileAttributeInfoList
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_read (
   GFile $file,
@@ -899,7 +899,7 @@ sub g_file_read (
   returns GFileInputStream
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_read_async (
   GFile $file,
@@ -910,7 +910,7 @@ sub g_file_read_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_read_finish (
   GFile $file,
@@ -920,7 +920,7 @@ sub g_file_read_finish (
   returns GFileInputStream
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_replace (
   GFile $file,
@@ -933,7 +933,7 @@ sub g_file_replace (
   returns GFileOutputStream
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_replace_async (
   GFile $file,
@@ -947,7 +947,7 @@ sub g_file_replace_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_replace_contents (
   GFile $file,
@@ -963,7 +963,7 @@ sub g_file_replace_contents (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_replace_contents_async (
   GFile $file,
@@ -978,7 +978,7 @@ sub g_file_replace_contents_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_replace_contents_bytes_async (
   GFile $file,
@@ -992,7 +992,7 @@ sub g_file_replace_contents_bytes_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_replace_contents_finish (
   GFile $file,
@@ -1003,7 +1003,7 @@ sub g_file_replace_contents_finish (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_replace_finish (
   GFile $file,
@@ -1013,7 +1013,7 @@ sub g_file_replace_finish (
   returns GFileOutputStream
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_replace_readwrite (
   GFile $file,
@@ -1026,7 +1026,7 @@ sub g_file_replace_readwrite (
   returns GFileIOStream
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_replace_readwrite_async (
   GFile $file,
@@ -1040,7 +1040,7 @@ sub g_file_replace_readwrite_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_replace_readwrite_finish (
   GFile $file,
@@ -1050,13 +1050,13 @@ sub g_file_replace_readwrite_finish (
   returns GFileIOStream
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_resolve_relative_path (GFile $file, Str $relative_path)
   returns GFile
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_set_attribute (
   GFile $file,
@@ -1070,7 +1070,7 @@ sub g_file_set_attribute (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_set_attribute_byte_string (
   GFile $file,
@@ -1083,7 +1083,7 @@ sub g_file_set_attribute_byte_string (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_set_attribute_int32 (
   GFile $file,
@@ -1096,7 +1096,7 @@ sub g_file_set_attribute_int32 (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_set_attribute_int64 (
   GFile $file,
@@ -1109,7 +1109,7 @@ sub g_file_set_attribute_int64 (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_set_attribute_string (
   GFile $file,
@@ -1122,7 +1122,7 @@ sub g_file_set_attribute_string (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_set_attribute_uint32 (
   GFile $file,
@@ -1135,7 +1135,7 @@ sub g_file_set_attribute_uint32 (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_set_attribute_uint64 (
   GFile $file,
@@ -1148,7 +1148,7 @@ sub g_file_set_attribute_uint64 (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_set_attributes_async (
   GFile $file,
@@ -1161,7 +1161,7 @@ sub g_file_set_attributes_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_set_attributes_finish (
   GFile $file,
@@ -1172,7 +1172,7 @@ sub g_file_set_attributes_finish (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_set_attributes_from_info (
   GFile $file,
@@ -1184,7 +1184,7 @@ sub g_file_set_attributes_from_info (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_set_display_name (
   GFile $file,
@@ -1195,7 +1195,7 @@ sub g_file_set_display_name (
   returns GFile
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_set_display_name_async (
   GFile $file,
@@ -1207,7 +1207,7 @@ sub g_file_set_display_name_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_set_display_name_finish (
   GFile $file,
@@ -1217,7 +1217,7 @@ sub g_file_set_display_name_finish (
   returns GFile
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_start_mountable (
   GFile $file,
@@ -1229,7 +1229,7 @@ sub g_file_start_mountable (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_start_mountable_finish (
   GFile $file,
@@ -1239,7 +1239,7 @@ sub g_file_start_mountable_finish (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_stop_mountable (
   GFile $file,
@@ -1251,7 +1251,7 @@ sub g_file_stop_mountable (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_stop_mountable_finish (
   GFile $file,
@@ -1261,13 +1261,13 @@ sub g_file_stop_mountable_finish (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_supports_thread_contexts (GFile $file)
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_trash (
   GFile $file,
@@ -1277,7 +1277,7 @@ sub g_file_trash (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_trash_async (
   GFile $file,
@@ -1288,7 +1288,7 @@ sub g_file_trash_async (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_trash_finish (
   GFile $file,
@@ -1298,7 +1298,7 @@ sub g_file_trash_finish (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_unmount_mountable_with_operation (
   GFile $file,
@@ -1310,7 +1310,7 @@ sub g_file_unmount_mountable_with_operation (
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_file_unmount_mountable_with_operation_finish (
   GFile $file,
@@ -1320,4 +1320,4 @@ sub g_file_unmount_mountable_with_operation_finish (
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
