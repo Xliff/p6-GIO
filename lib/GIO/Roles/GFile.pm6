@@ -805,26 +805,69 @@ role GIO::Roles::GFile {
     $rc;
   }
 
-  method load_contents (
-    GCancellable() $cancellable,
-    Str() $contents,
-    gsize $length,
-    Str() $etag_out,
-    CArray[Pointer[GError]] $error = gerror
-  )
+  proto method load_contents (|)
     is also<load-contents>
-  {
-    clear_error;
-    my $rc = g_file_load_contents(
-      $!file,
-      $cancellable,
+  { * }
+
+  multi method load_contents (
+    CArray[Pointer[GError]] $error = gerror,
+    :$buf = True
+  ) {
+    samewith($, $, $, $error, :all, :$buf);
+  }
+  multi method load_contents (
+    $contents is rw,
+    $length is rw,
+    $etag_out is rw,
+    CArray[Pointer[GError]] $error = gerror,
+    :$buf = True
+  ) {
+    my @r = callwith(
+      GCancellable,
       $contents,
       $length,
       $etag_out,
+      $error,
+      :all,
+      :$buf
+    );
+    @r[0] ?? @r[1..*] !! Nil;
+  }
+  multi method load_contents (
+    GCancellable() $cancellable,
+    $contents is rw,
+    $length is rw,
+    $etag_out is rw,
+    CArray[Pointer[GError]] $error = gerror,
+    :$all = False,
+    :$buf = True
+  ) {
+    my gsize $l = 0;
+    my $c = CArray[uint8].new;
+    my $eo = CArray[Str].new;
+    ($c[0], $eo[0]) = (0, Str);
+
+    clear_error;
+    my $rv = so g_file_load_contents(
+      $!file,
+      $cancellable,
+      $c,
+      $l,
+      $eo,
       $error
     );
     set_error($error);
-    $rc;
+
+    my @a = CArrayToArray($c);
+    $all.not ??
+      $rv
+      !!
+      (
+        $rv,
+        $buf ?? Buf.new(@a) !! @a,
+        $l,
+        $eo[0] ?? $eo[0] !! Nil
+      )
   }
 
   method load_contents_async (
