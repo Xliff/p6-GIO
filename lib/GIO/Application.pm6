@@ -10,28 +10,44 @@ use GLib::Roles::Object;
 
 use GIO::DBus::Connection;
 
+use GIO::Roles::ActionMap;
 use GIO::Roles::Signals::Application;
+
+our subset ApplicationAncestry is export of Mu
+  where GApplication | GObject;
 
 class GIO::Application {
   also does GLib::Roles::Object;
+  also does GIO::Roles::ActionMap;
   also does GIO::Roles::Signals::Application;
 
   has GApplication $!a is implementor;
 
   submethod BUILD (:$application) {
+    return unless $application;
+
     given $application {
-      when GApplication { $!a = $application }
-      default           { $!a = cast(GApplication, $application) }
+      when ApplicationAncestry { self.setApplication($application) }
+      when GIO::Application    { }
+      default                  { }
+    }
+  }
+
+  method setApplication (ApplicationAncestry $_) {
+    $!a = do {
+      when GApplication { $_ }
+      default           { cast(GApplication, $_) }
     }
 
     self.roleInit-Object;
+    self.roleInit-ActionMap;
   }
 
   method GIO::Raw::Definitions::GApplication
     is also<GApplication>
   { $!a }
 
-  multi method new (GApplication $application, :$ref = True) {
+  multi method new (ApplicationAncestry $application, :$ref = True) {
     return Nil unless $application;
 
     my $a = self.bless(:$application);
@@ -109,7 +125,7 @@ class GIO::Application {
     Str() $description,
     Str() $arg_description
   )
-    is also<add-main-option>
+    is also<add-4-option>
   {
     my GOptionFlags $f = $flags;
 
@@ -210,7 +226,7 @@ class GIO::Application {
     g_application_open($!a, $files, $n_files, $hint);
   }
 
-  method quit {
+  method quit is also<exit> {
     g_application_quit($!a);
   }
 
@@ -228,6 +244,9 @@ class GIO::Application {
     g_application_release($!a);
   }
 
+  multi method run {
+    samewith(0, CArray[Str]);
+  }
   multi method run (@args) {
     samewith( @args.elems, ArrayToCArray(Str, @args) );
   }
