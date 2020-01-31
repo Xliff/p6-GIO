@@ -24,7 +24,7 @@ role GIO::Roles::ListModel {
     $!lm = cast( GListModel, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GListModel
+  method GIO::Raw::Definitions::GListModel
     is also<GListModel>
   { $!lm }
 

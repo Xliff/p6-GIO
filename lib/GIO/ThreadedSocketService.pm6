@@ -40,7 +40,7 @@ class GIO::ThreadedSocketService is GIO::SocketService {
     }
   }
 
-  method GIO::Raw::Types::GThreadedSocketService
+  method GIO::Raw::Definitions::GThreadedSocketService
     is also<GThreadedSocketService>
   { $!tss }
 

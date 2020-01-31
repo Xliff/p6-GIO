@@ -25,7 +25,7 @@ class GIO::DBus::ObjectManagerClient {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GDBusObjectManagerClient
+  method GIO::Raw::Definitions::GDBusObjectManagerClient
   { $!domc }
 
   multi method new (GDBusObjectManagerClient $client) {

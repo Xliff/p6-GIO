@@ -19,7 +19,7 @@ role GIO::Roles::AsyncInitable {
     $!ai = cast(GAsyncInitable, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GAsyncInitable
+  method GIO::Raw::Definitions::GAsyncInitable
     is also<GAsyncInitable>
   { $!ai; }
 

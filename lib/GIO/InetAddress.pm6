@@ -19,7 +19,7 @@ class GIO::InetAddress {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GInetAddress
+  method GIO::Raw::Definitions::GInetAddress
     is also<GInetAddress>
   { $!ia }
 

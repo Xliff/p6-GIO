@@ -20,7 +20,7 @@ role GIO::Roles::NetworkMonitor {
     $!nm = cast( GNetworkMonitor, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GNetworkMonitor
+  method GIO::Raw::Definitions::GNetworkMonitor
     is also<GNetworkMonitor>
   { $!nm }
 

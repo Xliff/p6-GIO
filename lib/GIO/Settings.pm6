@@ -27,7 +27,7 @@ class GIO::Settings {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GSettings
+  method GIO::Raw::Definitions::GSettings
     is also<GSettings>
   { $!s }
 

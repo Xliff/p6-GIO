@@ -28,7 +28,7 @@ class GIO::DBus::InterfaceSkeleton {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GDBusInterfaceSkeleton
+  method GIO::Raw::Definitions::GDBusInterfaceSkeleton
     is also<GDBusInterfaceSkeleton>
   { $!dis }
 

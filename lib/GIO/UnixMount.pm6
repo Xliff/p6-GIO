@@ -23,7 +23,7 @@ class GIO::UnixMount {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GUnixMountEntry
+  method GIO::Raw::Definitions::GUnixMountEntry
     is also<GUnixMountEntry>
   { $!um }
 
@@ -270,7 +270,7 @@ class GIO::UnixMountPoint {
     $!mp = $mount-point;
   }
 
-  method GIO::Raw::Types::GUnixMountPoint
+  method GIO::Raw::Definitions::GUnixMountPoint
     is also<GUnixMountPoint>
   { $!mp }
 
@@ -422,7 +422,7 @@ class GIO::UnixMountMonitor {
     $!mm = $monitor;
   }
 
-  method GIO::Raw::Types::GUnixMountMonitor
+  method GIO::Raw::Definitions::GUnixMountMonitor
     is also<GUnixMountMonitor>
   { $!mm }
 

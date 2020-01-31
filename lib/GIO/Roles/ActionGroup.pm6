@@ -18,7 +18,7 @@ role GIO::Roles::ActionGroup {
     $!ag = cast( GActionGroup, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GActionGroup
+  method GIO::Raw::Definitions::GActionGroup
     is also<GActionGroup>
   { $!ag }
 

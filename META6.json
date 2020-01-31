@@ -287,16 +287,7 @@
     "name": "P6-GIO",
     "perl": "6.c",
     "test-depends": ["Test::META"],
-    "build-depends": [
-      "Text::Table::Simple",
-      "Dependency::Sort",
-      "Color",
-      "RandomColor",
-      "File::Find",
-      "LWP::Simple",
-      "Inline::Perl5",
-      "IO::Socket::SSL"
-    ],
+    "build-depends": [ ],
     "support": {"source": null},
     "authors": ["clifton.wood@gmail.com"]
 }

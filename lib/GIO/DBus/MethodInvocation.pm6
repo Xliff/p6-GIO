@@ -25,7 +25,7 @@ class GIO::DBus::MethodInvocation {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GDBusMethodInvocation
+  method GIO::Raw::Definitions::GDBusMethodInvocation
     is also<GDBusMethodInvocation>
   { $!dmi }
 

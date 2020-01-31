@@ -34,7 +34,7 @@ role GIO::Roles::DtlsConnection {
     $!dtc = cast( GDtlsConnection, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GDtlsConnection
+  method GIO::Raw::Definitions::GDtlsConnection
     is also<GDtlsConnection>
   { $!dtc }
 

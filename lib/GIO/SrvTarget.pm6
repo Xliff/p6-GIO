@@ -17,7 +17,7 @@ class GIO::SrvTarget {
     $!st = $srv;
   }
 
-  method GIO::Raw::Types::GSrvTarget
+  method GIO::Raw::Definitions::GSrvTarget
     is also<GSrvTarget>
   { $!st }
 

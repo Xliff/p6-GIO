@@ -18,7 +18,7 @@ role GIO::Roles::DatagramBased {
     $!d = cast(GDatagramBased, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GDatagramBased
+  method GIO::Raw::Definitions::GDatagramBased
     is also<GDatagramBased>
   { $!d }
 

@@ -19,7 +19,7 @@ class GIO::Notification {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GNotification
+  method GIO::Raw::Definitions::GNotification
     is also<GNotification>
   { $!n }
 

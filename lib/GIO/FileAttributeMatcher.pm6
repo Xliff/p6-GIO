@@ -13,7 +13,7 @@ class GIO::FileAttributeMatcher {
     $!fam = $matcher;
   }
 
-  method GIO::Raw::Types::GFileAttributeMatcher
+  method GIO::Raw::Definitions::GFileAttributeMatcher
     is also<GFileAttributeMatcher>
   { $!fam }
 

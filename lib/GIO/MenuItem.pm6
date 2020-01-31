@@ -19,7 +19,7 @@ class GIO::MenuItem {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GMenuItem
+  method GIO::Raw::Definitions::GMenuItem
     is also<
       GMenuItem
       MenuItem

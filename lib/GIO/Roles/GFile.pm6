@@ -30,7 +30,7 @@ role GIO::Roles::GFile {
     $!file = cast( GFile, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GFile
+  method GIO::Raw::Definitions::GFile
     is also<GFile>
   { $!file }
 

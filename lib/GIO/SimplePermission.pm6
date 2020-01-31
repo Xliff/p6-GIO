@@ -40,7 +40,7 @@ class GIO::SimplePermission is GIO::Permission {
     }
   }
 
-  method GIO::Raw::Types::GSimplePermission
+  method GIO::Raw::Definitions::GSimplePermission
     is also<GSimplePermission>
   { $!sp }
 

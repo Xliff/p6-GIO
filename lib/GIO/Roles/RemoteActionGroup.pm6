@@ -13,7 +13,7 @@ role GIO::Roles::RemoteActionGroup {
 
   has GRemoteActionGroup $!rag;
 
-  method GIO::Raw::Types::GRemoteActionGroup
+  method GIO::Raw::Definitions::GRemoteActionGroup
     is also<GRemoteActionGroup>
   { $!rag }
 

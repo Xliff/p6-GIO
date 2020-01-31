@@ -28,7 +28,7 @@ class GIO::Permission {
     $permission ?? self.bless( :$permission ) !! Nil;
   }
 
-  method GIO::Raw::Types::GPermission
+  method GIO::Raw::Definitions::GPermission
     is also<GPermission>
   { $!p }
 

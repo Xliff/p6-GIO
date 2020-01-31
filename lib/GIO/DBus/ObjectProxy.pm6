@@ -23,7 +23,7 @@ class GIO::DBus::ObjectProperty {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GDBusObjectProxy
+  method GIO::Raw::Definitions::GDBusObjectProxy
     is also<GDBusObjectProxy>
   { $!dop }
 

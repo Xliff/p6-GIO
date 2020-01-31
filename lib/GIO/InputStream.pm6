@@ -24,7 +24,7 @@ class GIO::InputStream {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GInputStream
+  method GIO::Raw::Definitions::GInputStream
     is also<GInputStream>
   { $!is }
 

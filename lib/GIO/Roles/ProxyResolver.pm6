@@ -22,7 +22,7 @@ role GIO::ProxyResolver {
     $!pr = cast( GProxyResolver, i.get-value(self) );
   }
 
-  method GIO::Raw::Types::GProxyResolver
+  method GIO::Raw::Definitions::GProxyResolver
     is also<GProxyResolver>
   { $!pr }
 

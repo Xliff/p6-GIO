@@ -22,7 +22,7 @@ role GIO::Roles::PollableOutputStream {
     $!pos = cast( GPollableOutputStream, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GPollableOutputStream
+  method GIO::Raw::Definitions::GPollableOutputStream
     is also<GPollableOutputStream>
   { $!pos }
 

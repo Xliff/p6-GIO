@@ -66,7 +66,7 @@ class GIO::MemoryInputStream is GIO::InputStream {
     self.setInputStream($to-parent);
   }
 
-  method GIO::Raw::Types::GMemoryInputStream
+  method GIO::Raw::Definitions::GMemoryInputStream
     is also<GMemoryInputStream>
   { $!mis }
 

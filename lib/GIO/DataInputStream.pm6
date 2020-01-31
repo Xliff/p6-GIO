@@ -45,7 +45,7 @@ class GIO::DataInputStream is GIO::BufferedInputStream {
     }
   }
 
-  method GIO::Raw::Types::GDataInputStream
+  method GIO::Raw::Definitions::GDataInputStream
     is also<GDataInputStream>
   { $!dis }
 

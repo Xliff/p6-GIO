@@ -21,7 +21,7 @@ role GIO::Roles::Icon {
     $!icon = cast( GIcon, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GIcon
+  method GIO::Raw::Definitions::GIcon
     is also<
       GIcon
       Icon

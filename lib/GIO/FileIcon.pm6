@@ -30,7 +30,7 @@ class GIO::FileIcon {
     #say "FI: $!fi";
   }
 
-  method GIO::Raw::Types::GFileIcon
+  method GIO::Raw::Definitions::GFileIcon
     is also<GFileIcon>
   { $!fi }
 

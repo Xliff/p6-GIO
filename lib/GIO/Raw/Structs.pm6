@@ -124,11 +124,10 @@ class GActionEntry is repr('CStruct') does GLib::Roles::Pointers is export {
 
 }
 
-sub sprintf-SaVP(
+sub sprintf-SaVP (
   Blob,
   Str,
   & (GSimpleAction, GVariant, gpointer),
-  gpointer
 )
   returns int64
   is native

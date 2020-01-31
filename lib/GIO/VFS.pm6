@@ -20,7 +20,7 @@ class GIO::VFS {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GVfs
+  method GIO::Raw::Definitions::GVfs
     is also<GVfs>
   { $!fs }
 

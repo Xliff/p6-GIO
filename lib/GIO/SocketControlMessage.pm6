@@ -40,7 +40,7 @@ class GIO::SocketControlMessage {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GSocketControlMessage
+  method GIO::Raw::Definitions::GSocketControlMessage
     is also<GSocketControlMessage>
   { * }
 

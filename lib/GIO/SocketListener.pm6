@@ -29,7 +29,7 @@ class GIO::SocketListener {
     self.roleInit-Properties;
   }
 
-  method GIO::Raw::Types::GSocketListener
+  method GIO::Raw::Definitions::GSocketListener
     is also<GSocketListener>
   { $!sl }
 

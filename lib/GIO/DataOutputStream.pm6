@@ -37,7 +37,7 @@ class GIO::DataOutputStream is GIO::FilterOutputStream {
     }
   }
 
-  method GIO::Raw::Types::GDataOutputStream
+  method GIO::Raw::Definitions::GDataOutputStream
     is also<GDataOutputStream>
   { $!dos }
 

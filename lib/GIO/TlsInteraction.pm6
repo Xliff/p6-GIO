@@ -22,7 +22,7 @@ class GIO::TlsInteraction {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GTlsInteraction
+  method GIO::Raw::Definitions::GTlsInteraction
     is also<GTlsInteraction>
   { $!ti }
 

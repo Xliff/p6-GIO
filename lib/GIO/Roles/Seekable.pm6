@@ -16,7 +16,7 @@ role GIO::Roles::Seekable {
     $!s = cast( GSeekable, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GSeekable
+  method GIO::Raw::Definitions::GSeekable
     is also<GSeekable>
   { $!s }
 

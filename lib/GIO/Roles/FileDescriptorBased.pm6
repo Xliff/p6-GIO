@@ -9,7 +9,7 @@ use GIO::Raw::Types;
 role GIO::Roles::FileDescriptorBased {
   has GFileDescriptorBased $!fdb;
 
-  method GIO::Raw::Types::GFileDescriptorBased
+  method GIO::Raw::Definitions::GFileDescriptorBased
     is also<GFileDescriptorBased>
   { $!fdb }
 

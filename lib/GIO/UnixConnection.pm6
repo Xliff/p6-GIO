@@ -47,7 +47,7 @@ class GIO::UnixConnection is GIO::SocketConnection {
     self.setSocketConnection($to-parent);
   }
 
-  method GIO::Raw::Types::GUnixConnection
+  method GIO::Raw::Definitions::GUnixConnection
     is also<GUnixConnection>
   { $!uc }
 

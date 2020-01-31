@@ -20,7 +20,7 @@ class GIO::NetworkService {
     self.roleInit-SocketConnectable;
   }
 
-  method GIO::Raw::Types::GNetworkService
+  method GIO::Raw::Definitions::GNetworkService
   { $!s }
 
   method new (Str() $service, Str() $protocol, Str() $domain) {

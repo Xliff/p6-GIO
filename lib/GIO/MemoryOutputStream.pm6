@@ -67,7 +67,7 @@ class GIO::MemoryOutputStream is GIO::OutputStream {
     self.RoleInit-PollableOutputStream unless $!pos;
   }
 
-  method GIO::Raw::Types::GMemoryOutputStream
+  method GIO::Raw::Definitions::GMemoryOutputStream
     is also<GMemoryOutputStream>
   { $!mos }
 

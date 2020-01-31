@@ -22,7 +22,7 @@ class GIO::ProxyAddressEnumerator {
     self.roleInit-Properties;
   }
 
-  method GIO::Raw::Types::GProxyAddressEnumerator
+  method GIO::Raw::Definitions::GProxyAddressEnumerator
     is also<GProxyAddressEnumerator>
   { $!pae }
 

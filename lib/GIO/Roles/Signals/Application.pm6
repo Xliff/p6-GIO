@@ -124,7 +124,7 @@ sub g-connect-handle-local-options(
 sub g-connect-open(
   Pointer $app,
   Str $name,
-  &handler (Pointer, gpointer, gint, gchar, Pointer),
+  &handler (Pointer, CArray[Pointer[GFile]], gint, gchar, Pointer),
   Pointer $data,
   uint32 $flags
 )

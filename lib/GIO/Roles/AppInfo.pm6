@@ -23,7 +23,7 @@ class GIO::Roles::AppInfo {
     $!ai = cast( GAppInfo, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GAppInfo
+  method GIO::Raw::Definitions::GAppInfo
     is also<GAppInfo>
   { $!ai }
 
@@ -442,7 +442,7 @@ class GIO::AppInfoMonitor {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GAppInfoMonitor
+  method GIO::Raw::Definitions::GAppInfoMonitor
     is also<GAppInfoMonitor>
   { $!aim }
 

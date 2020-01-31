@@ -26,7 +26,7 @@ class GIO::DesktopAppInfo {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GDesktopAppInfo
+  method GIO::Raw::Definitions::GDesktopAppInfo
     is also<GDesktopAppInfo>
   { $!dai }
 

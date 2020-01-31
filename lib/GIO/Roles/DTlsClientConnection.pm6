@@ -32,7 +32,7 @@ role GIO::Roles::DtlsClientConnection {
     $!tdcc = cast( GDtlsClientConnection, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GDtlsClientConnection
+  method GIO::Raw::Definitions::GDtlsClientConnection
     is also<GDtlsClientConnection>
   { $!tdcc }
 

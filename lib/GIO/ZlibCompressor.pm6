@@ -24,7 +24,7 @@ class GIO::ZlibCompressor {
     self.roleInit-Converter;
   }
 
-  method GIO::Raw::Types::GZlibCompressor
+  method GIO::Raw::Definitions::GZlibCompressor
     is also<GZlibCompressor>
   { $!zc }
 

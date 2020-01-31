@@ -44,7 +44,7 @@ class GIO::SocketAddress {
     self.roleInit-SocketConnectable unless $role-set;
   }
 
-  method GIO::Raw::Types::GSocketAddress
+  method GIO::Raw::Definitions::GSocketAddress
     is also<GSocketAddress>
   { $!sa }
 

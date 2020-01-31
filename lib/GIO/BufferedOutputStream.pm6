@@ -57,7 +57,7 @@ class GIO::BufferedOutputStream is GIO::FilterOutputStream {
     self.setFilterOutputStream($to-parent);
   }
 
-  method GIO::Raw::Types::GBufferedOutputStream
+  method GIO::Raw::Definitions::GBufferedOutputStream
     is also<GBufferedOutputStream>
   { $!bos }
 

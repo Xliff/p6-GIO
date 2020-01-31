@@ -22,7 +22,7 @@ role GIO::Roles::TlsServerConnection {
     $!tsc = cast( GTlsServerConnection, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GTlsServerConnection
+  method GIO::Raw::Definitions::GTlsServerConnection
     is also<GTlsServerConnection>
   { $!tsc }
 

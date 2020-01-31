@@ -57,7 +57,7 @@ class GIO::BufferedInputStream is GIO::FilterInputStream {
     self.setFilterInputStream($to-parent);
   }
 
-  method GIO::Raw::Types::GBufferedInputStream
+  method GIO::Raw::Definitions::GBufferedInputStream
     is also<GBufferedInputStream>
   { $!bis }
 

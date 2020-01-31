@@ -30,7 +30,7 @@ role GIO::Roles::Volume {
     $!v = cast( GVolume, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GVolume
+  method GIO::Raw::Definitions::GVolume
   { $!v }
 
   method new-volume-obj (GVolume :$volume) is also<new_volume_obj> {

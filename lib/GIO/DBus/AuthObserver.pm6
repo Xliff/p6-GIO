@@ -21,7 +21,7 @@ class GIO::DBus::AuthObserver {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GDbusAuthObserver
+  method GIO::Raw::Definitions::GDbusAuthObserver
     is also<GDBusAuthObserver>
   { $!dao }
 

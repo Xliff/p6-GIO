@@ -22,7 +22,7 @@ class GIO::FilenameCompleter {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GFilenameCompleter
+  method GIO::Raw::Definitions::GFilenameCompleter
     is also<GFilenameCompleter>
   { $!fc }
 

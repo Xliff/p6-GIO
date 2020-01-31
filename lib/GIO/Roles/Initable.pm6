@@ -15,7 +15,7 @@ role GIO::Roles::Initable {
     $!i = cast(GInitable, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GInitable
+  method GIO::Raw::Definitions::GInitable
     is also<GInitable>
   { $!i }
 

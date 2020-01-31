@@ -31,7 +31,7 @@ class GIO::Stream {
     self.bless( :$stream );
   }
 
-  method GIO::Raw::Types::GIOStream
+  method GIO::Raw::Definitions::GIOStream
     is also<GIOStream>
   { $!ios }
 

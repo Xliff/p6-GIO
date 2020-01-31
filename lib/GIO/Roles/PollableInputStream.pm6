@@ -16,7 +16,7 @@ role GIO::Roles::PollableInputStream {
     $!pis = cast(GPollableInputStream, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GPollableInputStream
+  method GIO::Raw::Definitions::GPollableInputStream
     is also<GPollableInputStream>
   { * }
 

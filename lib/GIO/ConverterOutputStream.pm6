@@ -59,7 +59,7 @@ class GIO::ConverterOutputStream is GIO::FilterOutputStream {
     self.setFilterOutputStream($to-parent);
   }
 
-  method GIO::Raw::Types::GConverterOutputStream
+  method GIO::Raw::Definitions::GConverterOutputStream
     is also<GConverterOutputStream>
   { $!cos }
 

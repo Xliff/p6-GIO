@@ -24,7 +24,7 @@ class GIO::FileInfo {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GFileInfo
+  method GIO::Raw::Definitions::GFileInfo
     is also<GFileInfo>
   { $!fi }
 

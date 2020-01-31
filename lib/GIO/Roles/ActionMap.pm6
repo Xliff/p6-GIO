@@ -5,10 +5,12 @@ use NativeCall;
 
 use GIO::Raw::Types;
 
+use GLib::Roles::TypedBuffer;
+
 role GIO::Roles::ActionMap {
   has GActionMap $!actmap;
 
-  method GIO::Raw::Types::GActionMap
+  method GIO::Raw::Definitions::GActionMap
     is also<GActionMap>
   { $!actmap }
 
@@ -44,7 +46,7 @@ role GIO::Roles::ActionMap {
         }
       }
     });
-    my $lb = GLib::Roles::TypedBuffer.new(@entries);
+    my $lb = GLib::Roles::TypedBuffer[GActionEntry].new(@entries);
 
     samewith($lb.p, @entries.elems, $user_data);
   }

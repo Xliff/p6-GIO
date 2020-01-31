@@ -72,7 +72,7 @@ class GIO::UnixOutputStream is GIO::OutputStream {
     self.bless( unix-stream =>  g_unix_output_stream_new($f, $cfd) );
   }
 
-  method GIO::Raw::Types::GUnixOutputStream
+  method GIO::Raw::Definitions::GUnixOutputStream
     is also<GUnixOutputStream>
   { $!uos }
 

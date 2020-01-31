@@ -27,7 +27,7 @@ class GIO::ThemedIcon {
     self.roleInit-Icon;
   }
 
-  method GIO::Raw::Types::GThemedIcon
+  method GIO::Raw::Definitions::GThemedIcon
   { $!ti }
 
   method new (Str() $icon-name) {

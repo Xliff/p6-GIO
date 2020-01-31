@@ -25,7 +25,7 @@ class GIO::ZlibDecompressor {
     self.roleInit-Converter;
   }
 
-  method GIO::Raw::Types::GZlibDecompressor
+  method GIO::Raw::Definitions::GZlibDecompressor
     is also<GZlibDecompressor>
   { $!zd }
 

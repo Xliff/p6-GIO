@@ -20,7 +20,7 @@ class GIO::Emblem {
     self.roleInit-Object;
   }
 
-  multi method GIO::Raw::Types::GEmblem
+  multi method GIO::Raw::Definitions::GEmblem
     is also<GEmblem>
   { $!e }
 

@@ -21,7 +21,7 @@ class GIO::PropertyAction {
     self!roleInit-Action;
   }
 
-  method GIO::Raw::Types::GPropertyAction
+  method GIO::Raw::Definitions::GPropertyAction
     is also<GPropertyAction>
   { $!pa }
 

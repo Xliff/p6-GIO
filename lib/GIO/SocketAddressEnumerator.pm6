@@ -19,7 +19,7 @@ class GIO::SocketAddressEnumerator {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GSocketAddressEnumerator
+  method GIO::Raw::Definitions::GSocketAddressEnumerator
     is also<GSocketAddressEnumerator>
   { $!se }
 

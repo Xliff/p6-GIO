@@ -17,7 +17,7 @@ class GIO::FileAttributeInfoList {
     $!fail = $list;
   }
 
-  method GIO::Raw::Types::GFileAttributeInfoList
+  method GIO::Raw::Definitions::GFileAttributeInfoList
     is also<GFileAttributeInfoList>
   { $!fail }
 

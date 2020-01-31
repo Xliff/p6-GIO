@@ -19,7 +19,7 @@ class GIO::DBus::ObjectManagerServer {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GDBusObjectManagerServer
+  method GIO::Raw::Definitions::GDBusObjectManagerServer
   { $!doms }
 
   multi method new (GDBusObjectManagerServer $server) {

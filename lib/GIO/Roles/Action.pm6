@@ -26,7 +26,7 @@ role GIO::Roles::Action {
     $!a = cast( GAction, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GAction
+  method GIO::Raw::Definitions::GAction
     is also<Action>
   { $!a }
 

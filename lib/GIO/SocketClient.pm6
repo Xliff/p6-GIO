@@ -27,7 +27,7 @@ class GIO::SocketClient {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GSocketClient
+  method GIO::Raw::Definitions::GSocketClient
   { $!sc }
 
   multi method new (GSocketClient $client) {

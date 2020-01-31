@@ -54,7 +54,7 @@ class GIO::TlsConnection is GIO::Stream {
     self.setIOStream($to-parent);
   }
 
-  method GIO::Raw::Types::GTlsConnection
+  method GIO::Raw::Definitions::GTlsConnection
     is also<GTlsConnection>
   { $!tc }
 

@@ -21,7 +21,7 @@ role GIO::Roles::TlsBackend {
     $!tb = cast( GTlsBackend, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GTlsBackend
+  method GIO::Raw::Definitions::GTlsBackend
     is also<GTlsBackend>
   { $!tb }
 

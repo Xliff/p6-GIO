@@ -27,7 +27,7 @@ class GIO::Resolver {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GResolver
+  method GIO::Raw::Definitions::GResolver
     is also<GResolver>
   { $!r }
 

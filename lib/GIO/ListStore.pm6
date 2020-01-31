@@ -21,7 +21,7 @@ class GIO::ListStore {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GListStore
+  method GIO::Raw::Definitions::GListStore
   { $!ls }
 
   method new (Int() $type) {

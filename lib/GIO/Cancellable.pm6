@@ -24,7 +24,7 @@ class GIO::Cancellable {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GCancellable
+  method GIO::Raw::Definitions::GCancellable
     is also<GCancellable>
   { $!c }
 

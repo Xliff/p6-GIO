@@ -16,7 +16,7 @@ role GIO::DBus::Roles::ObjectManager {
     $!dom = cast( GDBusObjectManager, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GDBusObjectManager
+  method GIO::Raw::Definitions::GDBusObjectManager
     is also<GDBusObjectManager>
   { $!dom }
 

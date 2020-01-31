@@ -37,7 +37,7 @@ role GIO::Roles::TlsFileDatabase {
     self.bless( :$file-database );
   }
 
-  method GIO::Raw::Types::GTlsFileDatabase
+  method GIO::Raw::Definitions::GTlsFileDatabase
   { $!tfd }
 
   # Type: gchar

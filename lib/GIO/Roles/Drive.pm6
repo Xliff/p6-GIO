@@ -27,7 +27,7 @@ role GIO::Roles::Drive {
     $!d = cast( GDrive, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GDrive
+  method GIO::Raw::Definitions::GDrive
     is also<GDrive>
   { $!d }
 

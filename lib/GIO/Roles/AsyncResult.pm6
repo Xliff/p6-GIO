@@ -19,7 +19,7 @@ role GIO::Roles::AsyncResult {
     $!ar = cast( GAsyncResult, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GAsyncResult
+  method GIO::Raw::Definitions::GAsyncResult
     is also<GAsyncResult>
   { $!ar }
 

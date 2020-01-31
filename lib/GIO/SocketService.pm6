@@ -48,7 +48,7 @@ class GIO::SocketService is GIO::SocketListener {
     self.setSocketListener($to-parent);
   }
 
-  method GIO::Raw::Types::GSocketService
+  method GIO::Raw::Definitions::GSocketService
     is also<GSocketService>
   { $!ss }
 

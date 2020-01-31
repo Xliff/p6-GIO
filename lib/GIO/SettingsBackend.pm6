@@ -23,7 +23,7 @@ class GIO::SettingsBackend {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GSettingsBackend
+  method GIO::Raw::Definitions::GSettingsBackend
     is also<GSettingsBackend>
   { $!sb }
 

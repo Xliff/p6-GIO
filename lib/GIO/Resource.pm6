@@ -21,7 +21,7 @@ class GIO::Resource {
     $!r = $resource;
   }
 
-  method GIO::Raw::Types::GResouorce
+  method GIO::Raw::Definitions::GResouorce
     is also<GResource>
   { $!r }
 
@@ -52,7 +52,7 @@ class GIO::Resource {
     self.bless(:$resource);
   }
 
-  method GIO::Raw::Types::GResource
+  method GIO::Raw::Definitions::GResource
   { $!r }
 
   method enumerate_children (

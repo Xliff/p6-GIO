@@ -24,7 +24,7 @@ class GIO::TlsDatabase {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GTlsDatabase
+  method GIO::Raw::Definitions::GTlsDatabase
     is also<GTlsDatabase>
   { $!td }
 

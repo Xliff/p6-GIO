@@ -16,7 +16,7 @@ class GIO::Credentials {
     $!c = $credentials;
   }
 
-  method GIO::Raw::Types::GCredentials
+  method GIO::Raw::Definitions::GCredentials
     is also<GCredentials>
   { $!c }
 

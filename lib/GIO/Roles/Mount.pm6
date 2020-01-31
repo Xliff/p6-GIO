@@ -28,7 +28,7 @@ role GIO::Roles::Mount {
     $!m = cast(GMount, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GMount
+  method GIO::Raw::Definitions::GMount
     is also<GMount>
   { $!m }
 

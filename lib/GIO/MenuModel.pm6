@@ -27,7 +27,7 @@ class GIO::MenuModel {
   has GMenuModel $!mm is implementor;
 
   submethod BUILD(:$model) {
-    self.setModel($model) if $model;
+    self.setMenuModel($model) if $model;
   }
 
   submethod DESTROY {
@@ -44,7 +44,7 @@ class GIO::MenuModel {
     self.bless( :$model );
   }
 
-  method GIO::Raw::Types::GMenuModel
+  method GIO::Raw::Definitions::GMenuModel
     is also<GMenuModel>
   { $!mm }
 

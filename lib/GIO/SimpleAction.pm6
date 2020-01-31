@@ -25,7 +25,7 @@ class GTK::Compat::SimpleAction {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GSimpleAction
+  method GIO::Raw::Definitions::GSimpleAction
     is also<GSimpleAction>
   { $!sa }
 

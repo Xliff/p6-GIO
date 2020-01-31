@@ -32,7 +32,7 @@ role GIO::Roles::TlsClientConnection {
     $!tcc = cast( GTlsClientConnection, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GTlsClientConnection
+  method GIO::Raw::Definitions::GTlsClientConnection
     is also<GTlsClientConnection>
   { $!tcc }
 

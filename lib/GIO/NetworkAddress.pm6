@@ -22,7 +22,7 @@ class GIO::NetworkAddress {
     self.roleInit-SocketConnectable;
   }
 
-  method GIO::Raw::Types::GNetworkAddress
+  method GIO::Raw::Definitions::GNetworkAddress
     is also<GNetworkAddress>
   { $!a }
 

@@ -27,7 +27,7 @@ class GIO::BytesIcon {
     self.roleInit-LoadableIcon;
   }
 
-  method GIO::Raw::Types::GBytesIcon
+  method GIO::Raw::Definitions::GBytesIcon
     is also<GBytesIcon>
   { $!bi }
 

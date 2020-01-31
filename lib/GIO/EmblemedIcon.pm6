@@ -25,7 +25,7 @@ class GIO::EmblemedIcon {
     self.roleInit-Icon;
   }
 
-  method GIO::Raw::Types::GEmblemedIcon
+  method GIO::Raw::Definitions::GEmblemedIcon
     is also<GEmblemedIcon>
   { $!ei }
 

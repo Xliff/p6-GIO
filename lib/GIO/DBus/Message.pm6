@@ -24,7 +24,7 @@ class GIO::DBus::Message {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GDBusMessage
+  method GIO::Raw::Definitions::GDBusMessage
   { $!dm }
 
   proto method new (|)

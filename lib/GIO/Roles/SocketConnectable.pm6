@@ -15,7 +15,7 @@ role GIO::Roles::SocketConnectable {
     $!sc = $connectable;
   }
 
-  method GIO::Raw::Types::GSocketConnectable
+  method GIO::Raw::Definitions::GSocketConnectable
     is also<GSocketConnectable>
   { $!sc }
 

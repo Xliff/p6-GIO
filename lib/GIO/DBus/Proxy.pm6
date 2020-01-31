@@ -35,7 +35,7 @@ class GIO::DBus::Proxy {
     self.roleInit-AsyncInitable;
   }
 
-  method GIO::Raw::Types::GDBusProxy
+  method GIO::Raw::Definitions::GDBusProxy
     is also<GDBusProxy>
   { $!dp }
 

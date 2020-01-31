@@ -45,7 +45,7 @@ class GIO::TcpConnection is GIO::SocketConnection {
     self.setSocketConnection($to-parent);
   }
 
-  method GIO::Raw::Types::GTcpConnection
+  method GIO::Raw::Definitions::GTcpConnection
     is also<GTcpConnection>
   { $!tc }
 

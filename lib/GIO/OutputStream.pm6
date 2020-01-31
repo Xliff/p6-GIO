@@ -24,7 +24,7 @@ class GIO::OutputStream {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GOutputStream
+  method GIO::Raw::Definitions::GOutputStream
     is also<GOutputStream>
   { $!os }
 

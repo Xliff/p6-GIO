@@ -15,7 +15,7 @@ my subset GIOMenuAncestry is export of Mu
 class GIO::Menu is GIO::MenuModel {
   has GMenu $!menu;
 
-  method GIO::Raw::Types::GMenu
+  method GIO::Raw::Definitions::GMenu
     is also<GMenu>
   { $!menu }
 
@@ -50,7 +50,7 @@ class GIO::Menu is GIO::MenuModel {
 
     $m ?? self.bless( menu => $m ) !! Nil;
   }
-  multi method new (GMenuModel $menu) {
+  multi method new (GIOMenuAncestry $menu) {
     self.bless( :$menu );
   }
 

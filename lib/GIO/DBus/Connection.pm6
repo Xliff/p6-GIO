@@ -28,7 +28,7 @@ class GIO::DBus::Connection {
     self.roleInit-AsyncInitable;
   }
 
-  method GIO::Raw::Types::GDBusConnection
+  method GIO::Raw::Definitions::GDBusConnection
     is also<GDBusConnection>
   { $!dc }
 

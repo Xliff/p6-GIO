@@ -43,7 +43,7 @@ class GIO::UnixCredentialsMessage is GIO::SocketControlMessage {
     }
   }
 
-  method GIO::Raw::Types::GUnixCredentialsMessage
+  method GIO::Raw::Definitions::GUnixCredentialsMessage
     is also<GUnixCredentialsMessage>
   { $!cm }
 

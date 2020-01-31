@@ -24,7 +24,7 @@ class GIO::VolumeMonitor {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GVolumeMonitor
+  method GIO::Raw::Definitions::GVolumeMonitor
     is also<GVolumeMonitor>
   { $!vm }
 

@@ -72,7 +72,7 @@ class GIO::UnixInputStream is GIO::InputStream {
     self.bless( unix-stream =>  g_unix_input_stream_new($f, $cfd) );
   }
 
-  method GIO::Raw::Types::GUnixInputStream
+  method GIO::Raw::Definitions::GUnixInputStream
     is also<GUnixInputStream>
   { $!uis }
 

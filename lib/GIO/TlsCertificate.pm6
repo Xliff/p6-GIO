@@ -27,7 +27,7 @@ class GIO::TlsCertificate {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GTlsCertificate
+  method GIO::Raw::Definitions::GTlsCertificate
     is also<GTlsCertificate>
   { $!c }
 

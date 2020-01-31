@@ -20,7 +20,7 @@ role GIO::DBus::Roles::Interface {
     $!di = cast( GDBusInterface, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GDBusInterface
+  method GIO::Raw::Definitions::GDBusInterface
     is also<GDBusInterface>
   { $!di }
 

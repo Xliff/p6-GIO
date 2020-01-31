@@ -20,7 +20,7 @@ role GIO::Roles::LoadableIcon {
     $!li = cast( GLoadableIcon, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GLoadableIcon
+  method GIO::Raw::Definitions::GLoadableIcon
     is also<GLoadableIcon>
   { $!li }
 

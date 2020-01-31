@@ -14,7 +14,7 @@ role GIO::Roles::Proxy {
     $!p = $proxy if $proxy;
   }
 
-  submethod GIO::Raw::Types::GProxy
+  submethod GIO::Raw::Definitions::GProxy
   { $!p }
 
   method roleInit-Proxy {

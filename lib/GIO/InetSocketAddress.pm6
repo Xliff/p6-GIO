@@ -34,7 +34,7 @@ class GIO::InetSocketAddress is GIO::SocketAddress {
     self.setSocketAddress($to-parent);
   }
 
-  method GIO::Raw::Types::GInetSocketAddress
+  method GIO::Raw::Definitions::GInetSocketAddress
     is also<GInetSocketAddress>
   { $!isa }
 

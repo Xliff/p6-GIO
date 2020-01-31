@@ -42,7 +42,7 @@ class GIO::TcpWrapperConnection is GIO::TcpConnection {
     }
   }
 
-  method GIO::Raw::Types::GTcpWrapperConnection
+  method GIO::Raw::Definitions::GTcpWrapperConnection
     is also<GTcpWrapperConnection>
   { $!twc }
 

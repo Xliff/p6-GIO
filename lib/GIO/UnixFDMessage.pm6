@@ -46,7 +46,7 @@ class GIO::UnixFDMessage is GIO::SocketControlMessage {
     self.setSocketControlMessage($to-parent);
   }
 
-  method GIO::Raw::Types::GUnixFDMessage
+  method GIO::Raw::Definitions::GUnixFDMessage
     is also<GUnixFDMessage>
   { $!fdm }
 

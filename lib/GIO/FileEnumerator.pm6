@@ -23,7 +23,7 @@ class GIO::FileEnumerator {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GFileEnumerator
+  method GIO::Raw::Definitions::GFileEnumerator
   { $!fe }
 
   method new (GFileEnumerator $enumerator) {

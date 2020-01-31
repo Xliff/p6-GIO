@@ -29,7 +29,7 @@ class GIO::Socket {
     self.roleInit-DatagramBased;
   }
 
-  method GIO::Raw::Types::GSocket
+  method GIO::Raw::Definitions::GSocket
     is also<GSocket>
   { $!s }
 

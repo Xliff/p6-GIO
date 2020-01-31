@@ -48,7 +48,7 @@ class GIO::SocketConnection is GIO::Stream {
     self.setStream($to-parent);
   }
 
-  method GIO::Raw::Types::GSocketConnection
+  method GIO::Raw::Definitions::GSocketConnection
     is also<GSocketConnection>
   { $!sc }
 

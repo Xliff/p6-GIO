@@ -30,7 +30,7 @@ role GIO::DBus::Roles::Object {
     $!do = cast( GDBusObject, i.get_value(self) );
   }
 
-  method GIO::Raw::Types::GDBusObject
+  method GIO::Raw::Definitions::GDBusObject
     is also<GDBusObject>
   { $!do }
 

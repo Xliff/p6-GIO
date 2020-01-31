@@ -25,7 +25,7 @@ class GIO::SimpleProxyResolver {
     self.roleInit-ProxyResolver;
   }
 
-  method GIO::Raw::Types::GSimpleProxyResolver
+  method GIO::Raw::Definitions::GSimpleProxyResolver
     is also<GSimpleProxyResolver>
   { $!spr }
 

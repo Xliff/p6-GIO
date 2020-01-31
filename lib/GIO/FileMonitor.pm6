@@ -24,7 +24,7 @@ class GIO::FileMonitor {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GFileMonitor
+  method GIO::Raw::Definitions::GFileMonitor
     is also<GFileMonitor>
   { $!m }
 

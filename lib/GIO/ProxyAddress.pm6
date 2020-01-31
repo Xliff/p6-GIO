@@ -44,7 +44,7 @@ class GIO::ProxyAddress is GIO::InetSocketAddress {
     self.setInetSocketAddr($to-parent);
   }
 
-  method GIO::Raw::Types::GProxyAddress
+  method GIO::Raw::Definitions::GProxyAddress
   { $!pa }
 
   multi method new (ProxyAddressAncestry $proxy-address) {

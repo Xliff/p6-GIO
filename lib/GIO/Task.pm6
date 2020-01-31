@@ -52,7 +52,7 @@ class GIO::Task {
     self.roleInit-AsyncResult;
   }
 
-  method GIO::Raw::Types::GTask
+  method GIO::Raw::Definitions::GTask
     is also<GTask>
   { $!t }
 

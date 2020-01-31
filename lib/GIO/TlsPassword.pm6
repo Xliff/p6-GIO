@@ -31,7 +31,7 @@ class GIO::TlsPassword {
     self.bless( tls-password => g_tls_password_new($f, $description) )
   }
 
-  method GIO::Raw::Types::GTlsPassword
+  method GIO::Raw::Definitions::GTlsPassword
     is also<GTlsPassword>
   { $!tp }
 

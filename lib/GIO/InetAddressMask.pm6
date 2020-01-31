@@ -21,7 +21,7 @@ class GIO::InetAddressMask {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GInetAddressMask
+  method GIO::Raw::Definitions::GInetAddressMask
     is also<GInetAddressMask>
   { $!iam }
 

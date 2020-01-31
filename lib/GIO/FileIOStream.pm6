@@ -50,7 +50,7 @@ class GIO::FileIOStream is GIO::Stream {
     self.roleInit-Seekable unless $!s;
   }
 
-  method GIO::Raw::Types::GFileIOStream
+  method GIO::Raw::Definitions::GFileIOStream
     is also<GFileIOStream>
   { $!fios }
 

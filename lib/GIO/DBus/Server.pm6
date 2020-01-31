@@ -26,7 +26,7 @@ class GIO::DBus::Server {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GDBusServer
+  method GIO::Raw::Definitions::GDBusServer
     is also<GDBusServer>
   { $!ds }
 

@@ -44,7 +44,7 @@ class GIO::FilterInputStream is GIO::InputStream {
     self.setInputStream($to-parent);
   }
 
-  method GIO::Raw::Types::GFilterInputStream
+  method GIO::Raw::Definitions::GFilterInputStream
     is also<GFilterInputStream>
   { $!fis }
 

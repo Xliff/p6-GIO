@@ -20,7 +20,7 @@ class GIO::MountOperation {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Types::GMountOperation
+  method GIO::Raw::Definitions::GMountOperation
     is also<GMountOperation>
   { $!mo }
 

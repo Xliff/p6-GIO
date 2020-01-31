@@ -59,7 +59,7 @@ class GIO::ConverterInputStream is GIO::FilterInputStream {
     self.setFilterInputStream($to-parent);
   }
 
-  method GIO::Raw::Types::GConverterInputStream
+  method GIO::Raw::Definitions::GConverterInputStream
     is also<GConverterInputStream>
   { $!cis }
 

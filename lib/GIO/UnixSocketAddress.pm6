@@ -43,7 +43,7 @@ class GIO::UnixSocketAddress is GIO::SocketAddress {
     self.setSocketAddress($to-parent);
   }
 
-  method GIO::Raw::Types::GUnixSocketAddress
+  method GIO::Raw::Definitions::GUnixSocketAddress
     is also<GUnixSocketAddress>
   { $!us }
 
