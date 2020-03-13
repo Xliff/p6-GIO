@@ -1,0 +1,5184 @@
+Dependency Generation
+=====================
+real 1.50
+user 2.02
+sys 0.03
+ === GLib::ByteArray ===
+Stage start      :   0.000
+Stage parse      :   1.476
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GLib::Bytes ===
+Stage start      :   0.000
+Stage parse      :   1.433
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GLib::DateTime ===
+Stage start      :   0.000
+Stage parse      :   1.455
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GLib::GList ===
+Stage start      :   0.000
+Stage parse      :   1.456
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GLib::MainContext ===
+Stage start      :   0.000
+Stage parse      :   1.444
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GLib::Memory ===
+Stage start      :   0.000
+Stage parse      :   1.433
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GLib::Raw::Definitions ===
+Stage start      :   0.000
+Stage parse      :   1.446
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GLib::Raw::Enums ===
+Stage start      :   0.000
+Stage parse      :   1.448
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.006
+Stage mbc        :   0.003
+Stage moar       :   0.000
+ === GLib::Raw::Exports ===
+Stage start      :   0.000
+Stage parse      :   1.410
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GLib::Raw::ReturnedValue ===
+Stage start      :   0.000
+Stage parse      :   1.421
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GLib::Raw::Struct_Subs ===
+Stage start      :   0.000
+Stage parse      :   1.425
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GLib::Raw::Structs ===
+Stage start      :   0.000
+Stage parse      :   1.427
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GLib::Raw::Subs ===
+Stage start      :   0.000
+Stage parse      :   1.433
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GLib::Raw::Types ===
+Stage start      :   0.000
+Stage parse      :   1.449
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.007
+Stage mbc        :   0.004
+Stage moar       :   0.000
+ === GLib::Roles::ListData ===
+Stage start      :   0.000
+Stage parse      :   1.437
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GLib::Roles::Object ===
+Stage start      :   0.000
+Stage parse      :   1.444
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GLib::Roles::Pointers ===
+Stage start      :   0.000
+Stage parse      :   1.435
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GLib::Roles::Properties ===
+Stage start      :   0.000
+Stage parse      :   1.458
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GLib::Roles::Signals::Generic ===
+Stage start      :   0.000
+Stage parse      :   1.456
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GLib::Roles::TypedBuffer ===
+Stage start      :   0.000
+Stage parse      :   1.425
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GLib::Source ===
+Stage start      :   0.000
+Stage parse      :   1.462
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GLib::Value ===
+Stage start      :   0.000
+Stage parse      :   1.431
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GLib::Variant ===
+Stage start      :   0.000
+Stage parse      :   1.442
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GLib::VariantDict ===
+Stage start      :   0.000
+Stage parse      :   1.455
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === Method::Also ===
+Stage start      :   0.000
+Stage parse      :   1.413
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Definitions ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Definitions.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.446
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.004
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::DBus::Raw::Subs ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/Subs.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.308
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Raw::Types ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/Types.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   6.413
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.009
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Raw::Structs ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Structs.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.473
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Subs ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Subs.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.284
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Exports ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Exports.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   1.650
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Enums ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Enums.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.650
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.010
+Stage mbc        :   0.002
+Stage moar       :   0.000
+ === GIO::Raw::Types ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Types.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.366
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.006
+Stage mast       :   0.015
+Stage mbc        :   0.007
+Stage moar       :   0.000
+ === GIO::Raw::UnixConnection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/UnixConnection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.954
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::UnixCredentialsMessage ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/UnixCredentialsMessage.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.663
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::UnixFDList ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/UnixFDList.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.837
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::UnixFDMessage ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/UnixFDMessage.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.684
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::UnixInputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/UnixInputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.624
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::UnixMount ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/UnixMount.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   6.135
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Raw::UnixOutputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/UnixOutputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.627
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::UnixSocketAddress ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/UnixSocketAddress.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.786
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::VFS ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/VFS.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.856
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Volume ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Volume.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.354
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::VolumeMonitor ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/VolumeMonitor.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.672
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::ActionMap ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/ActionMap.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.646
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Converter ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Converter.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.406
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::DTlsServerConnection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/DTlsServerConnection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.394
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::FileDescriptorBased ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/FileDescriptorBased.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.354
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Initable ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Initable.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.323
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Signals::ActionGroup ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/ActionGroup.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.531
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.008
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Signals::Application ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/Application.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.649
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Signals::DtlsConnection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/DtlsConnection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.357
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Signals::FileMonitor ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/FileMonitor.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.300
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Signals::ListModel ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/ListModel.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.326
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.006
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Signals::MenuModel ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/MenuModel.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.336
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Signals::MountOperation ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/MountOperation.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.761
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Signals::Proxy ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/Proxy.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.459
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Signals::Settings ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/Settings.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.419
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Roles::Signals::SocketService ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/SocketService.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.511
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Signals::TlsConnection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/TlsConnection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.534
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Signals::VolumeMonitor ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/VolumeMonitor.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.800
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::TlsFileDatabase ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/TlsFileDatabase.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.604
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.007
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::TlsServerConnection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/TlsServerConnection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.603
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::SocketAddressEnumerator ===
+Stage start      :   0.000
+
+    precomp lib/GIO/SocketAddressEnumerator.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.658
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.007
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::UnixFDList ===
+Stage start      :   0.000
+
+    precomp lib/GIO/UnixFDList.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.462
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::VFS ===
+Stage start      :   0.000
+
+    precomp lib/GIO/VFS.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.519
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::ZlibCompressor ===
+Stage start      :   0.000
+
+    precomp lib/GIO/ZlibCompressor.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.717
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Raw::Address ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/Address.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.793
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Raw::Connection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/Connection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   6.794
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::DBus::Raw::Error ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/Error.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.052
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Raw::Interface ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/Interface.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.707
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Raw::InterfaceSkeleton ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/InterfaceSkeleton.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.235
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Raw::Message ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/Message.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   6.501
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::DBus::Raw::MethodInvocation ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/MethodInvocation.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.336
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::DBus::Raw::ObjectManager ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/ObjectManager.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.450
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Raw::ObjectManagerClient ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/ObjectManagerClient.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.881
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Raw::ObjectManagerServer ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/ObjectManagerServer.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.674
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Raw::ObjectSkeleton ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/ObjectSkeleton.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.645
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Raw::Proxy ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/Proxy.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   5.003
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::DBus::Raw::Server ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/Server.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.775
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Raw::Utils ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/Utils.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.445
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Roles::Interface ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Interface.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.333
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Roles::ObjectManager ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/ObjectManager.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.390
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Roles::Signals::AuthObserver ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Signals/AuthObserver.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.477
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Roles::Signals::Connection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Signals/Connection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.368
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Roles::Signals::InterfaceSkeleton ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Signals/InterfaceSkeleton.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.301
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Roles::Signals::Object ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Signals/Object.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.303
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Roles::Signals::ObjectManager ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Signals/ObjectManager.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.490
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.007
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Roles::Signals::ObjectManagerClient ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Signals/ObjectManagerClient.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.589
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Roles::Signals::ObjectSkeleton ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Signals/ObjectSkeleton.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.559
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Roles::Signals::Proxy ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Signals/Proxy.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.590
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Roles::Signals::Server ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Signals/Server.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.465
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Utils ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Utils.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.470
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Action ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Action.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.087
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::ActionGroup ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/ActionGroup.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.353
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::AppInfo ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/AppInfo.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   6.119
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Raw::Application ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Application.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   5.739
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Raw::ApplicationCommandLine ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/ApplicationCommandLine.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.075
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::AsyncInitable ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/AsyncInitable.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.669
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::AsyncResult ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/AsyncResult.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.671
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::BufferedInputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/BufferedInputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.172
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::BufferedOutputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/BufferedOutputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.747
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Cancellable ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Cancellable.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.253
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::CharsetConverter ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/CharsetConverter.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.510
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::ContentType ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/ContentType.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.046
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Credentials ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Credentials.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.778
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::DataInputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/DataInputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.574
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::DataOutputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/DataOutputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.984
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::DatagramBased ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/DatagramBased.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.614
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::DesktopAppInfo ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/DesktopAppInfo.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.847
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Raw::Drive ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Drive.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.911
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Raw::DtlsClientConnection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/DtlsClientConnection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.604
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::DtlsConnection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/DtlsConnection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.661
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Emblem ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Emblem.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.471
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::EmblemedIcon ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/EmblemedIcon.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.485
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::FileAttributeInfoList ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/FileAttributeInfoList.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.567
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::FileEnumerator ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/FileEnumerator.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.068
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::FileIOStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/FileIOStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.551
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::FileInfo ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/FileInfo.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   8.224
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.009
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Raw::FileMonitor ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/FileMonitor.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.645
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::FilenameCompleter ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/FilenameCompleter.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.668
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::FilterInputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/FilterInputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.552
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::FilterOutputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/FilterOutputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.554
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::GFile ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/GFile.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :  12.113
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.004
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Raw::Icon ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Icon.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.754
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::InetAddress ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/InetAddress.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.653
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::InetAddressMask ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/InetAddressMask.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.948
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::InetSocketAddress ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/InetSocketAddress.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.881
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::InputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/InputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.707
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::ListModel ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/ListModel.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.546
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::ListStore ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/ListStore.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.757
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::MemoryInputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/MemoryInputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.550
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::MemoryOutputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/MemoryOutputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.645
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Menu ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Menu.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   5.211
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Raw::MenuModel ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/MenuModel.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.159
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Mount ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Mount.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.721
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Raw::MountOperation ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/MountOperation.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.543
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Raw::NetworkAddress ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/NetworkAddress.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.656
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::NetworkMonitor ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/NetworkMonitor.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.759
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::NetworkService ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/NetworkService.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.646
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Notification ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Notification.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.834
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::OutputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/OutputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   5.198
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Raw::Permission ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Permission.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.961
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::PollableInputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/PollableInputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.472
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::PollableOutputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/PollableOutputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.701
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Proxy ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Proxy.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.729
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::ProxyAddress ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/ProxyAddress.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.921
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::ProxyResolver ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/ProxyResolver.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.741
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Quarks ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Quarks.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.243
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Resolver ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Resolver.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.766
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Resource ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Resource.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.478
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Seekable ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Seekable.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.707
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Settings ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Settings.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   6.379
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Raw::SettingsBackend ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SettingsBackend.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.080
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::SettingsSchema ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SettingsSchema.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   5.032
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Raw::SimpleAction ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SimpleAction.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.680
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::SimpleProxyResolver ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SimpleProxyResolver.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.684
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Socket ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Socket.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   7.175
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.005
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Raw::SocketAddress ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SocketAddress.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.495
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::SocketClient ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SocketClient.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   5.313
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Raw::SocketConnection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SocketConnection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.915
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::SocketControlMessage ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SocketControlMessage.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.531
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::SocketListener ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SocketListener.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.097
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::SocketService ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SocketService.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.452
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::SrvTarget ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SrvTarget.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.733
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Stream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Stream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.940
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::Task ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Task.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   5.377
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Raw::ThemedIcon ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/ThemedIcon.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.627
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::TlsBackend ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/TlsBackend.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.032
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::TlsCertificate ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/TlsCertificate.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.847
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::TlsClientConnection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/TlsClientConnection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.859
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::TlsConnection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/TlsConnection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.450
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::Raw::TlsDatabase ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/TlsDatabase.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.255
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::TlsInteraction ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/TlsInteraction.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.878
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Raw::TlsPassword ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/TlsPassword.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.058
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Resource ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Resource.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.536
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.007
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Action ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Action.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.700
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::ActionGroup ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/ActionGroup.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.572
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::AppInfo ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/AppInfo.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.952
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::AsyncInitable ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/AsyncInitable.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.585
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::AsyncResult ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/AsyncResult.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.420
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::DatagramBased ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/DatagramBased.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.434
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.004
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::GFile ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/GFile.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   5.225
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.004
+Stage moar       :   0.000
+ === GIO::Roles::Icon ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Icon.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.556
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::ListModel ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/ListModel.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.476
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::NetworkMonitor ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/NetworkMonitor.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.516
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::PollableInputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/PollableInputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.400
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::PollableOutputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/PollableOutputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.520
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::ProxyResolver ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/ProxyResolver.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.292
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::RemoteActionGroup ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/RemoteActionGroup.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.519
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Seekable ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Seekable.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.274
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::SocketConnectable ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/SocketConnectable.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.611
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::TlsClientConnection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/TlsClientConnection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.528
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Volume ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Volume.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.528
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Settings ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Settings.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.641
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::SettingsBackend ===
+Stage start      :   0.000
+
+    precomp lib/GIO/SettingsBackend.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.396
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::SettingsSchema ===
+Stage start      :   0.000
+
+    precomp lib/GIO/SettingsSchema.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.602
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::SimpleAction ===
+Stage start      :   0.000
+
+    precomp lib/GIO/SimpleAction.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.355
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::SimpleActionGroup ===
+Stage start      :   0.000
+
+    precomp lib/GIO/SimpleActionGroup.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.459
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::SimpleProxyResolver ===
+Stage start      :   0.000
+
+    precomp lib/GIO/SimpleProxyResolver.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.332
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::SocketAddress ===
+Stage start      :   0.000
+
+    precomp lib/GIO/SocketAddress.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.420
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::SocketControlMessage ===
+Stage start      :   0.000
+
+    precomp lib/GIO/SocketControlMessage.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.318
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::SrvTarget ===
+Stage start      :   0.000
+
+    precomp lib/GIO/SrvTarget.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.360
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::ThemedIcon ===
+Stage start      :   0.000
+
+    precomp lib/GIO/ThemedIcon.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.362
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::TlsCertificate ===
+Stage start      :   0.000
+
+    precomp lib/GIO/TlsCertificate.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.418
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::TlsDatabase ===
+Stage start      :   0.000
+
+    precomp lib/GIO/TlsDatabase.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.570
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::TlsInteraction ===
+Stage start      :   0.000
+
+    precomp lib/GIO/TlsInteraction.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.489
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::TlsPassword ===
+Stage start      :   0.000
+
+    precomp lib/GIO/TlsPassword.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.458
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::UnixFDMessage ===
+Stage start      :   0.000
+
+    precomp lib/GIO/UnixFDMessage.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.456
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::UnixMount ===
+Stage start      :   0.000
+
+    precomp lib/GIO/UnixMount.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.078
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::UnixSocketAddress ===
+Stage start      :   0.000
+
+    precomp lib/GIO/UnixSocketAddress.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.549
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Cancellable ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Cancellable.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.528
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::CharsetConverter ===
+Stage start      :   0.000
+
+    precomp lib/GIO/CharsetConverter.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.527
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::ContentType ===
+Stage start      :   0.000
+
+    precomp lib/GIO/ContentType.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.428
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Credentials ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Credentials.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.465
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::ActionGroup ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/ActionGroup.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.595
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::AuthObserver ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/AuthObserver.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.699
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Error ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Error.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.435
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::InterfaceSkeleton ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/InterfaceSkeleton.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.759
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Message ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Message.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.777
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Roles::Object ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Object.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.751
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.007
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::DBus::Server ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Server.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.663
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DesktopAppInfo ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DesktopAppInfo.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.489
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Emblem ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Emblem.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.335
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::EmblemedIcon ===
+Stage start      :   0.000
+
+    precomp lib/GIO/EmblemedIcon.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.438
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::FileAttributeMatcher ===
+Stage start      :   0.000
+
+    precomp lib/GIO/FileAttributeMatcher.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.195
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::FileInfo ===
+Stage start      :   0.000
+
+    precomp lib/GIO/FileInfo.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.522
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::FileMonitor ===
+Stage start      :   0.000
+
+    precomp lib/GIO/FileMonitor.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.281
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::FilenameCompleter ===
+Stage start      :   0.000
+
+    precomp lib/GIO/FilenameCompleter.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.244
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::InetAddress ===
+Stage start      :   0.000
+
+    precomp lib/GIO/InetAddress.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.731
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::InetAddressMask ===
+Stage start      :   0.000
+
+    precomp lib/GIO/InetAddressMask.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.424
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::InetSocketAddress ===
+Stage start      :   0.000
+
+    precomp lib/GIO/InetSocketAddress.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.442
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::InputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/InputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.463
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::LaunchContext ===
+Stage start      :   0.000
+
+    precomp lib/GIO/LaunchContext.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.192
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::ListStore ===
+Stage start      :   0.000
+
+    precomp lib/GIO/ListStore.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.293
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::MemoryInputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/MemoryInputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.362
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::MenuAttributeIter ===
+Stage start      :   0.000
+
+    precomp lib/GIO/MenuAttributeIter.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.139
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::MenuItem ===
+Stage start      :   0.000
+
+    precomp lib/GIO/MenuItem.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.374
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::MenuLinkIter ===
+Stage start      :   0.000
+
+    precomp lib/GIO/MenuLinkIter.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.176
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::MenuModel ===
+Stage start      :   0.000
+
+    precomp lib/GIO/MenuModel.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.461
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::MountOperation ===
+Stage start      :   0.000
+
+    precomp lib/GIO/MountOperation.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.471
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.005
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::NetworkAddress ===
+Stage start      :   0.000
+
+    precomp lib/GIO/NetworkAddress.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.570
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::NetworkService ===
+Stage start      :   0.000
+
+    precomp lib/GIO/NetworkService.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.493
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Notification ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Notification.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.369
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::OutputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/OutputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.657
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Permission ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Permission.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.575
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::PropertyAction ===
+Stage start      :   0.000
+
+    precomp lib/GIO/PropertyAction.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.683
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::ProxyAddress ===
+Stage start      :   0.000
+
+    precomp lib/GIO/ProxyAddress.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.692
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::ProxyAddressEnumerator ===
+Stage start      :   0.000
+
+    precomp lib/GIO/ProxyAddressEnumerator.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.502
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Resolver ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Resolver.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.682
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::DTlsClientConnection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/DTlsClientConnection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.628
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Drive ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Drive.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.815
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::DtlsConnection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/DtlsConnection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.042
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::LoadableIcon ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/LoadableIcon.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.830
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Mount ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Mount.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.860
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::TlsBackend ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/TlsBackend.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.484
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::SimplePermission ===
+Stage start      :   0.000
+
+    precomp lib/GIO/SimplePermission.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.363
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Socket ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Socket.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.005
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Stream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Stream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.395
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Task ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Task.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.745
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::TlsConnection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/TlsConnection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.709
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::UnixCredentialsMessage ===
+Stage start      :   0.000
+
+    precomp lib/GIO/UnixCredentialsMessage.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.297
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::UnixInputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/UnixInputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.318
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::UnixOutputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/UnixOutputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.341
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::VolumeMonitor ===
+Stage start      :   0.000
+
+    precomp lib/GIO/VolumeMonitor.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.551
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.005
+Stage moar       :   0.000
+ === GIO::ZlibDecompressor ===
+Stage start      :   0.000
+
+    precomp lib/GIO/ZlibDecompressor.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.562
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::ApplicationCommandLine ===
+Stage start      :   0.000
+
+    precomp lib/GIO/ApplicationCommandLine.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.340
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::BytesIcon ===
+Stage start      :   0.000
+
+    precomp lib/GIO/BytesIcon.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.611
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Address ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Address.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.322
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Connection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Connection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.434
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::MethodInvocation ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/MethodInvocation.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.733
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.005
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::ObjectManagerClient ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/ObjectManagerClient.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.689
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::ObjectManagerServer ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/ObjectManagerServer.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.373
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::ObjectProxy ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/ObjectProxy.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.779
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::ObjectSkeleton ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/ObjectSkeleton.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.534
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DBus::Proxy ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Proxy.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   4.460
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::FileAttributeInfoList ===
+Stage start      :   0.000
+
+    precomp lib/GIO/FileAttributeInfoList.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.451
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::FileEnumerator ===
+Stage start      :   0.000
+
+    precomp lib/GIO/FileEnumerator.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.599
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::FileIOStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/FileIOStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.625
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::FileIcon ===
+Stage start      :   0.000
+
+    precomp lib/GIO/FileIcon.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.835
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::FilterInputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/FilterInputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.471
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::FilterOutputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/FilterOutputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.443
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::MemoryOutputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/MemoryOutputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.541
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Menu ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Menu.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.490
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Roles::Proxy ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Proxy.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.496
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::SocketConnection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/SocketConnection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.643
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::SocketListener ===
+Stage start      :   0.000
+
+    precomp lib/GIO/SocketListener.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.685
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::SocketService ===
+Stage start      :   0.000
+
+    precomp lib/GIO/SocketService.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.557
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::TcpConnection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/TcpConnection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.687
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::TcpWrapperConnection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/TcpWrapperConnection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.605
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::ThreadedSocketService ===
+Stage start      :   0.000
+
+    precomp lib/GIO/ThreadedSocketService.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.539
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::UnixConnection ===
+Stage start      :   0.000
+
+    precomp lib/GIO/UnixConnection.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.473
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::Application ===
+Stage start      :   0.000
+
+    precomp lib/GIO/Application.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.675
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+ === GIO::BufferedInputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/BufferedInputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.436
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::BufferedOutputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/BufferedOutputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.314
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::ConverterInputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/ConverterInputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.511
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::ConverterOutputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/ConverterOutputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.519
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DataInputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DataInputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.504
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::DataOutputStream ===
+Stage start      :   0.000
+
+    precomp lib/GIO/DataOutputStream.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.385
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+ === GIO::SocketClient ===
+Stage start      :   0.000
+
+    precomp lib/GIO/SocketClient.pm6
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+    --stagestats
+Stage parse      :   3.721
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+
+real 1103.03
+user 1288.80
+sys 58.11
