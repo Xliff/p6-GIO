@@ -50,7 +50,7 @@ class GTK::Compat::SimpleAction {
   method enabled is rw  {
     my GLib::Value $gv .= new( G_TYPE_BOOLEAN );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('enabled', $gv)
         );
@@ -69,7 +69,7 @@ class GTK::Compat::SimpleAction {
   # method name is rw  {
   #   my GLib::Value $gv .= new( G_TYPE_STRING );
   #   Proxy.new(
-  #     FETCH => -> $ {
+  #     FETCH => sub ($) {
   #       $gv = GLib::Value.new(
   #         self.prop_get('name', $gv)
   #       );
@@ -86,7 +86,7 @@ class GTK::Compat::SimpleAction {
   # method parameter-type is rw  {
   #   my GLib::Value $gv .= new( -type- );
   #   Proxy.new(
-  #     FETCH => -> $ {
+  #     FETCH => sub ($) {
   #       $gv = GLib::Value.new(
   #         self.prop_get('parameter-type', $gv)
   #       );
@@ -103,7 +103,7 @@ class GTK::Compat::SimpleAction {
   method state is rw  {
     my GLib::Value $gv .= new( G_TYPE_OBJECT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('state', $gv)
         );
@@ -122,7 +122,7 @@ class GTK::Compat::SimpleAction {
   method state-type is rw  is also<state_type> {
     my GLib::Value $gv .= new( G_TYPE_OBJECT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('state-type', $gv)
         );

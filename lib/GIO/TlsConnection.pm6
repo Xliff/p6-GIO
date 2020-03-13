@@ -69,7 +69,7 @@ class GIO::TlsConnection is GIO::Stream {
   method advertised-protocols is rw  is also<advertised_protocols> {
     my GLib::Value $gv .= new( G_TYPE_POINTER );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('advertised-protocols', $gv)
         );
@@ -85,7 +85,7 @@ class GIO::TlsConnection is GIO::Stream {
   method base-io-stream (:$raw = False) is rw is also<base_io_stream> {
     my GLib::Value $gv .= new( G_TYPE_OBJECT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('base-io-stream', $gv)
         );

@@ -39,7 +39,7 @@ class GIO::ZlibDecompressor {
   method format is rw  {
     my GLib::Value $gv .= new( typeToGType(GZlibCompressorFormat) );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('format', $gv)
         );

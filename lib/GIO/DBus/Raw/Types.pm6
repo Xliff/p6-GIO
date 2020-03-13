@@ -219,7 +219,7 @@ class GDBusAnnotationInfo is export is repr<CStruct> does GLib::Roles::Pointers 
 
   method key is rw {
     Proxy.new:
-      FETCH => -> $             { $!key },
+      FETCH => sub ($)             { $!key },
 
       STORE => -> $, Str() $val {
         self.^attributes(:local)[1].set_value(self, $val)
@@ -228,7 +228,7 @@ class GDBusAnnotationInfo is export is repr<CStruct> does GLib::Roles::Pointers 
 
   method value is rw {
     Proxy.new:
-      FETCH => -> $             { $!value },
+      FETCH => sub ($)             { $!value },
 
       STORE => -> $, Str() $val {
         self.^attributes(:local)[2].set_value(self, $val)
@@ -237,7 +237,7 @@ class GDBusAnnotationInfo is export is repr<CStruct> does GLib::Roles::Pointers 
 
   method annotations ($raw = False) is rw {
     Proxy.new:
-      FETCH => -> $ { $!annotations },
+      FETCH => sub ($) { $!annotations },
 
       STORE => -> $, Pointer $val {
         self.^attributes(:local)[3].set_value(self, $val)
@@ -276,7 +276,7 @@ class GDBusArgInfo is export is repr<CStruct> does GLib::Roles::Pointers does An
 
   method name is rw {
     Proxy.new:
-      FETCH => -> $             { $!name },
+      FETCH => sub ($)             { $!name },
 
       STORE => -> $, Str() $val {
         self.^attributes(:local)[1].set_value(self, $val)
@@ -285,7 +285,7 @@ class GDBusArgInfo is export is repr<CStruct> does GLib::Roles::Pointers does An
 
   method signature is rw {
     Proxy.new:
-      FETCH => -> $             { $!name },
+      FETCH => sub ($)             { $!name },
 
       STORE => -> $, Str() $val {
         self.^attributes(:local)[2].set_value(self, $val)
@@ -294,7 +294,7 @@ class GDBusArgInfo is export is repr<CStruct> does GLib::Roles::Pointers does An
 
   method annotations ($raw = False) is rw {
     Proxy.new:
-      FETCH => -> $ { $raw ?? $!annotations !! CArrayToArray($!annotations) },
+      FETCH => sub ($) { $raw ?? $!annotations !! CArrayToArray($!annotations) },
 
       STORE => -> $, CArray[Pointer[GDBusAnnotationInfo]] $val {
         self.^attributes(:local)[3].set_value(self, $val)
@@ -329,13 +329,13 @@ class GDBusErrorEntry is export is repr<CStruct> does GLib::Roles::Pointers does
 
   method error-code is rw is also<error_code> {
     Proxy.new:
-      FETCH => -> $             { $!error-code },
+      FETCH => sub ($)             { $!error-code },
       STORE => -> $, Int() $val { $!error-code = $val };
   }
 
   method dbus-error-name is rw is also<dbus_error_name> {
     Proxy.new:
-      FETCH => -> $ { $!dbus-error-name },
+      FETCH => sub ($) { $!dbus-error-name },
 
       STORE => -> $, Str() $val {
         self.^attributes(:local)[1].set_value(self, $val)
@@ -360,7 +360,7 @@ class GDBusMethodInfo is export is repr<CStruct> does GLib::Roles::Pointers does
 
   method name is rw {
     Proxy.new:
-      FETCH => -> $ { $!name },
+      FETCH => sub ($) { $!name },
 
       STORE => -> $, Str() $val {
         self.^attributes(:local)[1].set_value(self, $val)
@@ -369,7 +369,7 @@ class GDBusMethodInfo is export is repr<CStruct> does GLib::Roles::Pointers does
 
   method in_args is rw is also<in-args> {
     Proxy.new:
-      FETCH => -> $ { $!in_args },
+      FETCH => sub ($) { $!in_args },
 
       STORE => -> $, CArray[Pointer[GDBusArgInfo]] $val {
         self.^attributes(:local)[2].set_value(self, $val)
@@ -378,7 +378,7 @@ class GDBusMethodInfo is export is repr<CStruct> does GLib::Roles::Pointers does
 
   method out_args is rw is also<out-args> {
     Proxy.new:
-      FETCH => -> $ { $!out_args },
+      FETCH => sub ($) { $!out_args },
 
       STORE => -> $, CArray[Pointer[GDBusArgInfo]] $val {
         self.^attributes(:local)[3].set_value(self, $val)
@@ -387,7 +387,7 @@ class GDBusMethodInfo is export is repr<CStruct> does GLib::Roles::Pointers does
 
   method annotations is rw {
     Proxy.new:
-      FETCH => -> $ { $!annotations },
+      FETCH => sub ($) { $!annotations },
 
       STORE => -> $, CArray[Pointer[GDBusAnnotationInfo]] $val {
         self.^attributes(:local)[4].set_value(self, $val)
@@ -427,7 +427,7 @@ class GDBusPropertyInfo is export is repr<CStruct> does GLib::Roles::Pointers do
 
   method name is rw {
     Proxy.new:
-      FETCH => -> $ { $!name },
+      FETCH => sub ($) { $!name },
 
       STORE => -> $, Str() $val {
         self.^attributes(:local)[1].set_value(self, $val)
@@ -436,7 +436,7 @@ class GDBusPropertyInfo is export is repr<CStruct> does GLib::Roles::Pointers do
 
   method signature is rw {
     Proxy.new:
-      FETCH => -> $             { $!name },
+      FETCH => sub ($)             { $!name },
 
       STORE => -> $, Str() $val {
         self.^attributes(:local)[2].set_value(self, $val)
@@ -445,13 +445,13 @@ class GDBusPropertyInfo is export is repr<CStruct> does GLib::Roles::Pointers do
 
   method flags is rw {
     Proxy.new:
-      FETCH => -> $             { GDBusPropertyInfoFlagsEnum($!flags) },
+      FETCH => sub ($)             { GDBusPropertyInfoFlagsEnum($!flags) },
       STORE => -> $, Int() $val { $!flags = $val                      };
   }
 
   method annotations is rw {
     Proxy.new:
-      FETCH => -> $ { $!annotations },
+      FETCH => sub ($) { $!annotations },
 
       STORE => -> $, CArray[Pointer[GDBusAnnotationInfo]] $val {
         self.^attributes(:local)[4].set_value(self, $val)
@@ -490,7 +490,7 @@ class GDBusSignalInfo is export is repr<CStruct> does GLib::Roles::Pointers does
 
   method name is rw {
     Proxy.new:
-      FETCH => -> $ { $!name },
+      FETCH => sub ($) { $!name },
 
       STORE => -> $, Str() $val {
         self.^attributes(:local)[1].set_value(self, $val)
@@ -499,7 +499,7 @@ class GDBusSignalInfo is export is repr<CStruct> does GLib::Roles::Pointers does
 
   method args is rw {
     Proxy.new:
-      FETCH => -> $ { $!args },
+      FETCH => sub ($) { $!args },
 
       STORE => -> $, CArray[Pointer[GDBusArgInfo]] $val {
         self.^attributes(:local)[2].set_value(self, $val)
@@ -508,7 +508,7 @@ class GDBusSignalInfo is export is repr<CStruct> does GLib::Roles::Pointers does
 
   method annotations is rw {
     Proxy.new:
-      FETCH => -> $ { $!annotations },
+      FETCH => sub ($) { $!annotations },
 
       STORE => -> $, CArray[Pointer[GDBusAnnotationInfo]] $val {
         self.^attributes(:local)[3].set_value(self, $val)
@@ -549,7 +549,7 @@ class GDBusInterfaceInfo is export is repr<CStruct> does GLib::Roles::Pointers d
 
   method name is rw {
     Proxy.new:
-      FETCH => -> $ { $!name },
+      FETCH => sub ($) { $!name },
 
       STORE => -> $, Str() $val {
         self.^attributes(:local)[1].set_value(self, $val)
@@ -558,7 +558,7 @@ class GDBusInterfaceInfo is export is repr<CStruct> does GLib::Roles::Pointers d
 
   method methods is rw {
     Proxy.new:
-      FETCH => -> $ { $!methods },
+      FETCH => sub ($) { $!methods },
 
       STORE => -> $, CArray[Pointer[GDBusMethodInfo]] $val {
         self.^attributes(:local)[2].set_value(self, $val)
@@ -567,7 +567,7 @@ class GDBusInterfaceInfo is export is repr<CStruct> does GLib::Roles::Pointers d
 
   method signals is rw {
     Proxy.new:
-      FETCH => -> $ { $!signals },
+      FETCH => sub ($) { $!signals },
 
       STORE => -> $, CArray[Pointer[GDBusSignalInfo]] $val {
         self.^attributes(:local)[3].set_value(self, $val)
@@ -576,7 +576,7 @@ class GDBusInterfaceInfo is export is repr<CStruct> does GLib::Roles::Pointers d
 
   method properties is rw {
     Proxy.new:
-      FETCH => -> $ { $!properties },
+      FETCH => sub ($) { $!properties },
 
       STORE => -> $, CArray[Pointer[GDBusPropertyInfo]] $val {
         self.^attributes(:local)[4].set_value(self, $val)
@@ -585,7 +585,7 @@ class GDBusInterfaceInfo is export is repr<CStruct> does GLib::Roles::Pointers d
 
   method annotations is rw {
     Proxy.new:
-      FETCH => -> $ { $!annotations },
+      FETCH => sub ($) { $!annotations },
 
       STORE => -> $, CArray[Pointer[GDBusAnnotationInfo]] $val {
         self.^attributes(:local)[5].set_value(self, $val)
@@ -643,7 +643,7 @@ class GDBusNodeInfo  is export is repr<CStruct> does GLib::Roles::Pointers does 
 
   method path is rw {
     Proxy.new:
-      FETCH => -> $ { $!path },
+      FETCH => sub ($) { $!path },
 
       STORE => -> $, Str() $val {
         self.^attributes(:local)[1].set_value(self, $val)
@@ -652,7 +652,7 @@ class GDBusNodeInfo  is export is repr<CStruct> does GLib::Roles::Pointers does 
 
   method interfaces is rw {
     Proxy.new:
-      FETCH => -> $ { $!interfaces },
+      FETCH => sub ($) { $!interfaces },
 
       STORE => -> $, CArray[Pointer[GDBusInterfaceInfo]] $val {
         self.^attributes(:local)[2].set_value(self, $val)
@@ -661,7 +661,7 @@ class GDBusNodeInfo  is export is repr<CStruct> does GLib::Roles::Pointers does 
 
   method nodes is rw {
     Proxy.new:
-      FETCH => -> $ { $!nodes },
+      FETCH => sub ($) { $!nodes },
 
       STORE => -> $, Pointer $val {
         self.^attributes(:local)[3].set_value(self, $val)
@@ -670,7 +670,7 @@ class GDBusNodeInfo  is export is repr<CStruct> does GLib::Roles::Pointers does 
 
   method annotations is rw {
     Proxy.new:
-      FETCH => -> $ { $!annotations },
+      FETCH => sub ($) { $!annotations },
 
       STORE => -> $, CArray[Pointer[GDBusAnnotationInfo]] $val {
         self.^attributes(:local)[4].set_value(self, $val)

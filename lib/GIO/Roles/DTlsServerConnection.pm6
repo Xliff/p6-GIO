@@ -54,7 +54,7 @@ role GIO::Roles::DtlsServerConnection {
   method authentication-mode is rw  is also<authentication_mode> {
     my GLib::Value $gv .= new( G_TYPE_UINT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('authentication-mode', $gv)
         );

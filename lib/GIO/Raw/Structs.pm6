@@ -77,14 +77,14 @@ class GActionEntry is repr('CStruct') does GLib::Roles::Pointers is export {
 
   method name is rw {
     Proxy.new:
-      FETCH => -> $                { $!name },
+      FETCH => sub ($)                { $!name },
       STORE => -> $, Str() $val    { self.^attributes(:local)[0]
                                          .set_value(self, $val)    };
   }
 
   method activate is rw {
     Proxy.new:
-      FETCH => -> $ { $!activate },
+      FETCH => sub ($) { $!activate },
       STORE => -> $, \func {
         $!activate := set_func_pointer( &(func), &sprintf-SaVP);
       };
@@ -92,21 +92,21 @@ class GActionEntry is repr('CStruct') does GLib::Roles::Pointers is export {
 
   method parameter_type is rw {
     Proxy.new:
-      FETCH => -> $                { $!parameter_type },
+      FETCH => sub ($)                { $!parameter_type },
       STORE => -> $, Str() $val    { self.^attributes(:local)[2]
                                          .set_value(self, $val)    };
   }
 
   method state is rw {
     Proxy.new:
-      FETCH => -> $                { $!state },
+      FETCH => sub ($)                { $!state },
       STORE => -> $, Str() $val    { self.^attributes(:local)[3]
                                          .set_value(self, $val)    };
   }
 
   method change_state is rw {
     Proxy.new:
-      FETCH => -> $        { $!activate },
+      FETCH => sub ($)        { $!activate },
       STORE => -> $, \func {
         $!change_state := set_func_pointer( &(func), &sprintf-SaVP )
       };

@@ -43,7 +43,7 @@ class GIO::SimpleProxyResolver {
   method default-proxy is rw  {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('default-proxy', $gv)
         );
@@ -60,7 +60,7 @@ class GIO::SimpleProxyResolver {
   method ignore-hosts is rw  {
     my GLib::Value $gv .= new( G_TYPE_POINTER );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('ignore-hosts', $gv)
         );

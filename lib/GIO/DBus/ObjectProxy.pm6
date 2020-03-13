@@ -43,7 +43,7 @@ class GIO::DBus::ObjectProperty {
   {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('g-object-path', $gv)
         );

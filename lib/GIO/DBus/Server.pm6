@@ -60,7 +60,7 @@ class GIO::DBus::Server {
   method address is rw  {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('address', $gv)
         );
@@ -76,7 +76,7 @@ class GIO::DBus::Server {
   method authentication-observer (:$raw = False) is rw is also<authentication_observer> {
     my GLib::Value $gv .= new( G_TYPE_OBJECT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('authentication-observer', $gv)
         );

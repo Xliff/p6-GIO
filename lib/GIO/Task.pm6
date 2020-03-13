@@ -140,7 +140,7 @@ class GIO::Task {
 
   method task_data is rw is also<task-data> {
     Proxy.new:
-      FETCH => -> $ { self.get-task-data },
+      FETCH => sub ($) { self.get-task-data },
       STORE => -> $, $val {
         self.set-task-data(
           $val ~~ (Pointer, GLib::Roles::Pointers).any ??

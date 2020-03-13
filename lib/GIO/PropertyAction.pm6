@@ -45,7 +45,7 @@ class GIO::PropertyAction {
   method enabled is rw  {
     my GLib::Value $gv .= new( G_TYPE_BOOLEAN );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('enabled', $gv)
         );
@@ -61,7 +61,7 @@ class GIO::PropertyAction {
   method invert-boolean is rw is also<invert_boolean> {
     my GLib::Value $gv .= new( G_TYPE_BOOLEAN );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('invert-boolean', $gv)
         );
@@ -78,7 +78,7 @@ class GIO::PropertyAction {
   method name is rw  {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('name', $gv)
         );
@@ -95,7 +95,7 @@ class GIO::PropertyAction {
   method object is rw  {
     my GLib::Value $gv .= new( G_TYPE_OBJECT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         warn 'object does not allow reading'
       },
       STORE => -> $, GObject() $val is copy {
@@ -109,7 +109,7 @@ class GIO::PropertyAction {
   method parameter-type (:$raw = False) is rw is also<parameter_type> {
     my GLib::Value $gv .= new( G_TYPE_BOXED );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('parameter-type', $gv)
         );
@@ -131,7 +131,7 @@ class GIO::PropertyAction {
   method property-name is rw  is also<property_name> {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         warn 'property-name does not allow reading'
       },
       STORE => -> $, Str() $val is copy {
@@ -145,7 +145,7 @@ class GIO::PropertyAction {
   method state (:$raw = False) is rw  {
     my GLib::Value $gv .= new( G_TYPE_OBJECT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('state', $gv)
         );
@@ -167,7 +167,7 @@ class GIO::PropertyAction {
   method state-type (:$raw = False) is rw  is also<state_type> {
     my GLib::Value $gv .= new( G_TYPE_BOXED );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('state-type', $gv)
         );

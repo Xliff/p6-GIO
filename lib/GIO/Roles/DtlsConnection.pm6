@@ -120,7 +120,7 @@ role GIO::Roles::DtlsConnection {
   method advertised-protocols is rw  {
     my GLib::Value $gv .= new( G_TYPE_POINTER );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('advertised-protocols', $gv)
         );
@@ -144,7 +144,7 @@ role GIO::Roles::DtlsConnection {
   method base-socket (:$raw = False) is rw  {
     my GLib::Value $gv .= new( G_TYPE_OBJECT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('base-socket', $gv)
         );

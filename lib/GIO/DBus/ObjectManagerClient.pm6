@@ -399,7 +399,7 @@ class GIO::DBus::ObjectManagerClient {
   method object-path is rw  is also<object_path> {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('object-path', $gv)
         );

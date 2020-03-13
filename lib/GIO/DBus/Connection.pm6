@@ -318,7 +318,7 @@ class GIO::DBus::Connection {
   method exit-on-close is rw  is also<exit_on_close> {
     my GLib::Value $gv .= new( G_TYPE_BOOLEAN );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('exit-on-close', $gv)
         );

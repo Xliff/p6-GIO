@@ -34,7 +34,7 @@ class GIO::ProxyAddressEnumerator {
   method connectable (:$raw = False) is rw {
     my GLib::Value $gv .= new( G_TYPE_OBJECT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('connectable', $gv)
         );
@@ -60,7 +60,7 @@ class GIO::ProxyAddressEnumerator {
   method default-port is rw  is also<default_port> {
     my GLib::Value $gv .= new( G_TYPE_UINT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('default-port', $gv)
         );
@@ -77,7 +77,7 @@ class GIO::ProxyAddressEnumerator {
   method proxy-resolver (:$raw = False) is rw is also<proxy_resolver> {
     my GLib::Value $gv .= new( G_TYPE_OBJECT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('proxy-resolver', $gv)
         );
@@ -103,7 +103,7 @@ class GIO::ProxyAddressEnumerator {
   method uri is rw  {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('uri', $gv)
         );

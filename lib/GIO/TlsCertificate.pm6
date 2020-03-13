@@ -98,7 +98,7 @@ class GIO::TlsCertificate {
   method certificate (:$raw = False) is rw  {
     my GLib::Value $gv .= new( G_TYPE_OBJECT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('certificate', $gv)
         );
@@ -120,7 +120,7 @@ class GIO::TlsCertificate {
   method certificate-pem is rw  is also<certificate_pem> {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('certificate-pem', $gv)
         );
@@ -137,7 +137,7 @@ class GIO::TlsCertificate {
   method issuer (:$raw = False) is rw  {
     my GLib::Value $gv .= new( G_TYPE_OBJECT );
     Proxy.new(
-      FETCH => -> $ { self.get_issuer(:$raw) },
+      FETCH => sub ($) { self.get_issuer(:$raw) },
       STORE => -> $, GTlsCertificate() $val is copy {
         $gv.object = $val;
         self.prop_set('issuer', $gv);
@@ -149,7 +149,7 @@ class GIO::TlsCertificate {
   method private-key is rw  is also<private_key> {
     my GLib::Value $gv .= new( G_TYPE_OBJECT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         warn 'private-key does not allow reading' if $DEBUG;
         0;
       },
@@ -164,7 +164,7 @@ class GIO::TlsCertificate {
   method private-key-pem is rw  is also<private_key_pem> {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         warn 'private-key-pem does not allow reading' if $DEBUG;
         '';
       },

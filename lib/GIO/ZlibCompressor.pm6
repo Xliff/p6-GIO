@@ -49,7 +49,7 @@ class GIO::ZlibCompressor {
   method format is rw  {
     my GLib::Value $gv .= new( G_TYPE_UINT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('format', $gv)
         );
@@ -66,7 +66,7 @@ class GIO::ZlibCompressor {
   method level is rw  {
     my GLib::Value $gv .= new( G_TYPE_INT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('level', $gv)
         );

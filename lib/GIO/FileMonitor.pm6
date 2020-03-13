@@ -36,7 +36,7 @@ class GIO::FileMonitor {
   method rate-limit is rw  is also<rate_limit> {
     my GLib::Value $gv .= new( G_TYPE_INT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('rate-limit', $gv)
         );

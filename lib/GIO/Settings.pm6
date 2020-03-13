@@ -112,7 +112,7 @@ class GIO::Settings {
   method backend (:$raw = False) is rw  {
     my GLib::Value $gv .= new( G_TYPE_OBJECT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('backend', $gv)
         );
@@ -133,7 +133,7 @@ class GIO::Settings {
   method delay-apply is rw  is also<delay_apply> {
     my GLib::Value $gv .= new( G_TYPE_BOOLEAN );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('delay-apply', $gv)
         );
@@ -149,7 +149,7 @@ class GIO::Settings {
   method has-unapplied is rw  is also<has_unapplied> {
     my GLib::Value $gv .= new( G_TYPE_BOOLEAN );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('has-unapplied', $gv)
         );
@@ -165,7 +165,7 @@ class GIO::Settings {
   method path is rw  {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('path', $gv)
         );
@@ -182,7 +182,7 @@ class GIO::Settings {
   method schema-id is rw  is also<schema_id> {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('schema-id', $gv)
         );
@@ -199,7 +199,7 @@ class GIO::Settings {
   method settings-schema (:$raw = False) is rw  is also<settings_schema> {
     my GLib::Value $gv .= new( G_TYPE_OBJECT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('settings-schema', $gv)
         );

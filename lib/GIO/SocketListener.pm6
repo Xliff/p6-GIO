@@ -41,7 +41,7 @@ class GIO::SocketListener {
   method listen-backlog is rw  is also<listen_backlog> {
     my GLib::Value $gv .= new( G_TYPE_INT );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('listen-backlog', $gv)
         );

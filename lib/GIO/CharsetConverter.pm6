@@ -50,7 +50,7 @@ class GIO::CharsetConverter {
   method from-charset is rw  is also<from_charset> {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('from-charset', $gv)
         );
@@ -67,7 +67,7 @@ class GIO::CharsetConverter {
   method to-charset is rw  is also<to_charset> {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
-      FETCH => -> $ {
+      FETCH => sub ($) {
         $gv = GLib::Value.new(
           self.prop_get('to-charset', $gv)
         );
