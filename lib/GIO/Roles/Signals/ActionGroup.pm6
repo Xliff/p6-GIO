@@ -19,12 +19,12 @@ role GIO::Roles::Signals::ActionGroup {
     %!signals-ag{$signal} //= do {
       my $s = Supplier.new;
       $hid = g-connect-action-enabled-changed($obj, $signal,
-        -> $, $s, $b, $ud {
+        -> $, $s1, $b, $ud {
           CATCH {
             default { $s.note($_) }
           }
 
-          $s.emit( [self, $s, $b, $ud ] );
+          $s.emit( [self, $s1, $b, $ud ] );
         },
         Pointer, 0
       );
@@ -44,12 +44,12 @@ role GIO::Roles::Signals::ActionGroup {
     %!signals-ag{$signal} //= do {
       my $s = Supplier.new;
       $hid = g-connect-action-state-changed($obj, $signal,
-        -> $, $s, $v, $ud {
+        -> $, $s1, $v, $ud {
           CATCH {
             default { $s.note($_) }
           }
 
-          $s.emit( [self, $s, $v, $ud ] );
+          $s.emit( [self, $s1, $v, $ud ] );
         },
         Pointer, 0
       );

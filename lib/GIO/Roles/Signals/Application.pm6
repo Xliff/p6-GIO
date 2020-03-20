@@ -77,12 +77,12 @@ role GIO::Roles::Signals::Application {
     %!signals-a{$signal} //= do {
       my $s = Supplier.new;
       $hid = g-connect-open($obj, $signal,
-        -> $, $p, $i, $s, $ud {
+        -> $, $p, $i, $s1, $ud {
           CATCH {
             default { $s.note($_) }
           }
 
-          $s.emit( [self, $p, $i, $s, $ud ] );
+          $s.emit( [self, $p, $i, $s1, $ud ] );
         },
         Pointer, 0
       );

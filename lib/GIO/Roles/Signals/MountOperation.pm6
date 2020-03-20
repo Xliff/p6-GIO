@@ -42,12 +42,12 @@ role GIO::Roles::Signals::MountOperation {
     %!signals-mo{$signal} //= do {
       my $s = Supplier.new;
       $hid = g-connect-ask-question($obj, $signal,
-        -> $, $g, $s, $ud {
+        -> $, $g, $s1, $ud {
           CATCH {
             default { $s.note($_) }
           }
 
-          $s.emit( [self, $g, $s, $ud ] );
+          $s.emit( [self, $g, $s1, $ud ] );
         },
         Pointer, 0
       );
@@ -92,12 +92,12 @@ role GIO::Roles::Signals::MountOperation {
     %!signals-mo{$signal} //= do {
       my $s = Supplier.new;
       $hid = g-connect-show-processes($obj, $signal,
-        -> $, $s, $a, $gsv, $ud {
+        -> $, $s1, $a, $gsv, $ud {
           CATCH {
             default { $s.note($_) }
           }
 
-          $s.emit( [self, $s, $a, $gsv, $ud ] );
+          $s.emit( [self, $s1, $a, $gsv, $ud ] );
         },
         Pointer, 0
       );
