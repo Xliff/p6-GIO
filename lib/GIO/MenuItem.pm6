@@ -11,6 +11,8 @@ use GLib::Variant;
 use GLib::Roles::Object;
 
 class GIO::MenuItem {
+  also does GLib::Roles::Object;
+  
   has GMenuItem $!mitem is implementor;
 
   submethod BUILD(:$item) {
