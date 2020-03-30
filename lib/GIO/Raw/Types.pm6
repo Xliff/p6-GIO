@@ -19,7 +19,6 @@ need GIO::Raw::Definitions;
 need GIO::Raw::Enums;
 need GIO::Raw::Structs;
 need GIO::Raw::Subs;
-need GIO::Raw::Exports;
 need GIO::DBus::Raw::Types;
 
 BEGIN {

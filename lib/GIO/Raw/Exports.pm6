@@ -11,6 +11,5 @@ BEGIN {
     GIO::Raw::Structs
     GIO::Raw::Subs
     GIO::DBus::Raw::Types
-    GIO::Raw::Exports
   >;
 }
