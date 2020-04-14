@@ -3,15 +3,12 @@ use v6.c;
 use Method::Also;
 
 use GIO::Raw::Types;
-
-
 use GIO::Raw::FileInfo;
-
-
 
 use GLib::DateTime;
 
 use GLib::Roles::Object;
+use GIO::Roles::Icon;
 
 class GIO::FileInfo {
   also does GLib::Roles::Object;
@@ -29,7 +26,9 @@ class GIO::FileInfo {
   { $!fi }
 
   method new {
-    self.bless( info => g_file_info_new() );
+    my $info = g_file_info_new();
+
+    $info ?? self.bless( :$info ) !! Nil;
   }
 
   method content_type is rw is also<content-type> {
@@ -78,10 +77,15 @@ class GIO::FileInfo {
     );
   }
 
-  method icon is rw {
+  method icon (:$raw = False) is rw {
     Proxy.new(
       FETCH => sub ($) {
-        GTK::Compat::Icon.new( g_file_info_get_icon($!fi) );
+        my $i = g_file_info_get_icon($!fi);
+
+        $i ??
+          ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i) )
+          !!
+          Nil
       },
       STORE => sub ($, GIcon() $icon is copy) {
         g_file_info_set_icon($!fi, $icon);
@@ -95,7 +99,7 @@ class GIO::FileInfo {
         so g_file_info_get_is_hidden($!fi);
       },
       STORE => sub ($, Int() $is_hidden is copy) {
-        my gboolean $ih = $is_hidden;
+        my gboolean $ih = $is_hidden.so.Int;
 
         g_file_info_set_is_hidden($!fi, $ih);
       }
@@ -108,7 +112,7 @@ class GIO::FileInfo {
         so g_file_info_get_is_symlink($!fi);
       },
       STORE => sub ($, Int() $is_symlink is copy) {
-        my gboolean $is = $is_symlink;
+        my gboolean $is = $is_symlink.so.Int;
 
         g_file_info_set_is_symlink($!fi, $is);
       }
@@ -152,10 +156,15 @@ class GIO::FileInfo {
     );
   }
 
-  method symbolic_icon is rw is also<symbolic-icon> {
+  method symbolic_icon (:$raw = False) is rw is also<symbolic-icon> {
     Proxy.new(
       FETCH => sub ($) {
-        GTK::Compat::Icon.new( g_file_info_get_symbolic_icon($!fi) );
+        my $i = g_file_info_get_symbolic_icon($!fi);
+
+        $i ??
+          ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i) )
+          !!
+          Nil
       },
       STORE => sub ($, GIcon() $icon is copy) {
         g_file_info_set_symbolic_icon($!fi, $icon);
@@ -185,6 +194,8 @@ class GIO::FileInfo {
   method dup (:$raw = False) {
     my $d = g_file_info_dup($!fi);
 
+    die 'Could not duplicate GFileInfo in dup!' unless $d;
+
     $raw ?? $d !! GIO::FileInfo.new($d);
   }
 
@@ -211,13 +222,16 @@ class GIO::FileInfo {
   { * }
 
   multi method get_attribute_data (Str() $attribute) {
-    samewith($attribute, $, $, $);
+    my $rv = samewith($attribute, $, $, $, :all);
+
+    $rv[0] ?? $rv.skip(1) !! Nil;
   }
   multi method get_attribute_data (
     Str() $attribute,
     $type     is rw,
     $value_pp is rw,
-    $status   is rw
+    $status   is rw,
+    :$all = False;
   ) {
     my GFileAttributeType $t = $type;
     my GFileAttributeStatus $s = $status;
@@ -225,10 +239,7 @@ class GIO::FileInfo {
 
     my $rv = so g_file_info_get_attribute_data($!fi, $attribute, $t, $p, $s);
     ($type, $value_pp, $status) = ($t, $p, $s);
-    $rv ??
-      ($rv, $type, $value_pp, $status)
-      !!
-      False;
+    $all.not ?? $rv !! ($rv, $type, $value_pp, $status);
   }
 
   method get_attribute_int32 (Str() $attribute) is also<get-attribute-int32> {
