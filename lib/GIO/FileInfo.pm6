@@ -6,9 +6,9 @@ use GIO::Raw::Types;
 use GIO::Raw::FileInfo;
 
 use GLib::DateTime;
-use GIO::Icon;
 
 use GLib::Roles::Object;
+use GIO::Roles::Icon;
 
 class GIO::FileInfo {
   also does GLib::Roles::Object;
@@ -83,7 +83,7 @@ class GIO::FileInfo {
         my $i = g_file_info_get_icon($!fi);
 
         $i ??
-          ( $raw ?? $i !! GIO::Icon.new($i) )
+          ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i) )
           !!
           Nil
       },
@@ -162,7 +162,7 @@ class GIO::FileInfo {
         my $i = g_file_info_get_symbolic_icon($!fi);
 
         $i ??
-          ( $raw ?? $i !! GIO::Icon.new($i) )
+          ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i) )
           !!
           Nil
       },
