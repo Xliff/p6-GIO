@@ -100,7 +100,7 @@ class GNetworkAddress          is repr<CPointer> is export does GLib::Roles::Poi
 class GNetworkMonitor          is repr<CPointer> is export does GLib::Roles::Pointers { }
 class GNetworkService          is repr<CPointer> is export does GLib::Roles::Pointers { }
 class GNotification            is repr<CPointer> is export does GLib::Roles::Pointers { }
-class GOptionEntry             is repr<CPointer> is export does GLib::Roles::Pointers { }
+#class GOptionEntry             is repr<CPointer> is export does GLib::Roles::Pointers { } --- Now defined in GLib::Raw::Structs
 class GOptionGroup             is repr<CPointer> is export does GLib::Roles::Pointers { }
 class GOutputStream            is repr<CPointer> is export does GLib::Roles::Pointers { }
 class GPollableInputStream     is repr<CPointer> is export does GLib::Roles::Pointers { }

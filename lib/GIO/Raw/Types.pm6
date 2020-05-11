@@ -5,7 +5,7 @@ use CompUnit::Util :re-export;
 use GLib::Raw::Exports;
 use GIO::Raw::Exports;
 
-constant forced = 1;
+constant forced = 2;
 
 unit package GIO::Raw::Types;
 
