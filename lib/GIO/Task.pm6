@@ -57,7 +57,7 @@ class GIO::Task {
   { $!t }
 
   multi method new (TaskAncestry $task) {
-    self.bless( :$task );
+    $task ?? self.bless( :$task ) !! Nil;
   }
   multi method new (
     GObject() $source,
@@ -72,9 +72,9 @@ class GIO::Task {
     &callback,
     gpointer $callback_data = gpointer
   ) {
-    self.bless(
-      task => g_task_new($source, $cancellable, &callback, $callback_data)
-    );
+    my $task = g_task_new($source, $cancellable, &callback, $callback_data);
+
+    $task ?? self.bless( :$task ) !! Nil;
   }
 
   method check_cancellable is rw is also<check-cancellable> {
@@ -83,7 +83,7 @@ class GIO::Task {
         so g_task_get_check_cancellable($!t);
       },
       STORE => sub ($, Int() $check_cancellable is copy) {
-        my gboolean $c = $check_cancellable;
+        my gboolean $c = $check_cancellable.so.Int;
 
         g_task_set_check_cancellable($!t, $c);
       }
@@ -120,7 +120,7 @@ class GIO::Task {
         so g_task_get_return_on_cancel($!t);
       },
       STORE => sub ($, Int() $return_on_cancel is copy) {
-        my gboolean $r = $return_on_cancel;
+        my gboolean $r = $return_on_cancel.so.Int;
 
         g_task_set_return_on_cancel($!t, $r);
       }
@@ -150,7 +150,7 @@ class GIO::Task {
               Pointer,
               do given $val {
                 when GLib::Roles::Object { $val.GObject }
-                when .REPR eq 'CStruct'         { $_           }
+                when .REPR eq 'CStruct'  { $_           }
 
                 default {
                   die "Cannot store object of type { .^name } as task data!"
