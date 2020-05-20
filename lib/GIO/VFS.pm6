@@ -5,8 +5,6 @@ use Method::Also;
 use GIO::Raw::Types;
 use GIO::Raw::VFS;
 
-
-
 use GLib::Roles::Object;
 
 class GIO::VFS {
@@ -25,15 +23,19 @@ class GIO::VFS {
   { $!fs }
 
   method new (GVfs $vfs) {
-    self.bless(:$vfs);
+    $vfs ?? self.bless(:$vfs) !! Nil;
   }
 
   method get_default is also<get-default> {
-    self.bless( vfs => g_vfs_get_default() );
+    my $vfs = g_vfs_get_default();
+
+    $vfs ?? self.bless(:$vfs) !! Nil;
   }
 
   method get_local is also<get-local> {
-    self.bless( vgs => g_vfs_get_local() );
+    my $vfs = g_vfs_get_local();
+
+    $vfs ?? self.bless(:$vfs) !! Nil;
   }
 
   method get_file_for_path (Str() $path, :$raw = False)
