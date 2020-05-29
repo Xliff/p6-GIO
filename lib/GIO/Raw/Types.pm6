@@ -11,6 +11,7 @@ unit package GIO::Raw::Types;
 
 need GLib::Raw::Definitions;
 need GLib::Raw::Enums;
+need GLib::Raw::Object;
 need GLib::Raw::Structs;
 need GLib::Raw::Struct_Subs;
 need GLib::Raw::Subs;
