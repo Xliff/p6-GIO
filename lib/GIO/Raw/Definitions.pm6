@@ -101,7 +101,7 @@ class GNetworkMonitor          is repr<CPointer> is export does GLib::Roles::Poi
 class GNetworkService          is repr<CPointer> is export does GLib::Roles::Pointers { }
 class GNotification            is repr<CPointer> is export does GLib::Roles::Pointers { }
 #class GOptionEntry             is repr<CPointer> is export does GLib::Roles::Pointers { } --- Now defined in GLib::Raw::Structs
-class GOptionGroup             is repr<CPointer> is export does GLib::Roles::Pointers { }
+#class GOptionGroup             is repr<CPointer> is export does GLib::Roles::Pointers { } --- Now defined in GLib::Raw::Definitions
 class GOutputStream            is repr<CPointer> is export does GLib::Roles::Pointers { }
 class GPollableInputStream     is repr<CPointer> is export does GLib::Roles::Pointers { }
 class GPollableOutputStream    is repr<CPointer> is export does GLib::Roles::Pointers { }
