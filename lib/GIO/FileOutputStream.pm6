@@ -38,6 +38,14 @@ class GIO::FileOutputStream {
     is also<GFileOutputStream>
   { $!fos }
 
+  method new (GFileOutputStreamAncestry $file-output, :$ref = True) {
+    return Nil unless $file-output;
+
+    my $o = self.bless( :$file-output );
+    $o.ref if $ref;
+    $o
+  }
+
   method get_etag is also<get-etag> {
     g_file_output_stream_get_etag($!fos);
   }
