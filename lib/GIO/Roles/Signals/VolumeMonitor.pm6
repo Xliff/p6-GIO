@@ -17,12 +17,12 @@ role GIO::Roles::Signals::VolumeMonitor {
     %!signals-vm{$signal} //= do {
       my $s = Supplier.new;
       $hid = g-connect-drive($obj, $signal,
-        -> $, $, $ud {
+        -> $, $d, $ud {
           CATCH {
             default { $s.note($_) }
           }
 
-          $s.emit( [self, $, $ud ] );
+          $s.emit( [self, $d, $ud ] );
         },
         Pointer, 0
       );
@@ -42,12 +42,12 @@ role GIO::Roles::Signals::VolumeMonitor {
     %!signals-vm{$signal} //= do {
       my $s = Supplier.new;
       $hid = g-connect-mount($obj, $signal,
-        -> $, $, $ud {
+        -> $, $m, $ud {
           CATCH {
             default { $s.note($_) }
           }
 
-          $s.emit( [self, $, $ud ] );
+          $s.emit( [self, $m, $ud ] );
         },
         Pointer, 0
       );
@@ -67,12 +67,12 @@ role GIO::Roles::Signals::VolumeMonitor {
     %!signals-vm{$signal} //= do {
       my $s = Supplier.new;
       $hid = g-connect-volume($obj, $signal,
-        -> $, $, $ud {
+        -> $, $v, $ud {
           CATCH {
             default { $s.note($_) }
           }
 
-          $s.emit( [self, $, $ud ] );
+          $s.emit( [self, $v, $ud ] );
         },
         Pointer, 0
       );
