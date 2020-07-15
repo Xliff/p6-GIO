@@ -9,17 +9,23 @@ use GIO::Raw::InputStream;
 
 use GLib::Roles::Object;
 
+our subset GInputStreamAncestry is export of Mu
+  where GInputStream | GObject;
+
 class GIO::InputStream {
   also does GLib::Roles::Object;
 
   has GInputStream $!is is implementor;
 
-  submethod BUILD (GInputStream :$stream) {
+  submethod BUILD (:$stream) {
     self.setInputStream($stream) if $stream;
   }
 
-  method setInputStream(GInputStream $stream) {
-    $!is = $stream;
+  method setInputStream (GInputStreamAncestry $_) is also<setGInputStream> {
+    $!is = do {
+      when GInputStream { $_  }
+      when GObject       { cast(GInputStream, $_) }
+    }
 
     self.roleInit-Object;
   }
