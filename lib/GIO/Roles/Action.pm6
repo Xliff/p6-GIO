@@ -4,8 +4,9 @@ use Method::Also;
 use NativeCall;
 
 use GIO::Raw::Types;
-
 use GIO::Raw::Action;
+
+use GLib::Variant;
 
 use GLib::Roles::Properties;
 
@@ -27,11 +28,14 @@ role GIO::Roles::Action {
   }
 
   method GIO::Raw::Definitions::GAction
-    is also<Action>
+    is also<
+      GAction
+      Action
+    >
   { $!a }
 
   method new-action-object (GAction $action) {
-    self.bless( :$action );
+    $action ?? self.bless( :$action ) !! Nil;
   }
 
   method activate (GVariant() $parameter) {
@@ -60,43 +64,63 @@ role GIO::Roles::Action {
     g_action_get_name($!a);
   }
 
-  method get_parameter_type
+  method get_parameter_type (:$raw = False)
     is also<
       get-parameter-type
       parameter_type
       parameter-type
     >
   {
-    g_action_get_parameter_type($!a);
+    my $v = g_action_get_parameter_type($!a);
+
+    $v ??
+      ( $raw ?? $v !! GLib::Variant.new($v) )
+      !!
+      Nil;
   }
 
-  method get_state
+  method get_state (:$raw = False)
     is also<
       get-state
       state
     >
   {
-    g_action_get_state($!a);
+    my $v = g_action_get_state($!a);
+
+    $v ??
+      ( $raw ?? $v !! GLib::Variant.new($v) )
+      !!
+      Nil;
   }
 
-  method get_state_hint
+  method get_state_hint (:$raw = False)
     is also<
       get-state-hint
       state_hint
       state-hint
     >
   {
-    g_action_get_state_hint($!a);
+    my $v = g_action_get_state_hint($!a);
+
+    $v ??
+      ( $raw ?? $v !! GLib::Variant.new($v) )
+      !!
+      Nil;
   }
 
-  method get_state_type
+  method get_state_type (:$raw = False)
     is also<
       get-state-type
       state_type
       state-type
     >
   {
-    g_action_get_state_type($!a);
+    my $v = g_action_get_state_type($!a);
+
+    $v ??
+      ( $raw ?? $v !! GLib::Variant.new($v) )
+      !!
+      Nil;
   }
 
   method get_type is also<get-type> {
@@ -117,11 +141,14 @@ role GIO::Roles::Action {
     Str() $detailed_name,
     Str() $action_name,
     GVariant() $target_value,
-    CArray[Pointer[GError]] $error = gerror()
+    CArray[Pointer[GError]] $error = gerror
   ) {
     clear_error;
     my $rc = so g_action_parse_detailed_name(
-      $detailed_name, $action_name, $target_value, $error
+      $detailed_name,
+      $action_name,
+      $target_value,
+      $error
     );
     set_error($error);
     $rc;
