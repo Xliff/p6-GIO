@@ -30,8 +30,14 @@ class GIO::PropertyAction {
 
   multi method new (
     Str() $name,
+    GObject() $object
+  ) {
+    samewith($name, $object, $name);
+  }
+  multi method new (
+    Str() $name,
     Str $property_name,
-    GObject() $object = GObject
+    GObject() $object
   ) {
     samewith($name, $object, $property_name);
   }
@@ -68,7 +74,7 @@ class GIO::PropertyAction {
         $gv.boolean;
       },
       STORE => -> $, Int() $val is copy {
-        $gv.boolean = $val;
+        $gv.boolean = $val.so.Int;
         self.prop_set('invert-boolean', $gv);
       }
     );
