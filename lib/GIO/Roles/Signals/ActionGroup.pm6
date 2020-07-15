@@ -17,18 +17,18 @@ role GIO::Roles::Signals::ActionGroup {
   ) {
     my $hid;
     %!signals-ag{$signal} //= do {
-      my $s = Supplier.new;
+      my \𝒮 = Supplier.new;
       $hid = g-connect-action-enabled-changed($obj, $signal,
         -> $, $s, $b, $ud {
           CATCH {
             default { $s.note($_) }
           }
 
-          $s.emit( [self, $s, $b, $ud ] );
+          𝒮.emit( [self, $s, $b, $ud ] );
         },
         Pointer, 0
       );
-      [ $s.Supply, $obj, $hid ];
+      [ 𝒮.Supply, $obj, $hid ];
     };
     %!signals-ag{$signal}[0].tap(&handler) with &handler;
     %!signals-ag{$signal}[0];
@@ -42,18 +42,18 @@ role GIO::Roles::Signals::ActionGroup {
   ) {
     my $hid;
     %!signals-ag{$signal} //= do {
-      my $s = Supplier.new;
+      my \𝒮 = Supplier.new;
       $hid = g-connect-action-state-changed($obj, $signal,
         -> $, $s, $v, $ud {
           CATCH {
             default { $s.note($_) }
           }
 
-          $s.emit( [self, $s, $v, $ud ] );
+          𝒮.emit( [self, $s, $v, $ud ] );
         },
         Pointer, 0
       );
-      [ $s.Supply, $obj, $hid ];
+      [ 𝒮.Supply, $obj, $hid ];
     };
     %!signals-ag{$signal}[0].tap(&handler) with &handler;
     %!signals-ag{$signal}[0];

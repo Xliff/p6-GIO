@@ -75,18 +75,18 @@ role GIO::Roles::Signals::Application {
   ) {
     my $hid;
     %!signals-a{$signal} //= do {
-      my $s = Supplier.new;
+      my \𝒮 = Supplier.new;
       $hid = g-connect-open($obj, $signal,
         -> $, $p, $i, $s, $ud {
           CATCH {
             default { $s.note($_) }
           }
 
-          $s.emit( [self, $p, $i, $s, $ud ] );
+          𝒮.emit( [self, $p, $i, $s, $ud ] );
         },
         Pointer, 0
       );
-      [ $s.Supply, $obj, $hid ];
+      [ 𝒮.Supply, $obj, $hid ];
     };
     %!signals-a{$signal}[0].tap(&handler) with &handler;
     %!signals-a{$signal}[0];
