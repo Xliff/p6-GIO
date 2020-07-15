@@ -64,7 +64,10 @@ class GIO::Menu is GIO::MenuModel {
   # ↑↑↑↑ PROPERTIES ↑↑↑↑
 
   # ↓↓↓↓ METHODS ↓↓↓↓
-  method append (Str() $label, Str() $detailed_action) {
+  multi method append (Str() $detailed_action) {
+    samewith(Str, $detailed_action);
+  }
+  multi method append (Str() $label, Str() $detailed_action) {
     g_menu_append($!menu, $label, $detailed_action);
   }
 
