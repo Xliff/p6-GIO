@@ -4,13 +4,9 @@ use Method::Also;
 use NativeCall;
 
 use GIO::Raw::Types;
-
 use GIO::Raw::Mount;
 
-
-
 use GLib::Roles::Signals::Generic;
-use GIO::Roles::GFile;
 use GIO::Roles::Icon;
 use GIO::Roles::Volume;
 use GIO::Roles::Drive;
@@ -69,11 +65,11 @@ role GIO::Roles::Mount {
   multi method eject_with_operation (
     Int() $flags,
     Int() $mount_operation,
-    GCancellable() $cancellable,
     GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    gpointer $user_data         = gpointer,
+    GCancellable() $cancellable = GCancellable
   ) {
-    samewith($flags, $mount_operation, GCancellable, $callback, $user_data);
+    samewith($flags, $mount_operation, $cancellable, $callback, $user_data);
   }
   multi method eject_with_operation (
     Int() $flags,
@@ -111,7 +107,7 @@ role GIO::Roles::Mount {
     my $f = g_mount_get_default_location($!m);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::GFile.new-file-obj($f) )
+      ( $raw ?? $f !! ::('GIO::Roles::GFile').new-file-obj($f) )
       !!
       Nil;
   }
@@ -142,7 +138,7 @@ role GIO::Roles::Mount {
     my $f = g_mount_get_root($!m);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::GFile.new-file-obj($f) )
+      ( $raw ?? $f !! ::('GIO::Roles::GFile').new-file-obj($f) )
       !!
       Nil;
   }
@@ -186,9 +182,10 @@ role GIO::Roles::Mount {
   multi method guess_content_type (
     Int() $force_rescan,
     GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    gpointer $user_data = gpointer,
+    GCancellable() $cancellable = GCancellable
   ) {
-    samewith($force_rescan, GCancellable, $callback, $user_data);
+    samewith($force_rescan, $cancellable, $callback, $user_data);
   }
   multi method guess_content_type (
     Int() $force_rescan,
@@ -196,7 +193,7 @@ role GIO::Roles::Mount {
     GAsyncReadyCallback $callback,
     gpointer $user_data = gpointer
   ) {
-    my gboolean $f = $force_rescan;
+    my gboolean $f = $force_rescan.so.Int;
 
     g_mount_guess_content_type($!m, $f, $cancellable, $callback, $user_data);
   }
@@ -221,7 +218,7 @@ role GIO::Roles::Mount {
   )
     is also<guess-content-type-sync>
   {
-    my gboolean $f = $force_rescan;
+    my gboolean $f = $force_rescan.so.Int;
 
     clear_error;
     my $sa = g_mount_guess_content_type_sync($!m, $f, $cancellable, $error);
