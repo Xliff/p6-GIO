@@ -11,7 +11,7 @@ sub g_datagram_based_condition_check (
   GIOCondition $condition
 )
   returns GIOCondition
-  is native(glib)
+  is native(gio)
   is export
 { * }
 
@@ -23,7 +23,7 @@ sub g_datagram_based_condition_wait (
   CArray[Pointer[GError]] $error
 )
   returns uint32
-  is native(glib)
+  is native(gio)
   is export
 { * }
 
@@ -33,13 +33,13 @@ sub g_datagram_based_create_source (
   GCancellable $cancellable
 )
   returns GSource
-  is native(glib)
+  is native(gio)
   is export
 { * }
 
 sub g_datagram_based_get_type ()
   returns GType
-  is native(glib)
+  is native(gio)
   is export
 { * }
 
@@ -53,7 +53,7 @@ sub g_datagram_based_receive_messages (
   CArray[Pointer[GError]] $error
 )
   returns gint
-  is native(glib)
+  is native(gio)
   is export
 { * }
 
@@ -67,6 +67,6 @@ sub g_datagram_based_send_messages (
   CArray[Pointer[GError]] $error
 )
   returns gint
-  is native(glib)
+  is native(gio)
   is export
 { * }
