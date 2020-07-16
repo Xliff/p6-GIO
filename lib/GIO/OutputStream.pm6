@@ -9,6 +9,9 @@ use GIO::Raw::OutputStream;
 
 use GLib::Roles::Object;
 
+our subset GOutputStreamAncestry is export of Mu
+  where GOutputStream | GObject;
+
 class GIO::OutputStream {
   also does GLib::Roles::Object;
 
@@ -18,9 +21,12 @@ class GIO::OutputStream {
     self.setOutputStream($output-stream) if $output-stream;
   }
 
-  method setOutputStream (GOutputStream $output-stream) {
-    $!os = $output-stream;
-    
+  method setOutputStream (GOutputStreamAncestry $_) is also<setGOutputStream> {
+    $!os = do {
+      when GOutputStream { $_  }
+      when GObject       { cast(GOutputStream, $_) }
+    }
+
     self.roleInit-Object;
   }
 
@@ -28,8 +34,12 @@ class GIO::OutputStream {
     is also<GOutputStream>
   { $!os }
 
-  method new (GOutputStream $output-stream) {
-    self.bless( :$output-stream );
+  method new (GOutputStreamAncestry $output-stream, :$ref = True) {
+    return Nil unless $output-stream;
+
+    my $o = self.bless( :$output-stream );
+    $o.ref if $ref;
+    $o;
   }
 
   method clear_pending is also<clear-pending> {
@@ -37,13 +47,13 @@ class GIO::OutputStream {
   }
 
   method close (
-    GCancellable $cancellable,
+    GCancellable() $cancellable    = GCancellable,
     CArray[Pointer[GError]] $error = gerror
   ) {
     clear_error;
-    my $rc = g_output_stream_close($!os, $cancellable, $error);
+    my $rv = so g_output_stream_close($!os, $cancellable, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method close_async (
@@ -84,14 +94,14 @@ class GIO::OutputStream {
   method flush_async (
     Int() $io_priority,
     GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
+    &callback,
     gpointer $user_data = gpointer
   )
     is also<flush-async>
   {
     my gint $io = $io_priority;
 
-    g_output_stream_flush_async($!os, $io, $cancellable, $callback, $user_data);
+    g_output_stream_flush_async($!os, $io, $cancellable, &callback, $user_data);
   }
 
   method flush_finish (
