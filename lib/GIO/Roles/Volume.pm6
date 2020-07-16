@@ -5,14 +5,9 @@ use Method::Also;
 use NativeCall;
 
 use GIO::Raw::Types;
-
 use GIO::Raw::Volume;
 
-
-
-use GIO::Roles::GFile;
 use GIO::Roles::Icon;
-
 use GLib::Roles::Signals::Generic;
 
 role GIO::Roles::Volume {

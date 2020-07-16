@@ -5,13 +5,10 @@ use Method::Also;
 use NativeCall;
 
 use GIO::Raw::Types;
-
-
-
 use GIO::Raw::Drive;
 
-use GIO::Roles::Icon;
 use GLib::Roles::Signals::Generic;
+use GIO::Roles::Icon;
 use GIO::Roles::Volume;
 
 role GIO::Roles::Drive {
