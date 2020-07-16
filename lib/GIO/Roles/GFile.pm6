@@ -3,17 +3,19 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
-
-
-use GIO::Raw::GFile;
-
+use GIO::Raw::File;
 use GIO::Raw::Types;
 
+use GIO::FileIOStream;
+use GIO::FileMonitor;
+use GIO::FileOutputStream;
+use GIO::FileIOStream;
 
 use GLib::Roles::Object;
+use GIO::Roles::AppInfo;
+use GIO::Roles::Mount;
 
-# This WILL be renamed to ::File
-role GIO::Roles::GFile {
+role GIO::Roles::File {
   has GFile $!file;
 
   submethod BUILD (:$file) {
@@ -44,10 +46,6 @@ role GIO::Roles::GFile {
     $file ?? self.bless(:$file) !! Nil;
   }
 
-  multi method new (GFile $file) {
-    die 'Role constructor called.' unless ::?CLASS.^name eq ::?ROLE.^name;
-    $file ?? self.bless(:$file) !! Nil;
-  }
   # XXX - To be replaced with multiple dispatchers!
   multi method new (
     :$path,
@@ -85,6 +83,9 @@ role GIO::Roles::GFile {
     $file ?? self.bless(:$file) !! Nil;
   }
 
+  multi method new (Str() $a, :$arg is required) {
+    self.new_for_commandline_arg($a);
+  }
   method new_for_commandline_arg (Str() $cmd)
     is also<new-for-commandline-arg>
   {
@@ -93,20 +94,29 @@ role GIO::Roles::GFile {
     $file ?? self.bless(:$file) !! Nil;
   }
 
-  method new_for_commandline_arg_and_cwd (Str() $cmd, Str() $cwd)
+  multi method new (Str() $arg, Str() $cwd, :arg_cwd(:$arg-cwd) is required) {
+    self.new_for_commandline_arg_and_cwd($arg, $cwd);
+  }
+  method new_for_commandline_arg_and_cwd (Str() $arg, Str() $cwd)
     is also<new-for-commandline-arg-and-cwd>
   {
-    my $file = g_file_new_for_commandline_arg_and_cwd($cmd, $cwd);
+    my $file = g_file_new_for_commandline_arg_and_cwd($arg, $cwd);
 
     $file ?? self.bless(:$file) !! Nil;
   }
 
+  multi method new (Str() $p, :$path is required) {
+    self.new_for_path($p);
+  }
   method new_for_path (Str() $path) is also<new-for-path> {
     my $file = g_file_new_for_path($path);
 
     $file ?? self.bless(:$file) !! Nil;
   }
 
+  multi method new (Str $u, :$uri is required) {
+    self.new_for_uri($uri);
+  }
   method new_for_uri (Str() $uri) is also<new-for-uri> {
     my $file = g_file_new_for_uri($uri);
 
@@ -117,16 +127,67 @@ role GIO::Roles::GFile {
     is also<new-tmp>
   { * }
 
-  multi method new_tmp {
-    my $ios = CArray[Pointer[GFileIOStream]].new;
 
-    samewith($ios);
+  multi method new (
+    :temp(:$tmp) is required,
+    :$raw = False
+  ) {
+    self.new_tmp(Str, :$raw);
   }
   multi method new_tmp (
-    CArray[Pointer[GFileIOStream]] $iostream,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   ) {
-    samewith(Str, $iostream, $error);
+    samewith(Str, $, $error, :$raw);
+  }
+
+  multi method new (
+    Str() $tmpl,
+    :temp(:$tmp) is required,
+    :$raw = False
+  ) {
+    self.new_tmp($tmpl, :$raw);
+  }
+  multi method new_tmp (
+    Str() $tmpl,
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
+  ) {
+    samewith($tmpl, $, $error, :$raw);
+  }
+
+  multi method new (
+    Str() $tmpl,
+    $iostream is rw,
+    :temp(:$tmp) is required,
+    :$raw = False,
+  ) {
+    samewith($tmpl, $iostream);
+  }
+  multi method new_tmp (
+    Str() $tmpl,
+    $iostream is rw,
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
+  ) {
+    my $i = CArray[Pointer[GFileIOStream]].new;
+    $i[0] = Pointer[GFileIOStream];
+    my $rv = samewith($tmpl, $i, $error);
+
+    $iostream = ppr($i);
+    if $iostream {
+      $iostream = GIO::FileIOStream.new($iostream) unless $raw;
+    }
+    $rv;
+  }
+
+  multi method new (
+    Str() $tmpl,
+    CArray[Pointer[GFileIOStream]] $iostream,
+    CArray[Pointer[GError]] $error = gerror,
+    :temp(:$tmp) is required
+  ) {
+    self.new_tmp($tmpl, $iostream, $error);
   }
   multi method new_tmp (
     Str() $tmpl,
@@ -161,41 +222,53 @@ role GIO::Roles::GFile {
     Int() $flags,                       # GFileCreateFlags $flags,
     Int() $io_priority,
     &callback,
+    gpointer $user_data         = Pointer,
     GCancellable() $cancellable = GCancellable,
-    gpointer $user_data         = Pointer
+    :$raw = False
   ) {
-    samewith($flags, $io_priority, $cancellable, &callback, $user_data);
+    samewith($flags, $io_priority, $cancellable, &callback, $user_data, :$raw);
   }
   multi method append_to_async (
     Int() $flags,                       # GFileCreateFlags $flags,
     Int() $io_priority,
     GCancellable() $cancellable,
     &callback,
-    gpointer $user_data = Pointer
+    gpointer $user_data = Pointer,
+    :$raw = False
   ) {
     my guint $f = $flags;
     my gint $io = $io_priority;
-    g_file_append_to_async(
+    my $fos = g_file_append_to_async(
       $!file, $f, $io, $cancellable, &callback, $user_data
     );
+
+    $fos ??
+      ( $raw ?? $fos !! GIO::FileOutputStream.new($fos) )
+      !!
+      Nil;
   }
 
   method append_to_finish (
     GAsyncResult() $res,
-    CArray[Pointer[GError]] $error  = gerror
+    CArray[Pointer[GError]] $error  = gerror,
+    :$raw = False
   )
     is also<append-to-finish>
   {
     clear_error;
-    my $rc = g_file_append_to_finish($!file, $res, $error);
+    my $fos = g_file_append_to_finish($!file, $res, $error);
     set_error($error);
-    $rc;
+
+    $fos ??
+      ( $raw ?? $fos !! GIO::FileOutputStream.new($fos) )
+      !!
+      Nil;
   }
 
   multi method copy (
     GFile() $destination,
     Int() $flags,                       # GFileCreateFlags $flags,
-    &progress_callback               = -> $, $, $ { },
+    &progress_callback               = Callable,
     gpointer $progress_callback_data = Pointer,
     GCancellable() $cancellable      = GCancellable,
     CArray[Pointer[GError]] $error   = gerror
@@ -215,11 +288,12 @@ role GIO::Roles::GFile {
     GCancellable() $cancellable,
     &progress_callback,
     gpointer $progress_callback_data = Pointer,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error   = gerror
   ) {
-    clear_error;
     my guint $f = $flags;
-    my $rc = g_file_copy(
+
+    clear_error;
+    my $rv = so g_file_copy(
       $!file,
       $destination,
       $f,
@@ -229,7 +303,7 @@ role GIO::Roles::GFile {
       $error
     );
     set_error($error);
-    $rc;
+    $rv;
   }
 
   proto method copy_async (|)
@@ -241,7 +315,7 @@ role GIO::Roles::GFile {
     Int() $flags,                       # GFileCreateFlags $flags,
     Int() $io_priority,
     &callback,
-    &progress_callback               = -> $, $, $ { },
+    &progress_callback               = Callable,
     gpointer $progress_callback_data = Pointer,
     gpointer $user_data              = Pointer,
     GCancellable() $cancellable      = GCancellable
@@ -269,6 +343,7 @@ role GIO::Roles::GFile {
   )  {
     my guint $f = $flags;
     my gint $io = $io_priority;
+
     g_file_copy_async(
       $!file,
       $destination,
@@ -291,7 +366,8 @@ role GIO::Roles::GFile {
     is also<copy-attributes>
   {
     my guint $f = $flags;
-    g_file_copy_attributes(
+
+    so g_file_copy_attributes(
       $!file, $destination, $f, $cancellable, $error
     );
   }
@@ -303,18 +379,27 @@ role GIO::Roles::GFile {
     is also<copy-finish>
   {
     clear_error;
-    my $rc = g_file_copy_finish($!file, $res, $error);
+    my $rv = so g_file_copy_finish($!file, $res, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method create (
     Int() $flags,                       # GFileCreateFlags $flags,
     GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   ) {
     my guint $f = $flags;
-    g_file_create($!file, $f, $cancellable, $error);
+
+    clear_error;
+    my $fos = g_file_create($!file, $f, $cancellable, $error);
+    set_error($error);
+
+    $fos ??
+      ( $raw ?? $fos !! GIO::FileOutputStream.new($fos) )
+      !!
+      Nil;
   }
 
   proto method create_async (|)
@@ -322,7 +407,7 @@ role GIO::Roles::GFile {
   { * }
 
   multi method create_async (
-    GFileCreateFlags $flags,
+    Int() $flags,
     Int() $io_priority,
     &callback,
     gpointer $user_data         = Pointer,
@@ -331,14 +416,15 @@ role GIO::Roles::GFile {
     samewith($flags, $io_priority, $cancellable, &callback, $user_data);
   }
   multi method create_async (
-    GFileCreateFlags $flags,
+    Int() $flags,
     Int() $io_priority,
     GCancellable() $cancellable,
     &callback,
     gpointer $user_data = Pointer
   ) {
-    my guint $f = $flags;
+    my GFileCreateFlags $f = $flags;
     my gint $io = $io_priority;
+
     g_file_create_async(
       $!file, $f, $io, $cancellable, &callback, $user_data
     );
@@ -346,28 +432,39 @@ role GIO::Roles::GFile {
 
   method create_finish (
     GAsyncResult() $res,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<create-finish>
   {
     clear_error;
-    my $rc = g_file_create_finish($!file, $res, $error);
+    my $fos = g_file_create_finish($!file, $res, $error);
     set_error($error);
-    $rc;
+
+    $fos ??
+      ( $raw ?? $fos !! GIO::FileOutputStream.new($fos) )
+      !!
+      Nil;
   }
 
   method create_readwrite (
-    GFileCreateFlags $flags,
+    Int() $flags,
     GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<create-readwrite>
   {
     my guint $f = $flags;
+
     clear_error;
-    my $rc = g_file_create_readwrite($!file, $f, $cancellable, $error);
+    my $fios = g_file_create_readwrite($!file, $f, $cancellable, $error);
     set_error($error);
-    $rc;
+
+    $fios ??
+      ( $raw ?? $fios !! GIO::FileIOStream.new($fios) )
+      !!
+      Nil;
   }
 
   proto method create_readwrite_async (|)
@@ -375,7 +472,7 @@ role GIO::Roles::GFile {
   { * }
 
   multi method create_readwrite_async (
-    GFileCreateFlags $flags,
+    Int() $flags,
     Int() $io_priority,
     &callback,
     gpointer $user_data         = Pointer,
@@ -384,14 +481,15 @@ role GIO::Roles::GFile {
     samewith($flags, $io_priority, $cancellable, &callback, $user_data);
   }
   multi method create_readwrite_async (
-    GFileCreateFlags $flags,
+    Int() $flags,
     Int() $io_priority,
     GCancellable() $cancellable,
     &callback,
     gpointer $user_data = Pointer
   ) {
-    my guint $f = $flags;
+    my GFileCreateFlags $f = $flags;
     my gint $io = $io_priority;
+
     g_file_create_readwrite_async(
       $!file, $f, $io, $cancellable, &callback, $user_data
     );
@@ -399,14 +497,19 @@ role GIO::Roles::GFile {
 
   method create_readwrite_finish (
     GAsyncResult() $res,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<create-readwrite-finish>
   {
     clear_error;
-    my $rc = g_file_create_readwrite_finish($!file, $res, $error);
+    my $fios = g_file_create_readwrite_finish($!file, $res, $error);
     set_error($error);
-    $rc;
+
+    $fios ??
+      ( $raw ?? $fios !! GIO::FileIOStream.new($fios) )
+      !!
+      Nil;
   }
 
   method delete (
@@ -414,9 +517,9 @@ role GIO::Roles::GFile {
     CArray[Pointer[GError]] $error = gerror
   ) {
     clear_error;
-    my $rc = g_file_delete($!file, $cancellable, $error);
+    my $rv = so g_file_delete($!file, $cancellable, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
   proto method delete_async (|)
@@ -449,11 +552,18 @@ role GIO::Roles::GFile {
     is also<delete-finish>
   {
     clear_error;
-    my $rc = g_file_delete_finish($!file, $result, $error);
+    my $rv = so g_file_delete_finish($!file, $result, $error);
+    set_error($error);
+    $rv;
   }
 
-  method dup {
-    g_file_dup($!file);
+  method dup (:$raw = False) {
+    my $f = g_file_dup($!file);
+
+    $f ??
+      ( $raw ?? $f !! GIO::Roles::File.new-file-obj($f) )
+      !!
+      Nil;
   }
 
   # proto method eject_mountable (|)
@@ -497,24 +607,36 @@ role GIO::Roles::GFile {
   { * }
 
   multi method eject_mountable_with_operation (
-    GMountUnmountFlags $flags,
-    GMountOperation $mount_operation,
+    Int() $flags,
+    GMountOperation() $mount_operation,
     &callback,
     gpointer $user_data         = Pointer,
     GCancellable() $cancellable = GCancellable
   ) {
-    samewith($flags, $mount_operation, $cancellable, &callback, $user_data);
+    samewith(
+      $flags,
+      $mount_operation,
+      $cancellable,
+      &callback,
+      $user_data
+    );
   }
   multi method eject_mountable_with_operation (
-    GMountUnmountFlags $flags,
-    GMountOperation $mount_operation,
+    Int() $flags,
+    GMountOperation() $mount_operation,
     GCancellable() $cancellable,
     &callback,
     gpointer $user_data = Pointer
   ) {
-    my guint $f = $flags;
+    my GMountUnmountFlags $f = $flags;
+
     g_file_eject_mountable_with_operation(
-      $!file, $f, $mount_operation, $cancellable, &callback, $user_data
+      $!file,
+      $f,
+      $mount_operation,
+      $cancellable,
+      &callback,
+      $user_data
     );
   }
 
@@ -525,26 +647,28 @@ role GIO::Roles::GFile {
     is also<eject-mountable-with-operation-finish>
   {
     clear_error;
-    my $rc = g_file_eject_mountable_with_operation_finish(
+    my $rv = so g_file_eject_mountable_with_operation_finish(
       $!file,
       $result,
       $error
     );
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method enumerate_children (
     Str() $attributes,
-    GFileQueryInfoFlags $flags,
+    Int() $flags                   = G_FILE_QUERY_INFO_NONE,
     GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<enumerate-children>
   {
-    my guint $f = $flags;
+    my GFileQueryInfoFlags $f = $flags;
+
     clear_error;
-    my $rc = g_file_enumerate_children(
+    my $fe = g_file_enumerate_children(
       $!file,
       $attributes,
       $f,
@@ -552,7 +676,11 @@ role GIO::Roles::GFile {
       $error
     );
     set_error($error);
-    $rc;
+
+    $fe ??
+      ( $raw ?? $fe !! GLib::FileEnumerator.new($fe) )
+      !!
+      Nil;
   }
 
 
@@ -562,7 +690,7 @@ role GIO::Roles::GFile {
 
   multi method enumerate_children_async (
     Str() $attributes,
-    GFileQueryInfoFlags $flags,
+    Int() $flags,
     Int() $io_priority,
     &callback,
     gpointer $user_data         = Pointer,
@@ -579,14 +707,15 @@ role GIO::Roles::GFile {
   }
   multi method enumerate_children_async (
     Str() $attributes,
-    GFileQueryInfoFlags $flags,
+    Int() $flags,
     Int() $io_priority,
     GCancellable() $cancellable,
     &callback,
     gpointer $user_data = Pointer
   ) {
-    my guint $f = $flags;
+    my GFileQueryInfoFlags $f = $flags;
     my gint $io = $io_priority;
+
     g_file_enumerate_children_async(
       $!file,
       $attributes,
@@ -600,14 +729,19 @@ role GIO::Roles::GFile {
 
   method enumerate_children_finish (
     GAsyncResult() $res,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<enumerate-children-finish>
   {
     clear_error;
-    my $rc = g_file_enumerate_children_finish($!file, $res, $error);
+    my $fe = g_file_enumerate_children_finish($!file, $res, $error);
     set_error($error);
-    $rc;
+
+    $fe ??
+      ( $raw ?? $fe !! GLib::FileEnumerator.new($fe) )
+      !!
+      Nil;
   }
 
   method equal (GFile() $file2) {
@@ -616,14 +750,19 @@ role GIO::Roles::GFile {
 
   method find_enclosing_mount (
     GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<find-enclosing-mount>
   {
     clear_error;
-    my $rc = g_file_find_enclosing_mount($!file, $cancellable, $error);
+    my $m = g_file_find_enclosing_mount($!file, $cancellable, $error);
     set_error($error);
-    $rc;
+
+    $m ??
+      ( $raw ?? $m !! GIO::Roles::Mount.new-mount-obj($m) )
+      !!
+      Nil;
   }
 
   proto method find_enclosing_mount_async (|)
@@ -644,9 +783,11 @@ role GIO::Roles::GFile {
     &callback,
     gpointer $user_data = Pointer
   ) {
+    my gint $i = $io_priority;
+
     g_file_find_enclosing_mount_async(
       $!file,
-      $io_priority,
+      $i,
       $cancellable,
       &callback,
       $user_data
@@ -655,14 +796,19 @@ role GIO::Roles::GFile {
 
   method find_enclosing_mount_finish (
     GAsyncResult() $res,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<find-enclosing-mount-finish>
   {
     clear_error;
-    my $rc = g_file_find_enclosing_mount_finish($!file, $res, $error);
+    my $m = g_file_find_enclosing_mount_finish($!file, $res, $error);
     set_error($error);
-    $rc;
+
+    $m ??
+      ( $raw ?? $m !! GIO::Roles::Mount.new-mount-obj($m) )
+      !!
+      Nil;
   }
 
   method get_basename
@@ -674,33 +820,48 @@ role GIO::Roles::GFile {
     g_file_get_basename($!file);
   }
 
-  method get_child (Str() $name) is also<get-child> {
-    g_file_get_child($!file, $name);
+  method get_child (Str() $name, :$raw = False) is also<get-child> {
+    my $f = g_file_get_child($!file, $name);
+
+    $f ??
+      ( $raw ?? $f !! GIO::Roles::File.new-file-obj($f) )
+      !!
+      Nil;
   }
 
   method get_child_for_display_name (
     Str() $display_name,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<get-child-for-display-name>
   {
     clear_error;
-    my $rc = g_file_get_child_for_display_name(
+    my $f = g_file_get_child_for_display_name(
       $!file,
       $display_name,
       $error
     );
     set_error($error);
-    $rc;
+
+    $f ??
+      ( $raw ?? $f !! GIO::Roles::File.new-file-obj($f) )
+      !!
+      Nil;
   }
 
-  method get_parent
+  method get_parent (:$raw = False)
     is also<
       get-parent
       parent
     >
   {
-    g_file_get_parent($!file);
+    my $f = g_file_get_parent($!file);
+
+    $f ??
+      ( $raw ?? $f !! GIO::Roles::File.new-file-obj($f) )
+      !!
+      Nil;
   }
 
   # Cannot use shorter variant due to conflict with the method parse_name()
@@ -727,6 +888,7 @@ role GIO::Roles::GFile {
 
   method get_type is also<get-type> {
     state ($n, $t);
+
     unstable_get_type( self.^name, &g_file_get_type, $n, $t );
   }
 
@@ -750,15 +912,15 @@ role GIO::Roles::GFile {
   }
 
   method has_parent (GFile() $parent) is also<has-parent> {
-    g_file_has_parent($!file, $parent);
+    so g_file_has_parent($!file, $parent);
   }
 
   method has_prefix (GFile() $prefix) is also<has-prefix> {
-    g_file_has_prefix($!file, $prefix);
+    so g_file_has_prefix($!file, $prefix);
   }
 
   method has_uri_scheme (Str() $uri_scheme) is also<has-uri-scheme> {
-    g_file_has_uri_scheme($!file, $uri_scheme);
+    so g_file_has_uri_scheme($!file, $uri_scheme);
   }
 
   method hash {
@@ -766,20 +928,25 @@ role GIO::Roles::GFile {
   }
 
   method is_native is also<is-native> {
-    g_file_is_native($!file);
+    so g_file_is_native($!file);
   }
 
   method load_bytes (
     GCancellable() $cancellable,
     Str() $etag_out,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<load-bytes>
   {
     clear_error;
-    my $rc = g_file_load_bytes($!file, $cancellable, $etag_out, $error);
+    my $b = g_file_load_bytes($!file, $cancellable, $etag_out, $error);
     set_error($error);
-    $rc;
+
+    $b ??
+      ( $raw ?? $b !! GLib::Bytes($b) )
+      !!
+      Nil;
   }
 
   method load_bytes_async (
@@ -795,14 +962,19 @@ role GIO::Roles::GFile {
   method load_bytes_finish (
     GAsyncResult() $result,
     Str() $etag_out,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<load-bytes-finish>
   {
     clear_error;
-    my $rc = g_file_load_bytes_finish($!file, $result, $etag_out, $error);
+    my $b = g_file_load_bytes_finish($!file, $result, $etag_out, $error);
     set_error($error);
-    $rc;
+
+    $b ??
+      ( $raw ?? $b !! GLib::Bytes($b) )
+      !!
+      Nil;
   }
 
   proto method load_contents (|)
@@ -880,36 +1052,54 @@ role GIO::Roles::GFile {
     g_file_load_contents_async($!file, $cancellable, &callback, $user_data);
   }
 
-  method load_contents_finish (
-    GAsyncResult() $res,
-    Str() $contents,
-    gsize $length,
-    Str() $etag_out,
-    CArray[Pointer[GError]] $error = gerror
-  )
+  proto method load_contents_finish (|)
     is also<load-contents-finish>
-  {
+  { * }
+
+  multi method load_contents_finish (
+    GAsyncResult() $res,
+    CArray[Pointer[GError]] $error = gerror
+  ) {
+    my $rv = samewith($res, $, $, $, $error, :all);
+    $rv[0] ?? $rv.skip(1) !! Nil;
+  }
+  multi method load_contents_finish (
+    GAsyncResult() $res,
+    $contents is rw,
+    $length is rw,
+    $etag_out is rw,
+    CArray[Pointer[GError]] $error = gerror,
+    :$all = False
+  ) {
+    my gsize $l = 0;
+    my ($c, $e) = CArray[Str].new;
+    ( $c[0], $e[0] ) = Str xx 2;
+
     clear_error;
-    my $rc = g_file_load_contents_finish(
-      $!file,
-      $res,
-      $contents,
-      $length,
-      $etag_out,
-      $error
-    );
+    my $rv = so g_file_load_contents_finish($!file, $res, $c, $l, $e, $error);
     set_error($error);
-    $rc;
+    ($contents, $length, $etag_out) = ($c[0], $l, $e[0]);
+    $all.not ?? $rv !! ($rv, $contents, $length, $etag_out);
   }
 
-  method load_partial_contents_async (
+  proto method load_partial_contents_async (|)
+    is also<load-partial-contents-async>
+  { * }
+
+  multi method load_partial_contents_async (
+    &read_more_callback,
+    &callback,
+    gpointer $user_data = Pointer,
+    GCancellable() $cancellable = GCancellable
+  ) {
+    samewith($cancellable, &read_more_callback, &callback, $user_data);
+  }
+  multi method load_partial_contents_async (
     GCancellable() $cancellable,
     &read_more_callback,
     &callback,
     gpointer $user_data = Pointer
-  )
-    is also<load-partial-contents-async>
-  {
+  ) {
     g_file_load_partial_contents_async(
       $!file,
       $cancellable,
@@ -919,26 +1109,43 @@ role GIO::Roles::GFile {
     );
   }
 
-  method load_partial_contents_finish (
+  proto method load_partial_contents_finish (|)
+    is also<load-partial-contents-finish>
+  { * }
+
+  multi method load_partial_contents_finish (
     GAsyncResult() $res,
-    Str() $contents,
-    gsize $length,
-    Str() $etag_out,
     CArray[Pointer[GError]] $error = gerror
+  ) {
+    my $rv = samewith($res, $, $, $, $error, :all);
+    $rv[0] ?? $rv.skip(1) !! Nil;
+  }
+  multi method load_partial_contents_finish (
+    GAsyncResult() $res,
+    $contents is rw,
+    $length   is rw,
+    $etag_out is rw,
+    CArray[Pointer[GError]] $error = gerror,
+    :$all = False
   )
     is also<load-partial-contents-finish>
   {
+    my gsize $l = 0;
+    my ($c, $e) = CArray[Str].new;
+    ( $c[0], $e[0] ) = Str xx 2;
+
     clear_error;
-    my $rc = g_file_load_partial_contents_finish(
+    my $rv = g_file_load_partial_contents_finish(
       $!file,
       $res,
-      $contents,
-      $length,
-      $etag_out,
+      $c,
+      $l,
+      $e,
       $error
     );
     set_error($error);
-    $rc;
+    ($contents, $length, $etag_out) = ($c[0], $l, $e[0]);
+    $all.not ?? $rv !! ($rv, $contents, $length, $etag_out);
   }
 
   method make_directory (
@@ -948,20 +1155,31 @@ role GIO::Roles::GFile {
     is also<make-directory>
   {
     clear_error;
-    my $rc = g_file_make_directory($!file, $cancellable, $error);
+    my $rv = so g_file_make_directory($!file, $cancellable, $error);
     set_error($error);
-    $rc
+    $rv
   }
 
-  method make_directory_async (
+  proto method make_directory_async (|)
+    is also<make-directory-async>
+  { * }
+
+  multi method make_directory_async (
+    Int() $io_priority,
+    &callback,
+    gpointer $user_data         = Pointer,
+    GCancellable() $cancellable = GCancellable
+  ) {
+    samewith($io_priority, $cancellable, &callback, $user_data);
+  }
+  multi method make_directory_async (
     Int() $io_priority,
     GCancellable() $cancellable,
     &callback,
     gpointer $user_data = Pointer
-  )
-    is also<make-directory-async>
-  {
+  ) {
     my gint $io = $io_priority;
+
     g_file_make_directory_async(
       $!file,
       $io,
@@ -978,9 +1196,9 @@ role GIO::Roles::GFile {
     is also<make-directory-finish>
   {
     clear_error;
-    my $rc = g_file_make_directory_finish($!file, $result, $error);
+    my $rv = so g_file_make_directory_finish($!file, $result, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method make_directory_with_parents (
@@ -990,14 +1208,18 @@ role GIO::Roles::GFile {
     is also<make-directory-with-parents>
   {
     clear_error;
-    my $rc = g_file_make_directory_with_parents($!file, $cancellable, $error);
+    my $rv = so g_file_make_directory_with_parents(
+      $!file,
+      $cancellable,
+      $error
+    );
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method make_symbolic_link (
     Str() $symlink_value,
-    GCancellable() $cancellable,
+    GCancellable() $cancellable    = GCancellable,
     CArray[Pointer[GError]] $error = gerror
   )
     is also<make-symbolic-link>
@@ -1013,49 +1235,74 @@ role GIO::Roles::GFile {
     $rc;
   }
 
-  method measure_disk_usage (
-    GFileMeasureFlags $flags,
+  proto method measure_disk_usage (|)
+    is also<measure-disk-usage>
+  { * }
+
+  multi method measure_disk_usage (
+    Int() $flags,
+    &progress_callback,
+    gpointer $progress_data        = gpointer,
+    GCancellable() $cancellable    = GCancellable,
+    CArray[Pointer[GError]] $error = gerror,
+  ) {
+    my $rv = samewith(
+      $flags,
+      $cancellable,
+      &progress_callback,
+      $progress_data,
+      $,
+      $,
+      $,
+      $error,
+      :all
+    );
+    $rv[0] ?? $rv.skip(1) !! Nil;
+  }
+  multi method measure_disk_usage (
+    Int() $flags,
     GCancellable() $cancellable,
     &progress_callback,
     gpointer $progress_data,
-    Int() $disk_usage,
-    Int() $num_dirs,
-    Int() $num_files,
-    CArray[Pointer[GError]] $error = gerror
+    $disk_usage is rw,
+    $num_dirs   is rw,
+    $num_files  is rw,
+    CArray[Pointer[GError]] $error = gerror,
+    :$all = False
   )
-    is also<measure-disk-usage>
+
   {
-    my guint $f = $flags;
-    my @ul = ($disk_usage, $num_dirs, $num_files);
-    my guint64 ($du, $nd, $nf) = @ul;
+    my GFileMeasureFlags $f = $flags;
+    my guint64 ($du, $nd, $nf) = 0 xx 3;
     clear_error;
-    my $rc = g_file_measure_disk_usage(
+    my $rv = so g_file_measure_disk_usage(
       $!file,
       $f,
       $cancellable,
       &progress_callback,
       $progress_data,
-      $disk_usage,
-      $num_dirs,
-      $num_files,
+      $du,
+      $nd,
+      $nf,
       $error
     );
     set_error($error);
-    $rc;
+    ($disk_usage, $num_dirs, $num_files) = ($du, $nd, $nf);
+    $all.not ?? $rv !! ($rv, $disk_usage, $num_dirs, $num_files);
   }
 
   method measure_disk_usage_async (
-    GFileMeasureFlags $flags,
+    Int() $flags,
     Int() $io_priority,
-    GCancellable() $cancellable,
-    &progress_callback,
-    gpointer $progress_data,
-    &callback,
-    gpointer $user_data = Pointer
+    GCancellable() $cancellable = GCancellable,
+    &progress_callback          = Callable,
+    gpointer $progress_data     = Pointer,
+    &callback                   = Callable,
+    gpointer $user_data         = Pointer
   )
     is also<measure-disk-usage-async>
   {
-    my guint $f = $flags;
+    my GFileMeasureFlags $f = $flags;
     my gint $io = $io_priority;
     g_file_measure_disk_usage_async(
       $!file,
@@ -1069,80 +1316,121 @@ role GIO::Roles::GFile {
     );
   }
 
-  method measure_disk_usage_finish (
-    GAsyncResult() $result,
-    Int() $disk_usage,
-    Int() $num_dirs,
-    Int() $num_files,
-    CArray[Pointer[GError]] $error = gerror
-  )
+  proto method measure_disk_usage_finish (|)
     is also<measure-disk-usage-finish>
-  {
-    my @ul = ($disk_usage, $num_dirs, $num_files);
-    my guint64 ($du, $nd, $nf) = @ul;
+  { * }
+
+  multi method measure_disk_usage_finish (
+    GAsyncResult() $result,
+    CArray[Pointer[GError]] $error = gerror,
+    :$all = False
+  ) {
+    samewith($result, $, $, $, $error, :all);
+  }
+  multi method measure_disk_usage_finish (
+    GAsyncResult() $result,
+    $disk_usage is rw,
+    $num_dirs   is rw,
+    $num_files  is rw,
+    CArray[Pointer[GError]] $error = gerror,
+    :$all = False
+  ) {
+    my guint64 ($du, $nd, $nf) = 0 xx 3;
+
     clear_error;
-    my $rc = g_file_measure_disk_usage_finish(
+    my $rv = so g_file_measure_disk_usage_finish(
       $!file,
       $result,
-      $disk_usage,
-      $num_dirs,
-      $num_files,
+      $du,
+      $nd,
+      $nf,
       $error
     );
     set_error($error);
-    $rc;
+    ($disk_usage, $num_dirs, $num_files) = ($du, $nd, $nf);
+    $all.not ?? $rv !! ($rv, $disk_usage, $num_dirs, $num_files);
   }
 
   method monitor (
-    GFileMonitorFlags $flags,
-    GCancellable() $cancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Int() $flags,
+    GCancellable() $cancellable    = GCancellable,
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   ) {
-    my guint $f = $flags;
+    my GFileMonitorFlags $f = $flags;
+
     clear_error;
-    my $rc = g_file_monitor($!file, $f, $cancellable, $error);
+    my $mon = g_file_monitor($!file, $f, $cancellable, $error);
     set_error($error);
-    $rc;
+
+    $mon ??
+      ( $raw ?? $mon !! GIO::FileMonitor.new($mon) )
+      !!
+      Nil;
   }
 
   method monitor_directory (
-    GFileMonitorFlags $flags,
-    GCancellable() $cancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Int() $flags,
+    GCancellable() $cancellable    = GCancellable,
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<monitor-directory>
   {
-    my guint $f = $flags;
+    my GFileMonitorFlags $f = $flags;
+
     clear_error;
-    my $rc = g_file_monitor_directory($!file, $f, $cancellable, $error);
+    my $mon = g_file_monitor_directory($!file, $f, $cancellable, $error);
     set_error($error);
-    $rc;
+
+    $mon ??
+      ( $raw ?? $mon !! GIO::FileMonitor.new($mon) )
+      !!
+      Nil;
   }
 
   method monitor_file (
-    GFileMonitorFlags $flags,
-    GCancellable() $cancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Int() $flags,
+    GCancellable() $cancellable    = GCancellable,
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<monitor-file>
   {
-    my guint $f = $flags;
+    my GFileMonitorFlags $f = $flags;
+
     clear_error;
-    my $rc = g_file_monitor_file($!file, $f, $cancellable, $error);
+    my $mon = g_file_monitor_file($!file, $f, $cancellable, $error);
     set_error($error);
-    $rc;
+
+    $mon ??
+      ( $raw ?? $mon !! GIO::FileMonitor.new($mon) )
+      !!
+      Nil;
   }
 
-  method mount_enclosing_volume (
-    GMountMountFlags $flags,
-    GMountOperation $mount_operation,
+  proto method mount_enclosing_volume (|)
+    is also<mount-enclosing-volume>
+  { * }
+
+  multi method mount_enclosing_volume (
+    Int() $flags,
+    GMountOperation() $mount_operation,
+    &callback,
+    gpointer $user_data         = Pointer,
+    GCancellable() $cancellable = GCancellable
+  ) {
+    samewith($flags, $mount_operation, $cancellable, &callback, $user_data);
+  }
+  multi method mount_enclosing_volume (
+    Int() $flags,
+    GMountOperation() $mount_operation,
     GCancellable() $cancellable,
     &callback,
     gpointer $user_data = Pointer
-  )
-    is also<mount-enclosing-volume>
-  {
-    my guint $f = $flags;
+  ) {
+    my GMountMountFlags $f = $flags;
+
     g_file_mount_enclosing_volume(
       $!file,
       $f,
@@ -1160,21 +1448,22 @@ role GIO::Roles::GFile {
     is also<mount-enclosing-volume-finish>
   {
     clear_error;
-    my $rc = g_file_mount_enclosing_volume_finish($!file, $result, $error);
+    my $rv = so g_file_mount_enclosing_volume_finish($!file, $result, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method mount_mountable (
-    GMountMountFlags $flags,
-    GMountOperation $mount_operation,
+    Int() $flags,
+    GMountOperation() $mount_operation,
     GCancellable() $cancellable,
     &callback,
     gpointer $user_data = Pointer
   )
     is also<mount-mountable>
   {
-    my guint $f = $flags;
+    my GMountMountFlags $f = $flags;
+
     g_file_mount_mountable(
       $!file,
       $f,
@@ -1187,20 +1476,25 @@ role GIO::Roles::GFile {
 
   method mount_mountable_finish (
     GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<mount-mountable-finish>
   {
     clear_error;
-    my $rc = g_file_mount_mountable_finish($!file, $result, $error);
+    my $f = g_file_mount_mountable_finish($!file, $result, $error);
     set_error($error);
-    $rc;
+
+    $f ??
+      ( $raw ?? $f !! GIO::Roles::File.new-file-obj($f) )
+      !!
+      Nil;
   }
 
   multi method move (
     GFile() $destination,
     Int() $flags,
-    &progress_callback               = -> $, $, $ { },
+    &progress_callback,
     gpointer $progress_callback_data = Pointer,
     GCancellable() $cancellable      = GCancellable,
     CArray[Pointer[GError]] $error   = gerror
@@ -1216,15 +1510,16 @@ role GIO::Roles::GFile {
   }
   multi method move (
     GFile() $destination,
-    Int() $flags,
+    Int() $flags                     = G_FILE_COPY_NONE,
     GCancellable() $cancellable      = GCancellable,
-    &progress_callback               = -> $, $, $ { },
+    &progress_callback               = Callable,
     gpointer $progress_callback_data = Pointer,
     CArray[Pointer[GError]] $error   = gerror
   ) {
-    my guint $f = $flags;
+    my GFileCopyFlags $f = $flags;
+
     clear_error;
-    my $rc = g_file_move(
+    my $rv = so g_file_move(
       $!file,
       $destination,
       $f,
@@ -1234,30 +1529,46 @@ role GIO::Roles::GFile {
       $error
     );
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method open_readwrite (
     GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<open-readwrite>
   {
     clear_error;
-    my $rc = g_file_open_readwrite($!file, $cancellable, $error);
+    my $fios = g_file_open_readwrite($!file, $cancellable, $error);
     set_error($error);
-    $rc;
+
+    $fios ??
+      ( $raw ?? $fios !! GIO::FileIOStream.new($fios) )
+      !!
+      Nil;
   }
 
-  method open_readwrite_async (
+  proto method open_readwrite_async (|)
+    is also<open-readwrite-async>
+  { * }
+
+  multi method open_readwrite_async (
+    Int() $io_priority,
+    &callback,
+    gpointer $user_data         = Pointer,
+    GCancellable() $cancellable = GCancellable,
+  ) {
+    samewith($io_priority, $cancellable, &callback, $user_data);
+  }
+  multi method open_readwrite_async (
     Int() $io_priority,
     GCancellable() $cancellable,
     &callback,
     gpointer $user_data  = Pointer
-  )
-    is also<open-readwrite-async>
-  {
+  ) {
     my gint $io = $io_priority;
+
     g_file_open_readwrite_async(
       $!file,
       $io,
@@ -1269,18 +1580,23 @@ role GIO::Roles::GFile {
 
   method open_readwrite_finish (
     GAsyncResult() $res,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<open-readwrite-finish>
   {
     clear_error;
-    my $rc = g_file_open_readwrite_finish($!file, $res, $error);
+    my $fios = g_file_open_readwrite_finish($!file, $res, $error);
     set_error($error);
-    $rc;
+
+    $fios ??
+      ( $raw ?? $fios !! GIO::FileIOStream.new($fios) )
+      !!
+      Nil;
   }
 
   method parse_name (
-    GIO::Roles::GFile:U:
+    GIO::Roles::File:U:
     Str() $name
   )
     is also<parse-name>
@@ -1316,14 +1632,19 @@ role GIO::Roles::GFile {
 
   method query_default_handler (
     GCancellable() $cancellable,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<query-default-handler>
   {
     clear_error;
-    my $rc = g_file_query_default_handler($!file, $cancellable, $error);
+    my $ai = g_file_query_default_handler($!file, $cancellable, $error);
     set_error($error);
-    $rc;
+
+    $ai ??
+      ( $raw ?? $ai !! GIO::Roles::AppInfo.new-appinfo-obj($ai) )
+      !!
+      Nil;
   }
 
   method query_exists (GCancellable() $cancellable) is also<query-exists> {
@@ -1492,88 +1813,118 @@ role GIO::Roles::GFile {
   }
 
   method replace (
-    Str() $etag,
-    gboolean $make_backup,
-    GFileCreateFlags $flags,
+    Str() $etag                    = Str,
+    Int() $make_backup             = False,
+    Int() $flags                   = G_FILE_CREATE_NONE,
     GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = True
   ) {
-    g_file_replace($!file, $etag, $make_backup, $flags, $cancellable, $error);
+    my gboolean $m = $make_backup.so.Int;
+    my GFileCreateFlags $f = $flags;
+
+    clear_error;
+    my $fos = g_file_replace($!file, $etag, $m, $f, $cancellable, $error);
+    set_error($error);
+
+    $fos ??
+      ( $raw ?? $fos !! GIO::FileOutputStream.new($fos) )
+      !!
+      Nil;
+
   }
 
   method replace_async (
     Str() $etag,
-    gboolean $make_backup,
-    GFileCreateFlags $flags,
+    Int() $make_backup,
+    Int() $flags,
     Int() $io_priority,
     GCancellable() $cancellable,
     &callback,
-    gpointer $user_data = Pointer
+    gpointer $user_data = Pointer,
+    :$raw = False
   )
     is also<replace-async>
   {
-    my guint $f = $flags;
+    my gboolean $m = $make_backup.so.Int;
+    my GFileCreateFlags $f = $flags;
     my gint $io = $io_priority;
-    g_file_replace_async(
+    my $fos = g_file_replace_async(
       $!file,
       $etag,
-      $make_backup,
-      $flags,
-      $io_priority,
+      $m,
+      $f,
+      $io,
       $cancellable,
       &callback,
       $user_data
     );
+
+    $fos ??
+      ( $raw ?? $fos !! GIO::FileOutputStream.new($fos) )
+      !!
+      Nil;
   }
 
   method replace_contents (
     Str() $contents,
-    gsize $length,
+    Int() $length,
     Str() $etag,
-    gboolean $make_backup,
-    GFileCreateFlags $flags,
+    Int() $make_backup,
+    Int() $flags,
     Str() $new_etag,
     GCancellable() $cancellable,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<replace-contents>
   {
-    my guint $f = $flags;
+    my gboolean $m = $make_backup.so.Int;
+    my GFileCreateFlags $f = $flags;
+    my gsize $l = $length;
+
     clear_error;
-    my $rc = g_file_replace_contents(
+    my $fos = g_file_replace_contents(
       $!file,
       $contents,
-      $length,
+      $l,
       $etag,
-      $make_backup,
+      $m,
       $f,
       $new_etag,
       $cancellable,
       $error
     );
     set_error($error);
-    $rc;
+
+    $fos ??
+      ( $raw ?? $fos !! GIO::FileOutputStream.new($fos) )
+      !!
+      Nil;
   }
 
   method replace_contents_async (
     Str() $contents,
-    gsize $length,
+    Int() $length,
     Str() $etag,
-    gboolean $make_backup,
-    GFileCreateFlags $flags,
+    Int() $make_backup,
+    Int() $flags,
     GCancellable() $cancellable,
     &callback,
     gpointer $user_data = Pointer
   )
     is also<replace-contents-async>
   {
-    my guint $f = $flags;
+    my gboolean $m = $make_backup.so.Int;
+    my GFileCreateFlags $f = $flags;
+    my gsize $l = $length;
+
     g_file_replace_contents_async(
       $!file,
       $contents,
-      $length,
+      $l,
       $etag,
-      $make_backup,
+      $m,
       $f,
       $cancellable,
       &callback,
@@ -1582,17 +1933,19 @@ role GIO::Roles::GFile {
   }
 
   method replace_contents_bytes_async (
-    GBytes $contents,
+    GBytes() $contents,
     Str() $etag,
-    gboolean $make_backup,
-    GFileCreateFlags $flags,
+    Int() $make_backup,
+    Int() $flags,
     GCancellable() $cancellable,
     &callback,
     gpointer $user_data = Pointer
   )
     is also<replace-contents-bytes-async>
   {
-    my guint $f = $flags;
+    my gboolean $m = $make_backup.so.Int;
+    my GFileCreateFlags $f = $flags;
+
     g_file_replace_contents_bytes_async(
       $!file,
       $contents,
@@ -1608,40 +1961,53 @@ role GIO::Roles::GFile {
   method replace_contents_finish (
     GAsyncResult() $res,
     Str() $new_etag,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<replace-contents-finish>
   {
     clear_error;
-    my $rc = g_file_replace_contents_finish($!file, $res, $new_etag, $error);
+    my $fos = g_file_replace_contents_finish($!file, $res, $new_etag, $error);
     set_error($error);
-    $rc;
+
+    $fos ??
+      ( $raw ?? $fos !! GIO::FileOutputStream.new($fos) )
+      !!
+      Nil;
   }
 
   method replace_finish (
     GAsyncResult() $res,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<replace-finish>
   {
     clear_error;
-    my $rc = g_file_replace_finish($!file, $res, $error);
+    my $fos = g_file_replace_finish($!file, $res, $error);
     set_error($error);
-    $rc;
+
+    $fos ??
+      ( $raw ?? $fos !! GIO::FileOutputStream.new($fos) )
+      !!
+      Nil;
   }
 
   method replace_readwrite (
     Str() $etag,
-    gboolean $make_backup,
-    GFileCreateFlags $flags,
+    Int() $make_backup,
+    Int() $flags,
     GCancellable() $cancellable,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<replace-readwrite>
   {
-    my guint $f = $flags;
+    my gboolean $m = $make_backup.so.Int;
+    my GFileCreateFlags $f = $flags;
+
     clear_error;
-    my $rc = g_file_replace_readwrite(
+    my $fis = g_file_replace_readwrite(
       $!file,
       $etag,
       $make_backup,
@@ -1650,13 +2016,17 @@ role GIO::Roles::GFile {
       $error
     );
     set_error($error);
-    $rc;
+
+    $fis ??
+      ( $raw ?? $fis !! GIO::FileIOStream.new($fis) )
+      !!
+      Nil;
   }
 
   method replace_readwrite_async (
     Str() $etag,
-    gboolean $make_backup,
-    GFileCreateFlags $flags,
+    Int() $make_backup,
+    Int() $flags,
     Int() $io_priority,
     GCancellable() $cancellable,
     &callback,
@@ -1664,12 +2034,14 @@ role GIO::Roles::GFile {
   )
     is also<replace-readwrite-async>
   {
-    my guint $f = $flags;
+    my GFileCreateFlags $f = $flags;
     my gint $io = $io_priority;
+    my gboolean $m = $make_backup.so.Int;
+
     g_file_replace_readwrite_async(
       $!file,
       $etag,
-      $make_backup,
+      $m,
       $f,
       $io,
       $cancellable,
@@ -1680,14 +2052,19 @@ role GIO::Roles::GFile {
 
   method replace_readwrite_finish (
     GAsyncResult() $res,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<replace-readwrite-finish>
   {
     clear_error;
-    my $rc = g_file_replace_readwrite_finish($!file, $res, $error);
+    my $fios = g_file_replace_readwrite_finish($!file, $res, $error);
     set_error($error);
-    $rc;
+
+    $fios ??
+      ( $raw ?? $fios !! GIO::FileIOStream.new($fios) )
+      !!
+      Nil;
   }
 
   method resolve_relative_path (Str() $relative_path)
@@ -1698,41 +2075,44 @@ role GIO::Roles::GFile {
 
   method set_attribute (
     Str() $attribute,
-    GFileAttributeType $type,
+    Int() $type,
     gpointer $value_p,
-    GFileQueryInfoFlags $flags,
-    GCancellable() $cancellable,
+    Int() $flags,
+    GCancellable() $cancellable    = GCancellable,
     CArray[Pointer[GError]] $error = gerror
   )
     is also<set-attribute>
   {
-    my guint $f = $flags;
+    my GFileAttributeType $t = $type,
+    my GFileQueryInfoFlags $f = $flags;
+
     clear_error;
-    my $rc = g_file_set_attribute(
+    my $rv = so g_file_set_attribute(
       $!file,
       $attribute,
-      $type,
+      $t,
       $value_p,
-      $flags,
+      $f,
       $cancellable,
       $error
     );
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method set_attribute_byte_string (
     Str() $attribute,
     Str() $value,
-    GFileQueryInfoFlags $flags,
-    GCancellable() $cancellable,
+    Int() $flags,
+    GCancellable() $cancellable    = GCancellable,
     CArray[Pointer[GError]] $error = gerror
   )
     is also<set-attribute-byte-string>
   {
-    my guint $f = $flags;
+    my GFileQueryInfoFlags $f = $flags;
+
     clear_error;
-    my $rc = g_file_set_attribute_byte_string(
+    my $rv = so g_file_set_attribute_byte_string(
       $!file,
       $attribute,
       $value,
@@ -1741,44 +2121,23 @@ role GIO::Roles::GFile {
       $error
     );
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method set_attribute_int32 (
     Str() $attribute,
-    gint32 $value,
-    GFileQueryInfoFlags $flags,
-    GCancellable() $cancellable,
+    Int() $value,
+    Int() $flags,
+    GCancellable() $cancellable    = GCancellable,
     CArray[Pointer[GError]] $error = gerror
   )
     is also<set-attribute-int32>
   {
     my guint $f = $flags;
-    clear_error;
-    my $rc = g_file_set_attribute_int32(
-      $!file,
-      $attribute,
-      $value,
-      $f,
-      $cancellable,
-      $error
-    );
-    set_error($error);
-    $rc;
-  }
+    my gint32 $v = $value;
 
-  method set_attribute_int64 (
-    Str() $attribute,
-    gint64 $value,
-    GFileQueryInfoFlags $flags,
-    GCancellable() $cancellable,
-    CArray[Pointer[GError]] $error = gerror
-  )
-    is also<set-attribute-int64>
-  {
-    my guint $f = $flags;
-    my gint64 $v = $value;
-    my $rc = g_file_set_attribute_int64(
+    clear_error;
+    my $rv = so g_file_set_attribute_int32(
       $!file,
       $attribute,
       $v,
@@ -1787,21 +2146,46 @@ role GIO::Roles::GFile {
       $error
     );
     set_error($error);
-    $rc;
+    $rv;
+  }
+
+  method set_attribute_int64 (
+    Str() $attribute,
+    Int() $value,
+    Int() $flags,
+    GCancellable() $cancellable    = GCancellable,
+    CArray[Pointer[GError]] $error = gerror
+  )
+    is also<set-attribute-int64>
+  {
+    my GFileQueryInfoFlags $f = $flags;
+    my gint64 $v = $value;
+
+    my $rv = so g_file_set_attribute_int64(
+      $!file,
+      $attribute,
+      $v,
+      $f,
+      $cancellable,
+      $error
+    );
+    set_error($error);
+    $rv;
   }
 
   method set_attribute_string (
     Str() $attribute,
     Str() $value,
-    GFileQueryInfoFlags $flags,
+    Int() $flags,
     GCancellable() $cancellable,
     CArray[Pointer[GError]] $error = gerror
   )
     is also<set-attribute-string>
   {
-    my guint $f = $flags;
+    my GFileQueryInfoFlags $f = $flags;
+
     clear_error;
-    my $rc = g_file_set_attribute_string(
+    my $rv = so g_file_set_attribute_string(
       $!file,
       $attribute,
       $value,
@@ -1810,45 +2194,23 @@ role GIO::Roles::GFile {
       $error
     );
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method set_attribute_uint32 (
     Str() $attribute,
-    guint32 $value,
-    GFileQueryInfoFlags $flags,
-    GCancellable() $cancellable,
+    Int() $value,
+    Int() $flags,
+    GCancellable() $cancellable    = GCancellable,
     CArray[Pointer[GError]] $error = gerror
   )
     is also<set-attribute-uint32>
   {
     my guint $f = $flags;
-    clear_error;
-    my $rc = g_file_set_attribute_uint32(
-      $!file,
-      $attribute,
-      $value,
-      $f,
-      $cancellable,
-      $error
-    );
-    set_error($error);
-    $rc;
-  }
+    my guint32 $v = $value;
 
-  method set_attribute_uint64 (
-    Str() $attribute,
-    guint64 $value,
-    GFileQueryInfoFlags $flags,
-    GCancellable() $cancellable,
-    CArray[Pointer[GError]] $error = gerror
-  )
-    is also<set-attribute-uint64>
-  {
-    my guint $f = $flags;
-    my guint64 $v = $value;
     clear_error;
-    my $rc = g_file_set_attribute_uint64(
+    my $rv = g_file_set_attribute_uint32(
       $!file,
       $attribute,
       $v,
@@ -1857,21 +2219,59 @@ role GIO::Roles::GFile {
       $error
     );
     set_error($error);
-    $rc;
+    $rv;
   }
 
-  method set_attributes_async (
-    GFileInfo $info,
-    GFileQueryInfoFlags $flags,
+  method set_attribute_uint64 (
+    Str() $attribute,
+    Int() $value,
+    Int() $flags,
+    GCancellable() $cancellable    = GCancellable,
+    CArray[Pointer[GError]] $error = gerror
+  )
+    is also<set-attribute-uint64>
+  {
+    my GFileQueryInfoFlags $f = $flags;
+    my guint64 $v = $value;
+    clear_error;
+
+    my $rv = so g_file_set_attribute_uint64(
+      $!file,
+      $attribute,
+      $v,
+      $f,
+      $cancellable,
+      $error
+    );
+    set_error($error);
+    $rv;
+  }
+
+  proto method set_attributes_async (|)
+    is also<set-attributes-async>
+  { * }
+
+  multi method set_attributes_async (
+    GFileInfo() $info,
+    Int() $flags,
+    Int() $io_priority,
+    &callback,
+    gpointer $user_data         = Pointer,
+    GCancellable() $cancellable = GCancellable
+  ) {
+    samewith($info, $flags, $io_priority, $cancellable, &callback, $user_data);
+  }
+  multi method set_attributes_async (
+    GFileInfo() $info,
+    Int() $flags,
     Int() $io_priority,
     GCancellable() $cancellable,
     &callback,
     gpointer $user_data = Pointer
-  )
-    is also<set-attributes-async>
-  {
-    my guint $f = $flags;
+  ) {
+    my GFileQueryInfoFlags $f = $flags;
     my gint $io = $io_priority;
+
     g_file_set_attributes_async(
       $!file,
       $info,
@@ -1883,30 +2283,45 @@ role GIO::Roles::GFile {
     );
   }
 
-  method set_attributes_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GFileInfo]] $info,
-    CArray[Pointer[GError]] $error = gerror
-  )
+  proto method set_attributes_finish (|)
     is also<set-attributes-finish>
-  {
+  { * }
+
+  multi method set_attributes_finish (
+    GAsyncResult() $result,
+    CArray[Pointer[GError]] $error = gerror,
+  ) {
+    my $rv = samewith($result, $, $error, :all);
+    $rv[0] ?? $rv.skip(1) !! Nil;
+  }
+  multi method set_attributes_finish (
+    GAsyncResult() $result,
+    $info is rw,
+    CArray[Pointer[GError]] $error = gerror,
+    :$all = False
+  ) {
+    my $i = CArray[Pointer[GFileInfo]].new;
+    $i[0] = Pointer[GFileInfo].new;
+
     clear_error;
-    my $rc = g_file_set_attributes_finish($!file, $result, $info, $error);
+    my $rv = so g_file_set_attributes_finish($!file, $result, $info, $error);
     set_error($error);
-    $rc;
+    $info = ppr($i);
+    $all.not ?? $rv !! ($rv, $info)
   }
 
   method set_attributes_from_info (
-    GFileInfo $info,
-    GFileQueryInfoFlags $flags,
-    GCancellable() $cancellable,
+    GFileInfo() $info,
+    Int() $flags,
+    GCancellable() $cancellable    = GCancellable,
     CArray[Pointer[GError]] $error = gerror
   )
     is also<set-attributes-from-info>
   {
-    my guint $f = $flags;
+    my GFileQueryInfoFlags $f = $flags;
+
     clear_error;
-    my $rc = g_file_set_attributes_from_info(
+    my $rv = so g_file_set_attributes_from_info(
       $!file,
       $info,
       $flags,
@@ -1914,37 +2329,54 @@ role GIO::Roles::GFile {
       $error
     );
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method set_display_name (
     Str() $display_name,
-    GCancellable() $cancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GCancellable() $cancellable    = GCancellable,
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<set-display-name>
   {
     clear_error;
-    my $rc = g_file_set_display_name(
+    my $f = g_file_set_display_name(
       $!file,
       $display_name,
       $cancellable,
       $error
     );
     set_error($error);
-    $rc;
+
+    $f ??
+      ( $raw ?? $f !! GIO::Roles::File.new-file-obj($f) )
+      !!
+      Nil;
   }
 
-  method set_display_name_async (
+  proto method set_display_name_async (|)
+    is also<set-display-name-async>
+  { * }
+
+  multi method set_display_name_async (
+    Str() $display_name,
+    Int() $io_priority,
+    &callback,
+    gpointer $user_data = Pointer,
+    GCancellable() $cancellable = GCancellable
+  ) {
+    samewith($display_name, $io_priority, $cancellable, &callback, $user_data);
+  }
+  multi method set_display_name_async (
     Str() $display_name,
     Int() $io_priority,
     GCancellable() $cancellable,
     &callback,
     gpointer $user_data = Pointer
-  )
-    is also<set-display-name-async>
-  {
+  ) {
     my gint $io = $io_priority;
+
     g_file_set_display_name_async(
       $!file,
       $display_name,
@@ -1955,30 +2387,46 @@ role GIO::Roles::GFile {
     );
   }
 
-
   method set_display_name_finish (
     GAsyncResult() $res,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<set-display-name-finish>
   {
     clear_error;
-    my $rc = g_file_set_display_name_finish($!file, $res, $error);
+    my $f = g_file_set_display_name_finish($!file, $res, $error);
     set_error($error);
-    $rc;
+
+    $f ??
+      ( $raw ?? $f !! GIO::Roles::File.new-file-obj($f) )
+      !!
+      Nil;
   }
 
-  method start_mountable (
-    GDriveStartFlags $flags,
-    GMountOperation $start_operation,
+  proto method start_mountable (|)
+    is also<start-mountable>
+  { * }
+
+  multi method start_mountable (
+    Int() $flags,
+    GMountOperation() $start_operation,
+    &callback,
+    gpointer $user_data         = Pointer,
+    GCancellable() $cancellable = GCancellable
+  ) {
+    samewith($flags, $start_operation, $cancellable, &callback, $user_data);
+  }
+  multi method start_mountable (
+    Int() $flags,
+    GMountOperation() $start_operation,
     GCancellable() $cancellable,
     &callback,
     gpointer $user_data = Pointer
-  )
-    is also<start-mountable>
-  {
-    my guint $f = $flags;
-    g_file_start_mountable(
+  ) {
+    my GDriveStartFlags $f = $flags;
+
+    so g_file_start_mountable(
       $!file,
       $f,
       $start_operation,
@@ -1995,21 +2443,33 @@ role GIO::Roles::GFile {
     is also<start-mountable-finish>
   {
     clear_error;
-    my $rc = g_file_start_mountable_finish($!file, $result, $error);
+    my $rv = so g_file_start_mountable_finish($!file, $result, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
-  method stop_mountable (
-    GMountUnmountFlags $flags,
-    GMountOperation $mount_operation,
+  proto method stop_mountable (|)
+    is also<stop-mountable>
+  { * }
+
+  multi method stop_mountable (
+    Int() $flags,
+    GMountOperation() $mount_operation,
+    &callback,
+    gpointer $user_data         = Pointer,
+    GCancellable() $cancellable = GCancellable
+  ) {
+    samewith($flags, $mount_operation, $cancellable, &callback, $user_data);
+  }
+  multi method stop_mountable (
+    Int() $flags,
+    GMountOperation() $mount_operation,
     GCancellable() $cancellable,
     &callback,
     gpointer $user_data = Pointer
-  )
-    is also<stop-mountable>
-  {
-    my guint $f = $flags;
+  ) {
+    my GMountUnmountFlags $f = $flags;
+
     g_file_stop_mountable(
       $!file,
       $f,
@@ -2020,16 +2480,16 @@ role GIO::Roles::GFile {
     );
   }
 
-  method stop_mountable_finish (
+  multi method stop_mountable_finish (
     GAsyncResult() $result,
     CArray[Pointer[GError]] $error = gerror
   )
     is also<stop-mountable-finish>
   {
     clear_error;
-    my $rc = g_file_stop_mountable_finish($!file, $result, $error);
+    my $rv = so g_file_stop_mountable_finish($!file, $result, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method supports_thread_contexts is also<supports-thread-contexts> {
@@ -2046,15 +2506,27 @@ role GIO::Roles::GFile {
     $rc;
   }
 
-  method trash_async (
+
+  proto method trash_async (|)
+    is also<trash-async>
+  { * }
+
+  multi method trash_async (
+    Int() $io_priority,
+    &callback,
+    gpointer $user_data         = Pointer,
+    GCancellable() $cancellable = GCancellable
+  ) {
+    samewith($io_priority, $cancellable, &callback, $user_data);
+  }
+  multi method trash_async (
     Int() $io_priority,
     GCancellable() $cancellable,
     &callback,
     gpointer $user_data = Pointer
-  )
-    is also<trash-async>
-  {
+  ) {
     my gint $io = $io_priority;
+
     g_file_trash_async(
       $!file,
       $io,
@@ -2071,9 +2543,9 @@ role GIO::Roles::GFile {
     is also<trash-finish>
   {
     clear_error;
-    my $rc = g_file_trash_finish($!file, $result, $error);
+    my $rv = so g_file_trash_finish($!file, $result, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
   # method unmount_mountable (
@@ -2100,16 +2572,29 @@ role GIO::Roles::GFile {
   #   $rc;
   # }
 
-  method unmount_mountable_with_operation (
-    GMountUnmountFlags $flags,
-    GMountOperation $mount_operation,
+
+  proto method unmount_mountable_with_operation (|)
+    is also<unmount-mountable-with-operation>
+  { * }
+
+  multi method unmount_mountable_with_operation (
+    Int() $flags,
+    GMountOperation() $mount_operation,
+    GAsyncReadyCallback &callback,
+    gpointer $user_data         = Pointer,
+    GCancellable() $cancellable = GCancellable
+  ) {
+    samewith($flags, $mount_operation, $cancellable, &callback, $user_data);
+  }
+  multi method unmount_mountable_with_operation (
+    Int() $flags,
+    GMountOperation() $mount_operation,
     GCancellable() $cancellable,
     GAsyncReadyCallback &callback,
     gpointer $user_data = Pointer
-  )
-    is also<unmount-mountable-with-operation>
-  {
-    my guint $f = $flags;
+  ) {
+    my GMountUnmountFlags $f = $flags;
+
     g_file_unmount_mountable_with_operation(
       $!file,
       $f,
@@ -2127,13 +2612,18 @@ role GIO::Roles::GFile {
     is also<unmount-mountable-with-operation-finish>
   {
     clear_error;
-    my $rc = g_file_unmount_mountable_with_operation_finish(
+    my $rv = so g_file_unmount_mountable_with_operation_finish(
       $!file,
       $result,
       $error
     );
     set_error($error);
-    $rc;
+    $rv;
   }
 
+}
+
+# Compatibility with old name.
+package GIO::Roles {
+  our constant GFile := GIO::Roles::File;
 }

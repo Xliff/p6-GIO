@@ -4,7 +4,7 @@ use NativeCall;
 
 use GIO::Raw::Types;
 
-unit package GIO::Raw::GFile;
+unit package GIO::Raw::File;
 
 sub g_file_append_to (
   GFile $file,
