@@ -3,8 +3,6 @@ use v6.c;
 use Method::Also;
 
 use GIO::Raw::Types;
-
-
 use GIO::Raw::FileMonitor;
 
 use GLib::Value;
@@ -29,7 +27,7 @@ class GIO::FileMonitor {
   { $!m }
 
   method new (GFileMonitor $monitor) {
-    self.bless( :$monitor );
+    $monitor ?? self.bless( :$monitor ) !! Nil;
   }
 
   # Type: gint
@@ -62,11 +60,13 @@ class GIO::FileMonitor {
   method emit_event (
     GFile() $child,
     GFile() $other_file,
-    GFileMonitorEvent $event_type
+    Int() $event_type
   )
     is also<emit-event>
   {
-    g_file_monitor_emit_event($!m, $child, $other_file, $event_type);
+    my GFileMonitorEvent $e = $event_type;
+
+    g_file_monitor_emit_event($!m, $child, $other_file, $e);
   }
 
   method get_type is also<get-type> {
@@ -79,7 +79,7 @@ class GIO::FileMonitor {
     so g_file_monitor_is_cancelled($!m);
   }
 
-  method set_rate_limit (gint $limit_msecs) is also<set-rate-limit> {
+  method set_rate_limit (Int() $limit_msecs) is also<set-rate-limit> {
     my gint $l = $limit_msecs;
 
     g_file_monitor_set_rate_limit($!m, $l);
