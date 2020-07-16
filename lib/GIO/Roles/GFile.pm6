@@ -3,7 +3,7 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
-use GIO::Raw::File;
+use GIO::Raw::GFile;
 use GIO::Raw::Types;
 
 use GIO::FileIOStream;
