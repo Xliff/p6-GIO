@@ -10,7 +10,7 @@ use GIO::OutputStream;
 our subset GFileOutputStreamAncestry is export of Mu
   where GFileOutputStream | GOutputStreamAncestry;
 
-class GIO::FileOutputStream {
+class GIO::FileOutputStream is GIO::OutputStream {
   has GFileOutputStream $!fos;
 
   submethod BUILD (:$file-output) {

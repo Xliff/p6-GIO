@@ -10,7 +10,7 @@ use GIO::InputStream;
 our subset GFileInputStreamAncestry is export of Mu
   where GFileInputStream | GInputStreamAncestry;
 
-class GIO::FileInputStream {
+class GIO::FileInputStream is GIO::InputStream {
   has GFileInputStream $!fis;
 
   submethod BUILD (:$file-input) {
@@ -31,7 +31,7 @@ class GIO::FileInputStream {
         cast(GFileInputStream, $_);
       }
     }
-    self.setGInputStream($to-parent);
+    self.setInputStream($to-parent);
   }
 
   method GIO::Raw::Definitions::GFileInputStream
