@@ -6,8 +6,10 @@ use NativeCall;
 use GIO::Raw::GFile;
 use GIO::Raw::Types;
 
+use GIO::FileInfo;
 use GIO::FileIOStream;
 use GIO::FileMonitor;
+use GIO::FileInputStream;
 use GIO::FileOutputStream;
 use GIO::FileIOStream;
 
@@ -108,8 +110,16 @@ role GIO::Roles::File {
   multi method new (Str() $p, :$path is required) {
     self.new_for_path($p);
   }
-  method new_for_path (Str() $path) is also<new-for-path> {
-    my $file = g_file_new_for_path($path);
+
+  proto method new_for_path (|)
+    is also<new-for-path>
+  { * }
+
+  multi method new_for_path (IO::Path $path) {
+    self.new_for_path($path.absolute);
+  }
+  multi method new_for_path (Str() $path)  {
+    my $file = g_file_new_for_path( explicitly-manage($path) );
 
     $file ?? self.bless(:$file) !! Nil;
   }
@@ -126,7 +136,6 @@ role GIO::Roles::File {
   proto method new_tmp (|)
     is also<new-tmp>
   { * }
-
 
   multi method new (
     :temp(:$tmp) is required,
@@ -203,15 +212,20 @@ role GIO::Roles::File {
   method append_to (
     Int() $flags,                       # GFileCreateFlags $flags,
     GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<append-to>
   {
     clear_error;
     my guint $f = $flags;
-    my $file = g_file_append_to($!file, $f, $cancellable, $error);
+    my $fos = g_file_append_to($!file, $f, $cancellable, $error);
     set_error($error);
-    $file ?? self.bless(:$file) !! Nil;
+
+    $fos ??
+      ($raw ?? $fos !! GIO::FileOutputStream.new($fos) )
+      !!
+      Nil;
   }
 
   proto method append_to_async (|)
@@ -1652,23 +1666,34 @@ role GIO::Roles::File {
   }
 
   method query_file_type (
-    GFileQueryInfoFlags $flags,
-    GCancellable() $cancellable
+    Int() $flags,
+    GCancellable() $cancellable = GCancellable
   )
     is also<query-file-type>
   {
-    my guint $f = $flags;
+    my GFileQueryInfoFlags $f = $flags;
     g_file_query_file_type($!file, $f, $cancellable);
   }
 
   method query_filesystem_info (
     Str() $attributes,
-    GCancellable() $cancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GCancellable() $cancellable    = GCancellable,
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<query-filesystem-info>
   {
-    g_file_query_filesystem_info($!file, $attributes, $cancellable, $error);
+    my $fi = g_file_query_filesystem_info(
+      $!file,
+      $attributes,
+      $cancellable,
+      $error
+    );
+
+    $fi ??
+      ($raw ?? $fi !! GIO::FileInfo.new($fi) )
+      !!
+      Nil
   }
 
   method query_filesystem_info_async (
@@ -1693,29 +1718,39 @@ role GIO::Roles::File {
 
   method query_filesystem_info_finish (
     GAsyncResult() $res,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<query-filesystem-info-finish>
   {
     clear_error;
-    my $rc = g_file_query_filesystem_info_finish($!file, $res, $error);
+    my $fi = g_file_query_filesystem_info_finish($!file, $res, $error);
     set_error($error);
-    $rc;
+
+    $fi ??
+      ($raw ?? $fi !! GIO::FileInfo.new($fi) )
+      !!
+      Nil
   }
 
   method query_info (
     Str() $attributes,
     GFileQueryInfoFlags $flags,
     GCancellable() $cancellable,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<query-info>
   {
     my guint $f = $flags;
     clear_error;
-    my $rc = g_file_query_info($!file, $attributes, $f, $cancellable, $error);
+    my $fi= g_file_query_info($!file, $attributes, $f, $cancellable, $error);
     set_error($error);
-    $rc;
+
+    $fi ??
+      ($raw ?? $fi !! GIO::FileInfo.new($fi) )
+      !!
+      Nil
   }
 
   method query_info_async (
@@ -1743,14 +1778,19 @@ role GIO::Roles::File {
 
   method query_info_finish (
     GAsyncResult() $res,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<query-info-finish>
   {
     clear_error;
-    my $rc = g_file_query_info_finish($!file, $res, $error);
+    my $fi = g_file_query_info_finish($!file, $res, $error);
     set_error($error);
-    $rc;
+
+    $fi ??
+      ($raw ?? $fi !! GIO::FileInfo.new($fi) )
+      !!
+      Nil
   }
 
   method query_settable_attributes (
@@ -1779,12 +1819,17 @@ role GIO::Roles::File {
 
   method read (
     GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   ) {
     clear_error;
-    my $rc = g_file_read($!file, $cancellable, $error);
+    my $is = g_file_read($!file, $cancellable, $error);
     set_error($error);
-    $rc;
+
+    $is ??
+      ($raw ?? $is !! GIO::FileInputStream.new($is) )
+      !!
+      Nil;
   }
 
   method read_async (
@@ -1802,14 +1847,19 @@ role GIO::Roles::File {
 
   method read_finish (
     GAsyncResult() $res,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+    :$raw = False
   )
     is also<read-finish>
   {
     clear_error;
-    my $rc = g_file_read_finish($!file, $res, $error);
+    my $is = g_file_read_finish($!file, $res, $error);
     set_error($error);
-    $rc;
+
+    $is ??
+      ( $raw ?? $is !! GIO::FileInputStream.new($is) )
+      !!
+      Nil;
   }
 
   method replace (
