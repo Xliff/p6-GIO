@@ -6,6 +6,8 @@ use NativeCall;
 
 use GIO::Raw::Types;
 
+# cw: Given the current paradigm, is this even useful?
+
 role GIO::Roles::Initable {
   has GInitable $!i;
 
@@ -26,7 +28,7 @@ role GIO::Roles::Initable {
   }
 
   multi method init (
-    GCancellable $cancellable,
+    GCancellable() $cancellable    = GCancellable,
     CArray[Pointer[GError]] $error = gerror
   ) {
     so g_initable_init($!i, $cancellable, $error);
