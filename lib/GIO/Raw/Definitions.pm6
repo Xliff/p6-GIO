@@ -129,7 +129,7 @@ class GSocketAddress           is repr<CPointer> is export does GLib::Roles::Poi
 class GSocketAddressEnumerator is repr<CPointer> is export does GLib::Roles::Pointers { }
 class GSocketConnectable       is repr<CPointer> is export does GLib::Roles::Pointers { }
 class GSocketConnection        is repr<CPointer> is export does GLib::Roles::Pointers { }
-class GSocketControlMessage    is repr<CPointer> is export does GLib::Roles::Pointers { }
+#class GSocketControlMessage    is repr<CPointer> is export does GLib::Roles::Pointers { }
 class GSocketListener          is repr<CPointer> is export does GLib::Roles::Pointers { }
 class GSocketService           is repr<CPointer> is export does GLib::Roles::Pointers { }
 class GSrvTarget               is repr<CPointer> is export does GLib::Roles::Pointers { }

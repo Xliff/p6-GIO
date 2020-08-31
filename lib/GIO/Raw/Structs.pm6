@@ -9,23 +9,28 @@ use GIO::Raw::Definitions;
 unit package GIO::Raw::Structs;
 
 class GInputVector  is repr('CStruct') does GLib::Roles::Pointers is export {
-  has Pointer $.buffer;
-  has gssize  $.size;
+  has Pointer       $.buffer;
+  has gssize        $.size;
 }
 
 class GOutputVector is repr('CStruct') does GLib::Roles::Pointers is export {
-  has Pointer $.buffer;
-  has gssize  $.size;
+  has Pointer       $.buffer;
+  has gssize        $.size;
+}
+
+class GSocketControlMessage is repr('CStruct') does GLib::Roles::Pointers is export {
+  HAS GObject       $.parent;
+  has Pointer       $!priv;                   #= GSocketControlMessagePrivate (not included)
 }
 
 class GInputMessage is repr('CStruct') does GLib::Roles::Pointers is export {
-  has Pointer       $.address;                # GSocketAddress **
-  has GInputVector  $.vectors;                # GInputVector *
+  has Pointer       $.address;                #= GSocketAddress **
+  has GInputVector  $.vectors;                #= GInputVector *
   has guint         $.num_vectors;
   has gsize         $.bytes_received;
   has gint          $.flags;
-  has Pointer       $.control_messages;       # GSocketControlMessage ***
-  has CArray[guint] $.num_control_messages;   # Pointer with 1 element == *guint
+  has Pointer       $.control_messages;       #= GSocketControlMessage ***
+  has CArray[guint] $.num_control_messages;   #= Pointer with 1 element == *guint
 }
 
 class GOutputMessage is repr('CStruct') does GLib::Roles::Pointers is export {
@@ -38,10 +43,10 @@ class GOutputMessage is repr('CStruct') does GLib::Roles::Pointers is export {
 };
 
 class GPermission is repr('CStruct') does GLib::Roles::Pointers is export {
-  has uint64 $.dummy1;
-  has uint64 $.dummy2;
-  has uint64 $.dummy3;
-  has uint64 $.dummy4;
+  has uint64        $.dummy1;
+  has uint64        $.dummy2;
+  has uint64        $.dummy3;
+  has uint64        $.dummy4;
 }
 
 class GFileAttributeInfoList is repr('CStruct') does GLib::Roles::Pointers is export {
