@@ -252,7 +252,7 @@ sub g_socket_new_from_fd (gint $fd, CArray[Pointer[GError]] $error)
 
 sub g_socket_receive (
   GSocket $socket,
-  Str $buffer,
+  Pointer $buffer,
   gsize $size,
   GCancellable $cancellable,
   CArray[Pointer[GError]] $error
@@ -264,8 +264,8 @@ sub g_socket_receive (
 
 sub g_socket_receive_from (
   GSocket $socket,
-  GSocketAddress $address,
-  Str $buffer,
+  Pointer $address,
+  Pointer $buffer,
   gsize $size,
   GCancellable $cancellable,
   CArray[Pointer[GError]] $error
@@ -277,10 +277,10 @@ sub g_socket_receive_from (
 
 sub g_socket_receive_message (
   GSocket $socket,
-  GSocketAddress $address,
-  GInputVector $vectors,
+  CArray[GSocketAddress] $address,
+  Pointer $vectors,
   gint $num_vectors,
-  GSocketControlMessage $messages,
+  Pointer $messages,
   gint $num_messages,
   gint $flags,
   GCancellable $cancellable,
@@ -306,7 +306,7 @@ sub g_socket_receive_messages (
 
 sub g_socket_receive_with_blocking (
   GSocket $socket,
-  Str $buffer,
+  Pointer $buffer,
   gsize $size,
   gboolean $blocking,
   GCancellable $cancellable,
@@ -319,7 +319,7 @@ sub g_socket_receive_with_blocking (
 
 sub g_socket_send (
   GSocket $socket,
-  Str $buffer,
+  Pointer $buffer,
   gsize $size,
   GCancellable $cancellable,
   CArray[Pointer[GError]] $error
@@ -331,10 +331,10 @@ sub g_socket_send (
 
 sub g_socket_send_message (
   GSocket $socket,
-  GSocketAddress $address,
-  GOutputVector $vectors,
+  CArray[GSocketAddress] $address,
+  Pointer $vectors,
   gint $num_vectors,
-  GSocketControlMessage $messages,
+  Pointer $messages, #= GSocketControlMessage **
   gint $num_messages,
   gint $flags,
   GCancellable $cancellable,
@@ -347,14 +347,14 @@ sub g_socket_send_message (
 
 sub g_socket_send_message_with_timeout (
   GSocket $socket,
-  GSocketAddress $address,
-  GOutputVector $vectors,
+  CArray[GSocketAddress] $address,
+  Pointer $vectors,
   gint $num_vectors,
-  GSocketControlMessage $messages,
+  Pointer $messages, #= GSocketControlMessage **
   gint $num_messages,
   gint $flags,
   gint64 $timeout_us,
-  gsize $bytes_written,
+  gsize $bytes_written is rw,
   GCancellable $cancellable,
   CArray[Pointer[GError]] $error
 )
@@ -379,7 +379,7 @@ sub g_socket_send_messages (
 sub g_socket_send_to (
   GSocket $socket,
   GSocketAddress $address,
-  Str $buffer,
+  Pointer $buffer,
   gsize $size,
   GCancellable $cancellable,
   CArray[Pointer[GError]] $error
@@ -391,7 +391,7 @@ sub g_socket_send_to (
 
 sub g_socket_send_with_blocking (
   GSocket $socket,
-  Str $buffer,
+  Pointer $buffer,
   gsize $size,
   gboolean $blocking,
   GCancellable $cancellable,
