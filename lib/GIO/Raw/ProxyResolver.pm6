@@ -39,7 +39,7 @@ sub g_proxy_resolver_lookup_async (
   GProxyResolver $resolver,
   Str $uri,
   GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
+  &callback (GProxyResolver, GAsyncResult, gpointer),
   gpointer $user_data
 )
   is native(gio)

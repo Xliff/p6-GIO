@@ -7,13 +7,11 @@ use NativeCall;
 use GIO::Raw::Types;
 use GIO::Raw::ProxyResolver;
 
-
-
 role GIO::ProxyResolver {
   has GProxyResolver $!pr;
 
   submethod BUILD (:$proxy-resolver) {
-    $!pr = $proxy-resolver;
+    $!pr = $proxy-resolver if $proxy-resolver;
   }
 
   method roleInit-ProxyResolver {
@@ -29,14 +27,14 @@ role GIO::ProxyResolver {
   multi method new-proxyresolber-obj (GProxyResolver $proxy-resolver)
     is also<new_proxyresolver_obj>
   {
-    self.bless( :$proxy-resolver );
+    $proxy-resolver ?? self.bless( :$proxy-resolver ) !! Nil;
   }
 
   method get_default is also<get-default> {
     self.bless( proxy-resolver => g_proxy_resolver_get_default() );
   }
 
-  method proxyresolver_get_type is also<proxyresolver-get-type> {
+  method get_proxyresolver_type is also<get-proxyresolver-type> {
     state ($n, $t);
 
     unstable_get_type( self.^name, &g_proxy_resolver_get_type, $n, $t );
@@ -48,7 +46,7 @@ role GIO::ProxyResolver {
 
   method lookup (
     Str() $uri,
-    GCancellable $cancellable,
+    GCancellable() $cancellable    = GCancellable,
     CArray[Pointer[GError]] $error = gerror
   ) {
     clear_error;
@@ -58,19 +56,28 @@ role GIO::ProxyResolver {
     CStringArrayToArray($sa);
   }
 
-  method lookup_async (
-    Str() $uri,
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
-  )
+  proto method lookup_async (|)
     is also<lookup-async>
-  {
+  { * }
+
+  multi method lookup_async (
+    Str() $uri,
+    &callback,
+    gpointer $user_data = gpointer
+  ) {
+    samewith($uri, GCancellable, &callback, $user_data);
+  }
+  multi method lookup_async (
+    Str() $uri,
+    GCancellable() $cancellable,
+    &callback,
+    gpointer $user_data = gpointer
+  ) {
     g_proxy_resolver_lookup_async(
       $!pr,
       $uri,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
