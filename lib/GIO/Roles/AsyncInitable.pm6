@@ -14,6 +14,7 @@ role GIO::Roles::AsyncInitable {
   has GAsyncInitable $!ai;
 
   method roleInit-AsyncInitable {
+    return if $!ai;
     my \i = findProperImplementor(self.^attributes);
 
     $!ai = cast(GAsyncInitable, i.get_value(self) );
