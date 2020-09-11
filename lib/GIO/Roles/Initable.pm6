@@ -9,10 +9,13 @@ use GIO::Raw::Types;
 role GIO::Roles::Initable {
   has GInitable $!i;
 
-  method roleInit-Initable {
-    my \i = findProperImplementor(self.^attributes);
+  method roleInit-Initable (:$init = True, :$cancellable = GCancellable) {
+    unless $!i {
+      my \i = findProperImplementor(self.^attributes);
 
-    $!i = cast(GInitable, i.get_value(self) );
+      $!i = cast(GInitable, i.get_value(self) );
+    }
+    self.init($cancellable) if $init;
   }
 
   method GIO::Raw::Definitions::GInitable
@@ -26,11 +29,13 @@ role GIO::Roles::Initable {
   }
 
   multi method init (
-    GCancellable $cancellable,
+    GCancellable() $cancellable    = GCancellable,
     CArray[Pointer[GError]] $error = gerror
   ) {
     so g_initable_init($!i, $cancellable, $error);
   }
+
+  method new_initable (|) { ... }
 
 }
 
