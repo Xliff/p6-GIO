@@ -17,7 +17,7 @@ role GIO::Roles::Converter {
     $!c = cast( GConverter, i.get_value(self) );
   }
 
-  method new-converrter-obj (GConverter $conv) {
+  method new-converter-obj (GConverter $conv) {
     self.bless( :$conv );
   }
 
