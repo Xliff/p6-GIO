@@ -10,40 +10,101 @@ use GIO::Raw::CharsetConverter;
 use GLib::Value;
 
 use GLib::Roles::Properties;
+use GLib::Roles::Object;
 use GIO::Roles::Converter;
 use GIO::Roles::Initable;
 
+our subset GCharsetConverterAncestry is export of Mu
+  where GCharsetConverter | GConverter | GInitable | GObject;
+
 class GIO::CharsetConverter {
-  also does GLib::Roles::Properties;
+  also does GLib::Roles::Object;
   also does GIO::Roles::Converter;
   also does GIO::Roles::Initable;
 
   has GCharsetConverter $!cc is implementor;
 
-  submethod BUILD (:$converter) {
-    $!cc = $converter;
+  submethod BUILD (:$char-converter) {
+    self.setGCharsetConverter($char-converter) if $char-converter;
+  }
+
+  method setGCharsetConverter (GCharsetConverterAncestry $_) {
+    my $to-parent;
+
+    $!cc = do {
+      when GCharsetConverter {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      when GConverter {
+        $to-parent = cast(GObject, $_);
+        $!c = $_;
+        cast(GCharsetConverter, $_);
+      }
+
+      when GInitable {
+        $to-parent = cast(GObject, $_);
+        $!i = $_;
+        cast(GCharsetConverter, $_);
+      }
+
+      default {
+        $to-parent = cast(GObject, $_);
+        cast(GCharsetConverter, $_);
+      }
+    }
 
     self.roleInit-Object;
-    self.roleInit-Converter;
-    self.roleInit-Initable;
+    self.roleInit-Converter unless $!c;
+    self.roleInit-Initable  unless $!i;
   }
 
   method GTK::Compat::Raw::GCharsetConverter
     is also<GCharsetConverter>
   { $!cc }
 
-  multi method new (GCharsetConverter :$converter) {
-    self.bless( :$converter );
+  multi method new (GCharsetConverter $char-converter) {
+    $char-converter ?? self.bless( :$char-converter ) !! Nil;
   }
   multi method new (
-    Str $to_charset,
-    Str $from_charset,
+    Str() $to_charset,
+    Str() $from_charset,
     CArray[Pointer[GError]] $error = gerror
   ) {
     clear_error;
-    my $cc = g_charset_converter_new($to_charset, $from_charset, $error);
+    my $char-converter = g_charset_converter_new(
+      $to_charset,
+      $from_charset,
+      $error
+    );
     set_error($error);
-    self.bless( converter => $cc );
+
+    $char-converter ?? self.bless( :$char-converter ) !! Nil;
+  }
+
+  my %attributes = (
+    from-charset => G_TYPE_STRING,
+    to-charset   => G_TYPE_STRING,
+    use-fallback => G_TYPE_BOOLEAN
+  );
+
+  method attributes ($key) {
+    %attributes{$key}:exists ?? %attributes{$key}
+                             !! die "Attribute '{ $key }' does not exist"
+  }
+
+  method new_initable (:$init = True, :$cancellable = Callable, *%options)
+    is also<new-initable>
+  {
+    my $char-converter = self.new_object_with_properties(:raw, |%options);
+
+    $char-converter ?? self.bless(
+                        :$char-converter,
+                        :$init,
+                        :$cancellable
+                       )
+                    !! Nil
   }
 
   # Type: gchar
@@ -87,7 +148,7 @@ class GIO::CharsetConverter {
         so g_charset_converter_get_use_fallback($!cc);
       },
       STORE => sub ($, Int() $use_fallback is copy) {
-        my gboolean $u = $use_fallback;
+        my gboolean $u = $use_fallback.so.Int;
 
         g_charset_converter_set_use_fallback($!cc, $u);
       }
