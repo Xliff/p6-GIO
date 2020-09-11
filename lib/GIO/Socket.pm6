@@ -23,11 +23,11 @@ class GIO::Socket {
 
   has GSocket $!s is implementor;
 
-  submethod BUILD (:$socket) {
+  submethod BUILD (:$socket, :$cancellable, :$init) {
     self.setGSocket($socket) if $socket;
   }
 
-  method setGSocket (GSocketAncestry $_) {
+  method setGSocket (GSocketAncestry $_, :$init, :$cancellable) {
     my $to-parent;
 
     $!s = do {
@@ -55,7 +55,7 @@ class GIO::Socket {
     }
 
     self!setObject($to-parent);
-    self.roleInit-Initable unless $!i;
+    self.roleInit-Initable(:$cancellable, :$init);
     self.roleInit-DatagramBased unless $!d;
   }
 
@@ -69,7 +69,7 @@ class GIO::Socket {
   multi method new (
     Int() $family,
     Int() $type,
-    Int() $protocol,
+    Int() $protocol                = G_SOCKET_PROTOCOL_DEFAULT,
     CArray[Pointer[GError]] $error = gerror
   ) {
     my GSocketFamily $f = $family;
@@ -91,6 +91,14 @@ class GIO::Socket {
     my $socket = g_socket_new_from_fd($!s, $error);
     set_error($error);
     $socket ?? self.bless( :$socket ) !! Nil;
+  }
+
+  method new_initable (:$init = True, :$cancellable = Callable, *%options)
+    is also<new-initable>
+  {
+    my $socket = self.new_object_with_properties( |%options );
+
+    $socket ?? self.bless( :$socket, :$init, $cancellable ) !! Nil;
   }
 
   method blocking is rw {
@@ -198,7 +206,7 @@ class GIO::Socket {
   }
 
   method accept (
-    GCancellable() $cancellable,
+    GCancellable() $cancellable    = GCancellable,
     CArray[Pointer[GError]] $error = gerror,
     :$raw = False
   ) {
@@ -251,7 +259,7 @@ class GIO::Socket {
   method condition_timed_wait (
     Int() $condition,
     Int() $timeout_us,
-    GCancellable() $cancellable = GCancellable,
+    GCancellable() $cancellable    = GCancellable,
     CArray[Pointer[GError]] $error = gerror
   )
     is also<condition-timed-wait>
@@ -268,7 +276,7 @@ class GIO::Socket {
 
   method condition_wait (
     Int() $condition,
-    GCancellable() $cancellable = GCancellable,
+    GCancellable() $cancellable    = GCancellable,
     CArray[Pointer[GError]] $error = gerror
   )
     is also<condition-wait>
@@ -283,7 +291,7 @@ class GIO::Socket {
 
   method connect (
     GSocketAddress() $address,
-    GCancellable() $cancellable = GCancellable,
+    GCancellable() $cancellable    = GCancellable,
     CArray[Pointer[GError]] $error = gerror
   ) {
     clear_error;
@@ -320,7 +328,10 @@ class GIO::Socket {
   method get_credentials (
     CArray[Pointer[GError]] $error = gerror
   )
-    is also<get-credentials>
+    is also<
+      get-credentials
+      credentialss
+    >
   {
     clear_error;
     g_socket_get_credentials($!s, $error);
@@ -343,6 +354,10 @@ class GIO::Socket {
     >
   {
     g_socket_get_fd($!s);
+  }
+
+  method local_address (:$raw) is also<local-address> {
+    self.get_local_address(:$raw);
   }
 
   method get_local_address (
