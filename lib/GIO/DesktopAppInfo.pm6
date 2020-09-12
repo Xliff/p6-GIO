@@ -5,14 +5,9 @@ use Method::Also;
 use NativeCall;
 
 use GIO::Raw::Types;
-
-
-
-
 use GIO::Raw::DesktopAppInfo;
 
 use GIO::Roles::AppInfo;
-
 use GLib::Roles::Object;
 
 class GIO::DesktopAppInfo {
