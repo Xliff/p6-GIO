@@ -170,3 +170,9 @@ sub g_file_input_stream_query_info_finish (
   is native(glib)
   is export
 { * }
+
+our %RAW-DEFS;
+for MY::.pairs {
+  %RAW-DEFS{.key} := .value if .key.starts-with('&g_file_');
+}
+%RAW-DEFS.gist.say;
