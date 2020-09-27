@@ -3,7 +3,6 @@ use v6.c;
 use Method::Also;
 
 use GIO::Raw::Types;
-
 use GIO::Raw::ListModel;
 
 use GLib::Roles::Object;
@@ -19,8 +18,9 @@ role GIO::Roles::ListModel {
   }
 
   method roleInit-ListModel {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!lm;
 
+    my \i = findProperImplementor(self.^attributes);
     $!lm = cast( GListModel, i.get_value(self) );
   }
 
