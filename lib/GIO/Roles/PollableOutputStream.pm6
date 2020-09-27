@@ -1,7 +1,6 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
@@ -13,12 +12,13 @@ role GIO::Roles::PollableOutputStream {
   has GPollableOutputStream $!pos;
 
   submethod BUILD (:$pollable) {
-    $!pos = $pollable;
+    $!pos = $pollable if $pollable;
   }
 
   method roleInit-PollableOutputStream is also<roleInit_PollableOutputStream> {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!pos;
 
+    my \i = findProperImplementor(self.^attributes);
     $!pos = cast( GPollableOutputStream, i.get_value(self) );
   }
 
@@ -29,7 +29,7 @@ role GIO::Roles::PollableOutputStream {
   method new-pollableoutputstream-obj (GPollableOutputStream $pollable)
     is also<new_pollableoutputstream_obj>
   {
-    self.bless( :$pollable );
+    $pollable ?? self.bless( :$pollable ) !! Nil;
   }
 
   method can_poll is also<can-poll> {
@@ -38,7 +38,7 @@ role GIO::Roles::PollableOutputStream {
 
   method create_source (
     GCancellable() $cancellable = GCancellable,
-    :$raw = False
+                   :$raw        = False
   )
     is also<create-source>
   {
@@ -61,10 +61,10 @@ role GIO::Roles::PollableOutputStream {
   }
 
   method write_nonblocking (
-    Pointer $buffer,
-    Int() $count,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Pointer                 $buffer,
+    Int()                   $count,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   )
     is also<write-nonblocking>
   {
@@ -87,21 +87,28 @@ role GIO::Roles::PollableOutputStream {
   { * }
 
   multi method writev_nonblocking (
-    GOutputVector $vectors,
-    Int() $n_vectors,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False
+                            @vectors,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
   ) {
-    samewith($vectors, $n_vectors, $, $cancellable, $error, :$all);
+    my $rv = samewith(
+      GLib::Roles::TypedBuffer[GOutputVector].new(@vectors).p,
+      @vectors.elems,
+      $,
+      $cancellable,
+      $error,
+      :all
+    );
+
+    $rv[0] ?? $rv[1] !! Nil;
   }
   multi method writev_nonblocking (
-    GOutputVector $vectors,
-    Int() $n_vectors,
-    $bytes_written is rw,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False
+    Pointer                 $vectors,
+    Int()                   $n_vectors,
+                            $bytes_written is rw,
+    GCancellable()          $cancellable   = GCancellable,
+    CArray[Pointer[GError]] $error         = gerror,
+                            :$all          = False
   ) {
     my gsize ($n, $bw) = ($n_vectors, $bw);
 
