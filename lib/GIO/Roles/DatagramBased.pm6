@@ -13,8 +13,9 @@ role GIO::Roles::DatagramBased {
   has GDatagramBased $!d;
 
   submethod roleInit-DatagramBased {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!d;
 
+    my \i = findProperImplementor(self.^attributes);
     $!d = cast(GDatagramBased, i.get_value(self) );
   }
 
