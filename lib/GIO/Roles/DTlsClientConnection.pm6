@@ -4,8 +4,6 @@ use Method::Also;
 use NativeCall;
 
 use GIO::Raw::Types;
-
-
 use GIO::Raw::DtlsClientConnection;
 
 use GLib::GList;
@@ -27,8 +25,9 @@ role GIO::Roles::DtlsClientConnection {
   method roleInit-DtlsClientConnection
     is also<roleInit_DtlsClientConnection>
   {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!tdcc;
 
+    my \i = findProperImplementor(self.^attributes);
     $!tdcc = cast( GDtlsClientConnection, i.get_value(self) );
   }
 
