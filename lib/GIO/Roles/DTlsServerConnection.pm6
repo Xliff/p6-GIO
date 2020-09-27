@@ -1,15 +1,13 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
 
-
 use GLib::Value;
 
-role GIO::Roles::DtlsServerConnection {
+role GIO::Roles::DTlsServerConnection {
   has GDtlsServerConnection $!dtsc;
 
   submethod BUILD (:$server-connection) {
@@ -17,8 +15,9 @@ role GIO::Roles::DtlsServerConnection {
   }
 
   method roleInit-DtlsServerConnection is also<roleInit_DtlsServerConnection> {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!dtsc;
 
+    my \i = findProperImplementor(self.^attributes);
     $!dtsc = cast( GDtlsServerConnection, i.get_value(self) );
   }
 
@@ -90,3 +89,9 @@ sub g_dtls_server_connection_new (
   is native(gio)
   is export
 { * }
+
+# our %GIO::Roles::DTlsServerConnection::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::Roles::DTlsServerConnection::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_dtls_server_connection_');
+# }
