@@ -14,8 +14,9 @@ role GIO::Roles::AsyncResult {
   }
 
   method roleInit-AsyncResult is also<roleInit_AsyncResult> {
+    return if $!ar;
+    
     my \i = findProperImplementor(self.^attributes);
-
     $!ar = cast( GAsyncResult, i.get_value(self) );
   }
 
