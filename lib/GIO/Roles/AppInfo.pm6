@@ -18,8 +18,9 @@ class GIO::Roles::AppInfo {
   }
 
   method roleInit-AppInfo {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!ai;
 
+    my \i = findProperImplementor(self.^attributes);
     $!ai = cast( GAppInfo, i.get_value(self) );
   }
 
