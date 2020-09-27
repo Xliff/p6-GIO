@@ -47,9 +47,9 @@ sub g_pollable_output_stream_write_nonblocking (
 
 sub g_pollable_output_stream_writev_nonblocking (
   GPollableOutputStream $stream,
-  GOutputVector $vectors,
+  Pointer $vectors,
   gsize $n_vectors,
-  gsize $bytes_written,
+  gsize $bytes_written is rw,
   GCancellable $cancellable,
   CArray[Pointer[GError]] $error
 )
