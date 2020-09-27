@@ -11,12 +11,13 @@ role GIO::Roles::LoadableIcon {
   has GLoadableIcon $!li;
 
   submethod BUILD (:$loadable) {
-    $!li = $loadable;
+    $!li = $loadable if $loadable;
   }
 
   method roleInit-LoadableIcon {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!li;
 
+    my \i = findProperImplementor(self.^attributes);
     $!li = cast( GLoadableIcon, i.get_value(self) );
   }
 
@@ -31,34 +32,31 @@ role GIO::Roles::LoadableIcon {
   }
 
   multi method load (
-    Int() $size,
-    CArray[Pointer[GError]] $error  = gerror,
-    :$all = False,
-    :$raw = False,
+    Int()                   $size,
+    CArray[Pointer[GError]] $error = gerror,
+                            :$raw  = False,
   ) {
-    my $rc = samewith($size, $, GCancellable, $error, :$all, :$raw);
-    $rc;
+    samewith($size, $, GCancellable, $error, :all, :$raw);
   }
   multi method load (
-    Int() $size,
-    $type is rw,
-    GCancellable() $cancellable     = GCancellable,
-    CArray[Pointer[GError]] $error  = gerror,
-    :$all = False,
-    :$raw = False
+    Int()                   $size,
+                            $type        is rw,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
+                            :$all        = False,
+                            :$raw        = False
   ) {
     my gint $s = $size;
     my $t = CArray[Str].new;
     $t[0] = Str;
 
     clear_error;
-    my $rc = g_loadable_icon_load($!li, $s, $t, $cancellable, $error);
+    my $is = g_loadable_icon_load($!li, $s, $t, $cancellable, $error);
     set_error($error);
 
-    $type = $t[0] if $t[0];
-
-    my $is = $rc ??
-      ( $raw ?? $rc !! GIO::InputStream.new($rc) )
+    $type = ppr($t);
+    $is = $is ??
+      ( $raw ?? $is !! GIO::InputStream.new($is) )
       !!
       Nil;
 
@@ -70,17 +68,17 @@ role GIO::Roles::LoadableIcon {
   { * }
 
   multi method load_async (
-    Int() $size,
-    &callback,
-    gpointer $user_data         = Pointer,
+    Int()    $size,
+             &callback,
+    gpointer $user_data = Pointer,
   ) {
     samewith($size, GCancellable, &callback, $user_data);
   }
   multi method load_async (
-    Int() $size,
+    Int()          $size,
     GCancellable() $cancellable,
-    &callback,
-    gpointer $user_data = Pointer
+                   &callback,
+    gpointer       $user_data   = Pointer
   ) {
     my gint $s = $size;
 
@@ -93,25 +91,25 @@ role GIO::Roles::LoadableIcon {
 
   multi method load_finish (
     GAsyncResult() $res,
-    :$all = False,
-    :$raw = False
+                   :$all = False,
+                   :$raw = False
   ) {
     samewith($res, $, gerror, :$all, :$raw);
   }
   multi method load_finish (
     GAsyncResult() $res,
-    $type is rw,
-    :$all = False,
-    :$raw = False,
+                   $type is rw,
+                   :$all = False,
+                   :$raw = False,
   ) {
     samewith($res, $type, gerror, :$all, :$raw);
   }
   multi method load_finish (
-    GAsyncResult() $res,
-    $type is rw,
+    GAsyncResult()          $res,
+                            $type  is rw,
     CArray[Pointer[GError]] $error = gerror,
-    :$all = False,
-    :$raw = False
+                            :$all  = False,
+                            :$raw  = False
   ) {
     my $s = CArray[Str].new;
     $s[0] = '';
@@ -141,10 +139,10 @@ sub g_loadable_icon_get_type ()
 { * }
 
 sub g_loadable_icon_load (
-  GLoadableIcon $icon,
-  int32 $size,                        # Only marked as int
-  CArray[Str] $type,
-  GCancellable $cancellable,
+  GLoadableIcon           $icon,
+  int32                   $size,           # Only marked as int
+  CArray[Str]             $type,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GInputStream
@@ -154,19 +152,19 @@ sub g_loadable_icon_load (
 
 sub g_loadable_icon_load_async (
   GLoadableIcon $icon,
-  int32 $size,                        # Only marked as int
-  GCancellable $cancellable,
-  &callback (GObject, GAsyncResult, Pointer),
-  gpointer $user_data
+  int32         $size,                        # Only marked as int
+  GCancellable  $cancellable,
+                &callback (GObject, GAsyncResult, Pointer),
+  gpointer      $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_loadable_icon_load_finish (
-  GLoadableIcon $icon,
-  GAsyncResult $res,
-  CArray[Str] $type,
+  GLoadableIcon           $icon,
+  GAsyncResult            $res,
+  CArray[Str]             $type,
   CArray[Pointer[GError]] $error
 )
   returns GInputStream
