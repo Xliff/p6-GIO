@@ -19,8 +19,9 @@ role GIO::Roles::Mount {
   }
 
   method roleInit-Mount is also<roleInit_Mount> {
+    return if $!m;
+    
     my \i = findProperImplementor(self.^attributes);
-
     $!m = cast(GMount, i.get_value(self) );
   }
 
