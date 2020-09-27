@@ -4,7 +4,7 @@ use NativeCall;
 
 use GIO::Raw::Types;
 
-unit package GIO::VFS;
+unit package GIO::Raw::VFS;
 
 sub g_vfs_get_default ()
   returns GVfs
