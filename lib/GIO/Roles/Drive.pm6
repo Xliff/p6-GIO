@@ -19,8 +19,9 @@ role GIO::Roles::Drive {
   }
 
   method roleInit-Drive is also<roleInit_Drive> {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!d;
 
+    my \i = findProperImplementor(self.^attributes);
     $!d = cast( GDrive, i.get_value(self) );
   }
 
