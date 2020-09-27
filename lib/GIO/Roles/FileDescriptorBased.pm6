@@ -1,7 +1,6 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
@@ -14,8 +13,9 @@ role GIO::Roles::FileDescriptorBased {
   { $!fdb }
 
   method roleInit-FileDescriptorBased is also<roleInit_FileDescriptorBased> {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!fdb;
 
+    my \i = findProperImplementor(self.^attributes);
     $!fdb = cast( GFileDescriptorBased, i.get_value(self) );
   }
 
@@ -40,3 +40,9 @@ sub g_file_descriptor_based_get_type ()
   is native(gio)
   is export
 { * }
+
+# our %GIO::Roles::FileDescriptorBased::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::Roles::FileDescriptorBased::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_file_descriptor_based_');
+# }
