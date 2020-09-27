@@ -1,7 +1,6 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
@@ -11,8 +10,9 @@ role GIO::Roles::PollableInputStream {
   has GPollableInputStream $!pis;
 
   method roleInit-PollableInputStream is also<roleInit_PollableInputStream> {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!pis;
 
+    my \i = findProperImplementor(self.^attributes);
     $!pis = cast(GPollableInputStream, i.get_value(self) );
   }
 
