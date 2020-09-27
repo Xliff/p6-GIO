@@ -15,8 +15,9 @@ role GIO::Roles::ActionMap {
   { $!actmap }
 
   method roleInit-ActionMap {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!actmap;
 
+    my \i = findProperImplementor(self.^attributes);
     $!actmap = cast(
       GActionMap,
       i.get_value(self)
@@ -116,3 +117,9 @@ sub g_action_map_remove_action (
   is native(gio)
   is export
   { * }
+
+# our %GIO::Roles::ActionMap::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::Roles::ActionMap::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_action_map_');
+# }
