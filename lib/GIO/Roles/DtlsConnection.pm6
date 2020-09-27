@@ -1,14 +1,9 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
-
-
 use GIO::Raw::Types;
-
-
 use GIO::Raw::DtlsConnection;
 
 use GLib::Value;
@@ -29,8 +24,9 @@ role GIO::Roles::DtlsConnection {
   }
 
   method roleInit-DtlsConnection is also<roleInit_DtlsConnection> {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!dtc;
 
+    my \i = findProperImplementor(self.^attributes);
     $!dtc = cast( GDtlsConnection, i.get_value(self) );
   }
 
