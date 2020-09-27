@@ -1,7 +1,6 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
@@ -20,8 +19,9 @@ role GIO::Roles::SocketConnectable {
   { $!sc }
 
   method roleInit-SocketConnectable {
+    return if $!sc;
+    
     my \i = findProperImplementor(self.^attributes);
-
     $!sc = cast( GSocketConnectable, i.get_value(self) );
   }
 
