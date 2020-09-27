@@ -1,7 +1,6 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
@@ -11,8 +10,9 @@ role GIO::Roles::Seekable {
   has GSeekable $!s;
 
   method roleInit-Seekable is also<roleInit_Seekable> {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!s;
 
+    my \i = findProperImplementor(self.^attributes);
     $!s = cast( GSeekable, i.get_value(self) );
   }
 
