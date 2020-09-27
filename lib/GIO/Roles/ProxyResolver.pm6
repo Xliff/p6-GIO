@@ -1,13 +1,12 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
 use GIO::Raw::ProxyResolver;
 
-role GIO::ProxyResolver {
+role GIO::Roles::ProxyResolver {
   has GProxyResolver $!pr;
 
   submethod BUILD (:$proxy-resolver) {
@@ -15,8 +14,9 @@ role GIO::ProxyResolver {
   }
 
   method roleInit-ProxyResolver {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!pr;
 
+    my \i = findProperImplementor(self.^attributes);
     $!pr = cast( GProxyResolver, i.get-value(self) );
   }
 
