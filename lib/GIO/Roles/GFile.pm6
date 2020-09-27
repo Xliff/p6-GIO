@@ -3,8 +3,20 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
-use GIO::Raw::GFile;
 use GIO::Raw::Types;
+use GIO::Raw::GFile;
+
+# cw: Are roles composing variables via their shortname?
+#     See use of GIO::FileInputStream  and
+#                GIO::FileOutputStream and consider the following error message:
+#
+# ===SORRY!=== Error while compiling -e
+# P6M Merging GLOBAL symbols failed: duplicate definition of symbol %RAW-DEFS
+#
+# Note that both of the above compunits do compose a %RAW-DEFS hash, but it is
+# our scoped, not exported, and prefixed with its namespace!
+#
+# 9/17/2020
 
 use GIO::FileInfo;
 use GIO::FileIOStream;
@@ -29,8 +41,9 @@ role GIO::Roles::File {
   }
 
   method roleInit-GFile {
+    return if $!file;
+    
     my \i = findProperImplementor(self.^attributes);
-
     $!file = cast( GFile, i.get_value(self) );
   }
 
