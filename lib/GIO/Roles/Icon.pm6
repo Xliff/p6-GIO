@@ -12,12 +12,13 @@ role GIO::Roles::Icon {
   has GIcon $!icon;
 
   submethod BUILD (:$icon) {
-    $!icon = $icon;
+    $!icon = $icon if $icon;
   }
 
   method roleInit-Icon {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!icon;
 
+    my \i = findProperImplementor(self.^attributes);
     $!icon = cast( GIcon, i.get_value(self) );
   }
 
@@ -39,9 +40,10 @@ role GIO::Roles::Icon {
     is also<new-for-string>
   {
     clear_error;
-    my $rc = g_icon_new_for_string($name, $error);
+    my $icon = g_icon_new_for_string($name, $error);
     set_error($error);
-    self.bless( icon => $rc );
+
+    $icon ?? self.bless( :$icon ) !! Nil;
   }
 
 
