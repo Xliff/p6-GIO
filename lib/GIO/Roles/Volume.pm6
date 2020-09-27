@@ -1,7 +1,6 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
@@ -20,8 +19,9 @@ role GIO::Roles::Volume {
   }
 
   method roleInit-Volume is also<roleInit_Volume> {
+    return if $!v;
+    
     my \i = findProperImplementor(self.^attributes);
-
     $!v = cast( GVolume, i.get_value(self) );
   }
 
