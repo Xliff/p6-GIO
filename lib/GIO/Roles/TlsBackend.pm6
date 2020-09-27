@@ -16,8 +16,9 @@ role GIO::Roles::TlsBackend {
   }
 
   method roleInit-TlsBackend is also<roleInit_TlsBackend> {
+    return if $!tb;
+    
     my \i = findProperImplementor(self.^attributes);
-
     $!tb = cast( GTlsBackend, i.get_value(self) );
   }
 
