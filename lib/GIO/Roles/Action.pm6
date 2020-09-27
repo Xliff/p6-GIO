@@ -8,11 +8,9 @@ use GIO::Raw::Action;
 
 use GLib::Variant;
 
-use GLib::Roles::Properties;
+use GLib::Roles::Object;
 
 role GIO::Roles::Action {
-  also does GLib::Roles::Properties;
-
   has GAction $!a;
 
   submethod BUILD (:$action) {
@@ -22,8 +20,9 @@ role GIO::Roles::Action {
   }
 
   method !roleInit-Action {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!a;
 
+    my \i = findProperImplementor(self.^attributes);
     $!a = cast( GAction, i.get_value(self) );
   }
 
@@ -133,27 +132,44 @@ role GIO::Roles::Action {
     so g_action_name_is_valid($action_name);
   }
 
-  proto method parse_detailed_name (|)
-    is also<parse-detailed-name>
-  { * }
 
-  multi method parse_detailed_name (
-    Str() $detailed_name,
-    Str() $action_name,
-    GVariant() $target_value,
-    CArray[Pointer[GError]] $error = gerror
+  proto method parse_detailed_name (
+    Str()                   $detailed_name,
+    Str()                   $action_name,
+    CArray[Pointer[GError]] $error         = gerror
   ) {
+    my $rv = samewith($detailed_name, $action_name, $, $error, :all);
+
+    $rv[0] ?? $rv[1] !! Nil;
+  }
+  multi method parse_detailed_name (
+    Str()                   $detailed_name,
+    Str()                   $action_name,
+                            $target_value is rw,
+    CArray[Pointer[GError]] $error        = gerror,
+                            :$all         = False,
+                            :$raw         = False
+  ) {
+    my $tv = CArray[GVariant].new;
+    $tv[0] = GVariant;
+
     clear_error;
-    my $rc = so g_action_parse_detailed_name(
+    my $rv = so g_action_parse_detailed_name(
       $detailed_name,
       $action_name,
-      $target_value,
+      $tv,
       $error
     );
     set_error($error);
-    $rc;
+
+    $tv = ppr($tv);
+    $tv = GLib::Variant.new($tv) unless $tv.not || $raw;
+    $target_value = $tv;
+
+    $all.not ?? $rv !! ($rv, $target_value);
   }
-  multi method print_detailed_name (
+
+  method print_detailed_name (
     Str() $action_name,
     GVariant() $target_value
   ) {
