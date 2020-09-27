@@ -4,12 +4,9 @@ use Method::Also;
 use NativeCall;
 
 use GIO::Raw::Types;
-
-
 use GIO::Raw::TlsClientConnection;
 
 use GLib::GList;
-
 use GLib::ByteArray;
 
 use GLib::Roles::ListData;
@@ -27,8 +24,9 @@ role GIO::Roles::TlsClientConnection {
   method roleInit-TlsClientConnection
     is also<roleInit_TlsClientConnection>
   {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!tcc;
 
+    my \i = findProperImplementor(self.^attributes);
     $!tcc = cast( GTlsClientConnection, i.get_value(self) );
   }
 
