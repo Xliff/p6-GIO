@@ -10,6 +10,7 @@ role GIO::Roles::Initable {
   has GInitable $!i;
 
   method roleInit-Initable (:$init = True, :$cancellable = GCancellable) {
+    # cw: No early return since self.init call must be conditionally made.
     unless $!i {
       my \i = findProperImplementor(self.^attributes);
 
@@ -54,3 +55,9 @@ sub g_initable_init (
   is native(gio)
   is export
 { * }
+
+# our %GIO::Roles::Initable::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::Roles::Initable::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_initable_');
+# }
