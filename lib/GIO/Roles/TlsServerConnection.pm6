@@ -1,11 +1,9 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
-
 
 use GLib::Value;
 
@@ -17,8 +15,9 @@ role GIO::Roles::TlsServerConnection {
   }
 
   method roleInit-TlsServerConnection is also<roleInit_TlsServerConnection> {
+    return if $!tsc;
+    
     my \i = findProperImplementor(self.^attributes);
-
     $!tsc = cast( GTlsServerConnection, i.get_value(self) );
   }
 
