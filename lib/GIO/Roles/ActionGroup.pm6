@@ -4,17 +4,15 @@ use Method::Also;
 use NativeCall;
 
 use GIO::Raw::Types;
-
 use GIO::Raw::ActionGroup;
-
-
 
 role GIO::Roles::ActionGroup {
   has GActionGroup $!ag;
 
   method !roleInit-ActionGroup is also<!roleInit_ActionGroup> {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!ag;
 
+    my \i = findProperImplementor(self.^attributes);
     $!ag = cast( GActionGroup, i.get_value(self) );
   }
 
