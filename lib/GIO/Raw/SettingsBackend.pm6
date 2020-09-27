@@ -36,24 +36,27 @@ sub g_settings_backend_flatten_tree (
   is export
 { * }
 
-sub g_keyfile_settings_backend_new (
+sub g_settings_backend_keyfile_new (
   Str $filename,
   Str $root_path,
   Str $root_group
 )
   returns GSettingsBackend
+  is symbol('g_keyfile_settings_backend_new')
   is native(gio)
   is export
 { * }
 
-sub g_memory_settings_backend_new ()
+sub g_settings_backend_memory_new ()
   returns GSettingsBackend
+  is symbol('g_memory_settings_backend_new')
   is native(gio)
   is export
 { * }
 
-sub g_null_settings_backend_new ()
+sub g_settings_backend_null_new ()
   returns GSettingsBackend
+  is symbol('g_null_settings_backend_new')
   is native(gio)
   is export
 { * }
