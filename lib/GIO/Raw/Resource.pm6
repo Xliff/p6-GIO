@@ -4,13 +4,12 @@ use NativeCall;
 
 use GIO::Raw::Types;
 
-
-unit package GIO::RAw::Resource;
+unit package GIO::Raw::Resource;
 
 sub g_resource_enumerate_children (
-  GResource $resource,
-  Str $path,
-  GResourceLookupFlags $lookup_flags,
+  GResource               $resource,
+  Str                     $path,
+  GResourceLookupFlags    $lookup_flags,
   CArray[Pointer[GError]] $error
 )
   returns CArray[Str]
@@ -25,8 +24,8 @@ sub g_resource_error_quark ()
 { * }
 
 sub g_resources_enumerate_children (
-  Str $path,
-  GResourceLookupFlags $lookup_flags,
+  Str                     $path,
+  GResourceLookupFlags    $lookup_flags,
   CArray[Pointer[GError]] $error
 )
   returns CArray[Str]
@@ -35,10 +34,10 @@ sub g_resources_enumerate_children (
 { * }
 
 sub g_resources_get_info (
-  Str $path,
-  GResourceLookupFlags $lookup_flags,
-  gsize $size is rw,
-  guint32 $flags is rw,
+  Str                     $path,
+  GResourceLookupFlags    $lookup_flags,
+  gsize                   $size is rw,
+  guint32                 $flags is rw,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -47,8 +46,8 @@ sub g_resources_get_info (
 { * }
 
 sub g_resources_lookup_data (
-  Str $path,
-  GResourceLookupFlags $lookup_flags,
+  Str                     $path,
+  GResourceLookupFlags    $lookup_flags,
   CArray[Pointer[GError]] $error
 )
   returns GBytes
@@ -57,8 +56,8 @@ sub g_resources_lookup_data (
 { * }
 
 sub g_resources_open_stream (
-  Str $path,
-  GResourceLookupFlags $lookup_flags,
+  Str                     $path,
+  GResourceLookupFlags    $lookup_flags,
   CArray[Pointer[GError]] $error
 )
   returns GInputStream
@@ -93,11 +92,11 @@ sub g_resources_unregister (GResource $resource)
 # { * }
 
 sub g_resource_get_info (
-  GResource $resource,
-  Str $path,
-  GResourceLookupFlags $lookup_flags,
-  gsize $size is rw,
-  guint32 $flags is rw,
+  GResource               $resource,
+  Str                     $path,
+  GResourceLookupFlags    $lookup_flags,
+  gsize                   $size  is rw,
+  guint32                 $flags is rw,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -121,9 +120,9 @@ sub g_resource_load (
 { * }
 
 sub g_resource_lookup_data (
-  GResource $resource,
-  Str $path,
-  GResourceLookupFlags $lookup_flags,
+  GResource               $resource,
+  Str                     $path,
+  GResourceLookupFlags    $lookup_flags,
   CArray[Pointer[GError]] $error
 )
   returns GBytes
@@ -138,9 +137,9 @@ sub g_resource_new_from_data (GBytes $data, CArray[Pointer[GError]] $error)
 { * }
 
 sub g_resource_open_stream (
-  GResource $resource,
-  Str $path,
-  GResourceLookupFlags $lookup_flags,
+  GResource               $resource,
+  Str                     $path,
+  GResourceLookupFlags    $lookup_flags,
   CArray[Pointer[GError]] $error
 )
   returns GInputStream
