@@ -12,46 +12,48 @@ role GIO::Roles::Converter {
   }
 
   method roleInit-Converter {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!c;
 
+    my \i = findProperImplementor(self.^attributes);
     $!c = cast( GConverter, i.get_value(self) );
   }
 
   method new-converter-obj (GConverter $conv) {
-    self.bless( :$conv );
+    $conv ?? self.bless( :$conv ) !! Nil;
   }
 
   multi method convert (
-    Pointer $inbuf,
-    Int() $inbuf_size,
-    Pointer $outbuf,
-    Int() $outbuf_size,
-    Int() $flags,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False
+    Pointer                 $inbuf,
+    Int()                   $inbuf_size,
+    Pointer                 $outbuf,
+    Int()                   $outbuf_size,
+    Int()                   $flags,
+    CArray[Pointer[GError]] $error       = gerror,
   ) {
-    samewith(
-      $inbuf,
-      $inbuf_size,
-      $outbuf,
-      $outbuf_size,
-      $flags,
-      $,
-      $,
-      $error,
-      :$all
+    return-with-all(
+      samewith(
+        $inbuf,
+        $inbuf_size,
+        $outbuf,
+        $outbuf_size,
+        $flags,
+        $,
+        $,
+        $error,
+        :all
+      )
     );
   }
   multi method convert (
-    Pointer $inbuf,
-    Int() $inbuf_size,
-    Pointer $outbuf,
-    Int() $outbuf_size,
-    Int() $flags,
-    $bytes_read    is rw,
-    $bytes_written is rw,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False
+    Pointer                 $inbuf,
+    Int()                   $inbuf_size,
+    Pointer                 $outbuf,
+    Int()                   $outbuf_size,
+    Int()                   $flags,
+                            $bytes_read    is rw,
+                            $bytes_written is rw,
+    CArray[Pointer[GError]] $error         = gerror,
+                            :$all          = False
   ) {
     my gsize ($is, $os, $br, $bw) = ($inbuf_size, $outbuf_size, 0, 0);
     my GConverterFlags $f = $flags;
@@ -61,8 +63,9 @@ role GIO::Roles::Converter {
       g_converter_convert($!c, $inbuf, $is, $outbuf, $os, $f, $br, $bw, $error)
     );
     set_error($error);
+    ($bytes_read, $bytes_written) = ($br, $bw);
 
-    $all ?? $rv !! ($rv, $bytes_read, $bytes_written)
+    $all.not ?? $rv !! ($rv, $bytes_read, $bytes_written)
   }
 
   method converter_get_type {
@@ -78,14 +81,14 @@ role GIO::Roles::Converter {
 }
 
 sub g_converter_convert (
-  GConverter $converter,
-  Pointer $inbuf,
-  gsize $inbuf_size,
-  Pointer $outbuf,
-  gsize $outbuf_size,
-  GConverterFlags $flags,
-  gsize $bytes_read,
-  gsize $bytes_written,
+  GConverter              $converter,
+  Pointer                 $inbuf,
+  gsize                   $inbuf_size,
+  Pointer                 $outbuf,
+  gsize                   $outbuf_size,
+  GConverterFlags         $flags,
+  gsize                   $bytes_read    is rw,
+  gsize                   $bytes_written is rw,
   CArray[Pointer[GError]] $error
 )
   returns GConverterResult
@@ -103,3 +106,9 @@ sub g_converter_reset (GConverter $converter)
   is native(gio)
   is export
 { * }
+
+# our %GIO::Roles::Converter::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::Roles::Converter::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_converter_');
+# }
