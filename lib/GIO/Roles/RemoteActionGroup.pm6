@@ -1,7 +1,6 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
@@ -18,8 +17,9 @@ role GIO::Roles::RemoteActionGroup {
   { $!rag }
 
   method roleInit-RemoteActionGroup is also<roleInit_RemoteActionGroup> {
+    return if $!rag;
+    
     my \i = findProperImplementor(self.^attributes);
-
     $!rag = cast( GRemoteActionGroup, i.get_value(self) );
   }
 
