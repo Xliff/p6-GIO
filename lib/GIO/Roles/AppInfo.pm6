@@ -40,10 +40,10 @@ class GIO::Roles::AppInfo {
 
   # Static methods
   method create_from_commandline (
-    Str() $application_name,
-    Int() $flags,              # GAppInfoCreateFlags $flags,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    Str()                   $application_name,
+    Int()                   $flags,                      # GAppInfoCreateFlags $flags,
+    CArray[Pointer[GError]] $error             = gerror,
+                            :$raw              = False
   )
     is also<create-from-commandline>
   {
@@ -81,7 +81,7 @@ class GIO::Roles::AppInfo {
   method get_default_for_type (
     Str() $content-type,
     Int() $must_support_uris,
-    :$raw = False
+          :$raw               = False
   )
     is also<get-default-for-type>
   {
@@ -110,8 +110,8 @@ class GIO::Roles::AppInfo {
 
   method get_fallback_for_type(
     Str() $content-type,
-    :$glist = False,
-    :$raw   = False
+          :$glist        = False,
+          :$raw          = False
   )
     is also<get-fallback-for-type>
   {
@@ -129,8 +129,8 @@ class GIO::Roles::AppInfo {
 
   method get_recommended_for_type(
     Str() $content-type,
-    :$glist = False,
-    :$raw   = False
+          :$glist        = False,
+          :$raw          = False
   )
     is also<get-recommended-for-type>
   {
@@ -147,9 +147,9 @@ class GIO::Roles::AppInfo {
   }
 
   method launch_default_for_uri (
-    Str() $uri,
-    GAppLaunchContext() $context,
-    CArray[Pointer[GError]] $error = gerror()
+    Str()                   $uri,
+    GAppLaunchContext()     $context,
+    CArray[Pointer[GError]] $error    = gerror()
   )
     is also<launch-default-for-uri>
   {
@@ -164,25 +164,25 @@ class GIO::Roles::AppInfo {
   { * }
 
   multi launch_default_for_uri_async (
-    Str() $uri,
+    Str()               $uri,
     GAppLaunchContext() $context,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+                        &callback,
+    gpointer            $user_data = gpointer
   ) {
-    samewith($uri, $context, GCancellable, $callback, $user_data)
+    samewith($uri, $context, GCancellable, &callback, $user_data)
   }
   multi method launch_default_for_uri_async (
-    Str() $uri,
+    Str()               $uri,
     GAppLaunchContext() $context,
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data
+    GCancellable        $cancellable,
+                        &callback,
+    gpointer            $user_data    = gpointer
   ) {
     g_app_info_launch_default_for_uri_async(
       $uri,
       $context,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
@@ -209,8 +209,8 @@ class GIO::Roles::AppInfo {
 
   # ↓↓↓↓ METHODS ↓↓↓↓
   method add_supports_type (
-    Str() $content_type,
-    CArray[Pointer[GError]] $error = gerror()
+    Str()                   $content_type,
+    CArray[Pointer[GError]] $error         = gerror()
   )
     is also<add-supports-type>
   {
@@ -335,9 +335,9 @@ class GIO::Roles::AppInfo {
   }
 
   method launch (
-    GList() $files,
-    GAppLaunchContext() $context,
-    CArray[Pointer[GError]] $error = gerror()
+    GList()                 $files,
+    GAppLaunchContext()     $context,
+    CArray[Pointer[GError]] $error    = gerror()
   ) {
     clear_error;
     my $rc = so g_app_info_launch($!ai, $files, $context, $error);
@@ -346,9 +346,9 @@ class GIO::Roles::AppInfo {
   }
 
   method launch_uris (
-    GList() $uris,
-    GAppLaunchContext() $context,
-    CArray[Pointer[GError]] $error is rw
+    GList()                 $uris,
+    GAppLaunchContext()     $context,
+    CArray[Pointer[GError]] $error    is rw
   )
     is also<launch-uris>
   {
@@ -359,8 +359,8 @@ class GIO::Roles::AppInfo {
   }
 
   method remove_supports_type (
-    Str() $content_type,
-    CArray[Pointer[GError]] $error = gerror()
+    Str()                   $content_type,
+    CArray[Pointer[GError]] $error         = gerror
   )
     is also<remove-supports-type>
   {
@@ -368,8 +368,8 @@ class GIO::Roles::AppInfo {
   }
 
   method set_as_default_for_extension (
-    Str() $extension,
-    CArray[Pointer[GError]] $error = gerror()
+    Str()                   $extension,
+    CArray[Pointer[GError]] $error      = gerror
   )
     is also<set-as-default-for-extension>
   {
@@ -384,8 +384,8 @@ class GIO::Roles::AppInfo {
   }
 
   method set_as_default_for_type (
-    Str() $content_type,
-    CArray[Pointer[GError]] $error = gerror()
+    Str()                   $content_type,
+    CArray[Pointer[GError]] $error         = gerror
   )
     is also<set-as-default-for-type>
   {
@@ -400,8 +400,8 @@ class GIO::Roles::AppInfo {
   }
 
   method set_as_last_used_for_type (
-    Str() $content_type,
-    CArray[Pointer[GError]] $error = gerror()
+    Str()                   $content_type,
+    CArray[Pointer[GError]] $error         = gerror()
   )
     is also<set-as-last-used-for-type>
   {
