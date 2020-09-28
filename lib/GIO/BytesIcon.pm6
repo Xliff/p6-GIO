@@ -12,6 +12,9 @@ use GLib::Roles::Object;
 use GIO::Roles::Icon;
 use GIO::Roles::LoadableIcon;
 
+our subset GBytesIconAncestry is export of Mu
+  where GBytesIcon | GLoadableIcon | GIcon | GObject;
+
 class GIO::BytesIcon {
   also does GLib::Roles::Object;
   also does GIO::Roles::Icon;
@@ -20,7 +23,35 @@ class GIO::BytesIcon {
   has GBytesIcon $!bi is implementor;
 
   submethod BUILD (GBytesIcon :$bytes-icon) {
-    $!bi = $bytes-icon;
+    self.setGBytesIcon($bytes-icon);
+  }
+
+  method setGBytesIcon (GBytesIconAncestry $_) {
+    my $to-parent;
+
+    $!bi = do {
+      when GBytesIcon {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      when GLoadableIcon {
+        $to-parent = cast(GObject, $_);
+        $!li = $_;
+        cast(GBytesIcon, $_);
+      }
+
+      when GIcon {
+        $to-parent = cast(GObject, $_);
+        $!icon = $_;
+        cast(GBytesIcon, $_);
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GBytesIcon, $_);
+      }
+    }
 
     self.roleInit-Object;
     self.roleInit-Icon;
@@ -31,13 +62,17 @@ class GIO::BytesIcon {
     is also<GBytesIcon>
   { $!bi }
 
-  multi method new (GBytesIcon $bytes-icon) {
-    self.bless( :$bytes-icon );
+  multi method new (GBytesIconAncestry $bytes-icon, :$ref = True) {
+    return Nil unless $bytes-icon;
+
+    my $o = self.bless( :$bytes-icon );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (GBytes() $bytes) {
-    my $bi = g_bytes_icon_new($bytes);
+    my $bytes-icon = g_bytes_icon_new($bytes);
 
-    self.bless( bytes-icon => $bi );
+    $bytes-icon ?? self.bless( :$bytes-icon ) !! Nil;
   }
 
   method get_bytes (:$raw = False)
@@ -79,3 +114,8 @@ sub g_bytes_icon_new (GBytes $bytes)
   is native(gio)
   is export
 { * }
+
+# our %GIO::BytesIcon::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::BytesIcon::RAW-DEFS{.key} := .value if .key.starts-with('&g_bytes_');
+# }
