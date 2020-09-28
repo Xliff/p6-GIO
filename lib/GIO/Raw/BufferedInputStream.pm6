@@ -7,9 +7,9 @@ use GIO::Raw::Types;
 unit package GIO::Raw::BufferedInputStream;
 
 sub g_buffered_input_stream_fill (
-  GBufferedInputStream $stream,
-  gssize $count,
-  GCancellable $cancellable,
+  GBufferedInputStream    $stream,
+  gssize                  $count,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gssize
@@ -19,19 +19,19 @@ sub g_buffered_input_stream_fill (
 
 sub g_buffered_input_stream_fill_async (
   GBufferedInputStream $stream,
-  gssize $count,
-  gint $io_priority,
-  GCancellable $cancellable,
-  &callback (GObject, GAsyncResult, Pointer),
-  gpointer $user_data
+  gssize               $count,
+  gint                 $io_priority,
+  GCancellable         $cancellable,
+                       &callback (GObject, GAsyncResult, Pointer),
+  gpointer             $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_buffered_input_stream_fill_finish (
-  GBufferedInputStream $stream,
-  GAsyncResult $result,
+  GBufferedInputStream    $stream,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns gssize
@@ -65,9 +65,9 @@ sub g_buffered_input_stream_new_sized (GInputStream $base_stream, gsize $size)
 
 sub g_buffered_input_stream_peek (
   GBufferedInputStream $stream,
-  Blob $buffer,
-  gsize $offset,
-  gsize $count
+  Pointer              $buffer,
+  gsize                $offset,
+  gsize                $count
 )
   returns gsize
   is native(gio)
@@ -77,7 +77,7 @@ sub g_buffered_input_stream_peek (
 # Occasionally returns corrupted data! -- WHY?
 sub g_buffered_input_stream_peek_buffer (
   GBufferedInputStream $stream,
-  gsize $count is rw
+  gsize                $count   is rw
 )
   returns CArray[uint8]
   is native(gio)
@@ -85,8 +85,8 @@ sub g_buffered_input_stream_peek_buffer (
 { * }
 
 sub g_buffered_input_stream_read_byte (
-  GBufferedInputStream $stream,
-  GCancellable $cancellable,
+  GBufferedInputStream    $stream,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gint
@@ -102,7 +102,7 @@ sub g_buffered_input_stream_get_buffer_size (GBufferedInputStream $stream)
 
 sub g_buffered_input_stream_set_buffer_size (
   GBufferedInputStream $stream,
-  gsize $size
+  gsize                $size
 )
   is native(gio)
   is export
