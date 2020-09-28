@@ -35,7 +35,7 @@ class GIO::DBus::AuthObserver {
   }
 
   # Is originally:
-  # GDBusAuthObserver, gchar, gpointer --> gboolean
+  # GDBusAuthObserver, Str, gpointer --> gboolean
   method allow-mechanism is also<allow_mechanism> {
     self.connect-allow-mechanism($!dao);
   }

@@ -9,7 +9,7 @@ use GIO::Raw::Types;
 role GIO::DBus::Roles::Signals::AuthObserver {
   has %!signals-dao;
 
-  # GDBusAuthObserver, gchar, gpointer --> gboolean
+  # GDBusAuthObserver, Str, gpointer --> gboolean
   method connect-allow-mechanism (
     $obj,
     $signal = 'allow-mechanism',
@@ -65,7 +65,7 @@ role GIO::DBus::Roles::Signals::AuthObserver {
 
 }
 
-# GDBusAuthObserver, gchar, gpointer --> gboolean
+# GDBusAuthObserver, Str, gpointer --> gboolean
 sub g-connect-allow-mechanism(
   Pointer $app,
   Str $name,
