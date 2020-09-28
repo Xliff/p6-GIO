@@ -11,14 +11,46 @@ use GIO::InputStream;
 use GLib::Roles::Object;
 use GIO::Roles::GFile;
 
+our subset GApplicationCommandLineAncestry is export of Mu
+  where GApplicationCommandLine | GObject;
+
 class GIO::ApplicationCommandLine {
   also does GLib::Roles::Object;
 
   has GApplicationCommandLine $!cl is implementor;
 
+  submethod BUILD (:$command-line) {
+    self.setGApplicationCommandLine($command-line) if $command-line;
+  }
+
+  method setGApplicationCommandLine (GApplicationCommandLine $_) {
+    my $to-parent;
+
+    $!cl = {
+      when GApplicationCommandLine {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GApplicationCommandLine, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
   method GIO::Raw::Definitions::GApplicationCommandLine
     is also<GApplicationCommandLine>
   { * }
+
+  method new (GApplicationCommandLineAncestry $command-line, :$ref = True) {
+    return Nil unless $command-line;
+
+    my $o = self.bless( :$command-line );
+    $o.ref if $ref;
+    $o;
+  }
 
   method create_file_for_arg (Str() $arg, :$raw = False)
     is also<create-file-for-arg>
@@ -26,7 +58,7 @@ class GIO::ApplicationCommandLine {
     my $f = g_application_command_line_create_file_for_arg($!cl, $arg);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::GFile.new-file-obj($f) )
+      ( $raw ?? $f !! GIO::Roles::GFile.new-file-obj($f, :!ref) )
       !!
       Nil;
   }
@@ -60,7 +92,7 @@ class GIO::ApplicationCommandLine {
     my $v = g_application_command_line_get_options_dict($!cl);
 
     $v ??
-      ( $raw ?? $v !! GLib::VariantDict.new($v) )
+      ( $raw ?? $v !! GLib::VariantDict.new($v, :ref) )
       !!
       Nil;
   }
@@ -69,7 +101,7 @@ class GIO::ApplicationCommandLine {
     my $v = g_application_command_line_get_platform_data($!cl);
 
     $v ??
-      ( $raw ?? $v !! GLib::Variant.new($v) )
+      ( $raw ?? $v !! GLib::Variant.new($v, :ref) )
       !!
       Nil;
   }
@@ -78,7 +110,7 @@ class GIO::ApplicationCommandLine {
     my $is = g_application_command_line_get_stdin($!cl);
 
     $is ??
-      ( $raw ?? $is !! GIO::InputStream.new($is) )
+      ( $raw ?? $is !! GIO::InputStream.new($is, :!ref) )
       !!
       Nil;
   }
