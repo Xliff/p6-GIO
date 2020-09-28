@@ -52,9 +52,9 @@ role GIO::Roles::ActionMap {
     samewith($lb.p, @entries.elems, $user_data);
   }
   multi method add_action_entries (
-    Pointer $entries,              # BLOCK of GActionEntry structs
-    Int() $n_entries,
-    gpointer $user_data = Pointer
+    Pointer  $entries,              # BLOCK of GActionEntry structs
+    Int()    $n_entries,
+    gpointer $user_data  = Pointer
   ) {
     my gint $n = $n_entries;
 
@@ -79,7 +79,7 @@ role GIO::Roles::ActionMap {
 
 sub g_action_map_add_action (
   GActionMap $action_map,
-  GAction $action
+  GAction    $action
 )
   is native(gio)
   is export
@@ -87,9 +87,9 @@ sub g_action_map_add_action (
 
 sub g_action_map_add_action_entries (
   GActionMap $action_map,
-  Pointer $entries,                   # BLOCK of GActionEntry
-  gint $n_entries,
-  gpointer $user_data
+  Pointer    $entries,                   # BLOCK of GActionEntry
+  gint       $n_entries,
+  gpointer   $user_data
 )
   is native(gio)
   is export
@@ -103,7 +103,7 @@ sub g_action_map_get_type ()
 
 sub g_action_map_lookup_action (
   GActionMap $action_map,
-  Str $action_name
+  Str        $action_name
 )
   returns GAction
   is native(gio)
@@ -112,7 +112,7 @@ sub g_action_map_lookup_action (
 
 sub g_action_map_remove_action (
   GActionMap $action_map,
-  Str $action_name
+  Str        $action_name
 )
   is native(gio)
   is export
