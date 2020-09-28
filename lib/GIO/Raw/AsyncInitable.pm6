@@ -13,19 +13,19 @@ sub g_async_initable_get_type ()
 { * }
 
 sub g_async_initable_init_async (
-  GAsyncInitable $initable,
-  gint $io_priority,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GAsyncInitable      $initable,
+  gint                $io_priority,
+  GCancellable        $cancellable,
+                      &callback (GAsyncInitable, GAsyncResult, gpointer),
+  gpointer            $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_async_initable_init_finish (
-  GAsyncInitable $initable,
-  GAsyncResult $res,
+  GAsyncInitable          $initable,
+  GAsyncResult            $res,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -34,8 +34,8 @@ sub g_async_initable_init_finish (
 { * }
 
 sub g_async_initable_new_finish (
-  GAsyncInitable $initable,
-  GAsyncResult $res,
+  GAsyncInitable          $initable,
+  GAsyncResult            $res,
   CArray[Pointer[GError]] $error
 )
   returns GObject
@@ -49,10 +49,12 @@ sub g_async_initable_newv_async (
   GParameter           $parameters,
   gint                 $io_priority,
   GCancellable         $cancellable,
-  GAsyncReadyCallback  $callback,
+                       &callback (GAsyncInitable, GAsyncResult, gpointer),
   gpointer             $user_data
 )
-  is DEPRECATED<g_object_new_with_properties() and g_async_initable_init_async()>
+  is DEPRECATED(
+    'g_object_new_with_properties() and g_async_initable_init_async()'
+  )
   is native(gio)
   is export
 { * }

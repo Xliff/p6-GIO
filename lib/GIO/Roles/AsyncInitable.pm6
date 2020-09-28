@@ -1,11 +1,9 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
-
 use GIO::Raw::AsyncInitable;
 
 use GLib::Roles::TypedBuffer;
@@ -47,10 +45,10 @@ role GIO::Roles::AsyncInitable {
     $s.Supply;
   }
   multi method init (
-    Int() $io_priority,
-    &callback,
-    gpointer $user_data = gpointer,
-    :$async is required
+    Int()    $io_priority,
+             &callback,
+    gpointer $user_data    =  gpointer,
+             :$async       is required
   ) {
     self.init_async(
       $io_priority,
@@ -59,9 +57,9 @@ role GIO::Roles::AsyncInitable {
     );
   }
   multi method init_async (
-    Int() $io_priority,
-    &callback,
-    gpointer $user_data = gpointer
+    Int()    $io_priority,
+             &callback,
+    gpointer $user_data     = gpointer
   ) {
     self.init_async(
       $io_priority,
@@ -71,11 +69,11 @@ role GIO::Roles::AsyncInitable {
     );
   }
   multi method init (
-    Int() $io_priority,
+    Int()          $io_priority,
     GCancellable() $cancellable,
-    &callback,
-    gpointer $user_data = gpointer,
-    :$async is required
+                   &callback,
+    gpointer       $user_data    = gpointer,
+                   :$async       is required
   ) {
     self.init_async(
       $io_priority,
@@ -85,10 +83,10 @@ role GIO::Roles::AsyncInitable {
     );
   }
   multi method init_async (
-    Int() $io_priority,
+    Int()          $io_priority,
     GCancellable() $cancellable,
-    &callback,
-    gpointer $user_data = gpointer
+                   &callback,
+    gpointer       $user_data    = gpointer
   ) {
     my gint $i = $io_priority;
 
@@ -102,7 +100,7 @@ role GIO::Roles::AsyncInitable {
   }
 
   method init_finish (
-    GAsyncResult() $res,
+    GAsyncResult()          $res,
     CArray[Pointer[GError]] $error = gerror
   )
     is also<init-finish>
@@ -114,7 +112,7 @@ role GIO::Roles::AsyncInitable {
   }
 
   method new_finish (
-    GAsyncResult() $res,
+    GAsyncResult()          $res,
     CArray[Pointer[GError]] $error = gerror,
   )
     is also<new-finish>
@@ -133,8 +131,8 @@ role GIO::Roles::AsyncInitable {
     Int() $io_priority,
     Int() $object_type,
           *@parameters,
-    :$async is required,
-    :$list  is required
+          :$async       is required,
+          :$list        is required
   ) {
     self.new_async(
       $io_priority,
@@ -146,7 +144,7 @@ role GIO::Roles::AsyncInitable {
     Int() $io_priority,
     Int() $object_type,
           @parameters,
-    :$async is required,
+          :$async       is required,
   ) {
     self.new_async(
       $io_priority,
@@ -179,7 +177,7 @@ role GIO::Roles::AsyncInitable {
           @parameters,
     Int() $io_priority,
           &callback,
-          :$async is required
+          :$async       is required
   ) {
     self.new_async(
       $object_type,
@@ -213,8 +211,8 @@ role GIO::Roles::AsyncInitable {
     gpointer  $parameters,
     Int()     $io_priority,
               &callback,
-    gpointer  $user_data = gpointer,
-              :$async is required
+    gpointer  $user_data     =  gpointer,
+              :$async        is required
   ) {
     self.new_async(
       $object_type,
@@ -231,7 +229,7 @@ role GIO::Roles::AsyncInitable {
     gpointer  $parameters,
     Int()     $io_priority,
               &callback,
-    gpointer  $user_data = gpointer
+    gpointer  $user_data     = gpointer
   ) {
     self.new_async(
       $object_type,
@@ -249,8 +247,8 @@ role GIO::Roles::AsyncInitable {
     Int()                $io_priority,
     GCancellable()       $cancellable,
                          &callback,
-    gpointer             $user_data = gpointer,
-                         :$async is required
+    gpointer             $user_data     = gpointer,
+                         :$async        is required
   ) {
     self.new_async(
       $object_type,
@@ -268,8 +266,8 @@ role GIO::Roles::AsyncInitable {
     gpointer             $parameters,
     Int()                $io_priority,
     GCancellable()       $cancellable,
-    GAsyncReadyCallback  $callback,
-    gpointer             $user_data = gpointer
+                         &callback,
+    gpointer             $user_data     = gpointer
   ) {
     my GType $o = $object_type;
     my guint $n = $n_parameters;
@@ -281,7 +279,7 @@ role GIO::Roles::AsyncInitable {
       $parameters,
       $i,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
