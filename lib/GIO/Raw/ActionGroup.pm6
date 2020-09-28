@@ -13,8 +13,8 @@ sub g_action_group_action_added (GActionGroup $action_group, Str $action_name)
 
 sub g_action_group_action_enabled_changed (
   GActionGroup $action_group,
-  Str $action_name,
-  gboolean $enabled
+  Str          $action_name,
+  gboolean     $enabled
 )
   is native(gio)
   is export
@@ -22,7 +22,7 @@ sub g_action_group_action_enabled_changed (
 
 sub g_action_group_action_removed (
   GActionGroup $action_group,
-  Str $action_name
+  Str          $action_name
 )
   is native(gio)
   is export
@@ -30,8 +30,8 @@ sub g_action_group_action_removed (
 
 sub g_action_group_action_state_changed (
   GActionGroup $action_group,
-  Str $action_name,
-  GVariant $state
+  Str          $action_name,
+  GVariant     $state
 )
   is native(gio)
   is export
@@ -39,8 +39,8 @@ sub g_action_group_action_state_changed (
 
 sub g_action_group_activate_action (
   GActionGroup $action_group,
-  Str $action_name,
-  GVariant $parameter
+  Str          $action_name,
+  GVariant     $parameter
 )
   is native(gio)
   is export
@@ -48,8 +48,8 @@ sub g_action_group_activate_action (
 
 sub g_action_group_change_action_state (
   GActionGroup $action_group,
-  Str $action_name,
-  GVariant $value
+  Str          $action_name,
+  GVariant     $value
 )
   is native(gio)
   is export
@@ -57,7 +57,7 @@ sub g_action_group_change_action_state (
 
 sub g_action_group_get_action_enabled (
   GActionGroup $action_group,
-  Str $action_name
+  Str          $action_name
 )
   returns uint32
   is native(gio)
@@ -66,7 +66,7 @@ sub g_action_group_get_action_enabled (
 
 sub g_action_group_get_action_parameter_type (
   GActionGroup $action_group,
-  Str $action_name
+  Str          $action_name
 )
   returns CArray[GVariantType]
   is native(gio)
@@ -75,7 +75,7 @@ sub g_action_group_get_action_parameter_type (
 
 sub g_action_group_get_action_state (
   GActionGroup $action_group,
-  Str $action_name
+  Str          $action_name
 )
   returns GVariant
   is native(gio)
@@ -84,7 +84,7 @@ sub g_action_group_get_action_state (
 
 sub g_action_group_get_action_state_hint (
   GActionGroup $action_group,
-  Str $action_name
+  Str          $action_name
 )
   returns GVariant
   is native(gio)
@@ -93,7 +93,7 @@ sub g_action_group_get_action_state_hint (
 
 sub g_action_group_get_action_state_type (
   GActionGroup $action_group,
-  Str $action_name
+  Str          $action_name
 )
   returns CArray[GVariantType]
   is native(gio)
@@ -120,12 +120,12 @@ sub g_action_group_list_actions (GActionGroup $action_group)
 
 sub g_action_group_query_action (
   GActionGroup $action_group,
-  Str $action_name,
-  gboolean $enabled,
+  Str          $action_name,
+  gboolean     $enabled         is rw,
   GVariantType $parameter_type,
   GVariantType $state_type,
-  GVariant $state_hint,
-  GVariant $state
+  GVariant     $state_hint,
+  GVariant     $state
 )
   returns uint32
   is native(gio)
