@@ -15,12 +15,12 @@ sub g_application_activate (GApplication $application)
 
 sub g_application_add_main_option (
   GApplication $application,
-  Str $long_name,
-  Str $short_name,
+  Str          $long_name,
+  Str          $short_name,
   GOptionFlags $flags,
-  GOptionArg $arg,
-  Str $description,
-  Str $arg_description
+  GOptionArg   $arg,
+  Str          $description,
+  Str          $arg_description
 )
   is native(gio)
   is export
@@ -28,7 +28,7 @@ sub g_application_add_main_option (
 
 sub g_application_add_main_option_entries (
   GApplication $application,
-  Pointer $entries
+  Pointer      $entries
 )
   is native(gio)
   is export
@@ -44,8 +44,8 @@ sub g_application_add_option_group (
 
 sub g_application_bind_busy_property (
   GApplication $application,
-  GObject $object,
-  Str $property
+  GObject      $object,
+  Str          $property
 )
   is native(gio)
   is export
@@ -135,9 +135,9 @@ sub g_application_new (Str $application_id, GApplicationFlags $flags)
 
 sub g_application_open (
   GApplication $application,
-  Pointer $files,
-  gint $n_files,
-  Str $hint
+  Pointer      $files,
+  gint         $n_files,
+  Str          $hint
 )
   is native(gio)
   is export
@@ -149,8 +149,8 @@ sub g_application_quit (GApplication $application)
 { * }
 
 sub g_application_register (
-  GApplication $application,
-  GCancellable $cancellable,
+  GApplication            $application,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -165,8 +165,8 @@ sub g_application_release (GApplication $application)
 
 sub g_application_run (
   GApplication $application,
-  gint $argc,
-  CArray[Str] $argv
+  gint         $argc,
+  CArray[Str]  $argv
 )
   returns gint
   is native(gio)
@@ -174,8 +174,8 @@ sub g_application_run (
 { * }
 
 sub g_application_send_notification (
-  GApplication $application,
-  Str $id,
+  GApplication  $application,
+  Str           $id,
   GNotification $notification
 )
   is native(gio)
@@ -192,7 +192,7 @@ sub g_application_set_action_group (
 
 sub g_application_set_application_id (
   GApplication $application,
-  Str $application_id
+  Str          $application_id
 )
   is native(gio)
   is export
@@ -204,7 +204,7 @@ sub g_application_set_default (GApplication $application)
 { * }
 
 sub g_application_set_flags (
-  GApplication $application,
+  GApplication      $application,
   GApplicationFlags $flags
 )
   is native(gio)
@@ -213,7 +213,7 @@ sub g_application_set_flags (
 
 sub g_application_set_inactivity_timeout (
   GApplication $application,
-  guint $inactivity_timeout
+  guint        $inactivity_timeout
 )
   is native(gio)
   is export
@@ -221,7 +221,7 @@ sub g_application_set_inactivity_timeout (
 
 sub g_application_set_option_context_description (
   GApplication $application,
-  Str $description
+  Str          $description
 )
   is native(gio)
   is export
@@ -229,7 +229,7 @@ sub g_application_set_option_context_description (
 
 sub g_application_set_option_context_parameter_string (
   GApplication $application,
-  Str $parameter_string
+  Str          $parameter_string
 )
   is native(gio)
   is export
@@ -237,7 +237,7 @@ sub g_application_set_option_context_parameter_string (
 
 sub g_application_set_option_context_summary (
   GApplication $application,
-  Str $summary
+  Str          $summary
 )
   is native(gio)
   is export
@@ -245,7 +245,7 @@ sub g_application_set_option_context_summary (
 
 sub g_application_set_resource_base_path (
   GApplication $application,
-  Str $resource_path
+  Str          $resource_path
 )
   is native(gio)
   is export
@@ -253,8 +253,8 @@ sub g_application_set_resource_base_path (
 
 sub g_application_unbind_busy_property (
   GApplication $application,
-  gpointer $object,
-  Str $property
+  gpointer     $object,
+  Str          $property
 )
   is native(gio)
   is export
