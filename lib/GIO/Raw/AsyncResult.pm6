@@ -31,7 +31,7 @@ sub g_async_result_is_tagged (GAsyncResult $res, gpointer $source_tag)
 { * }
 
 sub g_async_result_legacy_propagate_error (
-  GAsyncResult $res,
+  GAsyncResult            $res,
   CArray[Pointer[GError]] $error
 )
   returns uint32
