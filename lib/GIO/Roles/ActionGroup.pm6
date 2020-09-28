@@ -21,25 +21,25 @@ role GIO::Roles::ActionGroup {
   { $!ag }
 
   # Is originally:
-  # GActionGroup, gchar, gpointer --> void
+  # GActionGroup, Str, gpointer --> void
   method action-added is also<action_added> {
     self.connect-string($!ag, 'action-added');
   }
 
   # Is originally:
-  # GActionGroup, gchar, gboolean, gpointer --> void
+  # GActionGroup, Str, gboolean, gpointer --> void
   method action-enabled-changed is also<action_enabled_changed> {
     self.connect-action-enabled-changed($!ag);
   }
 
   # Is originally:
-  # GActionGroup, gchar, gpointer --> void
+  # GActionGroup, Str, gpointer --> void
   method action-removed is also<action_removed> {
     self.connect-string($!ag, 'action-removed');
   }
 
   # Is originally:
-  # GActionGroup, gchar, GVariant, gpointer --> void
+  # GActionGroup, Str, GVariant, gpointer --> void
   method action-state-changed is also<action_state_changed> {
     self.connect-action-state-changed($!ag);
   }
