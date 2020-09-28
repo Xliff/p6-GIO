@@ -67,7 +67,7 @@ role GIO::Roles::Signals::Application {
     %!signals-a{$signal}[0];
   }
 
-  # GApplication, gpointer, gint, gchar, gpointer
+  # GApplication, gpointer, gint, Str, gpointer
   method connect-open (
     $obj,
     $signal = 'open',
@@ -120,11 +120,11 @@ sub g-connect-handle-local-options(
   is symbol('g_signal_connect_object')
 { * }
 
-# GApplication, gpointer, gint, gchar, gpointer
+# GApplication, gpointer, gint, Str, gpointer
 sub g-connect-open(
   Pointer $app,
   Str $name,
-  &handler (Pointer, CArray[Pointer[GFile]], gint, gchar, Pointer),
+  &handler (Pointer, CArray[Pointer[GFile]], gint, Str, Pointer),
   Pointer $data,
   uint32 $flags
 )
