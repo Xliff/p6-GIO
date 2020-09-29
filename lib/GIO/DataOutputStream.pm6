@@ -4,50 +4,52 @@ use Method::Also;
 use NativeCall;
 
 use GIO::Raw::Types;
-
-
 use GIO::Raw::DataOutputStream;
 
 use GIO::FilterOutputStream;
 
-our subset DataOutputStreamAncestry is export of Mu
-  where GDataOutputStream | FilterOutputStreamAncestry;
+our subset GDataOutputStreamAncestry is export of Mu
+  where GDataOutputStream | GFilterOutputStreamAncestry;
 
 class GIO::DataOutputStream is GIO::FilterOutputStream {
   has GDataOutputStream $!dos is implementor;
 
   submethod BUILD (:$data-stream) {
-    given $data-stream {
-      when DataOutputStreamAncestry {
-        my $to-parent;
+    self.setDataOutputStream($data-stream) if $data-stream;
+  }
 
-        $!dos = do {
-          when GDataOutputStream {
-            $to-parent = cast(GFilterOutputStream, $_);
-            $_;
-          }
+  method setDataOutputStream (GDataOutputStreamAncestry $_) {
+    my $to-parent;
 
-          default {
-            $to-parent = $_;
-            cast(GDataOutputStream, $_);
-          }
-        }
-        self.setFilterOutputStream($to-parent);
+    $!dos = do {
+      when GDataOutputStream {
+        $to-parent = cast(GFilterOutputStream, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GDataOutputStream, $_);
       }
     }
+    self.setGFilterOutputStream($to-parent);
   }
 
   method GIO::Raw::Definitions::GDataOutputStream
     is also<GDataOutputStream>
   { $!dos }
 
-  multi method new (GDataOutputStream $data-stream) {
-    self.bless( :$data-stream );
+  multi method new (GDataOutputStream $data-stream, :$ref = True) {
+    return Nil unless $data-stream;
+
+    my $o = self.bless( :$data-stream );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (GOutputStream() $base) {
-    my $d = g_data_output_stream_new($base);
+    my $data-stream = g_data_output_stream_new($base);
 
-    $d ?? self.bless( data-stream => $d ) !! Nil;
+    $data-stream ?? self.bless( :$data-stream ) !! Nil
   }
 
   method byte_order is rw is also<byte-order> {
@@ -70,9 +72,9 @@ class GIO::DataOutputStream is GIO::FilterOutputStream {
   }
 
   method put_byte (
-    Int() $data,
-    GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Int()                   $data,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   )
     is also<put-byte>
   {
@@ -85,9 +87,9 @@ class GIO::DataOutputStream is GIO::FilterOutputStream {
   }
 
   method put_int16 (
-    Int() $data,
-    GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Int()                   $data,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   )
     is also<put-int16>
   {
@@ -100,9 +102,9 @@ class GIO::DataOutputStream is GIO::FilterOutputStream {
   }
 
   method put_int32 (
-    Int() $data,
-    GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Int()                   $data,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   )
     is also<put-int32>
   {
@@ -120,9 +122,9 @@ class GIO::DataOutputStream is GIO::FilterOutputStream {
   }
 
   method put_int64 (
-    Int() $data,
-    GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Int()                   $data,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   )
     is also<put-int64>
   {
@@ -140,9 +142,9 @@ class GIO::DataOutputStream is GIO::FilterOutputStream {
   }
 
   method put_string (
-    Str() $str,
-    GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Str()                   $str,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   )
     is also<put-string>
   {
@@ -158,9 +160,9 @@ class GIO::DataOutputStream is GIO::FilterOutputStream {
   }
 
   method put_uint16 (
-    Int() $data,
-    GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Int()                   $data,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   )
     is also<put-uint16>
   {
@@ -178,9 +180,9 @@ class GIO::DataOutputStream is GIO::FilterOutputStream {
   }
 
   method put_uint32 (
-    Int() $data,
-    GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Int()                   $data,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   )
     is also<put-uint32>
   {
@@ -198,9 +200,9 @@ class GIO::DataOutputStream is GIO::FilterOutputStream {
   }
 
   method put_uint64 (
-    Int() $data,
-    GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Int()                   $data,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   )
     is also<put-uint64>
   {
