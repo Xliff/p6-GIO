@@ -37,7 +37,7 @@ role GIO::Roles::DtlsConnection {
   method new-dtlsconnection-obj (GDtlsConnection $dtls-connection)
     is also<new_dtlsconnection_obj>
   {
-    self.bless( :$dtls-connection );
+    $dtls-connection ?? self.bless( :$dtls-connection ) !! Nil;
   }
 
   method certificate (:$raw = False) is rw {
@@ -46,7 +46,7 @@ role GIO::Roles::DtlsConnection {
         my $c = g_dtls_connection_get_certificate($!dtc);
 
         $c ??
-          ( $raw ?? $c !! GIO::TlsCertificate.new($c) )
+          ( $raw ?? $c !! GIO::TlsCertificate.new($c, :!ref) )
           !!
           Nil;
       },
@@ -62,7 +62,7 @@ role GIO::Roles::DtlsConnection {
         my $d = g_dtls_connection_get_database($!dtc);
 
         $d ??
-          ( $raw ?? $d !! GIO::TlsDatabase.new($d) )
+          ( $raw ?? $d !! GIO::TlsDatabase.new($d, :!ref) )
           !!
           Nil;
       },
@@ -78,7 +78,7 @@ role GIO::Roles::DtlsConnection {
         my $i = g_dtls_connection_get_interaction($!dtc);
 
         $i ??
-          ( $raw ?? $i !! GIO::TlsInteraction.new($i) )
+          ( $raw ?? $i !! GIO::TlsInteraction.new($i, :!ref) )
           !!
           Nil;
       },
@@ -105,7 +105,7 @@ role GIO::Roles::DtlsConnection {
         so g_dtls_connection_get_require_close_notify($!dtc);
       },
       STORE => sub ($, Int() $require_close_notify is copy) {
-        my gboolean $r = $require_close_notify;
+        my gboolean $r = $require_close_notify.so.Int;
 
         g_dtls_connection_set_require_close_notify($!dtc, $r);
       }
@@ -126,8 +126,8 @@ role GIO::Roles::DtlsConnection {
         $val = resolve-gstrv($val) if $val ~~ Array;
 
         die qq:to/DIE/ unless $val ~~ CArray[Str];
-          Invalid value passed to .advertised-protocols. Wanted CArray[Str]{''
-          } got { $val.^name }
+          Invalid value passed to .advertised-protocols. Wanted CArray[Str]{
+          '' } got { $val.^name }
           DIE
 
         $gv.pointer = $val;
@@ -137,17 +137,21 @@ role GIO::Roles::DtlsConnection {
   }
 
   # Type: GDatagramBased
-  method base-socket (:$raw = False) is rw  {
+  method base-socket ( :$raw = False ) is rw  {
     my GLib::Value $gv .= new( G_TYPE_OBJECT );
     Proxy.new(
       FETCH => -> $ {
         $gv = GLib::Value.new(
           self.prop_get('base-socket', $gv)
         );
-        return Nil unless $gv.object;
 
-        my $d = cast(GDatagramBased, $gv.object);
-        $raw ?? $d !! GIO::Roles::DatagramBased.new-datagrambased-obj($d);
+        my $o = $gv.object;
+        return Nil unless $o;
+
+        $o = cast(GDatagramBased, $gv.object);
+        return $o if $raw;
+
+        GIO::Roles::DatagramBased.new-datagrambased-obj($o);
       },
       STORE => -> $, $val is copy {
         warn 'base-socked can only be set at construction time.'
@@ -162,8 +166,8 @@ role GIO::Roles::DtlsConnection {
   }
 
   method close (
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     g_dtls_connection_close($!dtc, $cancellable, $error);
   }
@@ -173,17 +177,17 @@ role GIO::Roles::DtlsConnection {
   { * }
 
   multi method close_async (
-    Int() $io_priority,
-    GAsyncReadyCallback $callback,
+    Int()    $io_priority,
+             &callback,
     gpointer $user_data = gpointer
   ) {
-    samewith($io_priority, GCancellable, $callback, $user_data);
+    samewith($io_priority, GCancellable, &callback, $user_data);
   }
   multi method close_async (
-    Int() $io_priority,
-    GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Int()               $io_priority,
+    GCancellable()      $cancellable,
+                        &callback,
+    gpointer            $user_data    = gpointer
   ) {
     my gint $i = $io_priority;
 
@@ -191,14 +195,14 @@ role GIO::Roles::DtlsConnection {
       $!dtc,
       $i,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method close_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<close-finish>
   {
@@ -210,7 +214,7 @@ role GIO::Roles::DtlsConnection {
 
   method emit_accept_certificate (
     GTlsCertificate() $peer_cert,
-    Int() $errors
+    Int()             $errors
   )
     is also<emit-accept-certificate>
   {
@@ -219,15 +223,17 @@ role GIO::Roles::DtlsConnection {
     g_dtls_connection_emit_accept_certificate($!dtc, $peer_cert, $e);
   }
 
-  method get_negotiated_protocol is also<
-    get-negotiated-protocol
-    negotiated_protocol
-    negotiated-protocol
-  > {
+  method get_negotiated_protocol
+    is also<
+      get-negotiated-protocol
+      negotiated_protocol
+      negotiated-protocol
+    >
+  {
     g_dtls_connection_get_negotiated_protocol($!dtc);
   }
 
-  method get_peer_certificate (:$raw = False)
+  method get_peer_certificate ( :$raw = False )
     is also<
       get-peer-certificate
       peer_certificate
@@ -237,7 +243,7 @@ role GIO::Roles::DtlsConnection {
     my $pc = g_dtls_connection_get_peer_certificate($!dtc);
 
     $pc ??
-      ( $raw ?? $pc !! GIO::TlsCertificate.new($pc) )
+      ( $raw ?? $pc !! GIO::TlsCertificate.new($pc, :!ref) )
       !!
       Nil;
   }
@@ -261,8 +267,8 @@ role GIO::Roles::DtlsConnection {
   }
 
   method handshake (
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     clear_error;
     my $rv = so g_dtls_connection_handshake($!dtc, $cancellable, $error);
@@ -275,17 +281,17 @@ role GIO::Roles::DtlsConnection {
   { * }
 
   multi method handshake_async (
-    Int() $io_priority,
-    GAsyncReadyCallback $callback,
+    Int()    $io_priority,
+             &callback,
     gpointer $user_data = gpointer
   ) {
-    samewith($io_priority, GCancellable, $callback, $user_data);
+    samewith($io_priority, GCancellable, &callback, $user_data);
   }
   multi method handshake_async (
-    Int() $io_priority,
+    Int()          $io_priority,
     GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+                   &callback,
+    gpointer       $user_data = gpointer
   ) {
     my gint $i = $io_priority;
 
@@ -293,14 +299,14 @@ role GIO::Roles::DtlsConnection {
       $!dtc,
       $i,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method handshake_finish (
-    GAsyncResult $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult            $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<handshake-finish>
   {
@@ -322,16 +328,16 @@ role GIO::Roles::DtlsConnection {
   }
 
   multi method shutdown (
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     samewith(True, True, $cancellable, $error);
   }
   multi method shutdown (
-    Int() $shutdown_read,
-    Int() $shutdown_write,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Int()                   $shutdown_read,
+    Int()                   $shutdown_write,
+    GCancellable()          $cancellable     = GCancellable,
+    CArray[Pointer[GError]] $error           = gerror
   ) {
     my gboolean ($sr, $sw) = ($shutdown_read, $shutdown_write);
 
@@ -343,44 +349,44 @@ role GIO::Roles::DtlsConnection {
   { * }
 
   multi method shutdown_async (
-    Int() $io_priority,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Int()    $io_priority,
+             &callback,
+    gpointer $user_data    = gpointer
   ) {
     samewith(
       True,
       True,
       $io_priority,
       GCancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
   multi method shutdown_async (
-    Int() $shutdown_read,
-    Int() $shutdown_write,
-    Int() $io_priority,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Int()    $shutdown_read,
+    Int()    $shutdown_write,
+    Int()    $io_priority,
+             &callback,
+    gpointer $user_data       = gpointer
   ) {
     samewith(
       $shutdown_read,
       $shutdown_write,
       $io_priority,
       GCancellable,
-      $callback,
+      &callback,
       $user_data
     )
   }
   multi method shutdown_async (
-    Int() $shutdown_read,
-    Int() $shutdown_write,
-    Int() $io_priority,
+    Int()          $shutdown_read,
+    Int()          $shutdown_write,
+    Int()          $io_priority,
     GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data
+                   &callback,
+    gpointer       $user_data
   ) {
-    my gboolean ($sr, $sw) = ($shutdown_read, $shutdown_write);
+    my gboolean ($sr, $sw) = ($shutdown_read, $shutdown_write).map( *.so.Int );
     my gint $i = $io_priority;
 
     g_dtls_connection_shutdown_async(
@@ -389,14 +395,14 @@ role GIO::Roles::DtlsConnection {
       $sw,
       $i,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method shutdown_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<shutdown-finish>
   {
