@@ -1,0 +1,21 @@
+[remote "origin"]
+	url = git@github.com:Xliff/p6-GIO.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+[branch "september-refactor-review"]
+	remote = origin
+	merge = refs/heads/september-refactor-review
+[remote "backup"]
+	url = ubuntu@backup:/srv/git/p6-GIO.git
+	fetch = +refs/heads/*:refs/remotes/backup/*
+[remote "google-backup"]
+	url = cbwood@google-backup:/srv/git/p6-GIO.git
+	fetch = +refs/heads/*:refs/remotes/google-backup/*
+[remote "azure-backup"]
+	url = cbwood@azure-backup:/srv/git/p6-GIO.git
+	fetch = +refs/heads/*:refs/remotes/azure-backup/*
+[remote "bitbucket"]
+	url = git@bitbucket.org:clifton-wood/p6-gio.git
+	fetch = +refs/heads/*:refs/remotes/bitbucket/*
