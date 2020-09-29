@@ -8,7 +8,7 @@ unit package GIO::Raw::DatagramBased;
 
 sub g_datagram_based_condition_check (
   GDatagramBased $datagram_based,
-  GIOCondition $condition
+  GIOCondition   $condition
 )
   returns GIOCondition
   is native(gio)
@@ -16,10 +16,10 @@ sub g_datagram_based_condition_check (
 { * }
 
 sub g_datagram_based_condition_wait (
-  GDatagramBased $datagram_based,
-  GIOCondition $condition,
-  gint64 $timeout,
-  GCancellable $cancellable,
+  GDatagramBased          $datagram_based,
+  GIOCondition            $condition,
+  gint64                  $timeout,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -29,8 +29,8 @@ sub g_datagram_based_condition_wait (
 
 sub g_datagram_based_create_source (
   GDatagramBased $datagram_based,
-  GIOCondition $condition,
-  GCancellable $cancellable
+  GIOCondition   $condition,
+  GCancellable   $cancellable
 )
   returns GSource
   is native(gio)
@@ -44,12 +44,12 @@ sub g_datagram_based_get_type ()
 { * }
 
 sub g_datagram_based_receive_messages (
-  GDatagramBased $datagram_based,
-  GInputMessage $messages,
-  guint $num_messages,
-  gint $flags,
-  gint64 $timeout,
-  GCancellable $cancellable,
+  GDatagramBased          $datagram_based,
+  GInputMessage           $messages,
+  guint                   $num_messages,
+  gint                    $flags,
+  gint64                  $timeout,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gint
@@ -58,12 +58,12 @@ sub g_datagram_based_receive_messages (
 { * }
 
 sub g_datagram_based_send_messages (
-  GDatagramBased $datagram_based,
-  GOutputMessage $messages,
-  guint $num_messages,
-  gint $flags,
-  gint64 $timeout,
-  GCancellable $cancellable,
+  GDatagramBased          $datagram_based,
+  GOutputMessage          $messages,
+  guint                   $num_messages,
+  gint                    $flags,
+  gint64                  $timeout,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gint

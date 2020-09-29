@@ -30,15 +30,15 @@ role GIO::Roles::DatagramBased {
   }
 
   method condition_wait (
-    Int() $condition,
-    Int() $timeout,
-    GCancellable $cancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Int()                   $condition,
+    Int()                   $timeout,
+    GCancellable()          $cancellable,
+    CArray[Pointer[GError]] $error        = gerror
   )
     is also<condition-wait>
   {
     my GIOCondition $c = $condition;
-    my gint64 $t = $timeout;
+    my gint64       $t = $timeout;
 
     clear_error;
     my $rv =
@@ -48,16 +48,19 @@ role GIO::Roles::DatagramBased {
   }
 
   method create_source (
-    Int() $condition,
-    GCancellable $cancellable,
-    :$raw = False
+    Int()          $condition,
+    GCancellable() $cancellable,
+                   :$raw         = False
   )
     is also<create-source>
   {
     my GIOCondition $c = $condition;
+    my              $s = g_datagram_based_create_source($!d, $c, $cancellable);
 
-    my $s = g_datagram_based_create_source($!d, $c, $cancellable);
-    $raw ?? $s !! GLib::Source.new($s);
+    $s ??
+      ( $raw ?? $s !! GLib::Source.new($s, :!ref) )
+      !!
+      Nil;
   }
 
   method datagrambased_get_type is also<get-type> {
@@ -67,21 +70,21 @@ role GIO::Roles::DatagramBased {
   }
 
   method receive_messages (
-    GInputMessage $messages,
-    Int() $num_messages,
-    Int() $flags,
-    Int() $timeout,
-    GCancellable $cancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GInputMessage           $messages,
+    Int()                   $num_messages,
+    Int()                   $flags,
+    Int()                   $timeout,
+    GCancellable()          $cancellable,
+    CArray[Pointer[GError]] $error         = gerror
   )
     is also<receive-messages>
   {
     my guint  $nm = $num_messages;
-    my gint    $f = $flags;
-    my gint64  $t = $timeout;
+    my gint   $f  = $flags;
+    my gint64 $t  = $timeout;
 
     clear_error;
-    my $rv = g_datagram_based_receive_messages(
+    my $m = g_datagram_based_receive_messages(
       $!d,
       $messages,
       $nm,
@@ -91,25 +94,25 @@ role GIO::Roles::DatagramBased {
       $error
     );
     set_error($error);
-    $rv;
+    $m;
   }
 
   method send_messages (
-    GOutputMessage $messages,
-    Int() $num_messages,
-    Int() $flags,
-    Int() $timeout,
-    GCancellable $cancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GOutputMessage          $messages,
+    Int()                   $num_messages,
+    Int()                   $flags,
+    Int()                   $timeout,
+    GCancellable()          $cancellable,
+    CArray[Pointer[GError]] $error         = gerror
   )
     is also<send-messages>
   {
     my guint  $nm = $num_messages;
-    my gint    $f = $flags;
-    my gint64  $t = $timeout;
+    my gint   $f  = $flags;
+    my gint64 $t  = $timeout;
 
     clear_error;
-    my $rv = g_datagram_based_send_messages(
+    my $m = g_datagram_based_send_messages(
       $!d,
       $messages,
       $nm,
@@ -119,7 +122,7 @@ role GIO::Roles::DatagramBased {
       $error
     );
     set_error($error);
-    $rv;
+    $m;
   }
 
 }
