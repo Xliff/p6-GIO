@@ -64,13 +64,17 @@ class GIO::CharsetConverter {
     is also<GCharsetConverter>
   { $!cc }
 
-  multi method new (GCharsetConverter $char-converter) {
-    $char-converter ?? self.bless( :$char-converter ) !! Nil;
+  multi method new (GCharsetConverterAncestry $char-converter, :$ref = True) {
+    return Nil unless $char-converter;
+
+    my $o = self.bless( :$char-converter );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (
-    Str() $to_charset,
-    Str() $from_charset,
-    CArray[Pointer[GError]] $error = gerror
+    Str()                   $to_charset,
+    Str()                   $from_charset,
+    CArray[Pointer[GError]] $error        = gerror
   ) {
     clear_error;
     my $char-converter = g_charset_converter_new(
@@ -107,7 +111,7 @@ class GIO::CharsetConverter {
                     !! Nil
   }
 
-  # Type: gchar
+  # Type: Str
   method from-charset is rw  is also<from_charset> {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
@@ -124,7 +128,7 @@ class GIO::CharsetConverter {
     );
   }
 
-  # Type: gchar
+  # Type: Str
   method to-charset is rw  is also<to_charset> {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
