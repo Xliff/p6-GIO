@@ -12,8 +12,8 @@ use GIO::Roles::Converter;
 use GIO::Roles::PollableInputStream;
 
 our subset ConverterInputStreamAncestry is export of Mu
-  where GConverterInputStream     | GPollableInputStream |
-        FilterInputStreamAncestry;
+  where GConverterInputStream      | GPollableInputStream |
+        GFilterInputStreamAncestry;
 
 class GIO::ConverterInputStream is GIO::FilterInputStream {
   also does GIO::Roles::Converter;
@@ -22,17 +22,7 @@ class GIO::ConverterInputStream is GIO::FilterInputStream {
   has GConverterInputStream $!cis is implementor;
 
   submethod BUILD (:$convert-stream) {
-    given $convert-stream {
-      when ConverterInputStreamAncestry {
-        self.setConverterInputStream($convert-stream);
-      }
-
-      when GIO::ConverterInputStream {
-      }
-
-      default {
-      }
-    }
+    self.setConverterInputStream($convert-stream) if $convert-stream;
   }
 
   method setConverterInputStream(ConverterInputStreamAncestry $_) {
@@ -55,8 +45,8 @@ class GIO::ConverterInputStream is GIO::FilterInputStream {
         cast(GConverterInputStream, $_);
       }
     }
-    self.roleInit-PollableInputStream unless $!pis;
-    self.setFilterInputStream($to-parent);
+    self.setGFilterInputStream($to-parent);
+    self.roleInit-PollableInputStream;
   }
 
   method GIO::Raw::Definitions::GConverterInputStream
@@ -66,13 +56,20 @@ class GIO::ConverterInputStream is GIO::FilterInputStream {
   proto method new (|)
   { * }
 
-  multi method new (ConverterInputStreamAncestry $convert-stream) {
-    self.bless( :$convert-stream );
+  multi method new (
+    ConverterInputStreamAncestry $convert-stream,
+    :$ref = True
+  ) {
+    return Nil unless $convert-stream;
+
+    my $o = self.bless( :$convert-stream );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (GInputStream() $base, GConverter() $converter) {
-    self.bless(
-      convert-stream => g_converter_input_stream_new($base, $converter)
-    );
+    my $convert-stream = g_converter_input_stream_new($base, $converter);
+
+    $convert-stream ?? self.bless( :$convert-stream ) !! Nil;
   }
 
   method get_converter (:$raw = False) is also<get-converter> {
@@ -108,9 +105,15 @@ sub g_converter_input_stream_get_type ()
 
 sub g_converter_input_stream_new (
   GInputStream $base_stream,
-  GConverter $converter
+  GConverter   $converter
 )
   returns GConverterInputStream
   is native(gio)
   is export
 { * }
+
+# our %GIO::ConverterInputStream::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::ConverterInputStream::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_converter_input_stream_');
+# }
