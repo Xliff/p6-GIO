@@ -68,9 +68,9 @@ sub g_content_type_get_symbolic_icon (Str $type)
   { * }
 
 sub g_content_type_guess (
-  Str $filename,
-  Str $data,
-  gsize $data_size,
+  Str      $filename,
+  Str      $data,
+  gsize    $data_size,
   gboolean $result_uncertain is rw
 )
   returns Str

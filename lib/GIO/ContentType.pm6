@@ -7,9 +7,11 @@ use GIO::Raw::Types;
 use GIO::Raw::ContentType;
 
 use GLib::Roles::ListData;
+use GLib::Roles::StaticClass;
 
 # STATIC CATCH-ALL
 class GIO::ContentType {
+  also does GLib::Roles::StaticClass;
 
   method can_be_executable (Str() $type) is also<can-be-executable> {
     so g_content_type_can_be_executable($type);
@@ -34,9 +36,7 @@ class GIO::ContentType {
     return Nil   unless $list;
     return $list if     $glist;
 
-    (
-      GLib::GList.new($list) but GLib::Roles::ListData[Str]
-    ).Array
+    ( GLib::GList.new($list) but GLib::Roles::ListData[Str] ).Array
   }
 
   method get_description (Str() $type) is also<get-description> {
@@ -59,27 +59,31 @@ class GIO::ContentType {
     g_content_type_get_symbolic_icon($type);
   }
 
-  method guess (
+  multi method guess (
     Str() $filename,
     Str() $data,
     Int() $data_size,
-    $result_uncertain is rw
+  ) {
+    samewith($filename, $data, $data_size, :all);
+  }
+  multi method guess (
+    Str() $filename,
+    Str() $data,
+    Int() $data_size,
+          $result_uncertain is rw,
+          :$all             = False
   ) {
     my gulong $ds = $data_size;
-    my guint $ru = 0;
-    my $rc = g_content_type_guess($filename, $data, $ds, $ru);
+    my guint $ru  = 0;
+    my $result    = so g_content_type_guess($filename, $data, $ds, $ru);
 
     $result_uncertain = $ru.defined ?? $ru !! Nil;
     # GLib::Memory.free($rc);
-    $rc;
+    $all.not ?? $result !! ($result, $result_uncertain);
   }
 
   method guess_for_tree (GFile() $root) is also<guess-for-tree> {
-    my CArray[Str] $guesses = g_content_type_guess_for_tree($root);
-    my ($gc, @guess_list) = (0);
-
-    @guess_list.push( $guesses[$gc++] ) while $guesses[$gc].defined;
-    @guess_list;
+    CStringArrayToArray( g_content_type_guess_for_tree($root) );
   }
 
   method is_a (Str() $type, Str() $supertype) is also<is-a> {
