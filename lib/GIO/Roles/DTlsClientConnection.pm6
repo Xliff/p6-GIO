@@ -42,17 +42,22 @@ role GIO::Roles::DtlsClientConnection {
   multi method new-dtlsclientconnection-obj (
     GDtlsClientConnection $client-connection
   ) {
-    self.bless( :$client-connection );
+    $client-connection ?? self.bless( :$client-connection ) !! Nil;
   }
   multi method new-dtlsclientconnection-obj (
-    GDatagramBased() $base,
-    GSocketConnectable() $server_identity,
-    CArray[Pointer[GError]] $error = gerror
+    GDatagramBased()        $base,
+    GSocketConnectable()    $server_identity,
+    CArray[Pointer[GError]] $error            = gerror
   ) {
     clear_error;
-    my $cc = g_dtls_client_connection_new($base, $server_identity, $error);
+    my $client-connection = g_dtls_client_connection_new(
+      $base,
+      $server_identity,
+      $error
+    );
     set_error($error);
-    self.bless( client-connection => $cc );
+
+    $client-connection ?? self.bless( :$client-connection ) !! Nil;
   }
 
   method server_identity (:$raw = False) is rw is also<server-identity> {
@@ -61,8 +66,11 @@ role GIO::Roles::DtlsClientConnection {
         my $sc = g_dtls_client_connection_get_server_identity($!tdcc);
 
         $sc ??
-          ( $raw ?? $sc !!
-                    GIO::SocketConnectable.new-socketconnectable-obj($sc) )
+          ( $raw ?? $sc
+                 !! GIO::SocketConnectable.new-socketconnectable-obj(
+                      $sc,
+                      :!ref
+                    ) )
           !!
           Nil;
       },
@@ -97,10 +105,10 @@ role GIO::Roles::DtlsClientConnection {
     my $cal = g_dtls_client_connection_get_accepted_cas($!tdcc);
 
     return Nil  unless $cal;
-    return $cal if     $glist;
+    return $cal if     $glist && $raw;
 
-    $cal = GLib::GList.new($cal)
-      but GLib::Roles::ListData[GByteArray];
+    $cal = GLib::GList.new($cal) but GLib::Roles::ListData[GByteArray];
+    return $cal  if $glist;
 
     $raw ?? $cal.Array !! $cal.Array.map({ GLib::ByteArray.new($_) });
   }
