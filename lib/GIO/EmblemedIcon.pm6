@@ -12,6 +12,9 @@ use GLib::Roles::Object;
 use GLib::Roles::ListData;
 use GIO::Roles::Icon;
 
+our subset GEmblemedIconAncestry is export of Mu
+  where GEmblemedIcon | GIcon | GObject;
+
 class GIO::EmblemedIcon {
   also does GLib::Roles::Object;
   also does GIO::Roles::Icon;
@@ -19,9 +22,24 @@ class GIO::EmblemedIcon {
   has GEmblemedIcon $!ei is implementor;
 
   submethod BUILD (:$emblem) {
-    $!ei = $emblem;
+    self.setEmblemedIcon($emblem) if $emblem;
+  }
 
-    self.roleInit-Object;
+  method setGEmblemedIcon (GEmblemedIconAncestry $_) {
+    my $to-parent;
+
+    $!ei = {
+      when GEmblemedIcon {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GEmblemedIcon, $_);
+      }
+    }
+    self!setObject($to-parent);
     self.roleInit-Icon;
   }
 
@@ -29,11 +47,17 @@ class GIO::EmblemedIcon {
     is also<GEmblemedIcon>
   { $!ei }
 
-  multi method new (GEmblemedIcon $emblem) {
-    self.bless( :$emblem );
+  multi method new (GEmblemedIconAncestry $emblem, :$ref = True) {
+    return Nil unless $emblem;
+
+    my $o = self.bless( :$emblem );
+    $o.ref if $ref;
+    $o;
   }
-  multi method new (GIcon() $icon, GEmblem() $emblem) {
-    self.bless( emblem => g_emblemed_icon_new($icon, $emblem) );
+  multi method new (GIcon() $icon, GEmblem() $e) {
+    my $emblem = g_emblemed_icon_new($icon, $e);
+
+    $emblem ?? self.bless( :$emblem ) !! Nil;
   }
 
   method add_emblem (GEmblem() $emblem) is also<add-emblem> {
@@ -51,15 +75,14 @@ class GIO::EmblemedIcon {
     >
   {
     my $el = g_emblemed_icon_get_emblems($!ei);
-    return $el if $glist;
+    return Nil unless $el;
+    return $el if $glist && $raw;
 
     $el = GLib::GList.new($el)
       but GLib::Roles::ListData[GEmblem];
+    return $el if $glist;
 
-    $el ??
-      ( $raw ?? $el.Array !! $el.Array.map({ GIO::Emblem.new($_) }) )
-      !!
-      Nil;
+    $raw ?? $el.Array !! $el.Array.map({ GIO::Emblem.new($_) });
   }
 
   method get_icon (:$raw = False)
@@ -72,7 +95,7 @@ class GIO::EmblemedIcon {
     my $i = g_emblemed_icon_get_icon($!ei);
 
     $i ??
-      ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i) )
+      ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i, :!ref) )
       !!
       Nil;
   }
