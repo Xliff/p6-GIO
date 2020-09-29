@@ -32,12 +32,12 @@ role GIO::Roles::DTlsServerConnection {
   multi method new-dtlsserverconnection-obj (
     GDtlsServerConnection $server-connection
   ) {
-    self.bless( :$server-connection )
+    $server-connection ?? self.bless( :$server-connection ) !! Nil;
   }
   multi method new-dtlsserverconnection-obj (
-    GDatagramBased() $base,
-    GTlsCertificate() $certificate,
-    CArray[Pointer[GError]] $error = gerror
+    GDatagramBased()        $base,
+    GTlsCertificate()       $certificate,
+    CArray[Pointer[GError]] $error        = gerror
   ) {
     clear_error;
     my $server-connection = g_dtls_server_connection_new(
@@ -46,7 +46,7 @@ role GIO::Roles::DTlsServerConnection {
       $error
     );
     set_error($error);
-    self.bless( :$server-connection );
+    $server-connection ?? self.bless( :$server-connection ) !! Nil;
   }
 
   # Type: GDtlsAuthenticationMode
@@ -81,8 +81,8 @@ sub g_dtls_server_connection_get_type ()
 { * }
 
 sub g_dtls_server_connection_new (
-  GIOStream $base_io_stream,
-  GTlsCertificate $certificate,
+  GIOStream               $base_io_stream,
+  GTlsCertificate         $certificate,
   CArray[Pointer[GError]] $error
 )
   returns GDtlsServerConnection
