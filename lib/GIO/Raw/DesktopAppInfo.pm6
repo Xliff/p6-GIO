@@ -2,14 +2,18 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
-
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::DesktopAppInfo;
 
 sub g_desktop_app_info_get_action_name (
   GDesktopAppInfo $info,
-  Str $action_name
+  Str             $action_name
 )
   returns Str
   is native(gio)
@@ -84,8 +88,8 @@ sub g_desktop_app_info_get_string (GDesktopAppInfo $info, Str $key)
 
 sub g_desktop_app_info_get_string_list (
   GDesktopAppInfo $info,
-  Str $key,
-  gsize $length
+  Str             $key,
+  gsize           $length
 )
   returns CArray[Str]
   is native(gio)
@@ -105,8 +109,8 @@ sub g_desktop_app_info_has_key (GDesktopAppInfo $info, Str $key)
 { * }
 
 sub g_desktop_app_info_launch_action (
-  GDesktopAppInfo $info,
-  Str $action_name,
+  GDesktopAppInfo   $info,
+  Str               $action_name,
   GAppLaunchContext $launch_context
 )
   is native(gio)
@@ -114,14 +118,14 @@ sub g_desktop_app_info_launch_action (
 { * }
 
 sub g_desktop_app_info_launch_uris_as_manager (
-  GDesktopAppInfo $appinfo,
-  GList $uris,
-  GAppLaunchContext $launch_context,
-  GSpawnFlags $spawn_flags,
-  GSpawnChildSetupFunc $user_setup,
-  gpointer $user_setup_data,
-  &pid_callback (GDesktopAppInfo, GPid, gpointer),
-  gpointer $pid_callback_data,
+  GDesktopAppInfo         $appinfo,
+  GList                   $uris,
+  GAppLaunchContext       $launch_context,
+  GSpawnFlags             $spawn_flags,
+                          &user_setup,
+  gpointer                $user_setup_data,
+                          &pid_callback (GDesktopAppInfo, GPid, gpointer),
+  gpointer                $pid_callback_data,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -130,17 +134,17 @@ sub g_desktop_app_info_launch_uris_as_manager (
 { * }
 
 sub g_desktop_app_info_launch_uris_as_manager_with_fds (
-  GDesktopAppInfo $appinfo,
-  GList $uris,
-  GAppLaunchContext $launch_context,
-  GSpawnFlags $spawn_flags,
-  GSpawnChildSetupFunc $user_setup,
-  gpointer $user_setup_data,
-  &pid_callback (GDesktopAppInfo, GPid, gpointer),
-  gpointer $pid_callback_data,
-  gint $stdin_fd,
-  gint $stdout_fd,
-  gint $stderr_fd,
+  GDesktopAppInfo         $appinfo,
+  GList                   $uris,
+  GAppLaunchContext       $launch_context,
+  GSpawnFlags             $spawn_flags,
+                          &user_setup,
+  gpointer                $user_setup_data,
+                          &pid_callback (GDesktopAppInfo, GPid, gpointer),
+  gpointer                $pid_callback_data,
+  gint                    $stdin_fd,
+  gint                    $stdout_fd,
+  gint                    $stderr_fd,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -150,7 +154,7 @@ sub g_desktop_app_info_launch_uris_as_manager_with_fds (
 
 sub g_desktop_app_info_lookup_get_default_for_uri_scheme (
   GDesktopAppInfoLookup $lookup,
-  Str $uri_scheme
+  Str                   $uri_scheme
 )
   returns GAppInfo
   is native(gio)

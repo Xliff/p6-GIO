@@ -25,23 +25,29 @@ class GIO::DesktopAppInfo {
     is also<GDesktopAppInfo>
   { $!dai }
 
-  multi method new (GDesktopAppInfo $desktop-info) {
+  multi method new (GDesktopAppInfo $desktop-info, :$ref = True) {
+    return Nil unless $desktop-info;
+
     my $o = self.bless( :$desktop-info );
+    $o.ref if $ref;
     $o;
   }
   multi method new (Str $desktop_id) {
-    my $di = g_desktop_app_info_new($desktop_id);
-    $di ?? self.bless( desktop-info => $di ) !! Nil;
+    my $desktop-info = g_desktop_app_info_new($desktop_id);
+
+    $desktop-info ?? self.bless( :$desktop-info ) !! Nil;
   }
 
   method new_from_filename (Str() $filename) is also<new-from-filename> {
-    my $di = g_desktop_app_info_new_from_filename($filename);
-    $di ?? self.bless( desktop-info => $di ) !! Nil;
+    my $desktop-info = g_desktop_app_info_new_from_filename($filename);
+
+    $desktop-info ?? self.bless( :$desktop-info ) !! Nil;
   }
 
   method new_from_keyfile (GKeyFile() $keyfile) is also<new-from-keyfile> {
-    my $di = g_desktop_app_info_new_from_keyfile($keyfile);
-    $di ?? self.bless( desktop-info => $di ) !! Nil;
+    my $desktop-info = g_desktop_app_info_new_from_keyfile($keyfile);
+
+    $desktop-info ?? self.bless( :$desktop-info ) !! Nil;
   }
 
   method get_action_name (Str() $action_name) is also<get-action-name> {
@@ -66,18 +72,20 @@ class GIO::DesktopAppInfo {
 
   method get_implementations (
     GIO::DesktopAppInfo:U:
-    Str() $interface,
-    :$glist = False,
-    :$raw = False
+    Str()                  $interface,
+                           :$glist    = False,
+                           :$raw      = False
   )
     is also<get-implementations>
   {
     my $il = g_desktop_app_info_get_implementations($interface);
 
     return Nil unless $il;
-    return $il if     $glist;
+    return $il if     $glist && $raw;
 
     $il = $il but GLib::Roles::ListData[GDesktopAppInfo];
+    return $il if $glist;
+
     $raw ?? $il.Array !! $il.Array.map({ GIO::DesktopAppInfo.new($_) });
   }
 
@@ -126,7 +134,7 @@ class GIO::DesktopAppInfo {
   }
 
   method launch_action (
-    Str() $action_name,
+    Str()               $action_name,
     GAppLaunchContext() $launch_context
   )
     is also<launch-action>
@@ -139,12 +147,29 @@ class GIO::DesktopAppInfo {
   { * }
 
   multi method launch_uris_as_manager (
-    GList() $uris,
-    GAppLaunchContext() $launch_context,
-    GSpawnFlags $spawn_flags,
-    GDesktopAppLaunchCallback &pid_callback = Callable,
-    gpointer $pid_callback_data             = gpointer,
-    CArray[Pointer[GError]] $error          = gerror
+                            @uris,
+    GAppLaunchContext()     $launch_context,
+    Int()                   $spawn_flags,
+                            &pid_callback      = Callable,
+    gpointer                $pid_callback_data = gpointer,
+    CArray[Pointer[GError]] $error             = gerror
+  ) {
+    samewith(
+      GLib::GList.new(@uris),
+      $launch_context,
+      $spawn_flags,
+      &pid_callback,
+      $pid_callback_data,
+      $error
+    );
+  }
+  multi method launch_uris_as_manager (
+    GList()                   $uris,
+    GAppLaunchContext()       $launch_context,
+    GSpawnFlags               $spawn_flags,
+    GDesktopAppLaunchCallback &pid_callback      = Callable,
+    gpointer                  $pid_callback_data = gpointer,
+    CArray[Pointer[GError]]   $error             = gerror
   ) {
     samewith(
       $uris,
@@ -158,21 +183,23 @@ class GIO::DesktopAppInfo {
     );
   }
   multi method launch_uris_as_manager (
-    GList() $uris,
-    GAppLaunchContext() $launch_context,
-    GSpawnFlags $spawn_flags,
-    GSpawnChildSetupFunc &user_setup        = Callable,
-    gpointer $user_setup_data               = gpointer,
-    GDesktopAppLaunchCallback &pid_callback = Callable,
-    gpointer $pid_callback_data             = gpointer,
-    CArray[Pointer[GError]] $error          = gerror
+    GList()                 $uris,
+    GAppLaunchContext()     $launch_context,
+    Int()                   $spawn_flags,
+                            &user_setup        = Callable,
+    gpointer                $user_setup_data   = gpointer,
+                            &pid_callback      = Callable,
+    gpointer                $pid_callback_data = gpointer,
+    CArray[Pointer[GError]] $error             = gerror
   ) {
+    my GSpawnFlags $s = $spawn_flags;
+
     clear_error;
     my $rv = so g_desktop_app_info_launch_uris_as_manager(
       $!dai,
       $uris,
       $launch_context,
-      $spawn_flags,
+      $s,
       &user_setup,
       $user_setup_data,
       &pid_callback,
@@ -188,20 +215,38 @@ class GIO::DesktopAppInfo {
   { * }
 
   multi method launch_uris_as_manager_with_fds (
-    GList() $uris,
-    GAppLaunchContext() $launch_context,
-    GSpawnFlags $spawn_flags,
-    GDesktopAppLaunchCallback &pid_callback,
-    Int() $stdin_fd                = -1,
-    Int() $stdout_fd               = -1,
-    Int() $stderr_fd               = -1,
-    CArray[Pointer[GError]] $error = gerror
+                              @uris,
+    GAppLaunchContext()       $launch_context,
+    Int()                     $spawn_flags,
+    Int()                     $stdin_fd       = -1,
+    Int()                     $stdout_fd      = -1,
+    Int()                     $stderr_fd      = -1,
+    CArray[Pointer[GError]]   $error          = gerror
+  ) {
+    samewith(
+      GLib::GList.new(@uris),
+      $launch_context,
+      $spawn_flags,
+      $stdin_fd,
+      $stdout_fd,
+      $stderr_fd,
+      $error
+    )
+  }
+  multi method launch_uris_as_manager_with_fds (
+    GList()                   $uris,
+    GAppLaunchContext()       $launch_context,
+    Int()                     $spawn_flags,
+    Int()                     $stdin_fd       = -1,
+    Int()                     $stdout_fd      = -1,
+    Int()                     $stderr_fd      = -1,
+    CArray[Pointer[GError]]   $error          = gerror
   ) {
     samewith(
       $uris,
       $launch_context,
       $spawn_flags,
-      &pid_callback,
+      Callable,
       gpointer,
       $stdin_fd,
       $stdout_fd,
@@ -210,15 +255,38 @@ class GIO::DesktopAppInfo {
     );
   }
   multi method launch_uris_as_manager_with_fds (
-    GList() $uris,
-    GAppLaunchContext() $launch_context,
-    GSpawnFlags $spawn_flags,
-    GDesktopAppLaunchCallback &pid_callback,
-    gpointer $pid_callback_data,
-    Int() $stdin_fd                = -1,
-    Int() $stdout_fd               = -1,
-    Int() $stderr_fd               = -1,
-    CArray[Pointer[GError]] $error = gerror
+                            @uris,
+    GAppLaunchContext()     $launch_context,
+    Int()                   $spawn_flags,
+                            &pid_callback,
+    gpointer                $pid_callback_data,
+    Int()                   $stdin_fd          = -1,
+    Int()                   $stdout_fd         = -1,
+    Int()                   $stderr_fd         = -1,
+    CArray[Pointer[GError]] $error             = gerror
+  ) {
+    samewith(
+      GLib::GList.new(@uris),
+      $launch_context,
+      $spawn_flags,
+      &pid_callback,
+      $pid_callback_data,
+      $stdin_fd,
+      $stdout_fd,
+      $stderr_fd,
+      $error
+    );
+  }
+  multi method launch_uris_as_manager_with_fds (
+    GList()                 $uris,
+    GAppLaunchContext()     $launch_context,
+    Int()                   $spawn_flags,
+                            &pid_callback,
+    gpointer                $pid_callback_data,
+    Int()                   $stdin_fd          = -1,
+    Int()                   $stdout_fd         = -1,
+    Int()                   $stderr_fd         = -1,
+    CArray[Pointer[GError]] $error             = gerror
   ) {
     samewith(
       $uris,
@@ -235,18 +303,46 @@ class GIO::DesktopAppInfo {
     );
   }
   multi method launch_uris_as_manager_with_fds (
-    GList() $uris,
-    GAppLaunchContext() $launch_context,
-    GSpawnFlags $spawn_flags,
-    GSpawnChildSetupFunc $user_setup,
-    gpointer $user_setup_data,
-    GDesktopAppLaunchCallback &pid_callback,
-    gpointer $pid_callback_data,
-    Int() $stdin_fd                = -1,
-    Int() $stdout_fd               = -1,
-    Int() $stderr_fd               = -1,
-    CArray[Pointer[GError]] $error = gerror
+                            @uris,
+    GAppLaunchContext()     $launch_context,
+    Int()                   $spawn_flags,
+                            &user_setup,
+    gpointer                $user_setup_data,
+                            &pid_callback,
+    gpointer                $pid_callback_data,
+    Int()                   $stdin_fd          = -1,
+    Int()                   $stdout_fd         = -1,
+    Int()                   $stderr_fd         = -1,
+    CArray[Pointer[GError]] $error             = gerror
   ) {
+    samewith(
+      GLib::GList.new(@uris),
+      $launch_context,
+      $spawn_flags,
+      &user_setup,
+      $user_setup_data,
+      &pid_callback,
+      $pid_callback_data,
+      $stdin_fd,
+      $stdout_fd,
+      $stderr_fd,
+      $error
+    );
+  }
+  multi method launch_uris_as_manager_with_fds (
+    GList()                 $uris,
+    GAppLaunchContext()     $launch_context,
+    Int()                   $spawn_flags,
+                            &user_setup,
+    gpointer                $user_setup_data,
+                            &pid_callback,
+    gpointer                $pid_callback_data,
+    Int()                   $stdin_fd          = -1,
+    Int()                   $stdout_fd         = -1,
+    Int()                   $stderr_fd         = -1,
+    CArray[Pointer[GError]] $error             = gerror
+  ) {
+    my GSpawnFlags $s = $spawn_flags,
     my gint ($si, $so, $se) = ($stdin_fd, $stdout_fd, $stderr_fd);
 
     clear_error;
@@ -254,8 +350,8 @@ class GIO::DesktopAppInfo {
       $!dai,
       $uris,
       $launch_context,
-      $spawn_flags,
-      $user_setup,
+      $s,
+      &user_setup,
       $user_setup_data,
       &pid_callback,
       $pid_callback_data,
