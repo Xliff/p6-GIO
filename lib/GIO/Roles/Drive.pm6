@@ -30,7 +30,7 @@ role GIO::Roles::Drive {
   { $!d }
 
   method new-drive-obj (GDrive $drive) is also<new_drive_obj> {
-    self.bless( :$drive );
+    $drive ?? self.bless( :$drive ) !! Nil;
   }
 
   # Is originally:
@@ -82,29 +82,36 @@ role GIO::Roles::Drive {
   { * }
 
   multi method eject_with_operation (
-    Int() $flags,
-    Int() $mount_operation,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Int()               $flags,
+    Int()               $mount_operation,
+                        &callback,
+    gpointer            $user_data        = gpointer
   ) {
-    samewith($flags, $mount_operation, GCancellable, $callback, $user_data);
+    samewith($flags, $mount_operation, GCancellable, &callback, $user_data);
   }
   multi method eject_with_operation (
-    Int() $flags,
-    Int() $mount_operation,
-    GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Int()               $flags,
+    Int()               $mount_operation,
+    GCancellable()      $cancellable,
+                        &callback,
+    gpointer            $user_data        = gpointer
   ) {
     my GMountUnmountFlags $f = $flags;
-    my GMountOperation $m = $mount_operation;
+    my GMountOperation    $m = $mount_operation;
 
-    g_drive_eject_with_operation($!d, $flags, $mount_operation, $cancellable, $callback, $user_data);
+    g_drive_eject_with_operation(
+      $!d,
+      $f,
+      $m,
+      $cancellable,
+      &callback,
+      $user_data
+    );
   }
 
   method eject_with_operation_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<eject-with-operation-finish>
   {
@@ -122,7 +129,7 @@ role GIO::Roles::Drive {
     my $i = g_drive_get_icon($!d);
 
     $i ??
-      ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i) )
+      ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i, :!ref) )
       !!
       Nil;
   }
@@ -147,7 +154,7 @@ role GIO::Roles::Drive {
     my $i = g_drive_get_symbolic_icon($!d);
 
     $i ??
-      ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i) )
+      ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i, :!ref) )
       !!
       Nil;
   }
@@ -159,17 +166,16 @@ role GIO::Roles::Drive {
   }
 
   method get_volumes (:$glist = False, :$raw = False) is also<get-volumes> {
-    my $vl = g_drive_get_volumes($!d)
-      but GLib::Roles::ListData[GVolume];
+    my $vl = g_drive_get_volumes($!d);
 
+    return Nil unless $vl;
+    return $vl if     $glist && $raw;
+
+    $vl = GLib::GList.new($vl) but GLib::Roles::ListData[GVolume];
     return $vl if $glist;
 
-    $vl ??
-      ( $raw ??
-        $vl.Array !!
-        $vl.Array.map({ GIO::Roles::Volume.new-volume-obj($_) }) )
-      !!
-      Nil
+    $raw ?? $vl.Array
+         !! $vl.Array.map({ GIO::Roles::Volume.new-volume-obj($_) });
   }
 
   method has_media is also<has-media> {
@@ -197,22 +203,22 @@ role GIO::Roles::Drive {
   { * }
 
   multi method poll_for_media (
-    GAsyncReadyCallback $callback,
+             &callback,
     gpointer $user_data = gpointer
   ) {
-    samewith(GCancellable, $callback, $user_data);
+    samewith(GCancellable, &callback, $user_data);
   }
   multi method poll_for_media (
     GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+                   &callback,
+    gpointer       $user_data = gpointer
   ) {
-    g_drive_poll_for_media($!d, $cancellable, $callback, $user_data);
+    g_drive_poll_for_media($!d, $cancellable, &callback, $user_data);
   }
 
   method poll_for_media_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<poll-for-media-finish>
   {
@@ -223,29 +229,29 @@ role GIO::Roles::Drive {
   }
 
   multi method start (
-    Int() $flags,
-    Int() $mount_operation,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Int()    $flags,
+    Int()    $mount_operation,
+             &callback,
+    gpointer $user_data        = gpointer
   ) {
-    samewith($flags, $mount_operation, GCancellable, $callback, $user_data);
+    samewith($flags, $mount_operation, GCancellable, &callback, $user_data);
   }
   multi method start (
-    Int() $flags,
-    Int() $mount_operation,
+    Int()          $flags,
+    Int()          $mount_operation,
     GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+                   &callback,
+    gpointer       $user_data        = gpointer
   ) {
     my GDriveStartFlags $f = $flags;
-    my GMountOperation $m = $mount_operation;
+    my GMountOperation  $m = $mount_operation;
 
-    g_drive_start($!d, $f, $m, $cancellable, $callback, $user_data);
+    g_drive_start($!d, $f, $m, $cancellable, &callback, $user_data);
   }
 
   method start_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<start-finish>
   {
@@ -256,34 +262,34 @@ role GIO::Roles::Drive {
   }
 
   multi method stop (
-    Int() $flags,
-    Int() $mount_operation,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Int()               $flags,
+    Int()               $mount_operation,
+                        &callback,
+    gpointer            $user_data = gpointer
   ) {
-    samewith($flags, $mount_operation, GCancellable, $callback, $user_data);
+    samewith($flags, $mount_operation, GCancellable, &callback, $user_data);
   }
   method stop (
-    Int() $flags,
-    Int() $mount_operation,
-    GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Int()               $flags,
+    Int()               $mount_operation,
+    GCancellable()      $cancellable,
+                        &callback,
+    gpointer            $user_data = gpointer
   ) {
     my GMountUnmountFlags $f = $flags;
-    my GMountOperation $m = $mount_operation;
+    my GMountOperation    $m = $mount_operation;
 
-    g_drive_stop($!d, $f, $m, $cancellable, $callback, $user_data);
+    g_drive_stop($!d, $f, $m, $cancellable, &callback, $user_data);
   }
 
   method stop_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<stop-finish>
   {
     clear_error;
-    my $rv = g_drive_stop_finish($!d, $result, $error);
+    my $rv = so g_drive_stop_finish($!d, $result, $error);
     set_error($error);
     $rv;
   }
