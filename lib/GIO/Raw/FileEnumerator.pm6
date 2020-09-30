@@ -2,13 +2,18 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::FileEnumerator;
 
 sub g_file_enumerator_close (
-  GFileEnumerator $enumerator,
-  GCancellable $cancellable,
+  GFileEnumerator         $enumerator,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -17,19 +22,19 @@ sub g_file_enumerator_close (
 { * }
 
 sub g_file_enumerator_close_async (
-  GFileEnumerator $enumerator,
-  gint $io_priority,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GFileEnumerator     $enumerator,
+  gint                $io_priority,
+  GCancellable        $cancellable,
+                      &callback (GFileEnumerator, GAsyncResult, gpointer),
+  gpointer            $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_file_enumerator_close_finish (
-  GFileEnumerator $enumerator,
-  GAsyncResult $result,
+  GFileEnumerator         $enumerator,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -68,10 +73,10 @@ sub g_file_enumerator_is_closed (GFileEnumerator $enumerator)
 { * }
 
 sub g_file_enumerator_iterate (
-  GFileEnumerator $direnum,
-  GFileInfo $out_info,
-  GFile $out_child,
-  GCancellable $cancellable,
+  GFileEnumerator         $direnum,
+  GFileInfo               $out_info,
+  GFile                   $out_child,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -80,8 +85,8 @@ sub g_file_enumerator_iterate (
 { * }
 
 sub g_file_enumerator_next_file (
-  GFileEnumerator $enumerator,
-  GCancellable $cancellable,
+  GFileEnumerator         $enumerator,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GFileInfo
@@ -91,19 +96,19 @@ sub g_file_enumerator_next_file (
 
 sub g_file_enumerator_next_files_async (
   GFileEnumerator $enumerator,
-  gint $num_files,
-  gint $io_priority,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  gint            $num_files,
+  gint            $io_priority,
+  GCancellable    $cancellable,
+                  &callback (GFileEnumerator, GAsyncResult, gpointer),
+  gpointer        $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_file_enumerator_next_files_finish (
-  GFileEnumerator $enumerator,
-  GAsyncResult $result,
+  GFileEnumerator         $enumerator,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns GList
@@ -113,7 +118,7 @@ sub g_file_enumerator_next_files_finish (
 
 sub g_file_enumerator_set_pending (
   GFileEnumerator $enumerator,
-  gboolean $pending
+  gboolean        $pending
 )
   is native(gio)
   is export
