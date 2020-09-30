@@ -17,11 +17,17 @@ class GIO::FileAttributeMatcher {
     is also<GFileAttributeMatcher>
   { $!fam }
 
-  multi method new (GFileAttributeMatcher $matcher) {
-    self.bless( :$matcher );
+  multi method new (GFileAttributeMatcher $matcher, :$ref = True) {
+    return Nil unless $matcher;
+    
+    my $o = self.bless( :$matcher );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (Str() $attributes) {
-    self.bless( matcher => g_file_attribute_matcher_new($attributes) );
+    my $matcher = g_file_attribute_matcher_new($attributes);
+
+    $matcher ?? self.bless( :$matcher ) !! Nil;
   }
 
   method enumerate_namespace (Str() $ns) is also<enumerate-namespace> {
@@ -51,10 +57,13 @@ class GIO::FileAttributeMatcher {
     self;
   }
 
-  method subtract (GFileAttributeMatcher() $subtract) {
-    GIO::FileAttributeMatcher.new(
-      g_file_attribute_matcher_subtract($!fam, $subtract)
-    );
+  method subtract (GFileAttributeMatcher() $subtract, :$raw = False) {
+    my $fam = g_file_attribute_matcher_subtract($!fam, $subtract);
+
+    $fam ??
+      ( $raw ?? $fam !! GIO::FileAttributeMatcher.new($fam, :!ref) )
+      !!
+      Nil;
   }
 
   method to_string
