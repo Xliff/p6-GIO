@@ -25,7 +25,14 @@ class GIO::FileInfo {
     is also<GFileInfo>
   { $!fi }
 
-  method new {
+  multi method new (GFileInfo $info, :$ref = True) {
+    return Nil unless $info;
+    
+    my $o = self.bless( :$ref );
+    $o.ref if $ref;
+    $o;
+  }
+  multi method new {
     my $info = g_file_info_new();
 
     $info ?? self.bless( :$info ) !! Nil;
@@ -196,7 +203,10 @@ class GIO::FileInfo {
 
     die 'Could not duplicate GFileInfo in dup!' unless $d;
 
-    $raw ?? $d !! GIO::FileInfo.new($d);
+    $d ??
+      ( $raw ?? $d !! GIO::FileInfo.new($d) )
+      !!
+      Nil;
   }
 
   method get_attribute_as_string (Str() $attribute)
@@ -256,7 +266,6 @@ class GIO::FileInfo {
     my $o = g_file_info_get_attribute_object($!fi, $attribute);
 
     $o ??
-      # Yet another name for a common option...
       ( $raw ?? $o !! GLib::Roles::Object.new-object-obj($o) )
       !!
       Nil;

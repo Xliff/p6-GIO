@@ -2,8 +2,13 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
-
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::FileInfo;
 
@@ -25,7 +30,7 @@ sub g_file_info_dup (GFileInfo $other)
 
 sub g_file_attribute_matcher_enumerate_namespace (
   GFileAttributeMatcher $matcher,
-  Str $ns
+  Str                   $ns
 )
   returns uint32
   is native(gio)
@@ -46,7 +51,7 @@ sub g_file_attribute_matcher_get_type ()
 
 sub g_file_attribute_matcher_matches (
   GFileAttributeMatcher $matcher,
-  Str $attribute
+  Str                   $attribute
 )
   returns uint32
   is native(gio)
@@ -55,7 +60,7 @@ sub g_file_attribute_matcher_matches (
 
 sub g_file_attribute_matcher_matches_only (
   GFileAttributeMatcher $matcher,
-  Str $attribute
+  Str                   $attribute
 )
   returns uint32
   is native(gio)
@@ -113,10 +118,10 @@ sub g_file_info_get_attribute_byte_string (GFileInfo $info, Str $attribute)
 { * }
 
 sub g_file_info_get_attribute_data (
-  GFileInfo $info,
-  Str $attribute,
-  GFileAttributeType $type,
-  gpointer $value_pp,
+  GFileInfo            $info,
+  Str                  $attribute,
+  GFileAttributeType   $type,
+  gpointer             $value_pp,
   GFileAttributeStatus $status
 )
   returns uint32
@@ -237,10 +242,10 @@ sub g_file_info_remove_attribute (GFileInfo $info, Str $attribute)
 { * }
 
 sub g_file_info_set_attribute (
-  GFileInfo $info,
-  Str $attribute,
+  GFileInfo          $info,
+  Str                $attribute,
   GFileAttributeType $type,
-  gpointer $value_p
+  gpointer           $value_p
 )
   is native(gio)
   is export
@@ -248,8 +253,8 @@ sub g_file_info_set_attribute (
 
 sub g_file_info_set_attribute_boolean (
   GFileInfo $info,
-  Str $attribute,
-  gboolean $attr_value
+  Str       $attribute,
+  gboolean  $attr_value
 )
   is native(gio)
   is export
@@ -257,8 +262,8 @@ sub g_file_info_set_attribute_boolean (
 
 sub g_file_info_set_attribute_byte_string (
   GFileInfo $info,
-  Str $attribute,
-  Str $attr_value
+  Str       $attribute,
+  Str       $attr_value
 )
   is native(gio)
   is export
@@ -266,8 +271,8 @@ sub g_file_info_set_attribute_byte_string (
 
 sub g_file_info_set_attribute_int32 (
   GFileInfo $info,
-  Str $attribute,
-  gint32 $attr_value
+  Str       $attribute,
+  gint32    $attr_value
 )
   is native(gio)
   is export
@@ -275,15 +280,15 @@ sub g_file_info_set_attribute_int32 (
 
 sub g_file_info_set_attribute_int64 (
   GFileInfo $info,
-  Str $attribute,
-  gint64 $attr_value
+  Str       $attribute,
+  gint64    $attr_value
 )
   is native(gio)
   is export
 { * }
 
 sub g_file_info_set_attribute_mask (
-  GFileInfo $info,
+  GFileInfo             $info,
   GFileAttributeMatcher $mask
 )
   is native(gio)
@@ -292,16 +297,16 @@ sub g_file_info_set_attribute_mask (
 
 sub g_file_info_set_attribute_object (
   GFileInfo $info,
-  Str $attribute,
-  GObject $attr_value
+  Str       $attribute,
+  GObject   $attr_value
 )
   is native(gio)
   is export
 { * }
 
 sub g_file_info_set_attribute_status (
-  GFileInfo $info,
-  Str $attribute,
+  GFileInfo            $info,
+  Str                  $attribute,
   GFileAttributeStatus $status
 )
   returns uint32
@@ -311,8 +316,8 @@ sub g_file_info_set_attribute_status (
 
 sub g_file_info_set_attribute_string (
   GFileInfo $info,
-  Str $attribute,
-  Str $attr_value
+  Str       $attribute,
+  Str       $attr_value
 )
   is native(gio)
   is export
@@ -320,8 +325,8 @@ sub g_file_info_set_attribute_string (
 
 sub g_file_info_set_attribute_stringv (
   GFileInfo $info,
-  Str $attribute,
-  Str $attr_value
+  Str       $attribute,
+  Str       $attr_value
 )
   is native(gio)
   is export
@@ -329,8 +334,8 @@ sub g_file_info_set_attribute_stringv (
 
 sub g_file_info_set_attribute_uint32 (
   GFileInfo $info,
-  Str $attribute,
-  guint32 $attr_value
+  Str       $attribute,
+  guint32   $attr_value
 )
   is native(gio)
   is export
@@ -338,8 +343,8 @@ sub g_file_info_set_attribute_uint32 (
 
 sub g_file_info_set_attribute_uint64 (
   GFileInfo $info,
-  Str $attribute,
-  guint64 $attr_value
+  Str       $attribute,
+  guint64   $attr_value
 )
   is native(gio)
   is export
