@@ -31,10 +31,10 @@ sub g_memory_output_stream_get_type ()
 { * }
 
 sub g_memory_output_stream_new (
-  gpointer $data,
-  gsize $size,
-  GReallocFunc $realloc_function,
-  GDestroyNotify $destroy_function
+  gpointer     $data,
+  gsize        $size,
+               &realloc_function (Pointer, gsize --> Pointer),
+               &destroy_function (Pointer)
 )
   returns GOutputStream
   is native(gio)
