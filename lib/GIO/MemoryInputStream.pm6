@@ -12,7 +12,7 @@ use GIO::InputStream;
 use GIO::Roles::Seekable;
 use GIO::Roles::PollableInputStream;
 
-our subset MemoryInputStreamAncestry is export of Mu
+our subset GMemoryInputStreamAncestry is export of Mu
   where GMemoryInputStream | GPollableInputStream | GSeekable | GInputStream;
 
 class GIO::MemoryInputStream is GIO::InputStream {
@@ -22,26 +22,16 @@ class GIO::MemoryInputStream is GIO::InputStream {
   has GMemoryInputStream $!mis is implementor;
 
   submethod BUILD (:$memory-stream) {
-    given $memory-stream {
-      when MemoryInputStreamAncestry {
-        self.setMemoryInputStream($memory-stream);
-      }
-
-      when GIO::MemoryInputStream {
-      }
-
-      default {
-      }
-    }
+    self.setMemoryInputStream($memory-stream) if $memory-stream;
   }
 
-  method setMemoryInputStream (MemoryInputStreamAncestry $_) {
+  method setMemoryInputStream (GMemoryInputStreamAncestry $_) {
     my $to-parent;
 
     $!mis = do {
       when GMemoryInputStream {
         $to-parent = cast(GInputStream, $_);
-        $_
+        $_;
       }
 
       when GSeekable {
@@ -70,29 +60,40 @@ class GIO::MemoryInputStream is GIO::InputStream {
     is also<GMemoryInputStream>
   { $!mis }
 
-  multi method new (GMemoryInputStream $memory-stream) {
-    self.bless( :$memory-stream );
+  multi method new (GMemoryInputStreamAncestry $memory-stream, :$ref = True) {
+    return unless $memory-stream;
+
+    my $o = self.bless( :$memory-stream );
+    $o.ref if $ref;
+    $o;
   }
   multi method new {
-    self.bless( memory-stream => g_memory_input_stream_new() );
+    my $memory-stream = g_memory_input_stream_new();
+
+    $memory-stream ?? self.bless( :$memory-stream ) !! Nil;
   }
 
   method new_from_bytes (GBytes() $bytes) is also<new-from-bytes> {
-    self.bless( memory-stream => g_memory_input_stream_new_from_bytes($bytes) );
+    my $memory-stream = g_memory_input_stream_new_from_bytes($bytes);
+
+    $memory-stream ?? self.bless( :$memory-stream ) !! Nil;
   }
 
   method new_from_data (
-    Blob() $data,
-    Int() $len = -1,
+    Blob()         $data,
+    Int()          $len     = -1,
     GDestroyNotify $destroy = Pointer
   )
     is also<new-from-data>
   {
     my gssize $l = $len;
-
-    self.bless(
-      memory-stream => g_memory_input_stream_new_from_data($data, $l, $destroy)
+    my $memory-stream = g_memory_input_stream_new_from_data(
+      $data,
+      $l,
+      $destroy
     );
+
+    $memory-stream ?? self.bless( :$memory-stream ) !! Nil;
   }
 
   method add_bytes (GBytes() $bytes) is also<add-bytes> {
@@ -100,8 +101,8 @@ class GIO::MemoryInputStream is GIO::InputStream {
   }
 
   method add_data (
-    Blob() $data,
-    Int() $len,
+    Blob()         $data,
+    Int()          $len     = -1,
     GDestroyNotify $destroy = Pointer
   )
     is also<add-data>

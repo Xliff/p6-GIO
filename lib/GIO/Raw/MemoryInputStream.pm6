@@ -8,7 +8,7 @@ unit package GIO::Raw::MemoryInputStream;
 
 sub g_memory_input_stream_add_bytes (
   GMemoryInputStream $stream,
-  GBytes $bytes
+  GBytes             $bytes
 )
   is native(gio)
   is export
@@ -16,9 +16,9 @@ sub g_memory_input_stream_add_bytes (
 
 sub g_memory_input_stream_add_data (
   GMemoryInputStream $stream,
-  Pointer $data,
-  gssize $len,
-  GDestroyNotify $destroy
+  Pointer            $data,
+  gssize             $len,
+  GDestroyNotify     $destroy
 )
   is native(gio)
   is export
@@ -43,8 +43,8 @@ sub g_memory_input_stream_new_from_bytes (GBytes $bytes)
 { * }
 
 sub g_memory_input_stream_new_from_data (
-  Blob $data,
-  gssize $len,
+  Blob           $data,
+  gssize         $len,
   GDestroyNotify $destroy
 )
   returns GMemoryInputStream
