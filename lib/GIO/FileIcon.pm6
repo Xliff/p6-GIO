@@ -1,7 +1,6 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
@@ -11,7 +10,8 @@ use GIO::Roles::GFile;
 use GIO::Roles::Icon;
 use GIO::Roles::LoadableIcon;
 
-# Does roles so Ancestry logic?
+our subset GFileIconAncestry is export of Mu
+  where GFileIcon | GLoadableIcon | GIcon | GObject;
 
 class GIO::FileIcon {
   also does GLib::Roles::Object;
@@ -21,24 +21,55 @@ class GIO::FileIcon {
   has GFileIcon $!fi is implementor;
 
   submethod BUILD (:$fileicon) {
-    $!fi = $fileicon;
+    self.setGFileIcon($fileicon) if $fileicon;
+  }
 
-    # See note in TODO about making this even easier!
-    self.roleInit-Object;
+  method setGFileIcon (GFileIconAncestry $_) {
+    my $to-parent;
+
+    $!fi = do {
+      when GFileIcon {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      when GIcon {
+        $to-parent = cast(GObject, $_);
+        $!icon = $_;
+        cast(GFileIcon, $_);
+      }
+
+      when GLoadableIcon {
+        $to-parent = cast(GObject, $_);
+        $!li = $_;
+        cast(GFileIcon, $_);
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GFileIcon, $_);
+      }
+    }
+
     self.roleInit-Icon;
     self.roleInit-LoadableIcon;
-    #say "FI: $!fi";
   }
 
   method GIO::Raw::Definitions::GFileIcon
     is also<GFileIcon>
   { $!fi }
 
-  multi method new (GFileIcon $fileicon) {
-    self.bless( :$fileicon );
+  multi method new (GFileIconAncestry $fileicon, :$ref = True) {
+    return Nil unless $fileicon;
+
+    my $o = self.bless( :$fileicon );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (GFile() $icon) {
-    self.bless( fileicon => g_file_icon_new($icon) );
+    my $fileicon = g_file_icon_new($icon);
+
+    $fileicon ?? self.bless( :$fileicon ) !! Nil;
   }
 
   method get_file (:$raw = False)
@@ -50,7 +81,7 @@ class GIO::FileIcon {
     my $f = g_file_icon_get_file($!fi);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::GFile.new-file-obj($f) )
+      ( $raw ?? $f !! GIO::Roles::GFile.new-file-obj($f, :!ref) )
       !!
       Nil;
   }
@@ -80,3 +111,8 @@ sub g_file_icon_new (GFile $file)
   is native(gio)
   is export
 { * }
+
+# our %GIO::FileIcon::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::FileIcon::RAW-DEFS{.key} := .value if .key.starts-with('&g_file_icon_');
+# }
