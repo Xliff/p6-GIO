@@ -8,6 +8,9 @@ use GIO::Raw::MountOperation;
 use GLib::Roles::Object;
 use GIO::Roles::Signals::MountOperation;
 
+our subset GMountOperationAncestry is export of Mu
+  where GMountOperation | GObject;
+
 class GIO::MountOperation {
   also does GLib::Roles::Object;
   also does GIO::Roles::Signals::MountOperation;
@@ -15,21 +18,41 @@ class GIO::MountOperation {
   has GMountOperation $!mo is implementor;
 
   submethod BUILD (:$mount-op) {
-    $!mo = $mount-op;
+    self.setGMountOperation($mount-op) if $mount-op;
+  }
 
-    self.roleInit-Object;
+  method setGMountOperation (GMountOperationAncestry $_) {
+    my $to-parent;
+
+    $!mo = do {
+      when GMountOperation {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GMountOperation, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GMountOperation
     is also<GMountOperation>
   { $!mo }
 
-  multi method new (GMountOperation $mount-op) {
-    self.bless( :$mount-op );
+  multi method new (GMountOperation $mount-op, :$ref = True) {
+    return Nil unless $mount-op;
+
+    my $o = self.bless( :$mount-op );
+    $o.ref if $ref;
+    $o;
   }
   multi method new {
-    my $mo = g_mount_operation_new();
-    self.bless( mount-op =>  $mo) if $mo;
+    my $mount-op = g_mount_operation_new();
+
+    $mount-op ?? self.bless( :$mount-op ) !! Nil;
   }
 
   method anonymous is rw {
@@ -38,7 +61,7 @@ class GIO::MountOperation {
         so g_mount_operation_get_anonymous($!mo);
       },
       STORE => sub ($, $anonymous is copy) {
-        my gboolean $a = $anonymous;
+        my gboolean $a = $anonymous.so.Int;
 
         g_mount_operation_set_anonymous($!mo, $a);
       }
@@ -75,7 +98,7 @@ class GIO::MountOperation {
         so g_mount_operation_get_is_tcrypt_hidden_volume($!mo);
       },
       STORE => sub ($, Int() $hidden_volume is copy) {
-        my gboolean $hv = $hidden_volume;
+        my gboolean $hv = $hidden_volume.so.Int;
 
         g_mount_operation_set_is_tcrypt_hidden_volume($!mo, $hv);
       }
@@ -88,7 +111,7 @@ class GIO::MountOperation {
         so g_mount_operation_get_is_tcrypt_system_volume($!mo);
       },
       STORE => sub ($, Int() $system_volume is copy) {
-        my gboolean $sv = $system_volume;
+        my gboolean $sv = $system_volume.so.Int;
 
         g_mount_operation_set_is_tcrypt_system_volume($!mo, $sv);
       }
@@ -150,13 +173,13 @@ class GIO::MountOperation {
   }
 
   # Is originally:
-  # GMountOperation, gchar, gchar, gchar, GAskPasswordFlags, gpointer --> void
+  # GMountOperation, Str, gchar, gchar, GAskPasswordFlags, gpointer --> void
   method ask-password is also<ask_password> {
     self.connect-ask-password($!mo);
   }
 
   # Is originally:
-  # GMountOperation, gchar, GStrv, gpointer --> void
+  # GMountOperation, Str, GStrv, gpointer --> void
   method ask-question is also<ask_question> {
     self.connect-ask-question($!mo);
   }
@@ -168,13 +191,13 @@ class GIO::MountOperation {
   }
 
   # Is originally:
-  # GMountOperation, gchar, GArray, GStrv, gpointer --> void
+  # GMountOperation, Str, GArray, GStrv, gpointer --> void
   method show-processes is also<show_processes> {
     self.connect-show-processes($!mo);
   }
 
   # Is originally:
-  # GMountOperation, gchar, gint64, gint64, gpointer --> void
+  # GMountOperation, Str, gint64, gint64, gpointer --> void
   method show-unmount-progress is also<show_unmount_progress> {
     self.connect-show-unmount-progress($!mo);
   }
