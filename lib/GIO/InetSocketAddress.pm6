@@ -8,18 +8,19 @@ use GIO::Raw::InetSocketAddress;
 use GIO::InetAddress;
 use GIO::SocketAddress;
 
-our subset InetSocketAddressAncestry is export
-  where GInetSocketAddress | SocketAddressAncestry;
+our subset GInetSocketAddressAncestry is export
+  where GInetSocketAddress | GSocketAddressAncestry;
 
 class GIO::InetSocketAddress is GIO::SocketAddress {
   has GInetSocketAddress $!isa is implementor;
 
   submethod BUILD (:$inetsocketaddr) {
-    self.setInetSocketAddr($inetsocketaddr);
+    self.setInetSocketAddr($inetsocketaddr) if $inetsocketaddr;
   }
 
-  method setInetSocketAddr(InetSocketAddressAncestry $_) {
+  method setInetSocketAddr(GInetSocketAddressAncestry $_) {
     my $to-parent;
+
     $!isa = do {
       when GInetSocketAddress {
         $to-parent = cast(GSocketAddress, $_);
@@ -38,14 +39,18 @@ class GIO::InetSocketAddress is GIO::SocketAddress {
     is also<GInetSocketAddress>
   { $!isa }
 
-  multi method new (InetSocketAddressAncestry $inetsocketaddr) {
-    $inetsocketaddr ?? self.bless( :$inetsocketaddr ) !! Nil;
+  multi method new (GInetSocketAddressAncestry $inetsocketaddr, :$ref = True) {
+    return Nil unless $inetsocketaddr;
+
+    my $o = self.bless( :$inetsocketaddr );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (
     GInetAddress() $address,
-    Int() $port,
-    Int() $flowinfo = 0,
-    Int() $scope_id = 0
+    Int()          $port,
+    Int()          $flowinfo = 0,
+    Int()          $scope_id = 0
   ) {
     my guint16 ($p, $f, $s) = ($port, $flowinfo, $scope_id);
     my $inetsocketaddr = ($flowinfo || $scope_id) ??
@@ -81,7 +86,7 @@ class GIO::InetSocketAddress is GIO::SocketAddress {
     my $a = g_inet_socket_address_get_address($!isa);
 
     $a ??
-      ( $raw ?? $a !! GIO::InetAddress.new($a) )
+      ( $raw ?? $a !! GIO::InetAddress.new($a, :!ref) )
       !!
       Nil;
   }
