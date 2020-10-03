@@ -33,9 +33,9 @@ sub g_menu_freeze (GMenu $menu)
 
 sub g_menu_insert (
   GMenu $menu,
-  gint $position,
-  Str $label,
-  Str $detailed_action
+  gint  $position,
+  Str   $label,
+  Str   $detailed_action
 )
   is native(gio)
   is export
@@ -47,9 +47,9 @@ sub g_menu_insert_item (GMenu $menu, gint $position, GMenuItem $item)
   { * }
 
 sub g_menu_insert_section (
-  GMenu $menu,
-  gint $position,
-  Str $label,
+  GMenu      $menu,
+  gint       $position,
+  Str        $label,
   GMenuModel $section
 )
   is native(gio)
@@ -57,9 +57,9 @@ sub g_menu_insert_section (
   { * }
 
 sub g_menu_insert_submenu (
-  GMenu $menu,
-  gint $position,
-  Str $label,
+  GMenu      $menu,
+  gint       $position,
+  Str        $label,
   GMenuModel $submenu
 )
   is native(gio)
@@ -68,8 +68,8 @@ sub g_menu_insert_submenu (
 
 sub g_menu_item_get_attribute_value (
   GMenuItem $menu_item,
-  Str $attribute,
-  uint32 $expected_type       # GVariantType $expected_type
+  Str       $attribute,
+  uint32    $expected_type       # GVariantType $expected_type
 )
   returns GVariant
   is native(gio)
@@ -114,8 +114,8 @@ sub g_menu_item_new_submenu (Str $label, GMenuModel $submenu)
 
 sub g_menu_item_set_action_and_target_value (
   GMenuItem $menu_item,
-  Str $action,
-  GVariant $target_value
+  Str       $action,
+  GVariant  $target_value
 )
   is native(gio)
   is export
@@ -123,8 +123,8 @@ sub g_menu_item_set_action_and_target_value (
 
 sub g_menu_item_set_attribute_value (
   GMenuItem $menu_item,
-  Str $attribute,
-  GVariant $value
+  Str       $attribute,
+  GVariant  $value
 )
   is native(gio)
   is export
@@ -132,7 +132,7 @@ sub g_menu_item_set_attribute_value (
 
 sub g_menu_item_set_detailed_action (
   GMenuItem $menu_item,
-  Str $detailed_action
+  Str       $detailed_action
 )
   is native(gio)
   is export
@@ -149,8 +149,8 @@ sub g_menu_item_set_label (GMenuItem $menu_item, Str $label)
   { * }
 
 sub g_menu_item_set_link (
-  GMenuItem $menu_item,
-  Str $link,
+  GMenuItem  $menu_item,
+  Str        $link,
   GMenuModel $model
 )
   is native(gio)

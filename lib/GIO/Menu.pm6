@@ -4,12 +4,11 @@ use Method::Also;
 use NativeCall;
 
 use GIO::Raw::Types;
-
 use GIO::Raw::Menu;
 
 use GIO::MenuModel;
 
-my subset GIOMenuAncestry is export of Mu
+my subset GMenuAncestry is export of Mu
   where GMenu | GMenuModel;
 
 class GIO::Menu is GIO::MenuModel {
@@ -20,39 +19,38 @@ class GIO::Menu is GIO::MenuModel {
   { $!menu }
 
   submethod BUILD(:$menu) {
-    given $menu {
-      when GIOMenuAncestry {
-        my $to-parent;
-        $!menu = do {
-          when GMenu {
-            $to-parent = cast(GMenuModel, $_);
-            $_;
-          }
+    self.setGMenu($menu) if $menu;
+  }
 
-          default {
-            $to-parent = $_;
-            cast(GMenu, $_);
-          }
-        }
-        self.setMenuModel($to-parent);
-      }
+  method setGMenu (GMenuAncestry $_) {
+    my $to-parent;
 
-      when GIO::Menu {
+    $!menu = do {
+      when GMenu {
+        $to-parent = cast(GMenuModel, $_);
+        $_;
       }
 
       default {
+        $to-parent = $_;
+        cast(GMenu, $_);
       }
     }
+    self.setMenuModel($to-parent);
   }
 
+  multi method new (GMenuAncestry $menu, :$ref = True) {
+    return Nil unless $menu;
+    my $o = self.bless( :$menu );
+    $o.ref if $ref;
+    $o;
+  }
   multi method new {
-    my $m = g_menu_new();
+    my $menu = g_menu_new();
 
-    $m ?? self.bless( menu => $m ) !! Nil;
+    $menu ?? self.bless( :$menu ) !! Nil;
   }
-  multi method new (GIOMenuAncestry $menu) {
-    self.bless( :$menu );
-  }
+
 
   # ↓↓↓↓ SIGNALS ↓↓↓↓
   # ↑↑↑↑ SIGNALS ↑↑↑↑
@@ -106,8 +104,8 @@ class GIO::Menu is GIO::MenuModel {
   }
 
   method insert_section (
-    Int() $position,
-    Str() $label,
+    Int()        $position,
+    Str()        $label,
     GMenuModel() $section
   )
     is also<insert-section>
@@ -118,8 +116,8 @@ class GIO::Menu is GIO::MenuModel {
   }
 
   method insert_submenu (
-    Int() $position,
-    Str() $label,
+    Int()        $position,
+    Str()        $label,
     GMenuModel() $submenu
   )
     is also<insert-submenu>
@@ -127,6 +125,36 @@ class GIO::Menu is GIO::MenuModel {
     my gint $p = $position;
 
     g_menu_insert_submenu($!menu, $p, $label, $submenu);
+  }
+
+  method prepend (Str() $label, Str() $detailed_action) {
+    g_menu_prepend($!menu, $label, $detailed_action);
+  }
+
+  method prepend_item (GMenuItem() $item) is also<prepend-item> {
+    g_menu_prepend_item($!menu, $item);
+  }
+
+  method prepend_section (Str() $label, GMenuModel() $section)
+    is also<prepend-section>
+  {
+    g_menu_prepend_section($!menu, $label, $section);
+  }
+
+  method prepend_submenu (Str() $label, GMenuModel() $submenu)
+    is also<prepend-submenu>
+  {
+    g_menu_prepend_submenu($!menu, $label, $submenu);
+  }
+
+  method remove (Int() $position) {
+    my gint $p = $position;
+
+    g_menu_remove($!menu, $p);
+  }
+
+  method remove_all is also<remove-all> {
+    g_menu_remove_all($!menu);
   }
 
   # ↑↑↑↑ METHODS ↑↑↑↑
