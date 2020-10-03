@@ -17,10 +17,10 @@ sub g_list_store_insert (GListStore $store, guint $position, gpointer $item)
 { * }
 
 sub g_list_store_insert_sorted (
-  GListStore $store,
-  gpointer $item,
-  GCompareDataFunc $compare_func,
-  gpointer $user_data
+  GListStore       $store,
+  gpointer         $item,
+                   &compare_func (Pointer, Pointer, Pointer --> gboolean),
+  gpointer         $user_data
 )
   returns guint
   is native(gio)
@@ -44,9 +44,9 @@ sub g_list_store_remove_all (GListStore $store)
 { * }
 
 sub g_list_store_sort (
-  GListStore $store,
-  GCompareDataFunc $compare_func,
-  gpointer $user_data
+  GListStore       $store,
+                   &compare_func (Pointer, Pointer, Pointer --> gboolean),
+  gpointer         $user_data
 )
   is native(gio)
   is export
@@ -54,10 +54,10 @@ sub g_list_store_sort (
 
 sub g_list_store_splice (
   GListStore $store,
-  guint $position,
-  guint $n_removals,
-  gpointer $additions,
-  guint $n_additions
+  guint      $position,
+  guint      $n_removals,
+  gpointer   $additions,
+  guint      $n_additions
 )
   is native(gio)
   is export
