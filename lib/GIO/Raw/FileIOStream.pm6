@@ -21,9 +21,9 @@ sub g_file_io_stream_get_type ()
 { * }
 
 sub g_file_io_stream_query_info (
-  GFileIOStream $stream,
-  Str $attributes,
-  GCancellable $cancellable,
+  GFileIOStream           $stream,
+  Str                     $attributes,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GFileInfo
@@ -33,19 +33,19 @@ sub g_file_io_stream_query_info (
 
 sub g_file_io_stream_query_info_async (
   GFileIOStream $stream,
-  Str $attributes,
-  gint $io_priority,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  Str           $attributes,
+  gint          $io_priority,
+  GCancellable  $cancellable,
+                &callback (GFileIOStream, GAsyncResult, gpointer),
+  gpointer      $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_file_io_stream_query_info_finish (
-  GFileIOStream $stream,
-  GAsyncResult $result,
+  GFileIOStream           $stream,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns GFileInfo

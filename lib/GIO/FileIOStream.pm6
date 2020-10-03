@@ -1,11 +1,9 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
-
 use GIO::Raw::FileIOStream;
 
 use GIO::FileInfo;
@@ -13,7 +11,7 @@ use GIO::Stream;
 
 use GIO::Roles::Seekable;
 
-our subset FileIOStreamAncestry is export of Mu
+our subset GFileIOStreamAncestry is export of Mu
   where GFileIOStream | GSeekable | GIOStream;
 
 class GIO::FileIOStream is GIO::Stream {
@@ -22,27 +20,26 @@ class GIO::FileIOStream is GIO::Stream {
   has GFileIOStream $!fios is implementor;
 
   submethod BUILD (:$fileio-stream) {
-    given $fileio-stream {
-      when FileIOStreamAncestry {
-        self.setFileIOStream($fileio-stream);
+    self.setGFileIOStream($fileio-stream) if $fileio-stream;
+  }
+
+  method setGFileIOStream (GFileIOStreamAncestry $_) is also<setFileIOStream> {
+    my $to-parent;
+
+    $!fios = do {
+      when GFileIOStream {
+        $to-parent = cast(GIOStream, $_);
+        $_
       }
 
-      when GIO::FileIOStream {
+      when GSeekable     {
+        $to-parent = cast(GIOStream, $_);
+        $!s = $_;
+        cast(GFileIOStream, $_);
       }
 
       default {
-      }
-    }
-  }
-
-  method setFileIOStream (FileIOStreamAncestry $_) {
-    my $to-parent;
-    $!fios = do {
-      when GFileIOStream { $to-parent = cast(GIOStream, $_);       $_      }
-      when GSeekable     { $to-parent = cast(GIOStream, $!s = $_); proceed }
-      when GIOStream     { $to-parent = $_;                        proceed }
-
-      when GSeekable | GIOStream {
+        $to-parent = $_;
         cast(GFileIOStream, $_);
       }
     }
@@ -54,8 +51,12 @@ class GIO::FileIOStream is GIO::Stream {
     is also<GFileIOStream>
   { $!fios }
 
-  method new (GFileIOStream $fileio-stream) {
-    self.bless( :$fileio-stream );
+  method new (GFileIOStreamAncestry $fileio-stream, :$ref = True) {
+    return Nil unless $fileio-stream;
+
+    my $o = self.bless( :$fileio-stream );
+    $o.ref if $ref;
+    $o;
   }
 
   method get_etag is also<get-etag> {
@@ -69,9 +70,9 @@ class GIO::FileIOStream is GIO::Stream {
   }
 
   method query_info (
-    Str() $attributes,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
+    Str()                   $attributes,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
     :$raw = False
   )
     is also<query-info>
@@ -86,7 +87,7 @@ class GIO::FileIOStream is GIO::Stream {
     set_error($error);
 
     $fi ??
-      ( $raw ?? $fi !! GIO::FileInfo.new($fi) )
+      ( $raw ?? $fi !! GIO::FileInfo.new($fi, :!ref) )
       !!
       Nil;
   }
@@ -96,19 +97,19 @@ class GIO::FileIOStream is GIO::Stream {
   { * }
 
   multi method query_info_async (
-    Str() $attributes,
-    Int() $io_priority,
-    &callback,
+    Str()    $attributes,
+    Int()    $io_priority,
+             &callback,
     gpointer $user_data = gpointer
   ) {
     samewith($attributes, $io_priority, GCancellable, &callback, $user_data);
   }
   multi method query_info_async (
-    Str() $attributes,
-    Int() $io_priority,
+    Str()          $attributes,
+    Int()          $io_priority,
     GCancellable() $cancellable,
-    &callback,
-    gpointer $user_data = gpointer
+                   &callback,
+    gpointer       $user_data    = gpointer
   ) {
     my gint $i = $io_priority;
 
@@ -123,8 +124,8 @@ class GIO::FileIOStream is GIO::Stream {
   }
 
   method query_info_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror,
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror,
     :$raw = False;
   )
     is also<query-info-finish>
@@ -134,7 +135,7 @@ class GIO::FileIOStream is GIO::Stream {
     set_error($error);
 
     $fi ??
-      ( $raw ?? $fi !! GIO::FileInfo.new($fi) )
+      ( $raw ?? $fi !! GIO::FileInfo.new($fi, :!ref) )
       !!
       Nil;
   }
