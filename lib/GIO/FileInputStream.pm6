@@ -31,7 +31,7 @@ class GIO::FileInputStream is GIO::InputStream {
         cast(GFileInputStream, $_);
       }
     }
-    self.setInputStream($to-parent);
+    self.setGInputStream($to-parent);
   }
 
   method GIO::Raw::Definitions::GFileInputStream
@@ -53,10 +53,10 @@ class GIO::FileInputStream is GIO::InputStream {
   }
 
   method query_info (
-    Str() $attributes,
-    GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    Str()                   $attributes,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
+                            :$raw        = False
   )
     is also<query-info>
   {
@@ -70,7 +70,7 @@ class GIO::FileInputStream is GIO::InputStream {
     set_error($error);
 
     $fi ??
-      ( $raw ?? $fi !! GIO::FileInfo.new($fi) )
+      ( $raw ?? $fi !! GIO::FileInfo.new($fi, :!ref) )
       !!
       Nil;
   }
@@ -80,11 +80,11 @@ class GIO::FileInputStream is GIO::InputStream {
   { * }
 
   multi method query_info_async (
-    Str() $attributes,
-    Int() $io_priority,
-    &callback,
-    gpointer $user_data         = gpointer,
-    GCancellable() $cancellable = GCancellable
+    Str()          $attributes,
+    Int()          $io_priority,
+                   &callback,
+    gpointer       $user_data    = gpointer,
+    GCancellable() $cancellable  = GCancellable
   ) {
     samewith(
       $attributes,
@@ -95,11 +95,11 @@ class GIO::FileInputStream is GIO::InputStream {
     );
   }
   multi method query_info_async (
-    Str() $attributes,
-    Int() $io_priority,
+    Str()          $attributes,
+    Int()          $io_priority,
     GCancellable() $cancellable,
-    &callback,
-    gpointer $user_data = gpointer
+                   &callback,
+    gpointer       $user_data = gpointer
   ) {
     my gint $i = $io_priority;
 
@@ -114,16 +114,16 @@ class GIO::FileInputStream is GIO::InputStream {
   }
 
   method query_info_finish (
-    GAsyncResult() $result,
+    GAsyncResult()          $result,
     CArray[Pointer[GError]] $error,
-    :$raw = False;
+                            :$raw    = False;
   )
     is also<query-info-finish>
   {
     my $fi = g_file_input_stream_query_info_finish($!fis, $result, $error);
 
     $fi ??
-      ( $raw ?? $fi !! GIO::FileInfo.new($fi) )
+      ( $raw ?? $fi !! GIO::FileInfo.new($fi, :!ref) )
       !!
       Nil;
   }
@@ -139,9 +139,9 @@ sub g_file_input_stream_get_type ()
 { * }
 
 sub g_file_input_stream_query_info (
-  GFileInputStream $stream,
-  Str $attributes,
-  GCancellable $cancellable,
+  GFileInputStream        $stream,
+  Str                     $attributes,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GFileInfo
@@ -151,22 +151,28 @@ sub g_file_input_stream_query_info (
 
 sub g_file_input_stream_query_info_async (
   GFileInputStream $stream,
-  Str $attributes,
-  gint $io_priority,
-  GCancellable $cancellable,
-  &callback (GObject, GAsyncResult, gpointer),
-  gpointer $user_data
+  Str              $attributes,
+  gint             $io_priority,
+  GCancellable     $cancellable,
+                   &callback (GObject, GAsyncResult, gpointer),
+  gpointer         $user_data
 )
   is native(glib)
   is export
 { * }
 
 sub g_file_input_stream_query_info_finish (
-  GFileInputStream $stream,
-  GAsyncResult $result,
+  GFileInputStream        $stream,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns GFileInfo
   is native(glib)
   is export
 { * }
+
+# our %GIO::FileInputStream::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::FileInputStream::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_file_input_stream_');
+# }
