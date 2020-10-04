@@ -2,7 +2,13 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::Resource;
 
@@ -36,8 +42,8 @@ sub g_resources_enumerate_children (
 sub g_resources_get_info (
   Str                     $path,
   GResourceLookupFlags    $lookup_flags,
-  gsize                   $size is rw,
-  guint32                 $flags is rw,
+  gsize                   $size          is rw,
+  guint32                 $flags         is rw,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -95,8 +101,8 @@ sub g_resource_get_info (
   GResource               $resource,
   Str                     $path,
   GResourceLookupFlags    $lookup_flags,
-  gsize                   $size  is rw,
-  guint32                 $flags is rw,
+  gsize                   $size          is rw,
+  guint32                 $flags         is rw,
   CArray[Pointer[GError]] $error
 )
   returns uint32

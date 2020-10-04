@@ -1,14 +1,9 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
-
-
 use GIO::Raw::Types;
-
-
 use GIO::Raw::Resource;
 
 use GLib::Bytes;
@@ -21,20 +16,25 @@ class GIO::Resource {
     $!r = $resource;
   }
 
-  method GIO::Raw::Definitions::GResouorce
+  method GIO::Raw::Definitions::GResource
     is also<GResource>
   { $!r }
 
-  method new (Str() $filename, CArray[Pointer[GError]] $error = gerror)
+  multi method new (GResource $resource, :$ref = True) {
+    return Nil unless $resource;
+
+    my $o = self.bless( :$resource );
+    $o.ref if $ref;
+    $o;
+  }
+  multi method new (Str() $filename, CArray[Pointer[GError]] $error = gerror)
     is also<load>
   {
     clear_error;
     my $resource = g_resource_load($filename, $error);
     set_error($error);
 
-    return Nil unless $resource;
-
-    self.bless(:$resource);
+    $resource ?? self.bless( :$resource ) !! Nil;
   }
 
   method new_from_data (
@@ -47,19 +47,14 @@ class GIO::Resource {
     my $resource = g_resource_new_from_data($data, $error);
     set_error($error);
 
-    return Nil unless $resource;
-
-    self.bless(:$resource);
+    $resource ?? self.bless( :$resource ) !! Nil;
   }
 
-  method GIO::Raw::Definitions::GResource
-  { $!r }
-
   method enumerate_children (
-    Str() $path,
-    Int() $lookup_flags,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    Str()                   $path,
+    Int()                   $lookup_flags,
+    CArray[Pointer[GError]] $error         = gerror,
+                            :$raw          = False
   )
     is also<enumerate-children>
   {
@@ -85,23 +80,24 @@ class GIO::Resource {
   { * }
 
   multi method get_info (
-    Str() $path,
-    Int() $lookup_flags,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False
+    Str()                   $path,
+    Int()                   $lookup_flags,
+    CArray[Pointer[GError]] $error        = gerror,
   ) {
-    samewith($path, $lookup_flags, $, $, $error, :$all);
+    return-with-all(
+      samewith($path, $lookup_flags, $, $, $error, :all)
+    )
   }
   multi method get_info (
-    Str() $path,
-    Int() $lookup_flags,
-    $size is rw,
-    $flags is rw,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False
+    Str()                   $path,
+    Int()                   $lookup_flags,
+                            $size          is rw,
+                            $flags         is rw,
+    CArray[Pointer[GError]] $error         = gerror,
+                            :$all          = False
   ) {
-    my gsize $s = 0;
-    my guint $f = 0;
+    my gsize                $s = 0;
+    my guint                $f = 0;
     my GResourceLookupFlags $l = $lookup_flags;
 
     clear_error;
@@ -118,10 +114,10 @@ class GIO::Resource {
   }
 
   method lookup_data (
-    Str() $path,
-    Int() $lookup_flags,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    Str()                   $path,
+    Int()                   $lookup_flags,
+    CArray[Pointer[GError]] $error         = gerror,
+                            :$raw          = False
   )
     is also<lookup-data>
   {
@@ -132,17 +128,17 @@ class GIO::Resource {
     set_error($error);
 
     $b ??
-      ( $raw ?? $b !! GLib::Bytes.new($b) )
+      ( $raw ?? $b !! GLib::Bytes.new($b, :!ref) )
       !!
       Nil;
 
   }
 
   method open_stream (
-    Str() $path,
-    Int() $lookup_flags,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    Str()                   $path,
+    Int()                   $lookup_flags,
+    CArray[Pointer[GError]] $error         = gerror,
+                            :$raw          = False
   )
     is also<open-stream>
   {
@@ -152,7 +148,7 @@ class GIO::Resource {
     my $i = g_resource_open_stream($!r, $path, $l, $error);
 
     $i ??
-      ( $raw ?? $i !! GIO::InputStream.new($i) )
+      ( $raw ?? $i !! GIO::InputStream.new($i, :!ref) )
       !!
       Nil;
   }
@@ -168,19 +164,16 @@ class GIO::Resource {
 
 }
 
+use GLib::Roles::StaticClass;
+
 class GIO::Resources {
-
-  method new (|) {
-    warn 'GIO::Resources is a static class and does not need instantiation.';
-
-    GIO::Resources;
-  }
+  also does GLib::Roles::StaticClass;
 
   method enumerate_children (
-    Str() $path,
-    Int() $lookup_flags,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    Str()                   $path,
+    Int()                   $lookup_flags,
+    CArray[Pointer[GError]] $error         = gerror,
+                            :$raw          = False
   )
     is also<enumerate-children>
   {
@@ -202,23 +195,24 @@ class GIO::Resources {
   { * }
 
   multi method get_info (
-    Str() $path,
-    Int() $lookup_flags,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False
+    Str()                   $path,
+    Int()                   $lookup_flags,
+    CArray[Pointer[GError]] $error         = gerror,
   ) {
-    GIO::Resources.get_info($path, $lookup_flags, $, $, $error, :$all)
+    return-with-all(
+      samewith($path, $lookup_flags, $, $, $error, :all)
+    );
   }
   multi method get_info (
-    Str() $path,
-    Int() $lookup_flags,
-    $size is rw,
-    $flags is rw,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False
+    Str()                   $path,
+    Int()                   $lookup_flags,
+                            $size          is rw,
+                            $flags         is rw,
+    CArray[Pointer[GError]] $error         =  gerror,
+                            :$all          =  False
   ) {
-    my gsize $s = 0;
-    my guint $f = 0;
+    my gsize                $s = 0;
+    my guint                $f = 0;
     my GResourceLookupFlags $l = $lookup_flags;
 
     clear_error;
@@ -229,10 +223,10 @@ class GIO::Resources {
   }
 
   method lookup_data (
-    Str() $path,
-    Int() $lookup_flags,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    Str()                   $path,
+    Int()                   $lookup_flags,
+    CArray[Pointer[GError]] $error         = gerror,
+                            :$raw          = False
   )
     is also<lookup-data>
   {
@@ -243,16 +237,16 @@ class GIO::Resources {
     set_error($error);
 
     $b ??
-      ( $raw ?? $b !! GLib::Bytes.new($b) )
+      ( $raw ?? $b !! GLib::Bytes.new($b, :!ref) )
       !!
       Nil;
   }
 
   method open_stream (
-    Str() $path,
-    Int() $lookup_flags,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    Str()                   $path,
+    Int()                   $lookup_flags,
+    CArray[Pointer[GError]] $error         = gerror,
+                            :$raw          = False
   )
     is also<open-stream>
   {
@@ -263,7 +257,7 @@ class GIO::Resources {
     set_error($error);
 
     $i ??
-      ( $raw ?? $i !! GIO::InputStream.new($i) )
+      ( $raw ?? $i !! GIO::InputStream.new($i, :!ref) )
       !!
       Nil;
   }
@@ -277,3 +271,8 @@ class GIO::Resources {
   }
 
 }
+
+our %GIO::Resource::CLASSES = (
+  'GIO::Resource'  => GIO::Resource,
+  'GIO::Resources' => GIO::Resources
+);
