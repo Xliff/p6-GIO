@@ -2,11 +2,15 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
-
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::Settings;
-
 
 ### /usr/include/glib-2.0/gio/gsettings.h
 
@@ -16,10 +20,10 @@ sub g_settings_apply (GSettings $settings)
 { * }
 
 sub g_settings_bind (
-  GSettings $settings,
-  Str $key,
-  GObject $object,
-  Str $property,
+  GSettings          $settings,
+  Str                $key,
+  GObject            $object,
+  Str                $property,
   GSettingsBindFlags $flags
 )
   is native(gio)
@@ -27,15 +31,25 @@ sub g_settings_bind (
 { * }
 
 sub g_settings_bind_with_mapping (
-  GSettings $settings,
-  Str $key,
-  GObject $object,
-  Str $property,
-  GSettingsBindFlags $flags,
-  GSettingsBindGetMapping $get_mapping,
-  GSettingsBindSetMapping $set_mapping,
-  gpointer $user_data,
-  GDestroyNotify $destroy
+  GSettings               $settings,
+  Str                     $key,
+  GObject                 $object,
+  Str                     $property,
+  GSettingsBindFlags      $flags,
+                          &get_mapping (
+                            GValue,
+                            GVariant,
+                            gpointer
+                            --> gboolean
+                          ),
+                          &set_mapping (
+                            GValue,
+                            GVariantType,
+                            gpointer
+                            --> GVariant
+                          ),
+  gpointer                $user_data,
+  GDestroyNotify          $destroy
 )
   is native(gio)
   is export
@@ -43,10 +57,10 @@ sub g_settings_bind_with_mapping (
 
 sub g_settings_bind_writable (
   GSettings $settings,
-  Str $key,
-  GObject $object,
-  Str $property,
-  gboolean $inverted
+  Str       $key,
+  GObject   $object,
+  Str       $property,
+  gboolean  $inverted
 )
   is native(gio)
   is export
@@ -118,10 +132,15 @@ sub g_settings_get_int64 (GSettings $settings, Str $key)
 { * }
 
 sub g_settings_get_mapped (
-  GSettings $settings,
-  Str $key,
-  GSettingsGetMapping $mapping,
-  gpointer $user_data
+  GSettings           $settings,
+  Str                 $key,
+                      &get_mapping (
+                        GValue,
+                        GVariant,
+                        gpointer
+                        --> gboolean
+                      ),
+  gpointer            $user_data
 )
   returns Pointer
   is native(gio)
@@ -189,9 +208,9 @@ sub g_settings_new (Str $schema_id)
 { * }
 
 sub g_settings_new_full (
-  GSettingsSchema $schema,
+  GSettingsSchema  $schema,
   GSettingsBackend $backend,
-  Str $path
+  Str              $path
 )
   returns GSettings
   is native(gio)
@@ -205,9 +224,9 @@ sub g_settings_new_with_backend (Str $schema_id, GSettingsBackend $backend)
 { * }
 
 sub g_settings_new_with_backend_and_path (
-  Str $schema_id,
+  Str              $schema_id,
   GSettingsBackend $backend,
-  Str $path
+  Str              $path
 )
   returns GSettings
   is native(gio)
