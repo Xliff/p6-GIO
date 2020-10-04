@@ -2,7 +2,13 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::SettingsSchema;
 
@@ -80,7 +86,7 @@ sub g_settings_schema_key_get_value_type (GSettingsSchemaKey $key)
 
 sub g_settings_schema_key_range_check (
   GSettingsSchemaKey $key,
-  GVariant $value
+  GVariant           $value
 )
   returns uint32
   is native(gio)
@@ -130,9 +136,9 @@ sub g_settings_schema_source_get_type ()
 
 sub g_settings_schema_source_list_schemas (
   GSettingsSchemaSource $source,
-  gboolean $recursive,
-  Str $non_relocatable,
-  Str $relocatable
+  gboolean              $recursive,
+  Str                   $non_relocatable,
+  Str                   $relocatable
 )
   is native(gio)
   is export
@@ -140,8 +146,8 @@ sub g_settings_schema_source_list_schemas (
 
 sub g_settings_schema_source_lookup (
   GSettingsSchemaSource $source,
-  Str $schema_id,
-  gboolean $recursive
+  Str                   $schema_id,
+  gboolean              $recursive
 )
   returns GSettingsSchema
   is native(gio)
@@ -149,9 +155,9 @@ sub g_settings_schema_source_lookup (
 { * }
 
 sub g_settings_schema_source_new_from_directory (
-  Str $directory,
-  GSettingsSchemaSource $parent,
-  gboolean $trusted,
+  Str                     $directory,
+  GSettingsSchemaSource   $parent,
+  gboolean                $trusted,
   CArray[Pointer[GError]] $error
 )
   returns GSettingsSchemaSource

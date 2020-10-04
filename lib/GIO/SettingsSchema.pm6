@@ -1,13 +1,9 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
-
-
-
 use GIO::Raw::SettingsSchema;
 
 class GIO::SettingsSchema::Key { ... }
@@ -21,6 +17,8 @@ class GIO::SettingsSchema {
   }
 
   method new (GSettingsSchema $schema, :$ref = True) {
+    return Nil unless $schema;
+
     my $o = self.bless( :$schema );
     $o.upref if $ref;
     $o;
@@ -38,8 +36,10 @@ class GIO::SettingsSchema {
   method get_key (Str() $name, :$raw = False) is also<get-key> {
     my $sk = g_settings_schema_get_key($!ss, $name);
 
-    my $rv = $raw ?? $sk !! GIO::SettingsSchema::Key.new($sk, :!ref);
-    $rv;
+    $sk ??
+      ( $raw ?? $sk !! GIO::SettingsSchema::Key.new($sk, :!ref) )
+      !!
+      Nil;
   }
 
   method get_path
@@ -87,6 +87,8 @@ class GIO::SettingsSchema::Key {
   }
 
   method new (GSettingsSchemaKey $key, :$ref = True) {
+    return Nil unless $key;
+
     my $o = self.bless(:$key);
     $o.upref if $ref;
     $o;
@@ -180,26 +182,29 @@ class GIO::SettingsSchema::Source {
   }
 
   method GTK::Compat::TYpes::GSettingsSchemaSource
+    is also<GSettingsSchemaSource>
   { $!sss }
 
   method new (GSettingsSchemaSource $source, :$ref = True) {
+    return Nil unless $source;
+
     my $o = self.bless( :$source );
     $o.upref if $ref;
     $o;
   }
 
   method new_from_directory (
-    Str() $directory,
-    GSettingsSchemaSource $parent,
-    Int() $trusted,
-    CArray[Pointer[GError]] $error = gerror
+    Str()                   $directory,
+    GSettingsSchemaSource   $parent,
+    Int()                   $trusted,
+    CArray[Pointer[GError]] $error     = gerror
   )
     is also<new-from-directory>
   {
-    my gboolean $t = $trusted;
+    my gboolean $t = $trusted.so.Int;
 
     clear_error;
-    my $ss = g_settings_schema_source_new_from_directory(
+    my $source = g_settings_schema_source_new_from_directory(
       $directory,
       $parent,
       $t,
@@ -207,7 +212,7 @@ class GIO::SettingsSchema::Source {
     );
     set_error($error);
 
-    self.bless( source => $ss );
+    $source ?? self.bless( :$source ) !! Nil
   }
 
   method get_default (:$raw = False)
@@ -216,11 +221,12 @@ class GIO::SettingsSchema::Source {
       default
     >
   {
-    my $s = g_settings_schema_source_get_default();
+    my $source = g_settings_schema_source_get_default();
 
-    my $rv = $raw ?? $s !! GIO::SettingsSchema::Source.new( source => $s );
-    $rv.downref unless $raw;
-    $rv;
+    $source ??
+      ( $raw ?? $source !! GIO::SettingsSchema::Source.new($source, :!ref) )
+      !!
+      Nil;
   }
 
   method get_type is also<get-type> {
@@ -243,8 +249,8 @@ class GIO::SettingsSchema::Source {
   }
   multi method list_schemas (
     Int() $recursive,
-    $non_relocatable is rw,
-    $relocatable     is rw
+    $non_relocatable  is rw,
+    $relocatable      is rw
   ) {
     my gboolean $r = $recursive;
     my ($na, $ra) = CArray[CArray[Str]].new xx 2;
