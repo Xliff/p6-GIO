@@ -4,46 +4,73 @@ use Method::Also;
 use NativeCall;
 
 use GIO::Raw::Types;
-
 use GIO::Raw::SimpleAction;
-
 
 use GLib::Value;
 
+use GLib::Roles::Object;
 use GIO::Roles::Action;
 
-# Will need ancestry since this could be built from a GAction!!
+our subset GSimpleActionAncestry is export of Mu
+  where GSimpleAction | GAction | GObject;
 
-class GTK::Compat::SimpleAction {
+class GIO::SimpleAction {
+  also does GLib::Roles::Object;
   also does GIO::Roles::Action;
 
   has GSimpleAction $!sa is implementor;
 
   submethod BUILD (:$simple-action) {
-    $!sa = $simple-action;
+    self.setGSimpleACtion($simple-action) if $simple-action;
+  }
 
-    self.roleInit-Object;
+  method setGSimpleAction (GSimpleActionAncestry $_) {
+    my $to-parent;
+    $!sa = do {
+      when GSimpleAction {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      when GAction {
+        $to-parent = cast(GObject, $_);
+        $!a = $_;
+        cast(GSimpleAction, $_);
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GSimpleAction, $_);
+      }
+    }
+
+    self!setObject($to-parent);
+    self.roleInit-Action;
   }
 
   method GIO::Raw::Definitions::GSimpleAction
     is also<GSimpleAction>
   { $!sa }
 
-  multi method new (GSimpleAction $simple-action) {
-    self.bless( :$simple-action );
+  multi method new (GSimpleActionAncestry $simple-action, :$ref = True) {
+    return Nil unless $simple-action;
+
+    my $o = self.bless( :$simple-action );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (GVariantType() $parameter_type) {
-    my $sa = g_simple_action_new($$parameter_type);
+    my $simple-action = g_simple_action_new($$parameter_type);
 
-    $sa ?? self.bless( simple-action => $sa) !! Nil;
+    $simple-action ?? self.bless( :$simple-action ) !! Nil;
   }
 
   method new_stateful (GVariantType() $parameter_type, GVariant() $state)
     is also<new-stateful>
   {
-    my $sa = g_simple_action_new_stateful($parameter_type, $state);
+    my $simple-action = g_simple_action_new_stateful($parameter_type, $state);
 
-    $sa ?? self.bless( action => $sa ) !! Nil;
+    $simple-action ?? self.bless( :$simple-action ) !! Nil;
   }
 
   # Type: gboolean
@@ -65,7 +92,7 @@ class GTK::Compat::SimpleAction {
 
   # CONSTRUCT-ONLY!
   #
-  # Type: gchar
+  # Type: Str
   # method name is rw  {
   #   my GLib::Value $gv .= new( G_TYPE_STRING );
   #   Proxy.new(
@@ -100,16 +127,21 @@ class GTK::Compat::SimpleAction {
   # }
 
   # Type: GVariant
-  method state is rw  {
+  method state (:$raw = False) is rw  {
     my GLib::Value $gv .= new( G_TYPE_OBJECT );
     Proxy.new(
       FETCH => -> $ {
         $gv = GLib::Value.new(
           self.prop_get('state', $gv)
         );
-        GLib::Variant.new(
-          nativecast(GVariant, $gv.object), :!ref
-        );
+
+        my $o = $gv.object;
+        return Nil unless $o;
+
+        $o = cast(GVariant, $o);
+        return $o if $raw;
+
+        GLib::Variant.new($o, :!ref);
       },
       STORE => -> $, GVariant() $val is copy {
         $gv.object = $val;
@@ -119,16 +151,21 @@ class GTK::Compat::SimpleAction {
   }
 
   # Type: GVariantType
-  method state-type is rw  is also<state_type> {
+  method state-type (:$raw = False) is rw is also<state_type> {
     my GLib::Value $gv .= new( G_TYPE_OBJECT );
     Proxy.new(
       FETCH => -> $ {
         $gv = GLib::Value.new(
           self.prop_get('state-type', $gv)
         );
-        GLib::VariantType.new(
-          nativecast(GVariantType, $gv.object )
-        )
+
+        my $o = $gv.object;
+        return Nil unless $o;
+
+        $o = cast(GVariant, $o);
+        return $o if $raw;
+
+        GLib::Variant.new($o, :!ref);
       },
       STORE => -> $, $val is copy {
         warn "state-type does not allow writing"
@@ -155,7 +192,7 @@ class GTK::Compat::SimpleAction {
   }
 
   method set_enabled (Int() $enabled) is also<set-enabled> {
-    my gboolean $e = $enabled;
+    my gboolean $e = $enabled.so.Int;
 
     g_simple_action_set_enabled($!sa, $e);
   }
