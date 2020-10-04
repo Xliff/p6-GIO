@@ -4,28 +4,45 @@ use Method::Also;
 use NativeCall;
 
 use GIO::Raw::Types;
-
-
-
 use GIO::Raw::Permission;
 
 use GLib::Roles::Object;
 
+our subset GPermissionAncestry is export of Mu
+  where GPermission | GObject;
+
 class GIO::Permission {
+  also does GLib::Roles::Object;
+
   has GPermission $!p is implementor;
 
-  submethod BUILD(:$permission) {
-    self.setPermission($permission);
+  submethod BUILD (:$permission) {
+    self.setPermission($permission) if $permission;
   }
 
-  method setPermission (GPermission $permission) {
-    $!p = $permission;
+  method setPermission (GPermissionAncestry $_) {
+    my $to-parent;
 
-    self.roleInit-Object;
+    $!p = do {
+      when GPermission {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GPermission, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
-  multi method new-permission-obj (GPermission $permission) {
-    $permission ?? self.bless( :$permission ) !! Nil;
+  multi method new (GPermissionAncestry $permission, :$ref = True) {
+    return Nil unless $permission;
+
+    my $o = self.bless( :$permission );
+    $o.ref if $ref;
+    $o;
   }
 
   method GIO::Raw::Definitions::GPermission
@@ -40,8 +57,8 @@ class GIO::Permission {
 
   # ↓↓↓↓ METHODS ↓↓↓↓
   method acquire (
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror()
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror()
   ) {
     clear_error;
     my $rv = so g_permission_acquire($!p, $cancellable, $error);
@@ -54,22 +71,22 @@ class GIO::Permission {
   { * }
 
   multi method acquire_async (
-    &callback,
+             &callback,
     gpointer $user_data = gpointer
   ) {
     samewith(GCancellable, &callback, $user_data);
   }
   multi method acquire_async  (
     GCancellable() $cancellable,
-    &callback,
-    gpointer $user_data = gpointer
+                   &callback,
+    gpointer       $user_data    = gpointer
   ) {
     g_permission_acquire_async($!p, $cancellable, &callback, $user_data);
   }
 
   method acquire_finish  (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror()
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror()
   )
     is also<acquire-finish>
   {
@@ -128,8 +145,8 @@ class GIO::Permission {
   }
 
   method release (
-    GCancellable $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror()
+    GCancellable            $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     clear_error;
     my $rv = so g_permission_release($!p, $cancellable, $error);
@@ -142,22 +159,22 @@ class GIO::Permission {
   { * }
 
   multi method release_async  (
-    &callback,
-    gpointer $user_data = gpointer
+                   &callback,
+    gpointer       $user_data = gpointer
   ) {
     samewith(GCancellable, &callback, $user_data);
   }
   multi method release_async  (
     GCancellable() $cancellable,
-    &callback,
-    gpointer $user_data = gpointer
+                   &callback,
+    gpointer       $user_data    = gpointer
   ) {
     g_permission_release_async($!p, $cancellable, &callback, $user_data);
   }
 
   method release_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror()
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror()
   )
     is also<release-finish>
   {
