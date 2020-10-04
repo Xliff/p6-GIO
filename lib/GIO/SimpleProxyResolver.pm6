@@ -1,27 +1,50 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
 use GIO::Raw::SimpleProxyResolver;
 
-
-
 use GLib::Value;
 
-use GLib::Roles::Properties;
+use GLib::Roles::Object;
 use GIO::Roles::ProxyResolver;
 
+our subset GSimpleProxyResolverAncestry is export of Mu
+  where GSimpleProxyResolver | GProxyResolver | GObject;
+
 class GIO::SimpleProxyResolver {
-  also does GLib::Roles::Properties;
+  also does GLib::Roles::Object;
+  also does GIO::Roles::ProxyResolver;
 
   has GSimpleProxyResolver $!spr is implementor;
 
   submethod BUILD (:$simple-resolver) {
-    $!spr = $simple-resolver;
+    self.setGSimpleProxyResolver($simple-resolver) if $simple-resolver;
+  }
 
+  method setGSimpleProxyResolver (GSimpleProxyResolverAncestry $_) {
+    my $to-parent;
+
+    $!spr = do {
+      when GSimpleProxyResolver {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      when GProxyResolver {
+        $to-parent = cast(GObject, $_);
+        $!pr = $_;
+        cast(GSimpleProxyResolver, $_);
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GSimpleProxyResolver, $_);
+      }
+    }
+    self!setObject($to-parent);
     self.roleInit-ProxyResolver;
   }
 
@@ -29,17 +52,29 @@ class GIO::SimpleProxyResolver {
     is also<GSimpleProxyResolver>
   { $!spr }
 
-  multi method new (GSimpleProxyResolver $simple-resolver) {
-    self.bless( :$simple-resolver );
+  multi method new (
+    GSimpleProxyResolverAncestry $simple-resolver,
+                                 :$ref             = True
+  ) {
+    return Nil unless $simple-resolver;
+
+    my $o = self.bless( :$simple-resolver );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (Str() $default_proxy, @ignore_hosts) {
     samewith( $default_proxy, resolve-gstrv(@ignore_hosts) );
   }
   multi method new (Str() $default_proxy, CArray[Str] $ignore_hosts) {
-    g_simple_proxy_resolver_new($default_proxy, $ignore_hosts);
+    my $simple-resolver = g_simple_proxy_resolver_new(
+      $default_proxy,
+      $ignore_hosts
+    );
+
+    $simple-resolver ?? self.bless( :$simple-resolver ) !! Nil;
   }
 
-  # Type: gchar
+  # Type: Str
   method default-proxy is rw  {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
