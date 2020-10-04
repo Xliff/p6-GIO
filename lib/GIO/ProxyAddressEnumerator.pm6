@@ -6,28 +6,58 @@ use GIO::Raw::Types;
 
 use GLib::Value;
 
-use GLib::Roles::Properties;
+use GLib::Roles::Object;
 
 use GIO::Roles::ProxyResolver;
 use GIO::Roles::SocketConnectable;
 
+our subset GProxyAddressEnumeratorAncestry is export of Mu
+  where GProxyAddressEnumerator | GProxyResolver | GObject;
+
 class GIO::ProxyAddressEnumerator {
-  also does GLib::Roles::Properties;
+  also does GLib::Roles::Object;
+  also does GIO::Roles::ProxyResolver;
 
   has GProxyAddressEnumerator $!pae is implementor;
 
   submethod BUILD (:$proxy-enumerator) {
-    $!pae = $proxy-enumerator;
+    self.setGProxyAddressEnumerator($proxy-enumerator) if $proxy-enumerator;
+  }
 
-    self.roleInit-Properties;
+  method setGProxyAddressEnumerator (GProxyAddressEnumeratorAncestry $_) {
+    my $to-parent;
+
+    $!pae = do {
+      when GProxyAddressEnumerator {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      when GProxyResolver {
+        $to-parent = cast(GObject, $_);
+        $!pr = $_;
+        cast(GProxyAddressEnumerator, $_);
+
+      }
+      default {
+        $to-parent = $_;
+        cast(GProxyAddressEnumerator, $_);
+      }
+    }
+    self!setObject($to-parent);
+    self.roleInit-ProxyResolver;
   }
 
   method GIO::Raw::Definitions::GProxyAddressEnumerator
     is also<GProxyAddressEnumerator>
   { $!pae }
 
-  method new (GProxyAddressEnumerator $proxy-enumerator) {
-    self.bless( :$proxy-enumerator );
+  method new (GProxyAddressEnumerator $proxy-enumerator, :$ref = True) {
+    return Nil unless $proxy-enumerator;
+
+    my $o = self.bless( :$proxy-enumerator );
+    $o.ref if $ref;
+    $o;
   }
 
   # Type: GSocketConnectable
@@ -40,14 +70,12 @@ class GIO::ProxyAddressEnumerator {
         );
 
         my $o = $gv.object;
+        return Nil unless $o;
 
-        $o ??
-          ( $raw ??
-            $o !!
-            GIO::Roles::SocketConnectable.new-socketconnectable-obj($o)
-          )
-          !!
-          Nil;
+        $o = cast(GSocketConnectable, $o);
+        return $o if $raw;
+
+        GIO::Roles::SocketConnectable.new-socketconnectable-obj($o, :!ref);
       },
       STORE => -> $, GSocketConnectable() $val is copy {
         $gv.object = $val;
@@ -82,24 +110,22 @@ class GIO::ProxyAddressEnumerator {
           self.prop_get('proxy-resolver', $gv)
         );
 
-        my $o = cast(GProxyResolver, $gv.object);
+        my $o = $gv.object;
+        return Nil unless $o;
 
-        $o ??
-          ( $raw ??
-            $o !!
-            GIO::Roles::ProxyResolver.new-proxyresolver-obj($o)
-          )
-          !!
-          Nil;
+        $o = cast(GProxyResolver, $o);
+        return $o if $raw;
+
+        GIO::Roles::ProxyResolver.new-proxyresolver-obj($o, :!ref)
       },
       STORE => -> $, GProxyResolver() $val is copy {
-        $gv.TYPE = $val;
+        $gv.object = $val;
         self.prop_set('proxy-resolver', $gv);
       }
     );
   }
 
-  # Type: gchar
+  # Type: Str
   method uri is rw  {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
