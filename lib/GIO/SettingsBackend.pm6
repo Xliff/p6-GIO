@@ -1,16 +1,15 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
-
-
-
 use GIO::Raw::SettingsBackend;
 
 use GLib::Roles::Object;
+
+our subset GSettingsBackendAncestry is export of Mu
+  where GSettingsBackend | GObject;
 
 class GIO::SettingsBackend {
   also does GLib::Roles::Object;
@@ -18,9 +17,24 @@ class GIO::SettingsBackend {
   has GSettingsBackend $!sb is implementor;
 
   submethod BUILD (:$backend) {
-    $!sb = $backend;
+    self.setGSettingsBackend($backend) if $backend;
+  }
 
-    self.roleInit-Object;
+  method setGSettingsBackend (GSettingsBackendAncestry $_) {
+    my $to-parent;
+
+    $!sb = do {
+      when GSettingsBackend {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GSettingsBackend, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GSettingsBackend
@@ -28,6 +42,8 @@ class GIO::SettingsBackend {
   { $!sb }
 
   multi method new (GSettingsBackend $backend, :$ref = True) {
+    return Nil unless $backend;
+
     my $o = self.bless( :$backend );
     $o.upref if $ref;
     $o;
@@ -37,7 +53,7 @@ class GIO::SettingsBackend {
     Str() $filename,
     Str() $root_path,
     Str() $root_group,
-    :$keyfile is required
+          :$keyfile    is required
   ) {
     self.new_keyfile_backend($filename, $root_path, $root_group);
   }
@@ -48,24 +64,31 @@ class GIO::SettingsBackend {
   )
     is also<new-keyfile-backend>
   {
-    my $b = g_keyfile_settings_backend_new($filename, $root_path, $root_group);
-    $b ?? self.bless( backend => $b ) !! Nil;
+    my $backend = g_settings_backend_keyfile_new(
+      $filename,
+      $root_path,
+      $root_group
+    );
+
+    $backend ?? self.bless( :$backend ) !! Nil;
   }
 
   multi method new ( :$memory is required ) {
     self.new_memory_backend;
   }
   method new_memory_backend is also<new-memory-backend> {
-    my $b = g_memory_settings_backend_new();
-    $b ?? self.bless( backend => $b ) !! Nil;
+    my $backend = g_settings_backend_memory_new();
+
+    $backend ?? self.bless( :$backend ) !! Nil;
   }
 
   multi method new ( :$null is required ) {
     self.new_null_backend;
   }
   method new_null_backend is also<new-null-backend> {
-    my $b = g_null_settings_backend_new();
-    $b ?? self.bless( backend => $b ) !! Nil;
+    my $backend = g_settings_backend_null_new();
+
+    $backend ?? self.bless( :$backend ) !! Nil;
   }
 
   multi method new {
@@ -77,8 +100,9 @@ class GIO::SettingsBackend {
       default
     >
   {
-    my $b = g_settings_backend_get_default();
-    $b ?? self.bless( backend => $b ) !! Nil;
+    my $backend = g_settings_backend_get_default();
+
+    $backend ?? self.bless( :$backend ) !! Nil;
   }
 
   proto method backend_keys_changed (|)
@@ -116,18 +140,18 @@ class GIO::SettingsBackend {
 
   multi method flatten_tree (
     GIO::SettingsBackend:U:
-    GTree() $tree,
-    :$raw = False
+    GTree()                 $tree,
+                            :$raw = False
   ) {
     GIO::SettingsBackend.flatten_tree($tree, $, $, $, :$raw);
   }
   multi method flatten_tree (
     GIO::SettingsBackend:U:
-    GTree() $tree,
-    $path   is rw,
-    $keys   is rw,
-    $values is rw,
-    :$raw = False;
+    GTree()                 $tree,
+                            $path   is rw,
+                            $keys   is rw,
+                            $values is rw,
+                            :$raw   =  False;
   ) {
     my $pa = CArray[Str].new;
     $pa[0] = Str;
