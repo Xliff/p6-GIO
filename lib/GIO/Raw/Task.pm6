@@ -2,14 +2,20 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::Task;
 
 sub g_task_attach_source (
-  GTask $task,
+  GTask   $task,
   GSource $source,
-  &callback (gpointer --> gboolean)
+          &callback (gpointer --> gboolean)
 )
   is native(gio)
   is export
@@ -64,10 +70,10 @@ sub g_task_is_valid (gpointer $result, gpointer $source_object)
 { * }
 
 sub g_task_new (
-  gpointer $source_object,
+  gpointer     $source_object,
   GCancellable $cancellable,
-  &callback (GObject, GAsyncResult, gpointer),
-  gpointer $callback_data
+               &callback (GObject, GAsyncResult, gpointer),
+  gpointer     $callback_data
 )
   returns GTask
   is native(gio)
@@ -93,10 +99,10 @@ sub g_task_propagate_pointer (GTask $task, CArray[Pointer[GError]] $error)
 { * }
 
 sub g_task_report_error (
-  gpointer $source_object,
-  &callback (GObject, GAsyncResult, gpointer),
-  gpointer $callback_data,
-  gpointer $source_tag,
+  GObject                 $source_object,
+                          &callback (GObject, GAsyncResult, gpointer),
+  gpointer                $callback_data,
+  gpointer                $source_tag,
   CArray[Pointer[GError]] $error
 )
   is native(gio)
@@ -125,9 +131,9 @@ sub g_task_return_int (GTask $task, gssize $result)
 { * }
 
 sub g_task_return_pointer (
-  GTask $task,
+  GTask    $task,
   gpointer $result,
-  GDestroyNotify $result_destroy
+           &result_destroy (gpointer)
 )
   is native(gio)
   is export
@@ -135,7 +141,7 @@ sub g_task_return_pointer (
 
 sub g_task_run_in_thread (
   GTask $task,
-  &task_func (gpointer --> gpointer)
+        &task_func (gpointer --> gpointer)
 )
   is native(gio)
   is export
@@ -143,16 +149,16 @@ sub g_task_run_in_thread (
 
 sub g_task_run_in_thread_sync (
   GTask $task,
-  &task_func (gpointer --> gpointer)
-  )
+        &task_func (gpointer --> gpointer)
+)
   is native(gio)
   is export
 { * }
 
 sub g_task_set_task_data (
-  GTask $task,
+  GTask    $task,
   gpointer $task_data,
-  GDestroyNotify $task_data_destroy
+           &task_data_destroy (gpointer)
 )
   is native(gio)
   is export
@@ -215,13 +221,13 @@ sub g_task_set_source_tag (GTask $task, gpointer $source_tag)
 { * }
 
 sub g_task_report_new_error (
-  gpointer            $source_object,
-  &callback (GObject, GAsyncResult, gpointer),
-  gpointer            $callback_data,
-  gpointer            $source_tag,
-  GQuark              $domain,
-  gint                $code,
-  Str                 $format,
+  gpointer $source_object,
+           &callback (GObject, GAsyncResult, gpointer),
+  gpointer $callback_data,
+  gpointer $source_tag,
+  GQuark   $domain,
+  gint     $code,
+  Str      $format,
   Str
 )
   is native(gio)
