@@ -1,26 +1,49 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
 
 use GLib::Value;
 
-use GLib::Roles::Properties;
+use GLib::Roles::Object;
 use GIO::Roles::Converter;
 
+our subset GZlibCompressorAncestry is export of Mu
+  where GZlibCompressor | GConverter | GObject;
+
 class GIO::ZlibCompressor {
-  also does GLib::Roles::Properties;
+  also does GLib::Roles::Object;
   also does GIO::Roles::Converter;
 
   has GZlibCompressor $!zc is implementor;
 
-  submethod BUILD (:$compressor) {
-    $!zc = $compressor;
+  submethod BUILD ( :$compressor ) {
+    self.setGZlibCompressor($compressor) if $compressor;
+  }
 
-    self.roleInit-Object;
+  method setGZlibCompressor (GZlibCompressorAncestry $_) {
+    my $to-parent;
+
+    $!zc = do {
+      when GZlibCompressor {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      when GConverter {
+        $to-parent = cast(GObject, $_);
+        $!c = $_;
+        cast(GZlibCompressor, $_);
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GZlibCompressor, $_);
+      }
+    }
+    self!setObject($to-parent);
     self.roleInit-Converter;
   }
 
@@ -28,18 +51,31 @@ class GIO::ZlibCompressor {
     is also<GZlibCompressor>
   { $!zc }
 
-  method new (Int() $level) {
-    my gint $l = $level;
+  multi method new (GZlibCompressorAncestry $compressor, :$ref = True) {
+    return Nil unless $compressor;
 
-    self.bless( compressor => g_zlib_compressor_new($!zc, $l) );
+    my $o = self.bless( :$compressor );
+    $o.ref if $ref;
+    $o;
+  }
+  multi method new (Int() $level) {
+    my gint $l          = $level;
+    my      $compressor = g_zlib_compressor_new($!zc, $l);
+
+    $compressor ?? self.bless( :$compressor ) !! Nil;
   }
 
-  method file_info is rw is also<file-info> {
+  method file_info (:$raw = False) is rw is also<file-info> {
     Proxy.new(
       FETCH => sub ($) {
-        g_zlib_compressor_get_file_info($!zc);
+        my $fi = g_zlib_compressor_get_file_info($!zc);
+
+        $fi ??
+          ( $raw ?? $fi !! GLib::FileInfo.new($fi, :!ref) )
+          !!
+          Nil;
       },
-      STORE => sub ($, $file_info is copy) {
+      STORE => sub ($, GFileInfo() $file_info is copy) {
         g_zlib_compressor_set_file_info($!zc, $file_info);
       }
     );
@@ -87,7 +123,6 @@ class GIO::ZlibCompressor {
 
 }
 
-
 sub g_zlib_compressor_get_type ()
   returns GType
   is native(gio)
@@ -108,8 +143,14 @@ sub g_zlib_compressor_get_file_info (GZlibCompressor $compressor)
 
 sub g_zlib_compressor_set_file_info (
   GZlibCompressor $compressor,
-  GFileInfo $file_info
+  GFileInfo       $file_info
 )
   is native(gio)
   is export
 { * }
+
+# our %GIO::ZlibCompressor::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::ZlibCompressor::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_zlib_compressor_');
+# }
