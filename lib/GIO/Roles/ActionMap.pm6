@@ -7,21 +7,50 @@ use GIO::Raw::Types;
 
 use GLib::Roles::TypedBuffer;
 
+our subset GActionMapAncestry is export of Mu
+  where GActionMap | GObject;
+
 role GIO::Roles::ActionMap {
   has GActionMap $!actmap;
+
+  submethod BUILD (:$action-map) {
+    self.setGActionMap($action-map) if $action-map;
+  }
+
+  method setGActionMap (GActionMapAncestry $_) {
+    my $to-parent;
+
+    $!actmap = do {
+      when GActionMap {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GActionMap, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
 
   method GIO::Raw::Definitions::GActionMap
     is also<GActionMap>
   { $!actmap }
 
+  method new-actionmap-obj (GActionMapAncestry $action-map, :$ref = True) {
+    return Nil unless $action-map;
+
+    my $o = self.bless( :$action-map );
+    $o.ref if $ref;
+    $o;
+  }
+
   method roleInit-ActionMap {
     return if $!actmap;
 
     my \i = findProperImplementor(self.^attributes);
-    $!actmap = cast(
-      GActionMap,
-      i.get_value(self)
-    );
+    $!actmap = cast( GActionMap, i.get_value(self) );
   }
 
   method add_action (GAction() $action)
