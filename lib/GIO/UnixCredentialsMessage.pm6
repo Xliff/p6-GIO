@@ -8,28 +8,19 @@ use GIO::Raw::UnixCredentialsMessage;
 use GIO::SocketControlMessage;
 use GIO::Credentials;
 
-our subset UnixCredentialsMessageAncestry is export of Mu
-  where GUnixCredentialsMessage | SocketControlMessageAncestry;
+our subset GUnixCredentialsMessageAncestry is export of Mu
+  where GUnixCredentialsMessage | GSocketControlMessageAncestry;
 
 class GIO::UnixCredentialsMessage is GIO::SocketControlMessage {
   has GUnixCredentialsMessage $!cm is implementor;
 
   submethod BUILD (:$cred-message) {
-    given $cred-message {
-      when UnixCredentialsMessageAncestry {
-        self.setUnixCredentialsMessage($cred-message);
-      }
-
-      when GIO::UnixCredentialsMessage {
-      }
-
-      default {
-      }
-    }
+    self.setUnixCredentialsMessage($cred-message) if $cred-message;
   }
 
-  method setUnixCredentialsMessage (UnixCredentialsMessageAncestry $_) {
+  method setUnixCredentialsMessage (GUnixCredentialsMessageAncestry $_) {
     my $to-parent;
+
     $!cm = do {
       when GUnixCredentialsMessage {
         $to-parent = cast(GSocketControlMessage, $_);
@@ -41,27 +32,37 @@ class GIO::UnixCredentialsMessage is GIO::SocketControlMessage {
         cast(GUnixCredentialsMessage, $_);
       }
     }
+    self.setGSocketControlMessage($to-parent);
   }
 
   method GIO::Raw::Definitions::GUnixCredentialsMessage
     is also<GUnixCredentialsMessage>
   { $!cm }
 
-  multi method new (UnixCredentialsMessageAncestry $cred-message) {
-    self.bless( :$cred-message );
+  multi method new (
+    GUnixCredentialsMessageAncestry $cred-message,
+                                    :$ref          = True
+  ) {
+    return Nil unless $cred-message;
+
+    my $o = self.bless( :$cred-message );
+    $o.ref if $ref;
+    $o;
   }
   multi method new {
-    self.bless( cred-message => g_unix_credentials_message_new() );
+    my $cred-message = g_unix_credentials_message_new();
+
+    $cred-message ?? self.bless( :$cred-message ) !! Nil;
   }
 
   method new_with_credentials (GCredentials $credentials)
     is also<new-with-credentials>
   {
-    self.bless(
-      cred-message => g_unix_credentials_message_new_with_credentials(
-        $credentials
-      )
-    )
+    my $cred-message = g_unix_credentials_message_new_with_credentials(
+      $credentials
+    );
+
+    $cred-message ?? self.bless( :$cred-message ) !! Nil;
   }
 
   method get_credentials (:$raw = False)
@@ -72,7 +73,10 @@ class GIO::UnixCredentialsMessage is GIO::SocketControlMessage {
   {
     my $c = g_unix_credentials_message_get_credentials($!cm);
 
-    $raw ?? $c !! GIO::Credentials.new($c);
+    $c ??
+      ( $raw ?? $c !! GIO::Credentials.new($c, :!ref) )
+      !!
+      Nil;
   }
 
   method get_type is also<get-type> {
