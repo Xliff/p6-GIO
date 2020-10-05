@@ -5,12 +5,13 @@ use NativeCall;
 
 use GIO::Raw::Types;
 
+use GLib::Roles::Object;
 use GLib::Roles::TypedBuffer;
 
 our subset GActionMapAncestry is export of Mu
   where GActionMap | GObject;
 
-role GIO::Roles::ActionMap {
+role GIO::Roles::ActionMap does GLib::Roles::Object {
   has GActionMap $!actmap;
 
   submethod BUILD (:$action-map) {

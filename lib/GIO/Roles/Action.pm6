@@ -13,7 +13,7 @@ use GLib::Roles::Object;
 our subset GActionAncestry is export of Mu
   where GAction | GObject;
 
-role GIO::Roles::Action {
+role GIO::Roles::Action does GLib::Roles::Object {
   has GAction $!a;
 
   submethod BUILD (:$action) {

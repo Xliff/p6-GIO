@@ -6,10 +6,12 @@ use NativeCall;
 use GIO::Raw::Types;
 use GIO::Raw::ActionGroup;
 
+use GLib::Roles::Object;
+
 our subset GActionGroupAncestry is export of Mu
   where GActionGroup | GObject;
 
-role GIO::Roles::ActionGroup {
+role GIO::Roles::ActionGroup does GLib::Roles::Object {
   has GActionGroup $!ag;
 
   submethod BUILD (:$action-group) {
