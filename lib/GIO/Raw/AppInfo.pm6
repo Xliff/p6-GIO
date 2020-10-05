@@ -4,7 +4,7 @@ use NativeCall;
 
 use GIO::Raw::Types;
 
-unit package gio::Compat::Raw::AppInfo;
+unit package GIO::Raw::AppInfo;
 
 sub g_app_info_add_supports_type (
   GAppInfo                $appinfo,
