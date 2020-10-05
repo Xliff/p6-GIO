@@ -1,15 +1,15 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
-
-
 use GIO::Raw::TlsPassword;
 
 use GLib::Roles::Object;
+
+our subset GTlsPasswordAncestry is export of Mu
+  where GTlsPassword | GObject;
 
 class GIO::TlsPassword {
   also does GLib::Roles::Object;
@@ -17,18 +17,38 @@ class GIO::TlsPassword {
   has GTlsPassword $!tp is implementor;
 
   submethod BUILD (:$tls-password) {
-    $!tp = $tls-password;
-
-    self.roleInit-Object;
+    self.setGTlsPassword($tls-password) if $tls-password;
   }
 
-  multi method new (GTlsPassword $tls-password) {
-    self.bless( :$tls-password );
+  method setGTlsPassword (GTlsPasswordAncestry $_) {
+    my $to-parent;
+
+    $!tp = do {
+      when GTlsPassword {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GTlsPassword, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  multi method new (GTlsPasswordAncestry $tls-password, :$ref = True) {
+    return Nil unless $tls-password;
+
+    my $o = self.bless( :$tls-password );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (Int() $flags, Str() $description) {
-    my GTlsPasswordFlags $f = $flags;
+    my GTlsPasswordFlags $f            = $flags;
+    my                   $tls-password = g_tls_password_new($f, $description);
 
-    self.bless( tls-password => g_tls_password_new($f, $description) )
+    $tls-password ?? self.bless( :$tls-password ) !! Nil;
   }
 
   method GIO::Raw::Definitions::GTlsPassword
@@ -40,7 +60,7 @@ class GIO::TlsPassword {
       FETCH => sub ($) {
         g_tls_password_get_description($!tp);
       },
-      STORE => sub ($, $description is copy) {
+      STORE => sub ($, Str() $description is copy) {
         g_tls_password_set_description($!tp, $description);
       }
     );
@@ -76,7 +96,7 @@ class GIO::TlsPassword {
     unstable_get_type( self.^name, &g_tls_password_get_type, $n, $t );
   }
 
-  method get_value (gsize $length) is also<get-value> {
+  method get_value (Int() $length) is also<get-value> {
     my gsize $l = $length;
 
     g_tls_password_get_value($!tp, $l);
@@ -89,15 +109,15 @@ class GIO::TlsPassword {
   }
 
   method set_value_full (
-    Str $value,
+    Str() $value,
     Int() $length,
-    GDestroyNotify $destroy = gpointer
+          &destroy
   )
-    is also<set-value-full> 
+    is also<set-value-full>
   {
     my gsize $l = $length;
 
-    g_tls_password_set_value_full($!tp, $value, $l, $destroy);
+    g_tls_password_set_value_full($!tp, $value, $l, &destroy);
   }
 
 }
