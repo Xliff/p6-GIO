@@ -2,15 +2,20 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
-
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::TlsInteraction;
 
 sub g_tls_interaction_ask_password (
-  GTlsInteraction $interaction,
-  GTlsPassword $password,
-  GCancellable $cancellable,
+  GTlsInteraction         $interaction,
+  GTlsPassword            $password,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GTlsInteractionResult
@@ -19,19 +24,19 @@ sub g_tls_interaction_ask_password (
 { * }
 
 sub g_tls_interaction_ask_password_async (
-  GTlsInteraction $interaction,
-  GTlsPassword $password,
-  GCancellable $cancellable,
+  GTlsInteraction     $interaction,
+  GTlsPassword        $password,
+  GCancellable        $cancellable,
   GAsyncReadyCallback $callback,
-  gpointer $user_data
+  gpointer            $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_tls_interaction_ask_password_finish (
-  GTlsInteraction $interaction,
-  GAsyncResult $result,
+  GTlsInteraction         $interaction,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns GTlsInteractionResult
@@ -46,9 +51,9 @@ sub g_tls_interaction_get_type ()
 { * }
 
 sub g_tls_interaction_invoke_ask_password (
-  GTlsInteraction $interaction,
-  GTlsPassword $password,
-  GCancellable $cancellable,
+  GTlsInteraction         $interaction,
+  GTlsPassword            $password,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GTlsInteractionResult
@@ -57,11 +62,11 @@ sub g_tls_interaction_invoke_ask_password (
 { * }
 
 sub g_tls_interaction_invoke_request_certificate (
-  GTlsInteraction $interaction,
-  GTlsConnection $connection,
+  GTlsInteraction             $interaction,
+  GTlsConnection              $connection,
   GTlsCertificateRequestFlags $flags,
-  GCancellable $cancellable,
-  CArray[Pointer[GError]] $error
+  GCancellable                $cancellable,
+  CArray[Pointer[GError]]     $error
 )
   returns GTlsInteractionResult
   is native(gio)
@@ -69,11 +74,11 @@ sub g_tls_interaction_invoke_request_certificate (
 { * }
 
 sub g_tls_interaction_request_certificate (
-  GTlsInteraction $interaction,
-  GTlsConnection $connection,
+  GTlsInteraction             $interaction,
+  GTlsConnection              $connection,
   GTlsCertificateRequestFlags $flags,
-  GCancellable $cancellable,
-  CArray[Pointer[GError]] $error
+  GCancellable                $cancellable,
+  CArray[Pointer[GError]]     $error
 )
   returns GTlsInteractionResult
   is native(gio)
@@ -81,20 +86,20 @@ sub g_tls_interaction_request_certificate (
 { * }
 
 sub g_tls_interaction_request_certificate_async (
-  GTlsInteraction $interaction,
-  GTlsConnection $connection,
-  GTlsCertificateRequestFlags $flags,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GTlsInteraction              $interaction,
+  GTlsConnection               $connection,
+  GTlsCertificateRequestFlags  $flags,
+  GCancellable                 $cancellable,
+  GAsyncReadyCallback          $callback,
+  gpointer                     $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_tls_interaction_request_certificate_finish (
-  GTlsInteraction $interaction,
-  GAsyncResult $result,
+  GTlsInteraction         $interaction,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns GTlsInteractionResult
