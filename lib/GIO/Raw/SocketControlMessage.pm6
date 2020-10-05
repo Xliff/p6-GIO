@@ -2,14 +2,20 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::SocketControlMessage;
 
 sub g_socket_control_message_deserialize (
-  gint $level,
-  gint $type,
-  gsize $size,
+  gint     $level,
+  gint     $type,
+  gsize    $size,
   gpointer $data
 )
   returns GSocketControlMessage
@@ -43,7 +49,7 @@ sub g_socket_control_message_get_type ()
 
 sub g_socket_control_message_serialize (
   GSocketControlMessage $message,
-  gpointer $data
+  gpointer              $data
 )
   is native(gio)
   is export
