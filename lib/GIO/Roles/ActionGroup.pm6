@@ -6,8 +6,43 @@ use NativeCall;
 use GIO::Raw::Types;
 use GIO::Raw::ActionGroup;
 
+our subset GActionGroupAncestry is export of Mu
+  where GActionGroup | GObject;
+
 role GIO::Roles::ActionGroup {
   has GActionGroup $!ag;
+
+  submethod BUILD (:$action-group) {
+    self.setGActionGroup($action-group) if $action-group;
+  }
+
+  method setGActionGroup (GActionGroupAncestry $_) {
+    my $to-parent;
+
+    $!ag = do {
+      when GActionGroup {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GActionGroup, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new-actiongroup-obj (
+    GActionGroupAncestry $action-group,
+                         :$ref          = True
+  ) {
+    return Nil unless $action-group;
+
+    my $o = self.bless( :$action-group );
+    $o.ref if $ref;
+    $o;
+  }
 
   method !roleInit-ActionGroup is also<!roleInit_ActionGroup> {
     return if $!ag;
@@ -89,7 +124,7 @@ role GIO::Roles::ActionGroup {
     my $pvt = g_action_group_get_action_parameter_type($!ag, $action_name);
 
     $pvt ??
-      ( $raw ?? $pvt !! GLib::VariantType.new($pvt) )
+      ( $raw ?? $pvt !! GLib::VariantType.new($pvt, :!ref) )
       !!
       Nil;
   }
@@ -100,7 +135,7 @@ role GIO::Roles::ActionGroup {
     my $s = g_action_group_get_action_state($!ag, $action_name);
 
     $s ??
-      ( $raw ?? $s !! GLib::Variant.new($s) )
+      ( $raw ?? $s !! GLib::Variant.new($s, :!ref) )
       !!
       Nil;
   }
@@ -111,7 +146,7 @@ role GIO::Roles::ActionGroup {
     my $sh = g_action_group_get_action_state_hint($!ag, $action_name);
 
     $sh ??
-      ( $raw ?? $sh !! GLib::Variant.new($sh) )
+      ( $raw ?? $sh !! GLib::Variant.new($sh, :!ref) )
       !!
       Nil;
   }
@@ -122,7 +157,7 @@ role GIO::Roles::ActionGroup {
     my $svt = g_action_group_get_action_state_type($!ag, $action_name);
 
     $svt ??
-      ( $raw ?? $svt !! GLib::VariantType.new($svt) )
+      ( $raw ?? $svt !! GLib::VariantType.new($svt, :!ref) )
       !!
       Nil;
   }
@@ -154,13 +189,13 @@ role GIO::Roles::ActionGroup {
   }
   multi method query_action (
     Str() $action_name,
-    $enabled        is rw,
-    $parameter_type is rw,
-    $state_type     is rw,
-    $state_hint     is rw,
-    $state          is rw,
-    :$all = False,
-    :$raw = False
+          $enabled            is rw,
+          $parameter_type     is rw,
+          $state_type         is rw,
+          $state_hint         is rw,
+          $state              is rw,
+          :$all               =  False,
+          :$raw               =  False
   ) {
     my $ea = CArray[gboolean].new;
     $ea[0] = gboolean;
@@ -184,22 +219,22 @@ role GIO::Roles::ActionGroup {
     $enabled = $ea[0] ?? ( so $ea[0] ) !! Nil;
 
     $parameter_type = $pvta[0] ??
-      ( $raw ?? $pvta[0] !! GLib::VariantType.new( $pvta[0] ) )
+      ( $raw ?? $pvta[0] !! GLib::VariantType.new( $pvta[0], :!ref ) )
       !!
       Nil;
 
     $state_type = $svta[0] ??
-      ( $raw ?? $svta[0] !! GLib::VariantType.new( $svta[0] ) )
+      ( $raw ?? $svta[0] !! GLib::VariantType.new( $svta[0], :!ref ) )
       !!
       Nil;
 
     $state_hint = $sha[0] ??
-      ( $raw ?? $sha[0] !! GLib::Variant.new( $sha[0] ) )
+      ( $raw ?? $sha[0] !! GLib::Variant.new( $sha[0], :!ref ) )
       !!
       Nil;
 
     $state = $sa[0] ??
-      ( $raw ?? $sa[0] !! GLib::Variant.new( $sa[0] ) )
+      ( $raw ?? $sa[0] !! GLib::Variant.new( $sa[0], :!ref ) )
       !!
       Nil;
 
