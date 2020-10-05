@@ -7,27 +7,17 @@ use GIO::Raw::UnixSocketAddress;
 
 use GIO::SocketAddress;
 
-our subset UnixSocketAddressAncestry is export of Mu
-  where GUnixSocketAddress | SocketAddressAncestry;
+our subset GUnixSocketAddressAncestry is export of Mu
+  where GUnixSocketAddress | GSocketAddressAncestry;
 
 class GIO::UnixSocketAddress is GIO::SocketAddress {
   has GUnixSocketAddress $!us is implementor;
 
   submethod BUILD (:$unix-socket) {
-    given $unix-socket {
-      when UnixSocketAddressAncestry {
-        self.setUnixSocket($unix-socket);
-      }
-
-      when GIO::UnixSocketAddress {
-      }
-
-      default {
-      }
-    }
+    self.setUnixSocket($unix-socket);
   }
 
-  method setUnixSocketAddress(UnixSocketAddressAncestry $_) {
+  method setUnixSocketAddress(GUnixSocketAddressAncestry $_) {
     my $to-parent;
     $!us = do {
       when GUnixSocketAddress {
@@ -40,31 +30,42 @@ class GIO::UnixSocketAddress is GIO::SocketAddress {
         cast(GUnixSocketAddress, $_);
       }
     }
-    self.setSocketAddress($to-parent);
+    self.setGSocketAddress($to-parent);
   }
 
   method GIO::Raw::Definitions::GUnixSocketAddress
     is also<GUnixSocketAddress>
   { $!us }
 
-  multi method new (UnixSocketAddressAncestry $unix-socket) {
-    self.bless( :$unix-socket );
+  multi method new (GUnixSocketAddressAncestry $unix-socket, :$ref = True) {
+    return Nil unless $unix-socket;
+
+    my $o = self.bless( :$unix-socket );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (Str() $path) {
-    self.bless( unix-socket => g_unix_socket_address_new($path) );
+    my $unix-socket = g_unix_socket_address_new($path);
+
+    $unix-socket ?? self.bless( :$unix-socket ) !! Nil;
   }
 
   method new_with_type (
     Str() $path,
     Int() $path_len,
     Int() $type
-  ) is also<new-with-type> {
-    my gint $pl = $path_len;
-    my GUnixSocketAddressType $t = $type;
+  )
+    is also<new-with-type>
+  {
+    my gint                   $pl = $path_len;
+    my GUnixSocketAddressType $t  = $type;
 
-    self.bless(
-      unix-socket => g_unix_socket_address_new_with_type($path, $pl, $t)
+    my $unix-socket = g_unix_socket_address_new_with_type(
+      $path,
+      $pl,
+      $t
     );
+    $unix-socket ?? self.bless( :$unix-socket ) !! Nil;
   }
 
   method abstract_names_supported is also<abstract-names-supported> {
