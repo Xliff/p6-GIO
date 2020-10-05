@@ -10,7 +10,7 @@ use GIO::OutputStream;
 use GIO::Roles::FileDescriptorBased;
 use GIO::Roles::PollableOutputStream;
 
-our subset UnixOutputStreamAncestry is export of Mu
+our subset GUnixOutputStreamAncestry is export of Mu
   where GUnixOutputStream | GFileDescriptorBased | GPollableOutputStream |
         GOutputStream;
 
@@ -21,20 +21,10 @@ class GIO::UnixOutputStream is GIO::OutputStream {
   has GUnixOutputStream $!uos is implementor;
 
   submethod BUILD (:$unix-stream) {
-    given $unix-stream {
-      when UnixOutputStreamAncestry {
-        self.setUnixOutputStream($unix-stream);
-      }
-
-      when GIO::UnixOutputStream {
-      }
-
-      default {
-      }
-    }
+    self.setGUnixOutputStream($unix-stream) if $unix-stream;
   }
 
-  method setUnixOutputStream (UnixOutputStreamAncestry $_) {
+  method setGUnixOutputStream (GUnixOutputStreamAncestry $_) {
     my $to-parent;
 
     $!uos = do {
@@ -60,16 +50,24 @@ class GIO::UnixOutputStream is GIO::OutputStream {
         cast(GUnixOutputStream, $_);
       }
     }
-    self.roleInit-FileDescriptorBased  unless $!fdb;
-    self.roleInit-GPollableOutputStream unless $!pos;
     self.setOutputStream($to-parent);
+    self.roleInit-FileDescriptorBased;
+    self.roleInit-GPollableOutputStream;
   }
 
-  method new (Int() $fd, Int() $close_fd) {
-    my gint $f = $fd;
-    my gboolean $cfd = $close_fd;
+  multi method new (GUnixOutputStreamAncestry $unix-stream, :$ref = True) {
+    return Nil unless $unix-stream;
 
-    self.bless( unix-stream =>  g_unix_output_stream_new($f, $cfd) );
+    my $o = self.bless( :$unix-stream );
+    $o.ref if $ref;
+    $o;
+  }
+  multi method new (Int() $fd, Int() $close_fd) {
+    my gint     $f           = $fd;
+    my gboolean $cfd         = $close_fd.so.Int;
+    my          $unix-stream = g_unix_output_stream_new($f, $cfd);
+
+    $unix-stream ?? self.bless( :$unix-stream ) !! Nil;
   }
 
   method GIO::Raw::Definitions::GUnixOutputStream
@@ -78,16 +76,21 @@ class GIO::UnixOutputStream is GIO::OutputStream {
 
   method close_fd is rw is also<close-fd> {
     Proxy.new(
-      FETCH => sub ($) {
-        g_unix_output_stream_get_close_fd($!uos);
-      },
-      STORE => sub ($, $close_fd is copy) {
-        g_unix_output_stream_set_close_fd($!uos, $close_fd);
-      }
+      FETCH => -> $             { self.get_close_fd      },
+      STORE => -> $, Int() \cfd { self.set_close_fd(cfd) };
     );
   }
 
-  method get_fd is also<get-fd> {
+  method get_close_fd {
+    so g_unix_output_stream_get_close_fd($!uos);
+  }
+
+  method get_fd
+    is also<
+      get-fd
+      fd
+    >
+  {
     g_unix_output_stream_get_fd($!uos);
   }
 
@@ -95,6 +98,12 @@ class GIO::UnixOutputStream is GIO::OutputStream {
     state ($n, $t);
 
     unstable_get_type( self.^name, &g_unix_output_stream_get_type, $n, $t );
+  }
+
+  method set_close_fd (Int() $close_fd) {
+    my gboolean $c = $close_fd.so.Int;
+
+    g_unix_output_stream_set_close_fd($!uos, $c);
   }
 
 }
