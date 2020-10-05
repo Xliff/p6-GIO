@@ -2,7 +2,13 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::VFS;
 
@@ -49,14 +55,14 @@ sub g_vfs_parse_name (GVfs $vfs, Str $parse_name)
 { * }
 
 sub g_vfs_register_uri_scheme (
-  GVfs $vfs,
-  Str $scheme,
-  GVfsFileLookupFunc $uri_func,
-  gpointer $uri_data,
-  GDestroyNotify $uri_destroy,
-  GVfsFileLookupFunc $parse_name_func,
-  gpointer $parse_name_data,
-  GDestroyNotify $parse_name_destroy
+  GVfs               $vfs,
+  Str                $scheme,
+                     &uri_func (GVfs, Str, gpointer --> GFile),
+  gpointer           $uri_data,
+  GDestroyNotify     $uri_destroy,
+                     &parse_name_func (GVfs, Str, gpointer --> GFile),
+  gpointer           $parse_name_data,
+                     &parse_name_destroy (gpointer)
 )
   returns uint32
   is native(gio)
