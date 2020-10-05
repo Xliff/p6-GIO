@@ -9,7 +9,7 @@ use GIO::SocketListener;
 
 use GIO::Roles::Signals::SocketService;
 
-our subset SocketServiceAncestry is export of Mu
+our subset GSocketServiceAncestry is export of Mu
   where GSocketService | GSocketListener;
 
 class GIO::SocketService is GIO::SocketListener {
@@ -18,20 +18,10 @@ class GIO::SocketService is GIO::SocketListener {
   has GSocketService $!ss is implementor;
 
   submethod BUILD (:$service) {
-    given $service {
-      when SocketServiceAncestry {
-        self.setSocketService($service);
-      }
-
-      when GIO::SocketService {
-      }
-
-      default {
-      }
-    }
+    self.setGSocketService($service) if $service;
   }
 
-  method setSocketService(SocketServiceAncestry $_) {
+  method setSocketService(GSocketServiceAncestry $_) {
     my $to-parent;
 
     $!ss = do {
@@ -52,11 +42,17 @@ class GIO::SocketService is GIO::SocketListener {
     is also<GSocketService>
   { $!ss }
 
-  multi method new (GSocketService $service) {
-    self.bless( :$service );
+  multi method new (GSocketServiceAncestry $service, :$ref = True) {
+    return unless $service;
+
+    my $o = self.bless( :$service );
+    $o.ref if $ref;
+    $o;
   }
   multi method new {
-    self.bless( service => g_socket_service_new() );
+    my $service = g_socket_service_new();
+
+    $service ?? self.bless( :$service ) !! Nil;
   }
 
   # Is originally:
