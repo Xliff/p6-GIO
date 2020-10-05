@@ -2,14 +2,20 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::SocketConnection;
 
 sub g_socket_connection_connect (
-  GSocketConnection $connection,
-  GSocketAddress $address,
-  GCancellable $cancellable,
+  GSocketConnection       $connection,
+  GSocketAddress          $address,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -18,19 +24,19 @@ sub g_socket_connection_connect (
 { * }
 
 sub g_socket_connection_connect_async (
-  GSocketConnection $connection,
-  GSocketAddress $address,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GSocketConnection   $connection,
+  GSocketAddress      $address,
+  GCancellable        $cancellable,
+                      &callback (GSocketConnection, GAsyncResult, gpointer),
+  gpointer            $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_socket_connection_connect_finish (
-  GSocketConnection $connection,
-  GAsyncResult $result,
+  GSocketConnection       $connection,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -46,8 +52,8 @@ sub g_socket_connection_factory_create_connection (GSocket $socket)
 
 sub g_socket_connection_factory_lookup_type (
   GSocketFamily $family,
-  GSocketType $type,
-  gint $protocol_id
+  GSocketType   $type,
+  gint          $protocol_id
 )
   returns GType
   is native(gio)
@@ -55,17 +61,17 @@ sub g_socket_connection_factory_lookup_type (
 { * }
 
 sub g_socket_connection_factory_register_type (
-  GType $g_type,
+  GType         $g_type,
   GSocketFamily $family,
-  GSocketType $type,
-  gint $protocol
+  GSocketType   $type,
+  gint          $protocol
 )
   is native(gio)
   is export
 { * }
 
 sub g_socket_connection_get_local_address (
-  GSocketConnection $connection,
+  GSocketConnection       $connection,
   CArray[Pointer[GError]] $error
 )
   returns GSocketAddress
@@ -74,7 +80,7 @@ sub g_socket_connection_get_local_address (
 { * }
 
 sub g_socket_connection_get_remote_address (
-  GSocketConnection $connection,
+  GSocketConnection       $connection,
   CArray[Pointer[GError]] $error
 )
   returns GSocketAddress
