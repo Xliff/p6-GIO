@@ -44,15 +44,19 @@ role GIO::Roles::AsyncResult {
     is also<GAsyncResult>
   { $!ar }
 
-  method new-asyncresult-obj (GAsyncResult $result) {
-    $result ?? self.bless( :$result ) !! Nil;
+  method new-asyncresult-obj (GAsyncResultAncestry $result, :$ref = True) {
+    return Nil unless $result;
+
+    my $o = self.bless( :$result );
+    $o.ref if $ref;
+    $o;
   }
 
   method get_source_object (:$raw = False) is also<get-source-object> {
     my $o = g_async_result_get_source_object($!ar);
 
     $o ??
-      ( $raw ?? $o !! GLib::Roles::Object.new-object-obj($o) )
+      ( $raw ?? $o !! GLib::Roles::Object.new-object-obj($o, :!ref) )
       !!
       Nil;
   }
