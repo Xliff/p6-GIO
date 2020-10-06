@@ -6,16 +6,52 @@ use NativeCall;
 use GIO::Raw::Types;
 use GIO::Raw::AsyncInitable;
 
+use GLib::Roles::Object;
 use GLib::Roles::TypedBuffer;
 
-role GIO::Roles::AsyncInitable {
+our subset GAsyncInitableAncestry is export of Mu
+  where GAsyncInitable | GObject;
+
+role GIO::Roles::AsyncInitable does GLib::Roles::Object {
   has GAsyncInitable $!ai;
+
+  submethod BUILD (:$async-initable) {
+    self.setGAsyncInitable($async-initable) if $async-initable;
+  }
+
+  method setGAsyncInitable (GAsyncInitableAncestry $_) {
+    my $to-parent;
+
+    $!ai = do {
+      when GAsyncInitable {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GAsyncInitable, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
 
   method roleInit-AsyncInitable {
     return if $!ai;
 
     my \i = findProperImplementor(self.^attributes);
-    $!ai = cast(GAsyncInitable, i.get_value(self) );
+    $!ai = cast(GAsyncInitable, i.getP4_value(self) );
+  }
+
+  method new-asyncinitable-obj (
+    GAsyncInitableAncestry $async-initable,
+                           :$ref            = True
+  ) {
+    return Nil unless $async-initable;
+
+    my $o = self.bless( :$async-initable );
+    $o.ref if $ref;
+    $o;
   }
 
   method GIO::Raw::Definitions::GAsyncInitable
@@ -114,13 +150,24 @@ role GIO::Roles::AsyncInitable {
   method new_finish (
     GAsyncResult()          $res,
     CArray[Pointer[GError]] $error = gerror,
+                            :$raw  = False
   )
     is also<new-finish>
   {
     clear_error
     my $o = g_async_initable_new_finish($!ai, $res, $error);
     set_error($error);
-    $o ?? GLib::Roles::Object.new-object-obj($o) !! Nil;
+
+    $o = $o ??
+      ( $raw ?? $o !! GLib::Roles::Object.new-object-obj($o, :!ref) )
+      !!
+      Nil;
+
+    unless $raw {
+      $o = $o but GIO::Roles::AsyncInitable;
+      $o.roleInit-AsyncInitable;
+    }
+    $o;
   }
 
   proto method new_async (|)
