@@ -20,10 +20,10 @@ class GIO::Emblem {
     self.setGEmblem($emblem) if $emblem;
   }
 
-  method setGEmblem (GEmblemAncestry) {
+  method setGEmblem (GEmblemAncestry $_) {
     my $to-parent;
 
-    $!e = {
+    $!e = do {
       when GEmblem {
         $to-parent = cast(GObject, $_);
         $_;
@@ -57,8 +57,10 @@ class GIO::Emblem {
   multi method new_with_origin (GIcon() $icon, Int() $origin)
     is also<new-with-origin>
   {
-    my GEmblemOrigin $o = $origin;
-    my $emblem = g_emblem_new_with_origin($icon, $o);
+    my GEmblemOrigin $o      = $origin;
+    my               $emblem = g_emblem_new_with_origin($icon, $o);
+
+    #say "E: $emblem";
 
     $emblem ?? self.bless( :$emblem ) !! Nil;
   }

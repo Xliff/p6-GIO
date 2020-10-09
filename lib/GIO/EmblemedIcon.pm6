@@ -22,13 +22,13 @@ class GIO::EmblemedIcon {
   has GEmblemedIcon $!ei is implementor;
 
   submethod BUILD (:$emblem) {
-    self.setEmblemedIcon($emblem) if $emblem;
+    self.setGEmblemedIcon($emblem) if $emblem;
   }
 
   method setGEmblemedIcon (GEmblemedIconAncestry $_) {
     my $to-parent;
 
-    $!ei = {
+    $!ei = do {
       when GEmblemedIcon {
         $to-parent = cast(GObject, $_);
         $_;
@@ -75,11 +75,11 @@ class GIO::EmblemedIcon {
     >
   {
     my $el = g_emblemed_icon_get_emblems($!ei);
+
     return Nil unless $el;
     return $el if $glist && $raw;
 
-    $el = GLib::GList.new($el)
-      but GLib::Roles::ListData[GEmblem];
+    $el = GLib::GList.new($el) but GLib::Roles::ListData[GEmblem];
     return $el if $glist;
 
     $raw ?? $el.Array !! $el.Array.map({ GIO::Emblem.new($_) });
