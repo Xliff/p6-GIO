@@ -7,6 +7,8 @@ use GIO::Raw::Types;
 use GIO::ContentType;
 use GIO::ThemedIcon;
 
+use GIO::Roles::GFile;
+
 # cw: Test ported from https://github.com/GNOME/glib/blob/master/gio/tests/contenttype.c
 
 sub test-guess {
@@ -163,6 +165,55 @@ sub test-symbolic-icon {
   }
 }
 
+sub test-tree {
+  subtest 'Tree', {
+    for 'x-content/' «~« <image-dcf unix-software win32-software> {
+      my $p = 't'.IO.add($_);
+      die "Cannot find directory '{ $p.absolute }'" unless $p.d;
+      my $path = GIO::Roles::File.new_for_path($p.absolute);
+      my $types = GIO::ContentType.guess-for-tree($path);
+      is $_, $types,                                       "Content type matches '{ $_ }'";
+    }
+  }
+}
+
+sub test-is-a-special-case {
+  subtest 'Special Case (#782311)', {
+    nok GIO::ContentType.is-a('inode/directory', 'application/octet-stream'),
+                                                          '"inode/directory" does not test as an "application/content-stream"';
+  }
+}
+
+sub test-guess-svg-from-data {
+  subtest 'Guess SVG from Data', {
+    my $svg = q:to/SVG/;
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <rect x="10" y="10" height="100" width="100" style="stroke:#ff0000; fill: #0000ff"/>
+      </svg>
+      SVG
+
+    my ($res, $uncertain) = GIO::ContentType.guess(Str, $svg, $svg.chars - 1);
+    is $res, 'image/svg+xml', 'SVG string detected as "image/svg+xml"';
+  }
+}
+
+sub test-mime-from-content {
+
+  subtest 'MIME from content', {
+    pass 'NYI under Linux!';
+  #   my $mime-type = GIO::ContentType.get-mime-type('com.microsoft.bmp');
+  #   is $mime-type, 'image/bmp',     '"com.microsoft.bmp" detected as "image/bmp"';
+  #      $mime-type = GIO::ContentType.get-mime-type('com.compuserve.com');
+  #   is $mime-type, 'image/gif',     '"com.compuserve.giv" detected as "image/gif"';
+  #      $mime-type = GIO::ContentType.get-mime-type('public.png');
+  #   is $mime-type, 'image/png',     '"com.microsoft.bmp" detected as "image/png"';
+  #      $mime-type = GIO::ContentType.get-mime-type('public.text');
+  #   is $mime-type, 'text/*',        '"com.microsoft.bmp" detected as "text/*"';
+  #      $mime-type = GIO::ContentType.get-mime-type('public.svg-image');
+  #   is $mime-type, 'image/svg+xml', '"com.microsoft.bmp" detected as "image/svg+xml"';
+  }
+}
+
 test-guess;
 test-unknown;
 test-subtype;
@@ -171,3 +222,7 @@ test-executable;
 test-description;
 test-icon;
 test-symbolic-icon;
+test-tree;
+test-is-a-special-case;
+test-guess-svg-from-data;
+test-mime-from-content;
