@@ -15,9 +15,9 @@ our subset GAsyncInitableAncestry is export of Mu
 role GIO::Roles::AsyncInitable does GLib::Roles::Object {
   has GAsyncInitable $!ai;
 
-  submethod BUILD (:$async-initable) {
-    self.setGAsyncInitable($async-initable) if $async-initable;
-  }
+  # submethod BUILD (:$async-initable) {
+  #   self.setGAsyncInitable($async-initable) if $async-initable;
+  # }
 
   method setGAsyncInitable (GAsyncInitableAncestry $_) {
     my $to-parent;
@@ -49,7 +49,8 @@ role GIO::Roles::AsyncInitable does GLib::Roles::Object {
   ) {
     return Nil unless $async-initable;
 
-    my $o = self.bless( :$async-initable );
+    my $o = self.bless;
+    $o.setGAsyncInitable($async-initable);
     $o.ref if $ref;
     $o;
   }
