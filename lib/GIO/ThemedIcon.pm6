@@ -52,6 +52,9 @@ class GIO::ThemedIcon {
     is also<GThemedIcon>
   { $!ti }
 
+  # cw: XXX - XXX - XXX
+  #     The following two multi's illustrate a potential bug in Raku.
+  #     Given the more restrictive nature of the following multi:
   multi method new (GThemedIconAncestry $themed-icon, :$ref = True) {
     return Nil unless $themed-icon;
 
@@ -59,7 +62,8 @@ class GIO::ThemedIcon {
     $o.ref if $ref;
     $o;
   }
-  multi method new (Str() $icon-name) {
+  # ... why is it that this multi (if made coercive) is used?
+  multi method new (Str $icon-name) {
     my $themed-icon = g_themed_icon_new($icon-name);
 
     $themed-icon ?? self.bless( :$themed-icon ) !! Nil;
@@ -145,7 +149,9 @@ class GIO::ThemedIcon {
       names
     >
   {
-    CStringArrayToArray( g_themed_icon_get_names($!ti) );
+    my $sl = g_themed_icon_get_names($!ti);
+
+    CStringArrayToArray( $sl );
   }
 
   method get_type is also<get-type> {
