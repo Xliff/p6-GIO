@@ -62,7 +62,7 @@ class GIO::PropertyAction {
     $o;
   }
   multi method new (
-    Str()            $property_name, name,
+    Str()            $property_name,
     GObjectOrPointer $object is copy;
   ) {
     # Shortcut where <action-name> is also the <property-name>
