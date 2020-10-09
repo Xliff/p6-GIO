@@ -8,11 +8,34 @@ use GLib::Variant;
 use GIO::Raw::Types;
 use GIO::Raw::Icon;
 
-role GIO::Roles::Icon {
+use GLib::Roles::Object;
+
+our subset GIconAncestry is export of Mu
+  where GIcon | GObject;
+
+role GIO::Roles::Icon does GLib::Roles::Object {
   has GIcon $!icon;
 
-  submethod BUILD (:$icon) {
-    $!icon = $icon if $icon;
+  method ROLEBUILD (:$icon) {
+    self.setGIcon($icon) if $icon;
+  }
+
+  method setGIcon (GIconAncestry $_) {
+    my $to-parent;
+
+    $!icon = do {
+      when GIcon {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GIcon, $_);
+      }
+    }
+    self!setObject($to-parent);
+    self.roleInit-Icon;
   }
 
   method roleInit-Icon {
@@ -22,6 +45,7 @@ role GIO::Roles::Icon {
     $!icon = cast( GIcon, i.get_value(self) );
   }
 
+  method GIcon { $!icon }
   method GIO::Raw::Definitions::GIcon
     is also<
       GIcon
@@ -29,8 +53,13 @@ role GIO::Roles::Icon {
     >
   { $!icon }
 
-  method new-icon-obj ($icon) {
-    self.bless( :$icon );
+  method new-icon-obj (GIconAncestry $icon, :$ref = True) {
+    return Nil unless $icon;
+
+    my $o = self.bless( :$icon );
+    $o.ROLEBUILD( :$icon );
+    $o.ref if $ref;
+    $o;
   }
 
   method new_for_string (
