@@ -58,6 +58,13 @@ class GIO::InputStream {
   { * }
 
   multi method close_async (
+    &callback,
+    GCancellable() $cancellable = GCancellable,
+    gpointer       $user_data   = Pointer
+  ) {
+    samewith(0, $cancellable, &callback, $user_data);
+  }
+  multi method close_async (
     Int()          $io_priority,
                    &callback,
     GCancellable() $cancellable = GCancellable,
@@ -208,13 +215,14 @@ class GIO::InputStream {
     is also<read-async>
   { * }
 
+  # cw: Not complete. Missing multis for Str, CArray[uint8], Pointer
   multi method read_async (
     Blob()         $buffer,
     Int()          $count,
     Int()          $io_priority,
                    &callback,
-    gpointer       $user_data   = Pointer,
-    GCancellable() $cancellable = GCancellable
+    gpointer       $user_data    = Pointer,
+    GCancellable() $cancellable  = GCancellable
   ) {
     samewith(
       $buffer,
@@ -270,8 +278,8 @@ class GIO::InputStream {
     Int()          $count,
     Int()          $io_priority,
                    &callback,
-    gpointer       $user_data   = Pointer,
-    GCancellable() $cancellable = GCancellable
+    gpointer       $user_data    = Pointer,
+                   :$cancellable = GCancellable
   ) {
     samewith($count, $io_priority, $cancellable, &callback, $user_data);
   }
@@ -346,10 +354,10 @@ class GIO::InputStream {
 
   multi method skip_async (
     Int()          $count,
-    Int()          $io_priority,
                    &callback,
-    gpointer       $user_data   = Pointer,
-    GCancellable() $cancellable = GCancellable
+    gpointer       $user_data    = Pointer,
+    Int()          :$io_priority = 0,
+    GCancellable() :$cancellable = GCancellable
   ) {
     samewith($count, $io_priority, $cancellable, &callback, $user_data);
   }
