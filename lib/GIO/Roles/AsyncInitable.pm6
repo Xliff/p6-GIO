@@ -9,50 +9,14 @@ use GIO::Raw::AsyncInitable;
 use GLib::Roles::Object;
 use GLib::Roles::TypedBuffer;
 
-our subset GAsyncInitableAncestry is export of Mu
-  where GAsyncInitable | GObject;
-
 role GIO::Roles::AsyncInitable does GLib::Roles::Object {
   has GAsyncInitable $!ai;
-
-  # submethod BUILD (:$async-initable) {
-  #   self.setGAsyncInitable($async-initable) if $async-initable;
-  # }
-
-  method setGAsyncInitable (GAsyncInitableAncestry $_) {
-    my $to-parent;
-
-    $!ai = do {
-      when GAsyncInitable {
-        $to-parent = cast(GObject, $_);
-        $_;
-      }
-
-      default {
-        $to-parent = $_;
-        cast(GAsyncInitable, $_);
-      }
-    }
-    self!setObject($to-parent);
-  }
 
   method roleInit-AsyncInitable {
     return if $!ai;
 
     my \i = findProperImplementor(self.^attributes);
     $!ai = cast(GAsyncInitable, i.getP4_value(self) );
-  }
-
-  method new-asyncinitable-obj (
-    GAsyncInitableAncestry $async-initable,
-                           :$ref            = True
-  ) {
-    return Nil unless $async-initable;
-
-    my $o = self.bless;
-    $o.setGAsyncInitable($async-initable);
-    $o.ref if $ref;
-    $o;
   }
 
   method GIO::Raw::Definitions::GAsyncInitable
@@ -330,6 +294,46 @@ role GIO::Roles::AsyncInitable does GLib::Roles::Object {
       &callback,
       $user_data
     );
+  }
+
+}
+
+our subset GAsyncInitableAncestry is export of Mu
+  where GAsyncInitable | GObject;
+
+class GIO::AsyncInitable does GIO::Roles::AsyncInitable {
+
+  submethod BUILD (:$async-initable) {
+    self.setGAsyncInitable($async-initable) if $async-initable;
+  }
+
+  method setGAsyncInitable (GAsyncInitableAncestry $_) {
+    my $to-parent;
+
+    $!ai = do {
+      when GAsyncInitable {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GAsyncInitable, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  multi method new (
+    GAsyncInitableAncestry $async-initable,
+                           :$ref            = True
+  ) {
+    return Nil unless $async-initable;
+
+    my $o = self.bless;
+    $o.setGAsyncInitable($async-initable);
+    $o.ref if $ref;
+    $o;
   }
 
 }
