@@ -7,12 +7,10 @@ use GIO::Raw::Types;
 
 use GLib::Value;
 
-role GIO::Roles::DTlsServerConnection {
-  has GDtlsServerConnection $!dtsc;
+use GLib::Roles::Object;
 
-  submethod BUILD (:$server-connection) {
-    $!dtsc = $server-connection;
-  }
+role GIO::Roles::DtlsServerConnection does GLib::Roles::Object {
+  has GDtlsServerConnection $!dtsc;
 
   method roleInit-DtlsServerConnection is also<roleInit_DtlsServerConnection> {
     return if $!dtsc;
@@ -24,30 +22,6 @@ role GIO::Roles::DTlsServerConnection {
   method GIO::Raw::Definitions::GDtlsServerConnection
     is also<GDtlsServerConnection>
   { $!dtsc }
-
-  proto method new-dtlsserverconnection-obj (|)
-      is also<new_Dtlsserverconnection_obj>
-  { * }
-
-  multi method new-dtlsserverconnection-obj (
-    GDtlsServerConnection $server-connection
-  ) {
-    $server-connection ?? self.bless( :$server-connection ) !! Nil;
-  }
-  multi method new-dtlsserverconnection-obj (
-    GDatagramBased()        $base,
-    GTlsCertificate()       $certificate,
-    CArray[Pointer[GError]] $error        = gerror
-  ) {
-    clear_error;
-    my $server-connection = g_dtls_server_connection_new(
-      $base,
-      $certificate,
-      $error
-    );
-    set_error($error);
-    $server-connection ?? self.bless( :$server-connection ) !! Nil;
-  }
 
   # Type: GDtlsAuthenticationMode
   method authentication-mode is rw  is also<authentication_mode> {
@@ -70,6 +44,56 @@ role GIO::Roles::DTlsServerConnection {
     state ($n, $t);
 
     unstable_get_type( self.^name, &g_dtls_server_connection_get_type, $n, $t );
+  }
+
+}
+
+our subset GDtlsServerConnectionAncestry is export of Mu
+  where GDtlsServerConnection | GObject;
+
+class GIO::DtlsServerConnection does GIO::Roles::DtlsServerConnection {
+
+  submethod BUILD (:$server-connection) {
+    self.setGDtlsServerConnection($server-connection) if $server-connection;
+  }
+
+  method setGDtlsServerConnection (GDtlsServerConnectionAncestry $_) {
+    my $to-parent;
+
+    $!dtsc = do {
+      when GDtlsServerConnection {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GDtlsServerConnection, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  multi method new (GDtlsServerConnection $server-connection, :$ref = True) {
+    return Nil unless $server-connection;
+
+    my $o = self.bless( :$server-connection );
+    $o.ref if $ref;
+    $o;
+  }
+  multi method new (
+    GDatagramBased()        $base,
+    GTlsCertificate()       $certificate,
+    CArray[Pointer[GError]] $error        = gerror
+  ) {
+    clear_error;
+    my $server-connection = g_dtls_server_connection_new(
+      $base,
+      $certificate,
+      $error
+    );
+    set_error($error);
+    $server-connection ?? self.bless( :$server-connection ) !! Nil;
   }
 
 }
