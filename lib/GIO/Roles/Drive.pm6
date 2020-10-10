@@ -7,16 +7,13 @@ use NativeCall;
 use GIO::Raw::Types;
 use GIO::Raw::Drive;
 
+use GLib::Roles::Object;
 use GLib::Roles::Signals::Generic;
 use GIO::Roles::Icon;
 use GIO::Roles::Volume;
 
-role GIO::Roles::Drive {
+role GIO::Roles::Drive does GLib::Roles::Object {
   has GDrive $!d;
-
-  submethod BUILD (:$drive) {
-    $!d = $drive;
-  }
 
   method roleInit-Drive is also<roleInit_Drive> {
     return if $!d;
@@ -28,10 +25,6 @@ role GIO::Roles::Drive {
   method GIO::Raw::Definitions::GDrive
     is also<GDrive>
   { $!d }
-
-  method new-drive-obj (GDrive $drive) is also<new_drive_obj> {
-    $drive ?? self.bless( :$drive ) !! Nil;
-  }
 
   # Is originally:
   # GDrive, gpointer --> void
@@ -269,7 +262,7 @@ role GIO::Roles::Drive {
   ) {
     samewith($flags, $mount_operation, GCancellable, &callback, $user_data);
   }
-  method stop (
+  multi method stop (
     Int()               $flags,
     Int()               $mount_operation,
     GCancellable()      $cancellable,
@@ -292,6 +285,42 @@ role GIO::Roles::Drive {
     my $rv = so g_drive_stop_finish($!d, $result, $error);
     set_error($error);
     $rv;
+  }
+
+}
+
+our subset GDriveAncestry is export of Mu
+  when GDrive | GObject;
+
+class GIO::Drive does GIO::Roles::Drive {
+
+  submethod BUILD (:$drive) {
+    self.setGDrive($drive) if $drive;
+  }
+
+  method setGDrive (GDriveAncestry $_) {
+    my $to-parent;
+
+    $!d = do {
+      when GDrive {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GDrive, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GDriveAncestry $drive, :$ref = True) {
+    return Nil unless $drive;
+
+    my $o = self.bless( :$drive );
+    $o.ref if $ref;
+    $o;
   }
 
 }
