@@ -7,20 +7,16 @@ use GIO::Raw::Types;
 use GIO::Raw::DtlsClientConnection;
 
 use GLib::GList;
-
 use GLib::ByteArray;
 
 use GLib::Roles::ListData;
+use GLib::Roles::Object;
 use GIO::Roles::SocketConnectable;
 
-role GIO::Roles::DtlsClientConnection {
+role GIO::Roles::DtlsClientConnection does GLib::Roles::Object {
   also does GIO::Roles::SocketConnectable;
 
   has GDtlsClientConnection $!tdcc;
-
-  submethod BUILD (:$client-connection) {
-    $!tdcc = $client-connection;
-  }
 
   method roleInit-DtlsClientConnection
     is also<roleInit_DtlsClientConnection>
@@ -35,30 +31,13 @@ role GIO::Roles::DtlsClientConnection {
     is also<GDtlsClientConnection>
   { $!tdcc }
 
-  proto method new-dtlsclientconnection-obj (|)
-    is also<new_dtlsclientconnection_obj>
-  { * }
-
-  multi method new-dtlsclientconnection-obj (
-    GDtlsClientConnection $client-connection
-  ) {
-    $client-connection ?? self.bless( :$client-connection ) !! Nil;
-  }
-  multi method new-dtlsclientconnection-obj (
-    GDatagramBased()        $base,
-    GSocketConnectable()    $server_identity,
-    CArray[Pointer[GError]] $error            = gerror
-  ) {
-    clear_error;
-    my $client-connection = g_dtls_client_connection_new(
-      $base,
-      $server_identity,
-      $error
-    );
-    set_error($error);
-
-    $client-connection ?? self.bless( :$client-connection ) !! Nil;
-  }
+  # multi method new (
+  #   GDatagramBased()        $base,
+  #   GSocketConnectable()    $server_identity,
+  #   CArray[Pointer[GError]] $error            = gerror
+  # ) {
+  #   ...
+  # }
 
   method server_identity (:$raw = False) is rw is also<server-identity> {
     Proxy.new(
@@ -66,11 +45,7 @@ role GIO::Roles::DtlsClientConnection {
         my $sc = g_dtls_client_connection_get_server_identity($!tdcc);
 
         $sc ??
-          ( $raw ?? $sc
-                 !! GIO::SocketConnectable.new-socketconnectable-obj(
-                      $sc,
-                      :!ref
-                    ) )
+          ( $raw ?? $sc !! GIO::SocketConnectable.new($sc,:!ref) )
           !!
           Nil;
       },
@@ -110,7 +85,7 @@ role GIO::Roles::DtlsClientConnection {
     $cal = GLib::GList.new($cal) but GLib::Roles::ListData[GByteArray];
     return $cal  if $glist;
 
-    $raw ?? $cal.Array !! $cal.Array.map({ GLib::ByteArray.new($_) });
+    $raw ?? $cal.Array !! $cal.Array.map({ GLib::ByteArray.new($_, :!ref) });
   }
 
   method dtlsclientconnection_get_type
@@ -119,6 +94,60 @@ role GIO::Roles::DtlsClientConnection {
     state ($n, $t);
 
     unstable_get_type( self.^name, &g_dtls_client_connection_get_type, $n, $t );
+  }
+
+}
+
+our subset GDtlsClientConnectionAncestry is export of Mu
+  where GDtlsClientConnection | GObject;
+
+class GIO::DTlsClientConnection does GIO::Roles::DtlsClientConnection {
+
+  submethod BUILD (:$client-connection) {
+    self.setGDtlsClientConnection($client-connection) if $client-connection;
+  }
+
+  method setGDtlsClientConnection (GDtlsClientConnectionAncestry $_) {
+    my $to-parent;
+
+    $!tdcc = do {
+      when GDtlsClientConnection {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GDtlsClientConnection, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  multi method new (
+    GDtlsClientConnection $client-connection,
+                          :$ref = True;
+  ) {
+    return Nil unless $client-connection;
+
+    my $o = self.bless( :$client-connection );
+    $o.ref if $ref;
+    $o;
+  }
+  multi method new (
+    GDatagramBased()        $base,
+    GSocketConnectable()    $server_identity,
+    CArray[Pointer[GError]] $error            = gerror
+  ) {
+    clear_error;
+    my $client-connection = g_dtls_client_connection_new(
+      $base,
+      $server_identity,
+      $error
+    );
+    set_error($error);
+
+    $client-connection ?? self.bless( :$client-connection ) !! Nil;
   }
 
 }
