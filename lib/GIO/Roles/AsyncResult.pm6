@@ -6,32 +6,10 @@ use NativeCall;
 use GIO::Raw::Types;
 use GIO::Raw::AsyncResult;
 
-our subset GAsyncResultAncestry is export of Mu
-  where GAsyncResult | GObject;
+use GLib::Roles::Object;
 
-role GIO::Roles::AsyncResult {
+role GIO::Roles::AsyncResult does GLib::Roles::Object {
   has GAsyncResult $!ar;
-
-  submethod BUILD (:$result) {
-    self.setAsyncResult($result) if $result;
-  }
-
-  method setGAsyncResult (GAsyncResultAncestry $_) {
-    my $to-parent;
-
-    $!ar = do {
-      when GAsyncResult {
-        $to-parent = cast(GObject, $_);
-        $_;
-      }
-
-      default {
-        $to-parent = $_;
-        cast(GAsyncResult, $_);
-      }
-    }
-    self!setObject($to-parent);
-  }
 
   method roleInit-AsyncResult is also<roleInit_AsyncResult> {
     return if $!ar;
@@ -43,14 +21,6 @@ role GIO::Roles::AsyncResult {
   method GIO::Raw::Definitions::GAsyncResult
     is also<GAsyncResult>
   { $!ar }
-
-  method new-asyncresult-obj (GAsyncResultAncestry $result, :$ref = True) {
-    return Nil unless $result;
-
-    my $o = self.bless( :$result );
-    $o.ref if $ref;
-    $o;
-  }
 
   method get_source_object (:$raw = False) is also<get-source-object> {
     my $o = g_async_result_get_source_object($!ar);
@@ -94,6 +64,42 @@ role GIO::Roles::AsyncResult {
     my $e = so g_async_result_legacy_propagate_error($!ar, $error);
     #set_error($error);
     ppr($e);
+  }
+
+}
+
+our subset GAsyncResultAncestry is export of Mu
+  where GAsyncResult | GObject;
+
+class GIO::AsyncResult does GIO::Roles::AsyncResult {
+
+  submethod BUILD (:$result) {
+    self.setAsyncResult($result) if $result;
+  }
+
+  method setGAsyncResult (GAsyncResultAncestry $_) {
+    my $to-parent;
+
+    $!ar = do {
+      when GAsyncResult {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GAsyncResult, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GAsyncResultAncestry $result, :$ref = True) {
+    return Nil unless $result;
+
+    my $o = self.bless( :$result );
+    $o.ref if $ref;
+    $o;
   }
 
 }
