@@ -34,45 +34,11 @@ use GIO::Roles::Mount;
 our subset GFileAncestry is export of Mu
   where GFile | GObject;
 
+role  GIO::Roles::File does GLib::Roles::Object { ... }
+class GIO::File                                 { ... }
+
 role GIO::Roles::File does GLib::Roles::Object {
   has GFile $!file;
-
-  # cw: THIS IS HUGE!! -- In an attempt to avoid conflicts between a role's
-  #     BUILD and that of an object, we need to somehow institute a method
-  #     of calling initialization routines specific to a role. It should
-  #     function on the same specifics as BUILD and TWEAK.
-  #
-  #     Without it, punning roles as simple objects just will not work.
-  #     And this is -software line- mechanism that is now entirely broken!!
-  #
-  # This here is an appropriate start, however... .setGFile needs a self, which
-  # a role will not have at BUILD time. If it does, it is only composable via
-  # an object, which eliminates the use of private methods, which were previously
-  # available in BUILD
-  method bless (*%attrinit) {
-    my $o = self.CREATE.BUILDALL(Empty, %attrinit) does ::?ROLE;
-    $o.setGFile(%attrinit<file>) if ::?CLASS.^name eq ::?ROLE.^name;
-    $o;
-  }
-
-  method setGFile (GFileAncestry $_) {
-    my $to-parent;
-
-    $!file = do {
-      when GFile {
-        $to-parent = cast(GObject, $_);
-        $_;
-      }
-
-      default {
-        $to-parent = $_;
-        cast(GFile, $_);
-      }
-    }
-    # Without an object, this throws:
-    # "Cannot invoke this object (REPR: Null; VMNull)"
-    self!setGObject($to-parent);
-  }
 
   method roleInit-GFile {
     return if $!file;
@@ -86,20 +52,7 @@ role GIO::Roles::File does GLib::Roles::Object {
   #  is also<GFile>
   { $!file }
 
-  method new-file-obj (GFile $file, :$ref = True)
-    is also<
-      new_file_obj
-      new_gfile_obj
-      new-gfile-obj
-    >
-  {
-    return Nil unless $file;
 
-    my $o = self.bless;
-    $o.setGFile($file);
-    $o.ref if $ref;
-    $o
-  }
 
   # XXX - To be replaced with multiple dispatchers!
   # multi method new (
@@ -631,7 +584,7 @@ role GIO::Roles::File does GLib::Roles::Object {
     my $f = g_file_dup($!file);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::File.new-file-obj($f, :!ref) )
+      ( $raw ?? $f !! GIO::File.new($f, :!ref) )
       !!
       Nil;
   }
@@ -894,7 +847,7 @@ role GIO::Roles::File does GLib::Roles::Object {
     my $f = g_file_get_child($!file, $name);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::File.new-file-obj($f, :!ref) )
+      ( $raw ?? $f !! GIO::File.new($f, :!ref) )
       !!
       Nil;
   }
@@ -915,7 +868,7 @@ role GIO::Roles::File does GLib::Roles::Object {
     set_error($error);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::File.new-file-obj($f, :!ref) )
+      ( $raw ?? $f !! GIO::File.new($f, :!ref) )
       !!
       Nil;
   }
@@ -929,7 +882,7 @@ role GIO::Roles::File does GLib::Roles::Object {
     my $f = g_file_get_parent($!file);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::File.new-file-obj($f, :!ref) )
+      ( $raw ?? $f !! GIO::File.new($f, :!ref) )
       !!
       Nil;
   }
@@ -1553,7 +1506,7 @@ role GIO::Roles::File does GLib::Roles::Object {
     set_error($error);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::File.new-file-obj($f, :!ref) )
+      ( $raw ?? $f !! GIO::File.new($f, :!ref) )
       !!
       Nil;
   }
@@ -2467,7 +2420,7 @@ role GIO::Roles::File does GLib::Roles::Object {
     set_error($error);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::File.new-file-obj($f, :!ref) )
+      ( $raw ?? $f !! GIO::File.new($f, :!ref) )
       !!
       Nil;
   }
@@ -2516,7 +2469,7 @@ role GIO::Roles::File does GLib::Roles::Object {
     set_error($error);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::File.new-file-obj($f, :!ref) )
+      ( $raw ?? $f !! GIO::File.new($f, :!ref) )
       !!
       Nil;
   }
@@ -2740,7 +2693,50 @@ role GIO::Roles::File does GLib::Roles::Object {
 
 }
 
-# Compatibility with old name.
-package GIO::Roles {
-  our constant GFile := GIO::Roles::File;
+class GIO::File {
+  also does GIO::Roles::File;
+
+  submethod BUILD (:$file) {
+    self.setGFile($file) if $file;
+  }
+
+  # cw: THIS IS HUGE!! -- In an attempt to avoid conflicts between a role's
+  #     BUILD and that of an object, we need to somehow institute a method
+  #     of calling initialization routines specific to a role. It should
+  #     function on the same specifics as BUILD and TWEAK.
+  #
+  #     Without it, punning roles as simple objects just will not work.
+  #     And this is -software line- mechanism that is now entirely broken!!
+  #
+  # This here is an appropriate start, however... .setGFile needs a self, which
+  # a role will not have at BUILD time. If it does, it is only composable via
+  # an object, which eliminates the use of private methods, which were previously
+  # available in BUILD
+  method setGFile (GFileAncestry $_) {
+    my $to-parent;
+
+    $!file = do {
+      when GFile {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GFile, $_);
+      }
+    }
+    # Without an object, this throws:
+    # "Cannot invoke this object (REPR: Null; VMNull)"
+    self!setObject($to-parent);
+  }
+
+  multi method new (GFileAncestry $file, :$ref = True) {
+    return Nil unless $file;
+
+    my $o = self.bless( :$file );
+    $o.ref if $ref;
+    $o
+  }
+
 }
