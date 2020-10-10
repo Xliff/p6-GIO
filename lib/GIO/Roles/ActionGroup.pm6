@@ -8,43 +8,8 @@ use GIO::Raw::ActionGroup;
 
 use GLib::Roles::Object;
 
-our subset GActionGroupAncestry is export of Mu
-  where GActionGroup | GObject;
-
 role GIO::Roles::ActionGroup does GLib::Roles::Object {
   has GActionGroup $!ag;
-
-  submethod BUILD (:$action-group) {
-    self.setGActionGroup($action-group) if $action-group;
-  }
-
-  method setGActionGroup (GActionGroupAncestry $_) {
-    my $to-parent;
-
-    $!ag = do {
-      when GActionGroup {
-        $to-parent = cast(GObject, $_);
-        $_;
-      }
-
-      default {
-        $to-parent = $_;
-        cast(GActionGroup, $_);
-      }
-    }
-    self!setObject($to-parent);
-  }
-
-  method new-actiongroup-obj (
-    GActionGroupAncestry $action-group,
-                         :$ref          = True
-  ) {
-    return Nil unless $action-group;
-
-    my $o = self.bless( :$action-group );
-    $o.ref if $ref;
-    $o;
-  }
 
   method !roleInit-ActionGroup is also<!roleInit_ActionGroup> {
     return if $!ag;
@@ -246,4 +211,43 @@ role GIO::Roles::ActionGroup does GLib::Roles::Object {
       ($rv, $enabled, $parameter_type, $state_type, $state_hint, $state);
   }
 
+}
+
+
+our subset GActionGroupAncestry is export of Mu
+  where GActionGroup | GObject;
+
+class GIO::ActionGroup does GIO::Roles::ActionGroup {
+  
+  submethod BUILD (:$action-group) {
+    self.setGActionGroup($action-group) if $action-group;
+  }
+
+  method setGActionGroup (GActionGroupAncestry $_) {
+    my $to-parent;
+
+    $!ag = do {
+      when GActionGroup {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GActionGroup, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (
+    GActionGroupAncestry $action-group,
+                         :$ref          = True
+  ) {
+    return Nil unless $action-group;
+
+    my $o = self.bless( :$action-group );
+    $o.ref if $ref;
+    $o;
+  }
 }
