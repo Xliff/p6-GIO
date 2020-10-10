@@ -17,7 +17,8 @@ $ cd p6-GLib
 $ zef install --deps-only .
 ```
 
-[Optional] To build all of GLib and GIO p6-GIO directory and do:
+[Optional] To build all of p6-GLib and p6-GIO, change to the p6-GIO directory
+and run:
 
 ```
 scripts/dependency-build.sh
