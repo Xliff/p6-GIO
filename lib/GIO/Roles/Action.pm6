@@ -10,32 +10,8 @@ use GLib::Variant;
 
 use GLib::Roles::Object;
 
-our subset GActionAncestry is export of Mu
-  where GAction | GObject;
-
 role GIO::Roles::Action does GLib::Roles::Object {
   has GAction $!a;
-
-  submethod BUILD (:$action) {
-    self.setGAction($action) if $action;
-  }
-
-  method setGAction (GActionAncestry $_) {
-    my $to-parent;
-
-    $!a = do {
-      when GAction {
-        $to-parent = cast(GObject, $_);
-        $_;
-      }
-
-      default {
-        $to-parent = $_;
-        cast(GAction, $_);
-      }
-    }
-    self!setObject($to-parent);
-  }
 
   method !roleInit-Action {
     return if $!a;
@@ -50,14 +26,6 @@ role GIO::Roles::Action does GLib::Roles::Object {
       Action
     >
   { $!a }
-
-  method new-action-object (GAction $action, :$ref = True) {
-    return Nil unless $action;
-
-    my $o = self.bless( :$action );
-    $o.ref if $ref;
-    $o;
-  }
 
   method activate (GVariant() $parameter) {
     g_action_activate($!a, $parameter);
@@ -196,6 +164,42 @@ role GIO::Roles::Action does GLib::Roles::Object {
     GVariant() $target_value
   ) {
     g_action_print_detailed_name($action_name, $target_value);
+  }
+
+}
+
+our subset GActionAncestry is export of Mu
+  where GAction | GObject;
+
+class GIO::Action does GIO::Roles::Action {
+
+  submethod BUILD (:$action) {
+    self.setGAction($action) if $action;
+  }
+
+  method setGAction (GActionAncestry $_) {
+    my $to-parent;
+
+    $!a = do {
+      when GAction {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GAction, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GActionAncestry $action, :$ref = True) {
+    return Nil unless $action;
+
+    my $o = self.bless( :$action );
+    $o.ref if $ref;
+    $o;
   }
 
 }
