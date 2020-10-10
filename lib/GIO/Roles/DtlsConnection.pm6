@@ -11,17 +11,14 @@ use GIO::TlsCertificate;
 use GIO::TlsDatabase;
 use GIO::TlsInteraction;
 
+use GLib::Roles::Object;
 use GIO::Roles::Signals::DtlsConnection;
 use GIO::Roles::DatagramBased;
 
-role GIO::Roles::DtlsConnection {
+role GIO::Roles::DtlsConnection does GLib::Roles::Object {
   also does GIO::Roles::Signals::DtlsConnection;
 
   has GDtlsConnection $!dtc;
-
-  submethod BUILD ( :$dtls-connection ) {
-    $!dtc = $dtls-connection if $dtls-connection;
-  }
 
   method roleInit-DtlsConnection is also<roleInit_DtlsConnection> {
     return if $!dtc;
@@ -33,12 +30,6 @@ role GIO::Roles::DtlsConnection {
   method GIO::Raw::Definitions::GDtlsConnection
     is also<GDtlsConnection>
   { $!dtc }
-
-  method new-dtlsconnection-obj (GDtlsConnection $dtls-connection)
-    is also<new_dtlsconnection_obj>
-  {
-    $dtls-connection ?? self.bless( :$dtls-connection ) !! Nil;
-  }
 
   method certificate (:$raw = False) is rw {
     Proxy.new(
@@ -151,7 +142,7 @@ role GIO::Roles::DtlsConnection {
         $o = cast(GDatagramBased, $gv.object);
         return $o if $raw;
 
-        GIO::Roles::DatagramBased.new-datagrambased-obj($o);
+        GIO::DatagramBased.new($o, :!ref);
       },
       STORE => -> $, $val is copy {
         warn 'base-socked can only be set at construction time.'
@@ -410,6 +401,44 @@ role GIO::Roles::DtlsConnection {
     my $rv = so g_dtls_connection_shutdown_finish($!dtc, $result, $error);
     set_error($error);
     $rv;
+  }
+
+}
+
+our subset GDtlsConnectionAncestry is export of Mu
+  where GDtlsConnection | GObject;
+
+class GIO::DtlsConenction does GIO::Roles::DtlsConnection {
+
+  submethod BUILD ( :$dtls-connection ) {
+    self.setGDtlsConnection($dtls-connection) if $dtls-connection;
+  }
+
+  method setGDtlsConnection (GDtlsConnectionAncestry $_) {
+    my $to-parent;
+
+    $!dtc = do {
+      when GDtlsConnection {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GDtlsConnection, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GDtlsConnection $dtls-connection, :$ref = True)
+    is also<new_dtlsconnection_obj>
+  {
+    return Nil unless $dtls-connection;
+
+    my $o = self.bless( :$dtls-connection );
+    $o.ref if $ref;
+    $o;
   }
 
 }
