@@ -10,32 +10,8 @@ use GLib::GList;
 
 use GLib::Roles::Object;
 
-our subset GAppInfoAncestry is export of Mu
-  where GAppInfo | GObject;
-
 role GIO::Roles::AppInfo does GLib::Roles::Object {
   has GAppInfo $!ai;
-
-  submethod BUILD (:$appinfo) {
-    self.setGAppInfo($appinfo) if $appinfo;
-  }
-
-  method setGAppInfo (GAppInfoAncestry $_) {
-    my $to-parent;
-
-    $!ai = do {
-      when GAppInfo {
-        $to-parent = cast(GObject, $_);
-        $_;
-      }
-
-      default {
-        $to-parent = $_;
-        cast(GAppInfo, $_);
-      }
-    }
-    self!setObject($to-parent);
-  }
 
   method roleInit-AppInfo {
     return if $!ai;
@@ -47,16 +23,6 @@ role GIO::Roles::AppInfo does GLib::Roles::Object {
   method GIO::Raw::Definitions::GAppInfo
     is also<GAppInfo>
   { $!ai }
-
-  method new_appinfo_obj (GAppInfo $appinfo, :$ref = True)
-    is also<new-appinfo-obj>
-  {
-    return Nil unless $appinfo;
-
-    my $o = self.bless(:$appinfo);
-    $o.ref if $ref;
-    $o;
-  }
 
   # ↓↓↓↓ SIGNALS ↓↓↓↓
   # ↑↑↑↑ SIGNALS ↑↑↑↑
@@ -456,3 +422,41 @@ role GIO::Roles::AppInfo does GLib::Roles::Object {
   # ↑↑↑↑ METHODS ↑↑↑↑
 
 }
+
+our subset GAppInfoAncestry is export of Mu
+  where GAppInfo | GObject;
+
+class GIO::AppInfo does GIO::Roles::AppInfo {
+
+   submethod BUILD (:$appinfo) {
+     self.setGAppInfo($appinfo) if $appinfo;
+   }
+
+   method setGAppInfo (GAppInfoAncestry $_) {
+     my $to-parent;
+
+     $!ai = do {
+       when GAppInfo {
+         $to-parent = cast(GObject, $_);
+         $_;
+       }
+
+       default {
+         $to-parent = $_;
+         cast(GAppInfo, $_);
+       }
+     }
+     self!setObject($to-parent);
+   }
+
+   method new (GAppInfoAncestry $appinfo, :$ref = True)
+     is also<new-appinfo-obj>
+   {
+     return Nil unless $appinfo;
+
+     my $o = self.bless(:$appinfo);
+     $o.ref if $ref;
+     $o;
+   }
+
+ }
