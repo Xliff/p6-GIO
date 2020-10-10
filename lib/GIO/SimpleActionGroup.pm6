@@ -9,7 +9,7 @@ use GLib::Roles::Object;
 use GIO::Roles::ActionGroup;
 use GIO::Roles::ActionMap;
 
-our subset GActionGroupAncestry is export of Mu
+our subset GSimpleActionGroupAncestry is export of Mu
   where GSimpleActionGroup | GActionGroup | GActionMap;
 
 class GIO::SimpleActionGroup {
@@ -20,6 +20,10 @@ class GIO::SimpleActionGroup {
   has GSimpleActionGroup $!sag is implementor;
 
   submethod BUILD (:$group) {
+    self.setGSimpleActionGroup($group) if $group;
+  }
+
+  method setGSimpleActionGroup (GSimpleActionGroupAncestry $_) {
     my $to-parent;
 
     $!sag = do {
@@ -50,7 +54,7 @@ class GIO::SimpleActionGroup {
     self.roleInit-ActionGroup;
   }
 
-  multi method new (GActionGroupAncestry $group, :$ref = True) {
+  multi method new (GSimpleActionGroupAncestry $group, :$ref = True) {
     return Nil unless $group;
 
     my $o = self.bless( :$group );
