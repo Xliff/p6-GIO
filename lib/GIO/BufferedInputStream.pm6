@@ -69,6 +69,9 @@ class GIO::BufferedInputStream is GIO::FilterInputStream {
 
     $buffered-stream ?? self.bless( :$buffered-stream ) !! Nil;
   }
+  multi method new (GInputStream() $base, Int() $size, :$sized is required) {
+    self.new_sized($base, $size);
+  }
 
   method new_sized (GInputStream() $base, Int() $size) is also<new-sized> {
     my gsize $s               = $size;
