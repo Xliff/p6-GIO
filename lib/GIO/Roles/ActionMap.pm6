@@ -8,44 +8,12 @@ use GIO::Raw::Types;
 use GLib::Roles::Object;
 use GLib::Roles::TypedBuffer;
 
-our subset GActionMapAncestry is export of Mu
-  where GActionMap | GObject;
-
 role GIO::Roles::ActionMap does GLib::Roles::Object {
   has GActionMap $!actmap;
-
-  submethod BUILD (:$action-map) {
-    self.setGActionMap($action-map) if $action-map;
-  }
-
-  method setGActionMap (GActionMapAncestry $_) {
-    my $to-parent;
-
-    $!actmap = do {
-      when GActionMap {
-        $to-parent = cast(GObject, $_);
-        $_;
-      }
-
-      default {
-        $to-parent = $_;
-        cast(GActionMap, $_);
-      }
-    }
-    self!setObject($to-parent);
-  }
 
   method GIO::Raw::Definitions::GActionMap
     is also<GActionMap>
   { $!actmap }
-
-  method new-actionmap-obj (GActionMapAncestry $action-map, :$ref = True) {
-    return Nil unless $action-map;
-
-    my $o = self.bless( :$action-map );
-    $o.ref if $ref;
-    $o;
-  }
 
   method roleInit-ActionMap {
     return if $!actmap;
@@ -105,6 +73,41 @@ role GIO::Roles::ActionMap does GLib::Roles::Object {
     g_action_map_remove_action($!actmap, $action_name);
   }
 
+}
+
+our subset GActionMapAncestry is export of Mu
+  where GActionMap | GObject;
+
+class GIO::ActionMap does GIO::Roles::ActionMap {
+
+  submethod BUILD (:$action-map) {
+    self.setGActionMap($action-map) if $action-map;
+  }
+
+  method setGActionMap (GActionMapAncestry $_) {
+    my $to-parent;
+
+    $!actmap = do {
+      when GActionMap {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GActionMap, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GActionMapAncestry $action-map, :$ref = True) {
+    return Nil unless $action-map;
+
+    my $o = self.bless( :$action-map );
+    $o.ref if $ref;
+    $o;
+  }
 }
 
 sub g_action_map_add_action (
