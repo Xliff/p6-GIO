@@ -9,7 +9,9 @@ use GIO::Raw::DatagramBased;
 
 use GLib::Source;
 
-role GIO::Roles::DatagramBased {
+use GLib::Roles::Object;
+
+role GIO::Roles::DatagramBased does GLib::Roles::Object {
   has GDatagramBased $!d;
 
   submethod roleInit-DatagramBased {
@@ -123,6 +125,42 @@ role GIO::Roles::DatagramBased {
     );
     set_error($error);
     $m;
+  }
+
+}
+
+our subset GDatagramBasedAncestry is export of Mu
+  where GDatagramBased | GObject;
+
+class GIO::DatagramBased does GIO::Roles::DatagramBased {
+
+  submethod BUILD (:$datagram-based) {
+    self.setGDatagramBased($datagram-based) if $datagram-based;
+  }
+
+  method setGDatagramBased (GDatagramBasedAncestry $_) {
+    my $to-parent;
+
+    $!d = do {
+      when GDatagramBased {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GDatagramBased, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GDatagramBasedAncestry $datagram-based, :$ref = True) {
+    return Nil unless $datagram-based;
+
+    my $o = self.bless( :$datagram-based ) if $datagram-based;
+    $o.ref if $ref;
+    $o;
   }
 
 }
