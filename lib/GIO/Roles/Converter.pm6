@@ -1,25 +1,20 @@
 use v6.c;
 
+use Method::Also;
 use NativeCall;
 
 use GIO::Raw::Types;
 
-role GIO::Roles::Converter {
+use GLib::Roles::Object;
+
+role GIO::Roles::Converter does GLib::Roles::Object {
   has GConverter $!c;
 
-  submethod BUILD (:$conv) {
-    $!c = $conv;
-  }
-
-  method roleInit-Converter {
+  method roleInit-Converter is also<roleInit_Converter> {
     return if $!c;
 
     my \i = findProperImplementor(self.^attributes);
     $!c = cast( GConverter, i.get_value(self) );
-  }
-
-  method new-converter-obj (GConverter $conv) {
-    $conv ?? self.bless( :$conv ) !! Nil;
   }
 
   multi method convert (
@@ -68,7 +63,7 @@ role GIO::Roles::Converter {
     $all.not ?? $rv !! ($rv, $bytes_read, $bytes_written)
   }
 
-  method converter_get_type {
+  method converter_get_type is also<converter-get-type> {
     state ($n, $t);
 
     unstable_get_type( self.^name, &g_converter_get_type, $n, $t );
@@ -76,6 +71,42 @@ role GIO::Roles::Converter {
 
   method reset {
     g_converter_reset($!c);
+  }
+
+}
+
+our subset GConverterAncestry is export of Mu
+  where GConverter | GObject;
+
+class GIO::Converter does GIO::Roles::Converter {
+
+  submethod BUILD (:$conv) {
+    self.setGConverter($conv) if $conv;
+  }
+
+  method setGConverter (GConverterAncestry $_) {
+    my $to-parent;
+
+    $!c = do {
+      when GConverter {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GConverter, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GConverterAncestry $conv, :$ref = True) {
+    return Nil unless $conv;
+
+    my $o = self.bless( :$conv );
+    $o.ref if $ref;
+    $o;
   }
 
 }
