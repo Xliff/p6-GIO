@@ -6,7 +6,9 @@ use NativeCall;
 
 use GIO::Raw::Types;
 
-role GIO::Roles::Initable {
+use GLib::Roles::Object;
+
+role GIO::Roles::Initable does GLib::Roles::Object {
   has GInitable $!i;
 
   method roleInit-Initable (:$init = True, :$cancellable = GCancellable) {
@@ -40,6 +42,55 @@ role GIO::Roles::Initable {
 
 }
 
+our subset GInitableAncestry is export of Mu
+  where GInitable | GObject;
+
+class GIO::Initable does GIO::Roles::Initable {
+
+  submethod BUILD (:$initable, :$cancellable, :$init) {
+    self.setGInitable($initable) if $initable;
+    self.init($cancellable) if $init;
+  }
+
+  method setGInitable (GInitableAncestry $_) {
+    my $to-parent;
+
+    $!i = do {
+      when GInitable {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GInitable, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (
+    GInitableAncestry $initable,
+    GCancellable      :$cancellable = GCancellable,
+                      :$init        = False,
+                      :$ref         = True
+  ) {
+    return Nil unless $initable;
+
+    my $o = self.bless(:$initable, $cancellable, :$init);
+    $o.ref if $ref;
+    $o;
+  }
+
+  method new_initable {
+    die qq:to/DIE/;
+      .new_initable is not to be called from the Role-based object!{
+      ''} Please use the subclass constructor, if available!
+      DIE
+  }
+
+}
+
 sub g_initable_get_type ()
   returns GType
   is native(gio)
@@ -47,8 +98,8 @@ sub g_initable_get_type ()
 { * }
 
 sub g_initable_init (
-  GInitable $initable,
-  GCancellable $cancellable,
+  GInitable               $initable,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32
