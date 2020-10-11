@@ -16,7 +16,7 @@ role GIO::Roles::NetworkMonitor {
 
   method roleInit-NetworkMonitor is also<roleInit_NetworkMonitor> {
     return if $!nm;
-    
+
     my \i = findProperImplementor(self.^attributes);
     $!nm = cast( GNetworkMonitor, i.get_value(self) );
   }
@@ -25,31 +25,39 @@ role GIO::Roles::NetworkMonitor {
     is also<GNetworkMonitor>
   { $!nm }
 
-  method new-networkmonitor-obj (GNetworkMonitor $monitor)
+  method new-networkmonitor-obj (GNetworkMonitor $monitor, :$ref = True)
     is also<new_networkmonitor_obj>
   {
-    self.bless( :$monitor );
+    return Nil unless $monitor;
+
+    my $o = self.bless( :$monitor );
+    $o.ref if $ref;
+    $o;
   }
 
   method can_reach (
-    GSocketConnectable() $connectable,
-    GCancellable $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GSocketConnectable()    $connectable,
+    GCancellable()          $cancellable  = GCancellable,
+    CArray[Pointer[GError]] $error        = gerror
   )
     is also<can-reach>
   {
     clear_error;
-    my $rv =
-      g_network_monitor_can_reach($!nm, $connectable, $cancellable, $error);
+    my $rv = g_network_monitor_can_reach(
+      $!nm,
+      $connectable,
+      $cancellable,
+      $error
+    );
     set_error($error);
     $rv;
   }
 
   method can_reach_async (
     GSocketConnectable() $connectable,
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    GCancellable()       $cancellable,
+                         &callback,
+    gpointer             $user_data    = gpointer
   )
     is also<can-reach-async>
   {
@@ -57,14 +65,14 @@ role GIO::Roles::NetworkMonitor {
       $!nm,
       $connectable,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method can_reach_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<can-reach-finish>
   {
@@ -87,7 +95,9 @@ role GIO::Roles::NetworkMonitor {
     my $nm = g_network_monitor_get_default();
 
     $nm ??
-      ( $raw ?? $nm !! GIO::Roles::NetworkMonitor.new-networkmonitor-obj($nm) )
+      ( $raw ?? $nm
+             !! GIO::Roles::NetworkMonitor.new-networkmonitor-obj($nm, :!ref)
+      )
       !!
       Nil;
   }
