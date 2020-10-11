@@ -430,6 +430,15 @@ role GIO::Roles::File does GLib::Roles::Object {
   { * }
 
   multi method create_async (
+                   &callback,
+    gpointer       $user_data     = Pointer,
+    GCancellable() $cancellable   = GCancellable,
+    Int()          :$flags        = 0,
+    Int()          :$io_priority  = 0
+  ) {
+    samewith($flags, $io_priority, $cancellable, &callback, $user_data);
+  }
+  multi method create_async (
     Int()          $flags,
     Int()          $io_priority,
                    &callback,
@@ -873,11 +882,14 @@ role GIO::Roles::File does GLib::Roles::Object {
       Nil;
   }
 
+  method parent (:$raw = False) {
+    self.get_parent(:$raw);
+  }
   method get_parent (:$raw = False)
-    is also<
-      get-parent
-      parent
-    >
+    # is also<
+      # get-parent
+      # parent
+    # >
   {
     my $f = g_file_get_parent($!file);
 
@@ -1065,13 +1077,22 @@ role GIO::Roles::File does GLib::Roles::Object {
       )
   }
 
-  method load_contents_async (
+  proto method load_contents_async (|)
+    is also<load-contents-async>
+  { * }
+
+  multi method load_contents_async (
+                   &callback,
+    gpointer       $user_data    = Pointer,
+    GCancellable() :$cancellable = GCancellable
+  ) {
+    samewith($cancellable, &callback, $user_data);
+  }
+  multi method load_contents_async (
     GCancellable() $cancellable,
                    &callback,
     gpointer       $user_data    = Pointer
-  )
-    is also<load-contents-async>
-  {
+  ) {
     g_file_load_contents_async($!file, $cancellable, &callback, $user_data);
   }
 
@@ -1411,7 +1432,7 @@ role GIO::Roles::File does GLib::Roles::Object {
   }
 
   method monitor_file (
-    Int()                   $flags,
+    Int()                   $flags       = 0,
     GCancellable()          $cancellable = GCancellable,
     CArray[Pointer[GError]] $error       = gerror,
                             :$raw        = False
@@ -1672,14 +1693,14 @@ role GIO::Roles::File does GLib::Roles::Object {
   }
 
   method query_file_type (
-    Int()          $flags,
+    Int()          $flags       = 0,
     GCancellable() $cancellable = GCancellable
   )
     is also<query-file-type>
   {
     my GFileQueryInfoFlags $f = $flags;
 
-    g_file_query_file_type($!file, $f, $cancellable);
+    GFileTypeEnum( g_file_query_file_type($!file, $f, $cancellable) );
   }
 
   method query_filesystem_info (
@@ -1851,7 +1872,18 @@ role GIO::Roles::File does GLib::Roles::Object {
       Nil;
   }
 
-  method read_async (
+  proto method read-async (|)
+  { * }
+
+  multi method read-async (
+                   &callback,
+    gpointer       $user_data    = gpointer,
+    Int()          :$io_priority = 0,
+    GCancellable() :$cancellable = GCancellable,
+  ) {
+    samewith($io_priority, $cancellable, &callback, $user_data);
+  }
+  multi method read_async (
     Int()          $io_priority,
     GCancellable() $cancellable,
                    &callback,
@@ -1973,7 +2005,32 @@ role GIO::Roles::File does GLib::Roles::Object {
       Nil;
   }
 
-  method replace_contents_async (
+  proto method replace_contents_async (|)
+    is also<replace-contents-async>
+  { * }
+
+  multi method replace_contents_async (
+    Str()          $contents,
+                   &callback,
+    gpointer       $user_data    = Pointer,
+    GCancellable() :$cancellable = GCancellable,
+    Int()          :$length      = $contents.chars,
+    Str()          :$etag        = Str,
+    Int()          :$make_backup = 0,
+    Int()          :$flags       = 0
+  ) {
+    samewith(
+      $contents,
+      $length,
+      $etag,
+      $make_backup,
+      $flags,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method replace_contents_async (
     Str()          $contents,
     Int()          $length,
     Str()          $etag,
@@ -1983,7 +2040,7 @@ role GIO::Roles::File does GLib::Roles::Object {
                    &callback,
     gpointer       $user_data    = Pointer
   )
-    is also<replace-contents-async>
+
   {
     my gboolean         $m = $make_backup.so.Int;
     my GFileCreateFlags $f = $flags;
