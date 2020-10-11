@@ -76,22 +76,22 @@ sub test-parse-name {
 }
 
 class CreateDeleteData {
-  has $.context;
-  has $.file;
-  has $.monitor;
-  has $.ostream;
-  has $.istream;
-  has $.buffersize;
-  has $.monitor-created;
-  has $.monitor-deleted;
-  has $.monitor-changed;
-  has $.monitor-path;
-  has $.pos;
-  has $.data;
-  has $.buffer;
-  has $.timeout;
-  has $.file-deleted;
-  has $.timed-out;
+  has $.context         is rw;
+  has $.file            is rw;
+  has $.monitor         is rw;
+  has $.ostream         is rw;
+  has $.istream         is rw;
+  has $.buffersize      is rw;
+  has $.monitor-created is rw;
+  has $.monitor-deleted is rw;
+  has $.monitor-changed is rw;
+  has $.monitor-path    is rw;
+  has $.pos             is rw;
+  has $.data            is rw;
+  has $.buffer          is rw;
+  has $.timeout         is rw;
+  has $.file-deleted    is rw;
+  has $.timed-out       is rw;
 };
 
 sub monitor-changed ($m, $f, $of, $et, $d) {
@@ -251,9 +251,9 @@ sub stop-timeout ($d --> gboolean) {
 sub test-create-delete ($buffersize) {
   my ($data, $iostream) = ( CreateDeleteData.new );
   $data.buffersize = $buffersize;
-  $data.data = 'abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYZ0123456789';
-  $data.pos  = 0;
-  $data.file = GIO::File.new_tmp('g_file_create_delete_XXXXXX', $iostream);
+  $data.data       = 'abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYZ0123456789';
+  $data.pos        = 0;
+  $data.file       = GIO::File.new_tmp('g_file_create_delete_XXXXXX', $iostream);
 
   ok $data.file,               'Temporary file created sucessfully';
   $iostream.unref;
@@ -344,10 +344,10 @@ my $replace-data = q:to/RD/;
    RD
 
 class ReplaceLoadData {
-  has $.file;
-  has $.data;
-  has $.loop;
-  has $.again;
+  has $.file  is rw;
+  has $.data  is rw;
+  has $.loop  is rw;
+  has $.again is rw;
 }
 
 sub replaced-cb ($d, $res) { ... }
@@ -384,8 +384,76 @@ sub replaced-cb ($d, $res) {
   $d.file.load-contents-async(-> *@a { loaded-cb($d, $res) });
 }
 
-# Stopped at #635 of original
+sub test-replace-load {
+  subtest 'Replace Load', {
+    my ($data, $iostream) = ( ReplaceLoadData.new );
+    $data.again           = True;
+    $data.data            = $replace-data;
+    $data.file            = GIO::File.new-tmp(
+      'g_file_replace_load_XXXXXX',
+      $iostream
+    );
 
+    ok $data.file,               '$data.file has a non-Nil value';
+    $iostream.unref;
+
+    my $path = $data.file.peek-path;
+    $path.IO.unlink;
+
+    nok $data.file.query-exists, '$data.file does not exist after removal';
+    $data.loop = GLib::MainLoop.new;
+    $data.file.replace-contents-async(
+      $data.data,
+      -> *@a { replaced-cb($data, @a[1]) }
+    );
+    $data.loop.run;
+    .unref for $data.loop, $data.file;
+  }
+}
+
+sub test-writev-helper (@vectors, $use-bytes-written, $ec, $el) {
+  my $iostream;
+  my $file = GIO::File.new-tmp('g_file_writev_XXXXXX', $iostream);
+
+  ok  $file,               '$file is non-Nil';
+  ok  $iostream,           '$iostream is non-Nil';
+
+  my ($res, $ubw) = $iostream.output-stream.writev-all(@vectors);
+  nok $ERROR,              'No errors detected during .writev-all';
+  ok  $res,                '.writev-all returned True';
+  is $ubw,      $el,       'Bytes actually written matches expected length'
+     if $use-bytes-written;
+
+  $res = $iostream.close;
+  nok $ERROR,              'No errors detected when closing the iostream';
+  ok  $res,                '.close returned True';
+  $iostream.unref;
+
+
+  my ($contents, $length);
+  $res = $file.load-contents($contents, $length, $);
+  nok $ERROR,              'No errors detected when loading contents';
+  ok  $res,                '.load-contents returned defined values';
+  is  $length,   $el,      'Returned length matches expected value';
+  is  $contents, $ec,      'Contents match expected value';
+
+  .delete && .unref with $file;
+}
+
+sub test-writev {
+  my $buffer = "\x1\x2\x3\x4\x5\x1\x2\x3\x4\x5\x6\x7\x8\x9\xa\xb\xc\x1\x2\x3";
+
+  # cw: All of these really need to be a part of the same memory space!
+  my @vectors = (
+    GOutputVector.new($buffer,               5),
+    GOutputVector.new($buffer.substr-rw(5), 12),
+    GOutputVector.new($buffer.substr-rw(12), 3)
+  );
+
+  test-writev-helper(@vectors, True, $buffer, $buffer.chars);
+}
+
+# Ended at line 1295 of original
 
 GLib::Test.init;
 
@@ -393,3 +461,5 @@ test-basic;
 test-parent;
 test-type;
 test-parse-name;
+# cw: Currently has an endless-loop somewhere in it's myriad of callbacks.
+# test-create-delete($_) for 0, 1, 10, 25, 4096;
