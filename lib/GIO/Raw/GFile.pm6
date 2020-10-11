@@ -685,7 +685,7 @@ sub g_file_new_for_uri (Str $uri)
 
 sub g_file_new_tmp (
   Str                     $tmpl,
-  GFileIOStream           $iostream,
+  CArray[GFileIOStream]   $iostream,
   CArray[Pointer[GError]] $error
 )
   returns GFile

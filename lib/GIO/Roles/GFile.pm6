@@ -31,9 +31,6 @@ use GLib::Roles::Object;
 use GIO::Roles::AppInfo;
 use GIO::Roles::Mount;
 
-our subset GFileAncestry is export of Mu
-  where GFile | GObject;
-
 role  GIO::Roles::File does GLib::Roles::Object { ... }
 class GIO::File                                 { ... }
 
@@ -185,8 +182,8 @@ role GIO::Roles::File does GLib::Roles::Object {
     CArray[Pointer[GError]] $error    =  gerror,
                             :$raw     =  False
   ) {
-    my $i    = CArray[Pointer[GFileIOStream]].new;
-       $i[0] = Pointer[GFileIOStream];
+    my $i    = CArray[GFileIOStream].new;
+       $i[0] = GFileIOStream;
 
     my $rv    = samewith($tmpl, $i, $error);
     $iostream = ppr($i);
@@ -2749,6 +2746,9 @@ role GIO::Roles::File does GLib::Roles::Object {
   }
 
 }
+
+our subset GFileAncestry is export of Mu
+  where GFile | GObject;
 
 class GIO::File {
   also does GIO::Roles::File;
