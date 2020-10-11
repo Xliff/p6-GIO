@@ -50,7 +50,6 @@ role GIO::Roles::File does GLib::Roles::Object {
   { $!file }
 
 
-
   # XXX - To be replaced with multiple dispatchers!
   # multi method new (
   #   :$path,
@@ -182,13 +181,13 @@ role GIO::Roles::File does GLib::Roles::Object {
     CArray[Pointer[GError]] $error    =  gerror,
                             :$raw     =  False
   ) {
-    my $i    = CArray[GFileIOStream].new;
-       $i[0] = GFileIOStream;
+    my $i     = CArray[GFileIOStream].new;
+       $i[0]  = GFileIOStream;
 
-    my $rv    = samewith($tmpl, $i, $error);
+    my $f     = samewith($tmpl, $i, $error);
     $iostream = ppr($i);
     $iostream = GIO::FileIOStream.new($iostream) if $iostream && $raw.not;
-    $rv;
+    $f;
   }
 
   multi method new (
@@ -200,13 +199,16 @@ role GIO::Roles::File does GLib::Roles::Object {
     self.new_tmp($tmpl, $iostream, $error);
   }
   multi method new_tmp (
-    Str()                          $tmpl,
-    CArray[Pointer[GFileIOStream]] $iostream,
-    CArray[Pointer[GError]]        $error     = gerror
+    Str()                   $tmpl,
+    CArray[GFileIOStream]   $iostream,
+    CArray[Pointer[GError]] $error     = gerror
   ) {
     clear_error;
-    my $file = g_file_new_tmp($tmpl, $iostream, $error);
+    my $file = g_file_new_tmp( explicitly-manage($tmpl), $iostream, $error );
     set_error($error);
+
+    say "Definitely here... ($file)";
+
     $file ?? self.bless(:$file) !! Nil;
   }
 
@@ -2750,10 +2752,12 @@ role GIO::Roles::File does GLib::Roles::Object {
 our subset GFileAncestry is export of Mu
   where GFile | GObject;
 
-class GIO::File {
-  also does GIO::Roles::File;
+class GIO::File does GIO::Roles::File {
 
   submethod BUILD (:$file) {
+    say "Thought we'd be here...";
+
+    say "F: {$file}";
     self.setGFile($file) if $file;
   }
 
@@ -2772,6 +2776,8 @@ class GIO::File {
   method setGFile (GFileAncestry $_) {
     my $to-parent;
 
+    say 'Now here...';
+
     $!file = do {
       when GFile {
         $to-parent = cast(GObject, $_);
@@ -2783,8 +2789,6 @@ class GIO::File {
         cast(GFile, $_);
       }
     }
-    # Without an object, this throws:
-    # "Cannot invoke this object (REPR: Null; VMNull)"
     self!setObject($to-parent);
   }
 
