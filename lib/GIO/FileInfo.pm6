@@ -27,7 +27,7 @@ class GIO::FileInfo {
 
   multi method new (GFileInfo $info, :$ref = True) {
     return Nil unless $info;
-    
+
     my $o = self.bless( :$ref );
     $o.ref if $ref;
     $o;
@@ -90,7 +90,7 @@ class GIO::FileInfo {
         my $i = g_file_info_get_icon($!fi);
 
         $i ??
-          ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i) )
+          ( $raw ?? $i !! GIO::Icon.new($i, :!ref) )
           !!
           Nil
       },
@@ -169,7 +169,7 @@ class GIO::FileInfo {
         my $i = g_file_info_get_symbolic_icon($!fi);
 
         $i ??
-          ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i) )
+          ( $raw ?? $i !! GIO::Icon.new($i, :!ref) )
           !!
           Nil
       },

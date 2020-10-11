@@ -10,8 +10,26 @@ use GIO::Raw::Icon;
 
 use GLib::Roles::Object;
 
+role  GIO::Roles::Icon { ... }
+class GIO::Icon        { ... }
+
 role GIO::Roles::Icon does GLib::Roles::Object {
   has GIcon $!icon;
+
+  method new_for_string (
+    Str()                   $name,
+    CArray[Pointer[GError]] $error = gerror,
+                            :$raw  = False
+  )
+    is also<new-for-string>
+  {
+    clear_error;
+    my $icon = g_icon_new_for_string($name, $error);
+    set_error($error);
+    return $icon if $raw;
+
+    $icon ?? self.bless( :$icon ) !! Nil;
+  }
 
   method roleInit-Icon {
     return if $!icon;
@@ -120,21 +138,6 @@ class GIO::Icon does GIO::Roles::Icon {
     my $o = self.bless( :$icon );
     $o.ref if $ref;
     $o;
-  }
-
-  method new_for_string (
-    Str()                   $name,
-    CArray[Pointer[GError]] $error = gerror,
-                            :$raw  = False
-  )
-    is also<new-for-string>
-  {
-    clear_error;
-    my $icon = g_icon_new_for_string($name, $error);
-    set_error($error);
-    return $icon if $raw;
-
-    $icon ?? self.bless( :$icon ) !! Nil;
   }
 
 }

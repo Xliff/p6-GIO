@@ -7,12 +7,10 @@ use GIO::Raw::Types;
 
 use GIO::InputStream;
 
-role GIO::Roles::LoadableIcon {
-  has GLoadableIcon $!li;
+use GLib::Roles::Object;
 
-  submethod BUILD (:$loadable) {
-    $!li = $loadable if $loadable;
-  }
+role GIO::Roles::LoadableIcon does GLib::Roles::Object {
+  has GLoadableIcon $!li;
 
   method roleInit-LoadableIcon {
     return if $!li;
@@ -36,15 +34,15 @@ role GIO::Roles::LoadableIcon {
     CArray[Pointer[GError]] $error = gerror,
                             :$raw  = False,
   ) {
-    samewith($size, $, GCancellable, $error, :all, :$raw);
+    samewith($size, $, GCancellable, $error, :all, :$raw)
   }
   multi method load (
     Int()                   $size,
                             $type        is rw,
-    GCancellable()          $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error       = gerror,
-                            :$all        = False,
-                            :$raw        = False
+    GCancellable()          $cancellable =  GCancellable,
+    CArray[Pointer[GError]] $error       =  gerror,
+                            :$all        =  False,
+                            :$raw        =  False
   ) {
     my gint $s = $size;
     my $t = CArray[Str].new;
@@ -56,7 +54,7 @@ role GIO::Roles::LoadableIcon {
 
     $type = ppr($t);
     $is = $is ??
-      ( $raw ?? $is !! GIO::InputStream.new($is) )
+      ( $raw ?? $is !! GIO::InputStream.new($is, :!ref) )
       !!
       Nil;
 
@@ -119,7 +117,7 @@ role GIO::Roles::LoadableIcon {
 
     do if $rc {
       my $is = $rc ??
-        ( $raw ?? $rc !! GIO::InputStream.new($rc) )
+        ( $raw ?? $rc !! GIO::InputStream.new($rc, :!ref) )
         !!
         Nil;
 
@@ -131,6 +129,43 @@ role GIO::Roles::LoadableIcon {
     }
   }
 }
+
+our subset GLoadableIconAncestry is export of Mu
+  where GLoadableIcon | GObject;
+
+class GIO::LoadableIcon does GIO::Roles::LoadableIcon {
+
+  submethod BUILD (:$loadable-icon) {
+    self.setGLoadableIcon($loadable-icon) if $loadable-icon;
+  }
+
+  method setGLoadableIcon (GLoadableIconAncestry $_) {
+    my $to-parent;
+
+    $!li = do {
+      when GLoadableIcon {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GLoadableIcon, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GLoadableIconAncestry $loadable-icon, :$ref = True) {
+    return Nil unless $loadable-icon;
+
+    my $o = self.bless( :$loadable-icon );
+    $o.ref if $ref;
+    $o;
+  }
+
+}
+
 
 sub g_loadable_icon_get_type ()
   returns GType

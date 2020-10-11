@@ -22,8 +22,8 @@ class GIO::BytesIcon {
 
   has GBytesIcon $!bi is implementor;
 
-  submethod BUILD (GBytesIcon :$bytes-icon) {
-    self.setGBytesIcon($bytes-icon);
+  submethod BUILD (:$bytes-icon, :$icon) {
+    self.setGBytesIcon($bytes-icon // $icon) if $bytes-icon || $icon;
   }
 
   method setGBytesIcon (GBytesIconAncestry $_) {

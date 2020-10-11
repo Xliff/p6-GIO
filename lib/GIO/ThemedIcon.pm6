@@ -20,8 +20,8 @@ class GIO::ThemedIcon {
 
   has GThemedIcon $!ti is implementor;
 
-  submethod BUILD (:$themed-icon) {
-    self.setGThemedIcon($themed-icon) if $themed-icon;
+  submethod BUILD (:$themed-icon, :$icon) {
+    self.setGThemedIcon($themed-icon // $icon) if $themed-icon || $icon;
   }
 
   method setGThemedIcon (GThemedIconAncestry $_) {

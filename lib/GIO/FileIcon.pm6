@@ -20,12 +20,15 @@ class GIO::FileIcon {
 
   has GFileIcon $!fi is implementor;
 
-  submethod BUILD (:$fileicon) {
-    self.setGFileIcon($fileicon) if $fileicon;
+  submethod BUILD (:$fileicon, :$loadable-icon, :$icon) {
+    self.setGFileIcon($fileicon // $loadable-icon // $icon)
+      if $fileicon || $loadable-icon || $icon;
   }
 
   method setGFileIcon (GFileIconAncestry $_) {
     my $to-parent;
+
+    #say "FileIcon: { $_ }";
 
     $!fi = do {
       when GFileIcon {
@@ -50,7 +53,7 @@ class GIO::FileIcon {
         cast(GFileIcon, $_);
       }
     }
-
+    self!setObject($to-parent);
     self.roleInit-Icon;
     self.roleInit-LoadableIcon;
   }
@@ -81,7 +84,7 @@ class GIO::FileIcon {
     my $f = g_file_icon_get_file($!fi);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::GFile.new-file-obj($f, :!ref) )
+      ( $raw ?? $f !! GIO::File.new($f, :!ref) )
       !!
       Nil;
   }
