@@ -2,10 +2,17 @@ use v6.c;
 
 use Test;
 
+use GLib::Compat::Definitions;
 use GIO::Raw::Types;
 use GIO::Raw::Quarks;
+use GIO::Raw::FileAttributeTypes;
 
+use GLib::FileUtils;
+use GLib::Source;
 use GLib::Test;
+use GLib::Timeout;
+
+use GIO::BufferedOutputStream;
 
 use GIO::Roles::GFile;
 
@@ -95,6 +102,8 @@ class CreateDeleteData {
 };
 
 sub monitor-changed ($m, $f, $of, $et, $d) {
+  CATCH { default { .message.say } }
+
   my ($fo, $ofo) = ( GIO::File.new($f), GIO::File.new($of) );
   my ($p,  $pp)  = ($f.get_path, $f.get_peek_path);
 
@@ -108,7 +117,9 @@ sub monitor-changed ($m, $f, $of, $et, $d) {
 }
 
 sub iclosed-cb ($d, $res) {
-  my $r = $d.istream.close-finish($res);
+  CATCH { default { .message.say } }
+
+  my $r = $d.istream.close_finish($res);
   nok $ERROR,               'No error detected when asynchronously closing input stream';
   ok  $r,                   'Return valued from operation is True';
   ok  $d.istream.is-closed, 'Input stream is closed';
@@ -120,7 +131,9 @@ sub iclosed-cb ($d, $res) {
 }
 
 sub read-cb ($d, $res) {
-  my $size = $d.istream.read-finish($res);
+  CATCH { default { .message.say } }
+
+  my $size = $d.istream.read_finish($res);
 
   nok $ERROR, 'No errors detected when asynchronously reading input stream ';
 
@@ -144,7 +157,9 @@ sub read-cb ($d, $res) {
 }
 
 sub ipending-cb ($d, $res) {
-  $d.istream.read-finish($res);
+  CATCH { default { .message.say } }
+
+  $d.istream.read_finish($res);
 
   # cw: Expect to comment
   ok  $ERROR.domain, $G_IO_ERROR,      'Global ERROR has the proper domain';
@@ -152,77 +167,118 @@ sub ipending-cb ($d, $res) {
 }
 
 sub skipped-cb ($d, $res) {
+  CATCH { default { .message.say } }
+
   my $s = $d.istream.skip-finish($res);
 
   nok $ERROR,     'No error detected during .skip-finish';
   is  $s, $d.pos, 'Size of skip and value of position are the same';
 
-  my $buf = $d.buffer.substring-rw($d.pos);
+  my $buf = $d.buffer.subbuf($d.pos);
   $d.istream.read-async(
     $buf,
     $buf.chars,
     0,
-    -> *@a { read-cb($d, @a[1]) }
+    -> *@a {
+      CATCH { default { .message.say } }
+      read-cb($d, @a[1])
+    }
   );
   # Should result in a pending error.
   $d.istream.read-async(
     $buf,
     $buf.chars,
     0,
-    -> *@a { ipending-cb($d, @a[1]) }
+    -> *@a {
+      CATCH { default { .message.say } }
+      ipending-cb($d, @a[1])
+    }
   );
 }
 
 sub opened-cb ($d, $res) {
-  my $b = $d.file.read-finish($res);
+  CATCH { default { .message.say } }
 
-  nok $ERROR, 'No error detected during .read-finish';
+  my $b = $d.file.read_finish($res);
+
+  nok $ERROR, 'No error detected during .read_finish';
   $d.istream = $d.buffersize == 0
     ?? $b.ref
     !! GIO::BufferedInputStream.new(:sized, $b, $d.buffersize);
   $b.unref;
-  $d.buffer = Buf.allocate($d.data + 1);
-  $d.buffer.pack('A10', $d.data);
+
+  # cw: XXX - Work blockage here... must figure this out.
+  $d.buffer = Buf.allocate($d.data.chars + 1, 0);
+  my $db = $d.data.encode('utf8');
+  $d.buffer[$_] = $db[$_] for ^10;
+
   $d.pos = 10;
-  $d.istream.skip-async(10, -> *@a { skipped-cb ($d, @a[1]) });
+  $d.istream.skip-async(
+    10,
+    -> *@a {
+      CATCH { default { .message.say; .backtrace.summary.say } }
+      skipped-cb($d, @a[1])
+    }
+  );
 }
 
 sub oclosed-cb ($d, $res) {
-  my $ret = $d.ostream.close-finished($res);
+  CATCH { default { .message.say } }
+
+  my $ret = $d.ostream.close_finish($res);
 
   nok $ERROR,               'No error detected during .close-finished';
   ok  $ret,                 'Return value from .closed-finished was True';
   ok  $d.ostream.is-closed, 'Output stream is closed';
 
-  $d.file.read-async(-> *@a { opened-cb($d, @a[1]) });
+  $d.file.read_async(
+    -> *@a {
+      CATCH { default { .message.say } }
+      opened-cb($d, @a[1])
+    }
+  );
 }
 
 sub written-cb ($d, $res) {
+  CATCH { default { .message.say } }
+
   my $size = $d.ostream.write-finish($res);
 
   nok $ERROR,                 'No error detected during .write-finished';
   $d.pos += $size;
   if $d.pos < $d.data.chars {
     my $buf = $d.data.substr-rw($d.pos);
-    $d.ostream.write-async($buf, $buf.chars, -> *@a { written-cb($d, @a[1]) });
+    $d.ostream.write-async(
+      $buf, $buf.chars, -> *@a {
+        CATCH { default { .message.say } }
+        written-cb($d, @a[1])
+      }
+    );
   } else {
     nok $d.ostream.is-closed, 'Output stream is NOT closed';
-    $d.ostream.close-async(-> *@a { oclosed-cb($d, @a[1]) });
+    $d.ostream.close-async(-> *@a {
+      CATCH { default { .message.say } }
+      oclosed-cb($d, @a[1])
+    });
   }
 }
 
 sub opending-cb ($d, $res) {
-  $d.ostream.wrote-finish($res);
+  CATCH { default { .message.say } }
 
-  is $ERROR.domain, $G_IO_ERROR,        'Error belongs to the G_IO_ERROR domain';
-  is $ERROR.code,   G_IO_ERROR_PENDING, 'Error code is G_IO_ERROR_PENDING';
+  $d.ostream.write-finis($res);
+
+  is $ERROR.domain, $G_IO_ERROR,            'Error belongs to the G_IO_ERROR domain';
+  is $ERROR.code,   G_IO_ERROR_PENDING.Int, 'Error code is G_IO_ERROR_PENDING';
 }
 
-sub created-cb ($s, $res, $d) {
-  my $base = $s.create-finish($res);
+sub created-cb ($f, $res, $d) {
+  CATCH { default { .message.say; .backtrace.summary.say } }
+
+  my $base = $f.create_finish($res);
 
   nok $ERROR,               'No error detected during .create-finish';
-  ok  $d.file.query-exists, 'Call to $d.file.query-exists returns a True value';
+  ok  $d.file.query_exists, 'Call to $d.file.query-exists returns a True value';
 
   $d.ostream = $d.buffersize == 0
     ?? $base.ref
@@ -232,80 +288,102 @@ sub created-cb ($s, $res, $d) {
   $d.ostream.write-async(
     $d.data,
     $d.data.chars,
-    -> *@a { written-cb($d, @a[1]) }
+    -> *@a {
+      CATCH { default { .message.say; .backtrace.summary.say } }
+      written-cb($d, @a[1])
+    }
   );
   # Should generate a pending error
   $d.ostream.write-async(
     $d.data,
     $d.data.chars,
-    -> *@a { opending-cb($d, @a[1]) }
+    -> *@a {
+      CATCH { default { .message.say; .backtrace.summary.say } }
+      opending-cb($d, @a[1])
+    }
   );
 }
 
 sub stop-timeout ($d --> gboolean) {
+  CATCH { default { .message.say; .backtrace.summary.say } }
+
   $d.timed-out = True;
   $d.context.wakeup;
   G_SOURCE_REMOVE
 }
 
 sub test-create-delete ($buffersize) {
-  my ($data, $iostream) = ( CreateDeleteData.new );
-  $data.buffersize = $buffersize;
-  $data.data       = 'abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYZ0123456789';
-  $data.pos        = 0;
-  $data.file       = GIO::File.new_tmp('g_file_create_delete_XXXXXX', $iostream);
+  subtest "Create Delete: $buffersize", {
+    CATCH { default { .message.say; .backtrace.summary.say } }
 
-  ok $data.file,               'Temporary file created sucessfully';
-  $iostream.unref;
+    my ($data, $iostream) = ( CreateDeleteData.new );
+    $data.context    = GLib::MainContext;
+    $data.buffersize = $buffersize;
+    $data.data       = 'abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYZ0123456789';
+    $data.pos        = 0;
+    $data.file       = GIO::File.new_tmp('g_file_create_delete_XXXXXX', $iostream);
 
-  $data.monitor-path = $data.file.get_path;
-  $data.monitor-path.IO.unlink;
+    ok $data.file,               'Temporary file created sucessfully';
+    $iostream.unref;
 
-  nok $data.file.query-exists, 'Monitor file no longer exists';
-  $data.monitor = $data.file.monitor_file;
+    $data.monitor-path = $data.file.get_path;
+    $data.monitor-path.IO.unlink;
 
-  nok $ERROR,                  'No error detected when creating file monitor';
+    nok $data.file.query_exists, 'Monitor file no longer exists';
+    $data.monitor = $data.file.monitor_file;
 
-  my $mn = $data.monitor.typeName;
-  if $mn ne <GPollFileMonitor GKqueueFileMonitor>.all {
-    $data.monitor.rate-limit = 100;
-    $data.monitor.changed.tap(-> $m, $f, $of, $et, $ud {
-      monitor-changed($data.monitor, $f, $of, $et, $data)
-    });
-    $data.timeout = GLib::Timeout.add-seconds(
-      10,
-      -> *@a { stop-timeout($data) }
-    );
-    $data.file.crteate-async(-> *@a { created-cb($data, @a[1]) });
+    nok $ERROR,                  'No error detected when creating file monitor';
 
-    $data.context.iteration(True) while $data.timed-out.not && (
-                                          $data.monitor-created.not ||
-                                          $data.monitor-deleted.not ||
-                                          $data.monitor-changed.not ||
-                                          $data.file-deleted   .not
-                                        );
-    $data.timeout.remove;
+    my $mn = $data.monitor.objectType.name;
+    if $mn ne <GPollFileMonitor GKqueueFileMonitor>.all {
+      $data.monitor.rate-limit = 100;
+      # $data.monitor.changed.tap(-> $m, $f, $of, $et, $ud {
+      #   CATCH { default { .message.say } }
+      #   monitor-changed($data.monitor, $f, $of, $et, $data)
+      # });
+      $data.timeout = GLib::Timeout.add-seconds(
+        10,
+        -> *@a --> gboolean {
+          CATCH { default { .message.say; .backtrace.summary.say } }
+          stop-timeout($data)
+        }
+      );
+      $data.file.create_async(-> *@a {
+        CATCH { default { .message.say; .backtrace.summary.say } }
+        created-cb($data.file, @a[1], $data)
+      });
 
-    diag 'After monitor run...';
-    nok $data.timed-out,            '...no timeout-encountered';
-    ok  $data.file-deleted,         '...file was deleted';
-    is  $data.monitor-create,  1,   '...monitor was create only once';
-    is  $data.monitor-deleted, 1,   '...monmitor was deleted only once';
-    is  $data.monitor-changed, 0,   '...monitor was never changed';
-    nok $data.monitor.is-cancelled, '...monitor was never cancelled';
+      $data.context.iteration(True) while $data.timed-out.not && (
+                                            $data.monitor-created.not ||
+                                            $data.monitor-deleted.not ||
+                                            $data.monitor-changed.not ||
+                                            $data.file-deleted   .not
+                                          );
+      GLib::Source.remove($data.timeout);
 
-    diag 'Monitor cancel operation sent';
-    $data.monitor.cancel;
-    ok $data.monitor.is-cancelled,  'Monitor has been cancelled';
+      diag 'After monitor run...';
+      nok $data.timed-out,            '...no timeout-encountered';
+      ok  $data.file-deleted,         '...file was deleted';
+      is  $data.monitor-created, 1,   '...monitor was create only once';
+      is  $data.monitor-deleted, 1,   '...monmitor was deleted only once';
+      is  $data.monitor-changed, 0,   '...monitor was never changed';
+      nok $data.monitor.is-cancelled, '...monitor was never cancelled';
 
-    # g_clear_pointer($data.context, &g_main_context_unref) -- Why?
-    $data.context.unref;
+      diag 'Monitor cancel operation sent';
+      $data.monitor.cancel;
+      ok $data.monitor.is-cancelled,  'Monitor has been cancelled';
 
-    .unref for $data.ostream, $data.istream;
-  } else {
-    diag "Skipping test for this GFileMonitorImplementation: $mn";
+      # g_clear_pointer($data.context, &g_main_context_unref) -- Why?
+      # ...ESPECIALLY for a NULL pointer, even!
+
+      for $data.ostream, $data.istream {
+        .unref if .defined;
+      }
+    } else {
+      diag "Skipping test for this GFileMonitorImplementation: $mn";
+    }
+    .unref for $data.monitor, $data.file;
   }
-  .unref for $data.monitor, $data.file;
 }
 
 my $original-data = q:to/OD/;
@@ -411,6 +489,285 @@ sub test-replace-load {
   }
 }
 
+sub test-replace-cancel {
+  subtest 'Replace/Cancel', {
+    diag '#629301';
+    my $path   = GLib::FileUtils.make-tmp('g_file_replace_cancel_XXXXXX');
+    nok  $ERROR,                                   'No error encountered when creating tmp directory name';
+
+    my $tmpdir = GIO::File.new-for-path($path);
+    my $f      = $tmpdir.get-child('file');
+
+    $f.replace-contents($original-data);
+    nok  $ERROR,                                   'No error encountered when setting replacement content';
+
+    my $o = $f.replace;
+    nok  $ERROR,                                   'No errors encountered when creating replacement output stream';
+
+    my $bw = $o.write-all($replace-data);
+    nok $ERROR,                                    'No errors encountered when writing replacement data';
+    is  $bw,    $replace-data.chars,               'Bytes written by .write-all matches the expected value';
+
+    my $fenum = $tmpdir.enumerate_children;
+    nok $ERROR,                                    'No error detected obtaining a file enumerator';
+
+    my $info  = $fenum.next-file;
+    nok $ERROR,                                    'No error detected detected retrieving the next file';
+    ok  $info,                                     'Next file retrieved successfully';
+    $info.unref;
+
+    $info  = $fenum.next-file;
+    nok $ERROR,                                    'No error detected detected retrieving the next file';
+    ok  $info,                                     'Next file retrieved successfully';
+    $info.unref;
+
+    $fenum.close;
+    nok $ERROR,                                    'No error detected when closing the enumerator';
+    $fenum.unref;
+
+    $fenum = $tmpdir.enumerate_children;
+    nok $ERROR,                                    'No error detected obtaining a file enumerator';
+
+    # Test both indicies
+    for ^2 -> $id {
+      my $count = 0;
+      loop {
+        my $info = $fenum.iterate;
+        ok  $info[0],                              "[$id] A value was retrieved when iterating the enumerator";
+        nok $ERROR,                                "[$id] No errors were detected during iteration";
+        last unless $info[0];
+        $count++;
+      }
+      is  $count, 2,                               "[$id] Two iterations were performed";
+      $fenum.close;
+      nok $ERROR,                                  "[$id] No errors detected when closing enumerator";
+    }
+
+    # cw: For all dangling GObjects, an .undef is implied when leaving scope. If it's
+    #     not that way now, then it SHOULD BE!
+    #$fenum.unref;
+
+    my $c = GIO::Cancellable;
+    $c.cancel;
+    $o.close($c);
+    ok  $ERROR.domain, $G_IO_ERROR,                'Error detected and is in the G_IO_ERROR domain';
+    ok  $ERROR.code,   G_IO_ERROR_CANCELLED.Int,   'Error was a G_IO_ERROR_CANCELLED';
+    .unref for $c, $o;
+
+    ($c, $) = $f.load-contents;
+    nok $ERROR,                                    'No error occurred when loading contents';
+    is  $c, $original-data,                        'Loaded contents match original data';
+    .delete && .unref with $f;
+
+    $tmpdir.delete;
+    nok $ERROR,                                    'No error occurred when deleting temp directory';
+    $tmpdir.unref;
+  }
+}
+
+sub on-file-deleted ($f, $res, $loop) {
+  my $local-error = gerror-blank;
+
+  $f.delete-finish($res, $local-error);
+  nok $local-error || $local-error[0],             'No error detected during .delete-finish';
+  $loop.quit;
+}
+
+sub test-file-delete {
+  subtest 'Async Delete', {
+    my ($f, $i) = GIO::file.new_tmp('g_file_delete_XXXXXX');
+    nok $ERROR,                                    'No errors detected generating tmp dirname';
+    $i.unref;
+
+    ok $f.query_exists,                            'Directory was created';
+    exit(1) unless $f.IO.d;
+
+    my $loop = GLib::MainLoop.new;
+    $f.delete-async(-> *@a { on-file-deleted($f, @a[1], $loop) });
+    $loop.run;
+    nok $f.query-exists,                           'Directory was deleted';
+
+    # cw: Again, a .unref on DESTROY is the implied behavior for GObjects!
+    #     (we aren't quire there yet, though)
+    .unref for $loop, $f;
+  }
+}
+
+sub test-copy-preserve-mode {
+  use NativeCall;
+
+  sub umask (uint32 $m)
+    returns uint32
+    is native
+  { * }
+
+  my $current-umask = umask(0);
+
+  class CopyPreserveVector {
+    has $.source                         is rw;
+    has $.expected-destination           is rw;
+    has $.create-destination-before-copy is rw;
+    has $.flags                          is rw;
+
+    submethod bless (
+      :$!source,
+      :$!expected-destination,
+      :cdbc(:$!create-destination-before-copy),
+      :$!flags
+    ) { }
+
+    method new ($source, $expected-destination, $cdbc, $flags) {
+      self.build(
+        :$source,
+        :$expected-destination,
+        :$cdbc,
+        :$flags
+      );
+    }
+  }
+  constant CPV := CopyPreserveVector;
+
+  my @vectors = (
+    CPV.new( 0o600, 0o600,                      True,                                     G_FILE_COPY_OVERWRITE +| G_FILE_COPY_NOFOLLOW_SYMLINKS +| G_FILE_COPY_ALL_METADATA ),
+    CPV.new( 0o600, 0o600,                      True,                                     G_FILE_COPY_OVERWRITE +| G_FILE_COPY_NOFOLLOW_SYMLINKS                             ),
+    CPV.new( 0o600, 0o600,                     False,                                                              G_FILE_COPY_NOFOLLOW_SYMLINKS +| G_FILE_COPY_ALL_METADATA ),
+    CPV.new( 0o600, 0o600,                     False,                                                              G_FILE_COPY_NOFOLLOW_SYMLINKS                             ),
+    CPV.new( 0o600, 0o666 +& ~^$current-umask,  True, G_FILE_COPY_TARGET_DEFAULT_PERMS +| G_FILE_COPY_OVERWRITE +| G_FILE_COPY_NOFOLLOW_SYMLINKS +| G_FILE_COPY_ALL_METADATA ),
+    CPV.new( 0o600, 0o666 +& ~^$current-umask,  True, G_FILE_COPY_TARGET_DEFAULT_PERMS +| G_FILE_COPY_OVERWRITE +| G_FILE_COPY_NOFOLLOW_SYMLINKS                             ),
+    CPV.new( 0o600, 0o666 +& ~^$current-umask, False, G_FILE_COPY_TARGET_DEFAULT_PERMS                          +| G_FILE_COPY_NOFOLLOW_SYMLINKS +| G_FILE_COPY_ALL_METADATA ),
+    CPV.new( 0o600, 0o666 +& ~^$current-umask, False, G_FILE_COPY_TARGET_DEFAULT_PERMS                          +| G_FILE_COPY_NOFOLLOW_SYMLINKS                             )
+  );
+  umask($current-umask);
+  diag "Current umask: 0o{ $current-umask.base(8) }";
+
+  subtest 'Copy Preserve', {
+    for @vectors.kv -> $k, $v {
+      my $V = @vectors[$k];
+
+      diag "Vector { $k.fmt("%lu"); }"; # G_GSIZE_FORMAT = %lu
+
+      my      $local-error   = gerror;
+      my      ($tmpfile, $i) = GIO::File.new_tmp('tmp-copy-preserve-modeXXXXXX', $local-error);
+
+      ok no-error($local-error),                           'No error detected when generating temp dirname';
+      $i.close( error => ($local-error = gerror) );
+      ok no-error($local-error),                           'No error detected when closing input stream';
+      $tmpfile.set-attribute(
+        |G_FILE_ATTRIBUTE_UNIX_MODE,
+        $V.source-mode,
+        flags => G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS,
+        error => ($local-error = gerror),
+      );
+      ok no-error($local-error),                           'No error detected when setting file attribute';
+
+      my $dtmpfile;
+      ($dtmpfile, $i) = GIO::File.new_tmp('tmp-copy-preserve-modeXXXXXX', $local-error);
+      ok no-error($local-error),                           'No error detected when generating temp dirname';
+      $i.close( error => ($local-error = gerror) );
+      ok no-error($local-error),                           'No error detected when closing input stream';
+
+      unless $V.create-destination-before-copy {
+        $dtmpfile.delete($local-error = gerror);
+        ok no-error($local-error),                         'No error detected when deleting temp directory';
+      }
+
+      $tmpfile.copy(
+        $dtmpfile,
+        $V.copy-flags,
+        error => ($local-error = gerror)
+      );
+      ok no-error($local-error),                           'No error detected during copy';
+
+      my $dinfo = $dtmpfile.query_info(
+        GFileAttributeName(G_FILE_ATTRIBUTE_UNIX_MODE),
+        G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS,
+        error => ($local-error = gerror)
+      );
+      ok no-error($local-error),                           'No error detected during query_info';
+
+      my $dmode = $dinfo.get_attribute(
+        GFileAttributeName(G_FILE_ATTRIBUTE_UNIX_MODE)
+      );
+
+      is $dmode +& ^S_IFMT, $V.expected-destination-mode,  'Test and Expected destination modes match';
+      is $dmode +& S_IFMT, S_IFREG,                        'Test destination mode is also S_IFREG';
+      .delete for $tmpfile, $dtmpfile;
+    }
+  }
+}
+
+# cw: It's only use was the the C code that was never written in get-size-from-du!
+# sub splice-to-string($i, $e) {
+#   my $buffer = GIO::MemoryOutputStream.new;
+#   my $ret    = Nil;
+#
+#   if !$buffer.splice($i) {
+#     if $buffer.write("\0", 1) {
+#       $ret = $buffer.steal-data if $buffer.close;
+#     }
+#   }
+#   $ret;
+# }
+
+sub get-size-from-du ($path) {
+  # cw: This would test the subprocess aspects of glib, but sometimes enough is
+  # enough! Use the raku-ish alternative
+  qqx«du --bytes -s $path» ~~ m/(\d+)/;
+  $0;
+}
+
+sub test-measure {
+  subtest 'Measure', {
+    plan 5;
+
+    my $path = GLib::Test.get_dir(G_TEST_DIST).IO.add('desktop-files');
+    my $file = GIO::File.new_for_path($path);
+
+    skip-rest 'du not found or failed to run, skipping byte measurement'
+        unless my $size = get-size-from-du($path);
+
+    my @size-data = $file.measure_disk_usage(G_FILE_MEASURE_APPARENT_SIZE);
+
+    ok +@size-data,                       '.measure-disk-usage executed properly';
+    ok no-error,                          'No error detected during .measure-disk-usage';
+
+    $size > 0 ?? is @size-data[0], $size, 'Size data matches expected result'
+              !! pass                     'Skipping byte measurement';
+
+
+    is @size-data[1], 6,                  'Six directories were found';
+    is @size-data[2], 31,                 'Thirty-one files were encountered';
+
+    #$file.unref;
+  }
+}
+
+{
+  class MeasureData {
+    has $.expected-bytes is rw;
+    has $.expected-dirs  is rw;
+    has $.expected-files is rw;
+    has $.progress-count is rw;
+    has $.progress-bytes is rw;
+    has $.progress-dirs  is rw;
+    has $.progress-files is rw;
+  }
+
+  my $measure-data = MeasureData.new;
+
+  sub measure_progress ($r, $cs, $nd, $nf, $d) {
+     $measure-data.progress-count++;
+     ok $cs >= $measure-data.progress-bytes, 'Current size  is less than progress bytes';
+     ok $nd >= $measure-data.progress-dirs,  'Current dirs  is less than progress dirs';
+     ok $nf >= $measure-data.progress-files, 'Current files are less than progress files';
+
+     ( .progress-bytes, .progress-dirs, .progress.files ) = ($cs, $nd, $nf)
+       with $measure-data;
+  }
+}
+
+# Continue from L#1089 of the original
+
 sub test-writev-helper (@vectors, $use-bytes-written, $ec, $el) {
   my $iostream;
   my $file = GIO::File.new-tmp('g_file_writev_XXXXXX', $iostream);
@@ -453,7 +810,7 @@ sub test-writev {
   test-writev-helper(@vectors, True, $buffer, $buffer.chars);
 }
 
-# Ended at line 1295 of original
+# Continue from L#1295 of original
 
 GLib::Test.init;
 
@@ -461,5 +818,10 @@ test-basic;
 test-parent;
 test-type;
 test-parse-name;
-# cw: Currently has an endless-loop somewhere in it's myriad of callbacks.
-# test-create-delete($_) for 0, 1, 10, 25, 4096;
+
+# cw: These tests are not currently being performed due to the lack of
+#     ability to create a sub-buffer or sub-array that can be passed to
+#     a NativeCall routine.
+#test-create-delete($_) for 0, 1, 10, 25, 4096;
+
+test-measure;
