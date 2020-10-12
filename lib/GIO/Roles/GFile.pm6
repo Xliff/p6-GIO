@@ -965,10 +965,10 @@ role GIO::Roles::File does GLib::Roles::Object {
   }
 
   method load_bytes (
-    GCancellable()          $cancellable,
-    Str()                   $etag_out,
+    GCancellable()          $cancellable  = GCancellable,
+    Str()                   $etag_out     = Str,
     CArray[Pointer[GError]] $error        = gerror,
-    :$raw = False
+                            :$raw         = False
   )
     is also<load-bytes>
   {
@@ -977,24 +977,35 @@ role GIO::Roles::File does GLib::Roles::Object {
     set_error($error);
 
     $b ??
-      ( $raw ?? $b !! GLib::Bytes($b, :!ref) )
+      ( $raw ?? $b !! GLib::Bytes.new($b, :!ref) )
       !!
       Nil;
   }
 
-  method load_bytes_async (
+  proto method load_bytes_async (|)
+    is also<load-bytes-async>
+  { * }
+
+  multi method load_bytes_async (
+                   &callback,
+    gpointer       $user_data    = Pointer,
+    GCancellable() :$cancellable = GCancellable
+  ) {
+    samewith($cancellable, &callback, $user_data);
+  }
+  multi method load_bytes_async (
     GCancellable() $cancellable,
                    &callback,
     gpointer       $user_data    = Pointer
   )
-    is also<load-bytes-async>
+
   {
     g_file_load_bytes_async($!file, $cancellable, &callback, $user_data);
   }
 
   method load_bytes_finish (
     GAsyncResult()          $result,
-    Str()                   $etag_out,
+    Str()                   $etag_out  = Str,
     CArray[Pointer[GError]] $error     = gerror,
                             :$raw      = False
   )
@@ -1005,7 +1016,7 @@ role GIO::Roles::File does GLib::Roles::Object {
     set_error($error);
 
     $b ??
-      ( $raw ?? $b !! GLib::Bytes($b, :!ref) )
+      ( $raw ?? $b !! GLib::Bytes.new($b, :!ref) )
       !!
       Nil;
   }
@@ -1289,7 +1300,7 @@ role GIO::Roles::File does GLib::Roles::Object {
     Int()                   $flags,
                             &progress_callback,
     gpointer                $progress_data      = gpointer,
-    CArray[Pointer[GError]] $error              = gerror,
+    CArray[Pointer[GError]] :$error             = gerror,
   ) {
     my $rv = samewith(
       $flags,
@@ -1337,17 +1348,39 @@ role GIO::Roles::File does GLib::Roles::Object {
     $all.not ?? $rv !! ($rv, $disk_usage, $num_dirs, $num_files);
   }
 
-  method measure_disk_usage_async (
+
+  proto method measure_disk_usage_async (|)
+    is also<measure-disk-usage-async>
+  { * }
+
+  multi method measure_disk_usage_async (
+    Int()             $flags,
+    Int()            :io-priority(      :$io_priority      )  = 0,
+    GCancellable()   :$cancellable                            = GCancellable,
+                     :progress-callback(:&progress_callback)  = Callable,
+    gpointer         :progress-data(    :$progress_data    )  = Pointer,
+                     :&callback                               = Callable,
+    gpointer         :$user_data                              = Pointer
+  ) {
+    samewith(
+      $flags,
+      $io_priority,
+      $cancellable,
+      &progress_callback,
+      $progress_data,
+      &callback,
+      $user_data
+    );
+  }
+  multi method measure_disk_usage_async (
     Int()          $flags,
     Int()          $io_priority,
-    GCancellable() $cancellable        = GCancellable,
-                   &progress_callback  = Callable,
-    gpointer       $progress_data      = Pointer,
-                   &callback           = Callable,
-    gpointer       $user_data          = Pointer
-  )
-    is also<measure-disk-usage-async>
-  {
+    GCancellable() $cancellable,
+                   &progress_callback,
+    gpointer       $progress_data,
+                   &callback,
+    gpointer       $user_data          = gpointer
+  ) {
     my GFileMeasureFlags $f  = $flags;
     my gint              $io = $io_priority;
     g_file_measure_disk_usage_async(
