@@ -46,9 +46,15 @@ class GIO::InputStream {
     g_input_stream_clear_pending($!is);
   }
 
-  method close (
-    GCancellable()          $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error       = gerror()
+  multi method close (
+    GCancellable()          :$cancellable = GCancellable,
+    CArray[Pointer[GError]] :$error       = gerror
+  ) {
+    samewith($cancellable, $error);
+  }
+  multi method close (
+    GCancellable()          $cancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     g_input_stream_close($!is, $cancellable, $error);
   }
