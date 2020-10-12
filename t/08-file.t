@@ -8,6 +8,7 @@ use GIO::Raw::Quarks;
 use GIO::Raw::FileAttributeTypes;
 
 use GLib::FileUtils;
+use GLib::MainLoop;
 use GLib::Source;
 use GLib::Test;
 use GLib::Timeout;
@@ -742,6 +743,7 @@ sub test-measure {
   }
 }
 
+my &test-measure-async;
 {
   class MeasureData {
     has $.expected-bytes is rw;
@@ -755,7 +757,7 @@ sub test-measure {
 
   my $measure-data = MeasureData.new;
 
-  sub measure_progress ($r, $cs, $nd, $nf, $d) {
+  sub measure-progress ($r, $cs, $nd, $nf, $d) {
      $measure-data.progress-count++;
      ok $cs >= $measure-data.progress-bytes, 'Current size  is less than progress bytes';
      ok $nd >= $measure-data.progress-dirs,  'Current dirs  is less than progress dirs';
@@ -764,9 +766,117 @@ sub test-measure {
      ( .progress-bytes, .progress-dirs, .progress.files ) = ($cs, $nd, $nf)
        with $measure-data;
   }
+
+  sub measure-done ($s, $r, $d) {
+    my ($bytes, $dirs, $files) = $s.disk_usage_finish($r);
+
+    ok $bytes && $dirs && $files, 'Cal to .disk_used_finished executed and returned values';
+
+    my $eb = $measure-data.expected-bytes;
+    $eb > 0 ?? is $bytes, $eb,                    'Measured total bytes matches expected'
+            !! pass                                 'Skipping measured bytes check';
+    is $dirs,  $measure-data.expected-dirs,         'Dir total matches expected';
+    is $files, $measure-data.expected-files,        'File total matches expected';
+
+    #$s.unref;
+  }
+
+  &test-measure-async = sub {
+    $measure-data = MeasureData.new;
+    subtest 'Measure Async', {
+      .progress-count = .progress-bytes = .progress-files = .progress-dirs = 0
+        with $measure-data;
+
+      my $path = GLib::Test.get_dir(G_TEST_DIST).IO.add('desktop-files');
+      my $file = GIO::File.new_for_path($path);
+
+      unless my $size = get-size-from-du($path) {
+        skip-rest 'du not found or failed to run, skipping byte measurement'
+        .expected-bytes = 0;
+      }
+
+      ( .expected-dirs, .expected-files ) = (6, 31) with $measure-data;
+      $file.measure_disk_usage_async(
+        G_FILE_MEASURE_APPARENT_SIZE,
+        progress_callback => &measure-progress,
+        callback          => &measure-done
+      );
+    }
+  }
 }
 
-# Continue from L#1089 of the original
+sub test-load-bytes {
+  subtest 'Load Bytes', {
+    my $fn = 'g_file_load_bytes_XXXXXX';
+    my $fd = GLib::FileUtils.mkstemp($fn);
+    ok $fd != -1,               'Returned file descriptor is not -1';
+
+    my $text = 'test_load_bytes';
+    my $ret  = GLib::FileUtils.write($fd, $text, $text.chars);
+    is $ret, $text.chars,       'Wrote out the proper number of bytes';
+    native-close($fd);
+
+    my $file  = GIO::File.new_for_path( $*CWD.add($fn).absolute );
+    my $bytes = $file.load_bytes;
+    ok no-error,                'No error detected when loading data';
+
+    ok $bytes,                  'Returned object is non-Nil';
+    is $ret,  $bytes.get-size,  'Retured file size contains the correct value';
+
+    my ($data) = ( $bytes.get-data );
+    is $text, $data,            'Returned data is the correct value';
+    $file.delete;
+    .unref for $bytes, $file;
+  }
+}
+
+my &test-load-bytes-async;
+{
+  class LoadBytesAsyncData {
+    has $.loop  is rw;
+    has $.file  is rw;
+    has $.bytes is rw;
+
+    method unref {
+      .unref for $!file, $!bytes, $!loop;
+    }
+  }
+  my $bytes-async-data = LoadBytesAsyncData.new;
+
+  sub load-bytes-cb ($o, $r, $d) {
+    CATCH { default { .message.say; .backtrace.summary.say } }
+    my $f = GIO::File.new($o);
+
+    my $b = $bytes-async-data.bytes = $f.load_bytes_finish($r);
+    ok no-error,                'No errors detected during .bytes_finish';
+    ok $b,                      'Async data bytes storage is non-Nil';
+    $bytes-async-data.loop.quit;
+  }
+
+  &test-load-bytes-async = sub {
+    subtest 'Load Bytes, Async', {
+      my $fn = 'g_file_load_bytes_XXXXXX';
+      my $fd = GLib::FileUtils.mkstemp($fn);
+      my $c  = 'test_load_bytes_async';
+      my $l  = $c.chars;
+      my $r  = GLib::FileUtils.write($fd, $c, $l);
+      is $r, $l,                               'Wrote proper number of bytes to temporary file';
+      native-close($fd);
+
+      $bytes-async-data.loop      = GLib::MainLoop.new(False);
+      $bytes-async-data.file      = GIO::File.new_for_path($fn);
+      $bytes-async-data.file.load_bytes_async( &load-bytes-cb );
+      $bytes-async-data.loop.run;
+
+      is $l, $bytes-async-data.bytes.get-size, 'Async bytes read matches expected value';
+      my $d = $bytes-async-data.bytes.get-data;
+
+      is $d, $c,                               'Async data matches expected value';
+      $bytes-async-data.file.delete;
+      $bytes-async-data.unref;
+    }
+  }
+}
 
 sub test-writev-helper (@vectors, $use-bytes-written, $ec, $el) {
   my $iostream;
@@ -785,7 +895,6 @@ sub test-writev-helper (@vectors, $use-bytes-written, $ec, $el) {
   nok $ERROR,              'No errors detected when closing the iostream';
   ok  $res,                '.close returned True';
   $iostream.unref;
-
 
   my ($contents, $length);
   $res = $file.load-contents($contents, $length, $);
@@ -825,3 +934,9 @@ test-parse-name;
 #test-create-delete($_) for 0, 1, 10, 25, 4096;
 
 test-measure;
+
+# cw: MoarVM panic: native callback ran on thread (140662838081088) unknown to MoarVM
+#&test-measure-async();
+
+test-load-bytes;
+&test-load-bytes-async();
