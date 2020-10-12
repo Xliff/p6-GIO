@@ -4,6 +4,7 @@ use Method::Also;
 
 use NativeCall;
 
+use GLib::Raw::Memory;
 use GIO::Raw::Types;
 use GIO::Raw::MemoryOutputStream;
 
@@ -95,6 +96,9 @@ class GIO::MemoryOutputStream is GIO::OutputStream {
     );
 
     $memory-output ?? self.bless( :$memory-output ) !! Nil;
+  }
+  multi method new {
+    samewith(gpointer, 0, &g_realloc, &g_free);
   }
 
   method new_resizable is also<new-resizable> {
