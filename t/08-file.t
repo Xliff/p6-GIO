@@ -869,10 +869,10 @@ my &test-load-bytes-async;
       $bytes-async-data.loop.run;
 
       is $l, $bytes-async-data.bytes.get-size, 'Async bytes read matches expected value';
-      my $d = $bytes-async-data.bytes.get-data;
+      my ($d, $) = $bytes-async-data.bytes.get-data;
 
       is $d, $c,                               'Async data matches expected value';
-      $bytes-async-data.file.delete;
+      .delete && .unref given $bytes-async-data.file;
       $bytes-async-data.unref;
     }
   }
