@@ -363,6 +363,24 @@ class GIO::OutputStream {
   { * }
 
   multi method write_async (
+    Str            $buffer,
+    Int()          $count,
+                   &callback,
+    gpointer       $user_data    = gpointer,
+    GCancellable() :$cancellable = GCancellable,
+    Int()          :$io_priority = 0,
+                   :$encoding    = 'utf8'
+  ) {
+    samewith(
+      cast( Pointer, CArray[uint8].new($buffer.encode($encoding)) ),
+      $count,
+      &callback,
+      $user_data,
+      :$cancellable,
+      :$io_priority
+    );
+  }
+  multi method write_async (
     Pointer        $buffer,
     Int()          $count,
                    &callback,
@@ -538,7 +556,7 @@ class GIO::OutputStream {
     Pointer                 $vectors,
     Int()                   $n_vectors,
                             $bytes_written is rw,
-    GCancellable            $cancellable,
+    GCancellable            $cancellable   = GCancellable,
     CArray[Pointer[GError]] $error         =  gerror,
                             :$all          =  False
   ) {
@@ -555,7 +573,7 @@ class GIO::OutputStream {
     );
     set_error($error);
     $bytes_written = $rv ?? $bw !! Nil;
-    $all ?? $bytes_written !! ($bytes_written, $rv);
+    $all.not ?? $bytes_written !! ($bytes_written, $rv);
   }
 
   proto method writev_all_async (|)
