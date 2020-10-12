@@ -43,7 +43,7 @@ class GIO::FileIOStream is GIO::Stream {
         cast(GFileIOStream, $_);
       }
     }
-    self.setIOStream($to-parent);
+    self.setGIOStream($to-parent);
     self.roleInit-Seekable unless $!s;
   }
 
