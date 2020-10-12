@@ -20,10 +20,10 @@ class GIO::Stream {
   has GIOStream $!ios is implementor;
 
   submethod BUILD (:$stream) {
-    self.setStream($stream) if $stream;
+    self.setGIOStream($stream) if $stream;
   }
 
-  method setStream (GIOStreamAncestry $_) {
+  method setGIOStream (GIOStreamAncestry $_) {
     my $to-parent;
 
     $!ios = do {
