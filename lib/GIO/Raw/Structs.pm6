@@ -11,11 +11,23 @@ unit package GIO::Raw::Structs;
 class GInputVector  is repr('CStruct') does GLib::Roles::Pointers is export {
   has Pointer       $.buffer;
   has gssize        $.size;
+
+  submethod BUILD (:$buffer, :$!size) {
+    $!buffer := cast( Pointer, explicitly-manage($buffer) ) if $buffer ~~ Str;
+  }
+
+  method new ($buffer, $size) { self.bless(:$buffer, :$size) }
 }
 
 class GOutputVector is repr('CStruct') does GLib::Roles::Pointers is export {
   has Pointer       $.buffer;
   has gssize        $.size;
+
+  submethod BUILD (:$buffer, :$!size) {
+    $!buffer := cast( Pointer, explicitly-manage($buffer) ) if $buffer ~~ Str;
+  }
+
+  method new ($buffer, $size) { self.bless(:$buffer, :$size) }
 }
 
 class GSocketControlMessage is repr('CStruct') does GLib::Roles::Pointers is export {
