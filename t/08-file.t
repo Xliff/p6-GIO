@@ -878,30 +878,35 @@ my &test-load-bytes-async;
   }
 }
 
-sub test-writev-helper (@vectors, $use-bytes-written, $ec, $el) {
+sub test-writev-helper (
+  @vectors           = (),
+  $use-bytes-written = 0,
+  $ec                = Str,
+  $el                = 0
+) {
   my $iostream;
-  my $file = GIO::File.new-tmp('g_file_writev_XXXXXX', $iostream);
+  my $file = GIO::File.new_tmp('g_file_writev_XXXXXX', $iostream);
 
-  ok  $file,               '$file is non-Nil';
-  ok  $iostream,           '$iostream is non-Nil';
+  ok  $file,                 '$file is non-Nil';
+  ok  $iostream,             '$iostream is non-Nil';
 
-  my ($res, $ubw) = $iostream.output-stream.writev-all(@vectors);
-  nok $ERROR,              'No errors detected during .writev-all';
-  ok  $res,                '.writev-all returned True';
-  is $ubw,      $el,       'Bytes actually written matches expected length'
+  my ($res, $ubw) = $iostream.get-output-stream.writev-all(@vectors);
+  nok $ERROR,                'No errors detected during .writev-all';
+  ok  $res,                  '.writev-all returned True';
+  is $ubw,      $el,         'Bytes actually written matches expected length'
      if $use-bytes-written;
 
   $res = $iostream.close;
-  nok $ERROR,              'No errors detected when closing the iostream';
-  ok  $res,                '.close returned True';
+  nok $ERROR,                'No errors detected when closing the iostream';
+  ok  $res,                  '.close returned True';
   $iostream.unref;
 
   my ($contents, $length);
-  $res = $file.load-contents($contents, $length, $);
-  nok $ERROR,              'No errors detected when loading contents';
-  ok  $res,                '.load-contents returned defined values';
-  is  $length,   $el,      'Returned length matches expected value';
-  is  $contents, $ec,      'Contents match expected value';
+  $res = $file.load_contents($contents, $length, $);
+  nok $ERROR,                'No errors detected when loading contents';
+  ok  $res,                  '.load-contents returned defined values';
+  is  $length   // 0,   $el, 'Returned length matches expected value';
+  is  $contents // Str, $ec, 'Contents match expected value';
 
   .delete && .unref with $file;
 }
@@ -920,6 +925,45 @@ sub test-writev {
 }
 
 # Continue from L#1295 of original
+
+sub test-writev-no-vectors {
+  subtest 'WriteV, No vectors', {
+    test-writev-helper;
+  }
+}
+
+# cw: -XXX- 20201013
+#
+# Continue from L#1324 of original -- Efforts marred by the lack of ability
+# to use a sub-CArray. Efforts on this file will be paused until this
+# is rectified or a workaround can be discovered.
+
+# cw: Not quite in, yet.
+# sub test-build-attribute-list-for-copy {
+#   my @test-flags = (
+#     G_FILE_COPY_NONE,
+#     G_FILE_COPY_TARGET_DEFAULT_PERMS,
+#     G_FILE_COPY_ALL_METADATA,
+#     G_FILE_COPY_ALL_METADATA +| G_FILE_COPY_TARGET_DEFAULT_PERMS,
+#   );
+#
+#   subtest 'Build attribute list for copy', {
+#     my $i;
+#     my $tmpfile = GIO::File.new_tmp(
+#       'tmp-build-attribute-list-for-copyXXXXXX',
+#       $i
+#     );
+#
+#     ok  no-error, 'No error encountered when generating tmpfile name';
+#     $i.close;
+#     nok no-error, 'No error encountered when closing iostream';
+#
+#     for @test-flags {
+#       my $atrs = $tmpfile.build_attribute_list_for_copy($_);
+#       ...
+#     }
+#   }
+# }
 
 GLib::Test.init;
 
@@ -940,3 +984,5 @@ test-measure;
 
 test-load-bytes;
 &test-load-bytes-async();
+
+test-writev-no-vectors;
