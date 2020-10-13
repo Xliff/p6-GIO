@@ -21,8 +21,8 @@ class GIO::EmblemedIcon {
 
   has GEmblemedIcon $!ei is implementor;
 
-  submethod BUILD (:$emblem) {
-    self.setGEmblemedIcon($emblem) if $emblem;
+  submethod BUILD (:$emblem, :$icon) {
+    self.setGEmblemedIcon($emblem // $icon) if $emblem || $icon;
   }
 
   method setGEmblemedIcon (GEmblemedIconAncestry $_) {
