@@ -2,8 +2,13 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
-
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::Mount;
 
@@ -20,20 +25,20 @@ sub g_mount_can_unmount (GMount $mount)
 { * }
 
 sub g_mount_eject_with_operation (
-  GMount $mount,
-  GMountUnmountFlags $flags,
-  GMountOperation $mount_operation,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GMount              $mount,
+  GMountUnmountFlags  $flags,
+  GMountOperation     $mount_operation,
+  GCancellable        $cancellable,
+                      &callback (GMount, GAsyncResult, gpointer),
+  gpointer            $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_mount_eject_with_operation_finish (
-  GMount $mount,
-  GAsyncResult $result,
+  GMount                  $mount,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -102,19 +107,19 @@ sub g_mount_get_volume (GMount $mount)
 { * }
 
 sub g_mount_guess_content_type (
-  GMount $mount,
-  gboolean $force_rescan,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GMount              $mount,
+  gboolean            $force_rescan,
+  GCancellable        $cancellable,
+                      &callback (GMount, GAsyncResult, gpointer),
+  gpointer            $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_mount_guess_content_type_finish (
-  GMount $mount,
-  GAsyncResult $result,
+  GMount                  $mount,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns CArray[Str]
@@ -123,9 +128,9 @@ sub g_mount_guess_content_type_finish (
 { * }
 
 sub g_mount_guess_content_type_sync (
-  GMount $mount,
-  gboolean $force_rescan,
-  GCancellable $cancellable,
+  GMount                  $mount,
+  gboolean                $force_rescan,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns CArray[Str]
@@ -140,11 +145,11 @@ sub g_mount_is_shadowed (GMount $mount)
 { * }
 
 sub g_mount_remount (
-  GMount $mount,
-  GMountMountFlags $flags,
-  GMountOperation $mount_operation,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
+  GMount              $mount,
+  GMountMountFlags    $flags,
+  GMountOperation     $mount_operation,
+  GCancellable        $cancellable,
+                      &callback (GMount, GAsyncResult, gpointer),
   gpointer $user_data
 )
   is native(gio)
@@ -152,8 +157,8 @@ sub g_mount_remount (
 { * }
 
 sub g_mount_remount_finish (
-  GMount $mount,
-  GAsyncResult $result,
+  GMount                  $mount,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -167,20 +172,20 @@ sub g_mount_shadow (GMount $mount)
 { * }
 
 sub g_mount_unmount_with_operation (
-  GMount $mount,
-  GMountUnmountFlags $flags,
-  GMountOperation $mount_operation,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GMount              $mount,
+  GMountUnmountFlags  $flags,
+  GMountOperation     $mount_operation,
+  GCancellable        $cancellable,
+                      &callback (GMount, GAsyncResult, gpointer),
+  gpointer            $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_mount_unmount_with_operation_finish (
-  GMount $mount,
-  GAsyncResult $result,
+  GMount                  $mount,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns uint32
