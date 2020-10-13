@@ -1,5 +1,6 @@
 use v6.c;
 
+use NativeCall;
 use Test;
 
 use GLib::Compat::Definitions;
@@ -878,59 +879,106 @@ my &test-load-bytes-async;
   }
 }
 
+sub compare-buffer ($a, $b) {
+  unless $a.defined {
+    # diag $b.defined.not ?? 'Passed' !! 'A is NULL but not B';
+    return $b.defined.not;
+  }
+  unless $b.defined {
+    # diag $a.defined.not ?? 'Passed' !! 'B is NULL but not A';
+    return $a.defined.not;
+  }
+
+  for ^$a.elems {
+    unless $a[$_] = $b[$_] {
+      diag "Failed comparison at position $_";
+      return False;
+    }
+  }
+  return True;
+}
+
 sub test-writev-helper (
   @vectors           = (),
-  $use-bytes-written = 0,
-  $ec                = Str,
+  $use-bytes-written = False,
+  $ec                = Buf,
   $el                = 0
 ) {
   my $iostream;
   my $file = GIO::File.new_tmp('g_file_writev_XXXXXX', $iostream);
 
-  ok  $file,                 '$file is non-Nil';
-  ok  $iostream,             '$iostream is non-Nil';
+  ok  $file,                          '$file is non-Nil';
+  ok  $iostream,                      '$iostream is non-Nil';
 
-  my ($res, $ubw) = $iostream.get-output-stream.writev-all(@vectors);
-  nok $ERROR,                'No errors detected during .writev-all';
-  ok  $res,                  '.writev-all returned True';
-  is $ubw,      $el,         'Bytes actually written matches expected length'
+  my $ubw = $iostream.get-output-stream.writev-all(@vectors);
+  nok $ERROR,                         'No errors detected during .writev-all';
+  ok  $ubw.defined,                   '.writev-all returned defined values';
+  is  $ubw,     $el,                  'Bytes actually written matches expected length'
      if $use-bytes-written;
 
-  $res = $iostream.close;
-  nok $ERROR,                'No errors detected when closing the iostream';
-  ok  $res,                  '.close returned True';
+  my $res = $iostream.close;
+  nok $ERROR,                         'No errors detected when closing the iostream';
+  ok  $res,                           '.close returned True';
   $iostream.unref;
 
-  my ($contents, $length);
-  $res = $file.load_contents($contents, $length, $);
-  nok $ERROR,                'No errors detected when loading contents';
-  ok  $res,                  '.load-contents returned defined values';
-  is  $length   // 0,   $el, 'Returned length matches expected value';
-  is  $contents // Str, $ec, 'Contents match expected value';
+  my ($contents, $length, $) = $file.load_contents($contents, $length, $);
+  nok $ERROR,                         'No errors detected when loading contents';
+  # cw: Tricky, since $contents CAN be undefined, $length is the only way
+  #     to properly determine if the underlying routine returned true.
+  ok  $length.defined,                '.load-contents returned defined values';
+  is  $length   // 0,   $el,          'Returned length matches expected value';
+  ok  compare-buffer($contents, $ec), 'Contents match expected value';
 
   .delete && .unref with $file;
 }
 
 sub test-writev {
-  my $buffer = "\x1\x2\x3\x4\x5\x1\x2\x3\x4\x5\x6\x7\x8\x9\xa\xb\xc\x1\x2\x3";
+  my $buffer = CArray[uint8].new(1, 2, 3, 4, 5,
+                                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                                 1, 2, 3);
 
-  # cw: All of these really need to be a part of the same memory space!
   my @vectors = (
-    GOutputVector.new($buffer,               5),
-    GOutputVector.new($buffer.substr-rw(5), 12),
-    GOutputVector.new($buffer.substr-rw(12), 3)
+    GOutputVector.new($buffer,                   5),
+    GOutputVector.new($buffer.&subarray(5),     12),
+    GOutputVector.new($buffer.&subarray(5 + 12), 3)
   );
 
-  test-writev-helper(@vectors, True, $buffer, $buffer.chars);
+  subtest 'WriteV', {
+    test-writev-helper(@vectors, True, $buffer, $buffer.elems);
+  }
 }
 
-# Continue from L#1295 of original
+sub test-writev-no-bytes-written {
+  my $buffer = CArray[uint8].new(1, 2, 3, 4, 5,
+                                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                                 1, 2, 3);
+
+  my @vectors = (
+    GOutputVector.new($buffer,                   5),
+    GOutputVector.new($buffer.&subarray(5),     12),
+    GOutputVector.new($buffer.&subarray(5 + 12), 3)
+  );
+
+  subtest 'WriteV, no bytes written', {
+    test-writev-helper(@vectors, False, $buffer, $buffer.elems);
+  }
+}
 
 sub test-writev-no-vectors {
   subtest 'WriteV, No vectors', {
     test-writev-helper;
   }
 }
+
+sub test-writev-empty-vectors {
+  my @vectors = GOutputVector.new xx 3;
+
+  subtest 'WriteV, Empty vectors', {
+    test-writev-helper(@vectors, True, Nil, 0);
+  }
+}
+
+# Continue from line 1339
 
 # cw: -XXX- 20201013
 #
@@ -985,4 +1033,7 @@ test-measure;
 test-load-bytes;
 &test-load-bytes-async();
 
+test-writev;
+test-writev-no-bytes-written;
 test-writev-no-vectors;
+test-writev-empty-vectors;
