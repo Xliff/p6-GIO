@@ -32,6 +32,8 @@ use GLib::Roles::Object;
 use GIO::Roles::AppInfo;
 use GIO::Roles::Mount;
 
+enum ContentReturn is export <CARRAY ARRAY BUF BUFFER STR STRING PTR POINTER>;
+
 role  GIO::Roles::File does GLib::Roles::Object { ... }
 class GIO::File                                 { ... }
 
@@ -1026,37 +1028,44 @@ role GIO::Roles::File does GLib::Roles::Object {
   { * }
 
   multi method load_contents (
-    CArray[Pointer[GError]] $error = gerror,
-                            :$buf  = True
+    CArray[Pointer[GError]] $error        = gerror,
+                            :$as          = BUF,
+                            :$encoding    = 'utf8'
   ) {
-    samewith($, $, $, $error, :all, :$buf);
+    return-with-all(
+      samewith($, $, $, $error, :all, :$as, :$encoding)
+    )
   }
   multi method load_contents (
-                            $contents is rw,
-                            $length   is rw,
-                            $etag_out is rw,
-    CArray[Pointer[GError]] $error    =  gerror,
-    :$buf = True
+                            $contents     is rw,
+                            $length       is rw,
+                            $etag_out     is rw,
+    CArray[Pointer[GError]] $error        =  gerror,
+                            :$as          =  BUF,
+                            :$encoding    =  'utf8'
   ) {
-    my @r = callwith(
-      GCancellable,
-      $contents,
-      $length,
-      $etag_out,
-      $error,
-      :all,
-      :$buf
-    );
-    @r[0] ?? @r[1..*] !! Nil;
+    return-with-all(
+      samewith(
+        GCancellable,
+        $contents,
+        $length,
+        $etag_out,
+        $error,
+        :all,
+        :$as,
+        :$encoding
+      )
+    )
   }
   multi method load_contents (
     GCancellable()          $cancellable,
-                            $contents         is rw,
-                            $length           is rw,
-                            $etag_out         is rw,
-    CArray[Pointer[GError]] $error            =  gerror,
-                            :$all             =  False,
-                            :$buf             =  True
+                            $contents     is rw,
+                            $length       is rw,
+                            $etag_out     is rw,
+    CArray[Pointer[GError]] $error        =  gerror,
+                            :$all         =  False,
+                            :$as          =  BUF,
+                            :$encoding    =  'utf8'
   ) {
     my gsize $l     = 0;
     my $c           = CArray[uint8].new;
@@ -1074,13 +1083,19 @@ role GIO::Roles::File does GLib::Roles::Object {
     );
     set_error($error);
 
-    my @a = CArrayToArray($c);
+    my @a   = CArrayToArray($c);
     $all.not ??
       $rv
       !!
       (
         $rv,
-        $buf   ?? Buf.new(@a) !! @a,
+        do given $as {
+          when BUF | BUFFER  { $l ?? Buf.new(@a)                   !! Buf     }
+          when CARRAY        { $c                                             }
+          when ARRAY         { @a                                             }
+          when STR | STRING  { $l ?? Buf.new(@a).decode($encoding) !! Str     }
+          when PTR | POINTER { $l ?? cast(Pointer, $c)             !! Pointer }
+        },
         $l,
         $eo[0] ?? $eo[0]      !! Nil
       )
