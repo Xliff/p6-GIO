@@ -32,8 +32,8 @@ role GIO::Roles::Initable does GLib::Roles::Object {
   }
 
   multi method init (
-    GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     so g_initable_init($!i, $cancellable, $error);
   }
@@ -49,7 +49,7 @@ class GIO::Initable does GIO::Roles::Initable {
 
   submethod BUILD (:$initable, :$cancellable, :$init) {
     self.setGInitable($initable) if $initable;
-    self.init($cancellable) if $init;
+    self.init($cancellable)      if $init;
   }
 
   method setGInitable (GInitableAncestry $_) {
