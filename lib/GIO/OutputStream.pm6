@@ -543,7 +543,8 @@ class GIO::OutputStream {
   ) {
     return-with-all(
       samewith(
-        GLib::Roles::TypedBuffer[GOutputVector].new(@vectors).p,
+        +@vectors ?? GLib::Roles::TypedBuffer[GOutputVector].new(@vectors).p
+                  !! Pointer,
         @vectors.elems,
         $,
         $cancellable,
@@ -556,14 +557,14 @@ class GIO::OutputStream {
     Pointer                 $vectors,
     Int()                   $n_vectors,
                             $bytes_written is rw,
-    GCancellable            $cancellable   = GCancellable,
+    GCancellable()          $cancellable   =  GCancellable,
     CArray[Pointer[GError]] $error         =  gerror,
                             :$all          =  False
   ) {
     my gsize ($nv, $bw) = ($n_vectors, 0);
 
     clear_error;
-    my $rv = g_output_stream_writev_all(
+    my $rv = so g_output_stream_writev_all(
       $!os,
       $vectors,
       $nv,
@@ -572,8 +573,8 @@ class GIO::OutputStream {
       $error
     );
     set_error($error);
-    $bytes_written = $rv ?? $bw !! Nil;
-    $all.not ?? $bytes_written !! ($bytes_written, $rv);
+    $bytes_written = $bw;
+    $all.not ?? $bytes_written !! ($rv, $bytes_written);
   }
 
   proto method writev_all_async (|)
