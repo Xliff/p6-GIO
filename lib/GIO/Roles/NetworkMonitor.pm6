@@ -7,12 +7,12 @@ use NativeCall;
 use GIO::Raw::Types;
 use GIO::Raw::NetworkMonitor;
 
-role GIO::Roles::NetworkMonitor {
-  has GNetworkMonitor $!nm;
+use GLib::Roles::Object;
 
-  submethod BUILD (:$monitor) {
-    $!nm = $monitor;
-  }
+class GIO::NetworkMonitor { ... }
+
+role GIO::Roles::NetworkMonitor does GLib::Roles::Object {
+  has GNetworkMonitor $!nm;
 
   method roleInit-NetworkMonitor is also<roleInit_NetworkMonitor> {
     return if $!nm;
@@ -24,16 +24,6 @@ role GIO::Roles::NetworkMonitor {
   method GIO::Raw::Definitions::GNetworkMonitor
     is also<GNetworkMonitor>
   { $!nm }
-
-  method new-networkmonitor-obj (GNetworkMonitor $monitor, :$ref = True)
-    is also<new_networkmonitor_obj>
-  {
-    return Nil unless $monitor;
-
-    my $o = self.bless( :$monitor );
-    $o.ref if $ref;
-    $o;
-  }
 
   method can_reach (
     GSocketConnectable()    $connectable,
@@ -53,7 +43,19 @@ role GIO::Roles::NetworkMonitor {
     $rv;
   }
 
-  method can_reach_async (
+  proto method can_reach_async (|)
+    is also<can-reach-async>
+  { * }
+
+  multi method can_reach_async (
+    GSocketConnectable() $connectable,
+                         &callback,
+    gpointer             $user_data    = gpointer,
+    GCancellable()       :$cancellable = GCancellable
+  ) {
+    samewith($connectable, $cancellable, &callback, $user_data);
+  }
+  multi method can_reach_async (
     GSocketConnectable() $connectable,
     GCancellable()       $cancellable,
                          &callback,
@@ -95,9 +97,7 @@ role GIO::Roles::NetworkMonitor {
     my $nm = g_network_monitor_get_default();
 
     $nm ??
-      ( $raw ?? $nm
-             !! GIO::Roles::NetworkMonitor.new-networkmonitor-obj($nm, :!ref)
-      )
+      ( $raw ?? $nm !! GIO::NetworkMonitor.new($nm, :!ref) )
       !!
       Nil;
   }
@@ -126,6 +126,42 @@ role GIO::Roles::NetworkMonitor {
     state ($n, $t);
 
     unstable_get_type( self.^name, &g_network_monitor_get_type, $n, $t );
+  }
+
+}
+
+our subset GNetworkMonitorAncestry is export of Mu
+  where GNetworkMonitor | GObject;
+
+class GIO::NetworkMonitor does GIO::Roles::NetworkMonitor {
+
+  submethod BUILD (:$monitor) {
+    self.setGMonitor($monitor) if $monitor;
+  }
+
+  method setGMonitor (GNetworkMonitorAncestry $_) {
+    my $to-parent;
+
+    $!nm = do {
+      when GNetworkMonitor {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GNetworkMonitor, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GNetworkMonitorAncestry $monitor, :$ref = True) {
+    return Nil unless $monitor;
+
+    my $o = self.bless( :$monitor );
+    $o.ref if $ref;
+    $o;
   }
 
 }
