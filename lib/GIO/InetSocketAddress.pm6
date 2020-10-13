@@ -48,7 +48,7 @@ class GIO::InetSocketAddress is GIO::SocketAddress {
   }
   multi method new (
     GInetAddress() $address,
-    Int()          $port,
+    Int()          $port     = 0,
     Int()          $flowinfo = 0,
     Int()          $scope_id = 0
   ) {
