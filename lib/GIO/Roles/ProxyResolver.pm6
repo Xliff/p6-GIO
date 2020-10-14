@@ -6,12 +6,10 @@ use NativeCall;
 use GIO::Raw::Types;
 use GIO::Raw::ProxyResolver;
 
-role GIO::Roles::ProxyResolver {
-  has GProxyResolver $!pr;
+use GLib::Roles::Object;
 
-  submethod BUILD (:$proxy-resolver) {
-    $!pr = $proxy-resolver if $proxy-resolver;
-  }
+role GIO::Roles::ProxyResolver does GLib::Roles::Object {
+  has GProxyResolver $!pr;
 
   method roleInit-ProxyResolver {
     return if $!pr;
@@ -24,16 +22,6 @@ role GIO::Roles::ProxyResolver {
     is also<GProxyResolver>
   { $!pr }
 
-  multi method new-proxyresolber-obj (GProxyResolver $proxy-resolver)
-    is also<new_proxyresolver_obj>
-  {
-    $proxy-resolver ?? self.bless( :$proxy-resolver ) !! Nil;
-  }
-
-  method get_default is also<get-default> {
-    self.bless( proxy-resolver => g_proxy_resolver_get_default() );
-  }
-
   method get_proxyresolver_type is also<get-proxyresolver-type> {
     state ($n, $t);
 
@@ -45,9 +33,9 @@ role GIO::Roles::ProxyResolver {
   }
 
   method lookup (
-    Str() $uri,
-    GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Str()                   $uri,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     clear_error;
     my $sa = g_proxy_resolver_lookup($!pr, $uri, $cancellable, $error);
@@ -61,17 +49,18 @@ role GIO::Roles::ProxyResolver {
   { * }
 
   multi method lookup_async (
-    Str() $uri,
-    &callback,
-    gpointer $user_data = gpointer
+    Str()          $uri,
+                   &callback,
+    gpointer       $user_data = gpointer,
+    GCancellable() :$cancellable = GCancellable
   ) {
-    samewith($uri, GCancellable, &callback, $user_data);
+    samewith($uri, $cancellable, &callback, $user_data);
   }
   multi method lookup_async (
-    Str() $uri,
+    Str()          $uri,
     GCancellable() $cancellable,
-    &callback,
-    gpointer $user_data = gpointer
+                   &callback,
+    gpointer       $user_data    = gpointer
   ) {
     g_proxy_resolver_lookup_async(
       $!pr,
@@ -83,8 +72,8 @@ role GIO::Roles::ProxyResolver {
   }
 
   method lookup_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<lookup-finish>
   {
@@ -93,6 +82,46 @@ role GIO::Roles::ProxyResolver {
     set_error($error);
 
     CStringArrayToArray($sa);
+  }
+
+}
+
+our subset GProxyResolverAncestry is export of Mu
+  where GProxyResolver | GObject;
+
+class GIO::ProxyResolver does GIO::Roles::ProxyResolver {
+
+  submethod BUILD (:$resolver) {
+    self.setGProxyResolver($resolver) if $resolver;
+  }
+
+  method setGProxyResolver (GProxyResolverAncestry $_) {
+    my $to-parent;
+
+    $!pr = do {
+      when GProxyResolver {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GProxyResolver, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GProxyResolverAncestry $resolver, :$ref = True) {
+    return Nil unless $resolver;
+
+    my $o = self.bless( :$resolver );
+    $o.ref if $ref;
+    $o;
+  }
+
+  method get_default is also<get-default> {
+    GIO::ProxyResolver.new( g_proxy_resolver_get_default(), :!ref );
   }
 
 }
