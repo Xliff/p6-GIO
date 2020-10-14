@@ -7,7 +7,9 @@ use GIO::Raw::Types;
 
 use GIO::Roles::ActionGroup;
 
-role GIO::Roles::RemoteActionGroup {
+use GLib::Roles::Object;
+
+role GIO::Roles::RemoteActionGroup does GLib::Roles::Object {
   also does GIO::Roles::ActionGroup;
 
   has GRemoteActionGroup $!rag;
@@ -18,13 +20,13 @@ role GIO::Roles::RemoteActionGroup {
 
   method roleInit-RemoteActionGroup is also<roleInit_RemoteActionGroup> {
     return if $!rag;
-    
+
     my \i = findProperImplementor(self.^attributes);
     $!rag = cast( GRemoteActionGroup, i.get_value(self) );
   }
 
   method activate_action_full (
-    Str() $action_name,
+    Str()      $action_name,
     GVariant() $parameter,
     GVariant() $platform_data
   )
@@ -39,7 +41,7 @@ role GIO::Roles::RemoteActionGroup {
   }
 
   method change_action_state_full (
-    Str() $action_name,
+    Str()      $action_name,
     GVariant() $value,
     GVariant() $platform_data
   )
@@ -61,14 +63,50 @@ role GIO::Roles::RemoteActionGroup {
 
 }
 
+our subset GRemoteActionGroupAncestry is export of Mu
+  where GRemoteActionGroup | GObject;
+
+class GIO::RemoteActionGroup does GIO::Roles::RemoteActionGroup {
+
+  submethod BUILD (:$group) {
+    self.setGRemoteActionGroup($group) if $group;
+  }
+
+  method setGRemoteActionGroup (GRemoteActionGroupAncestry $_) {
+    my $to-parent;
+
+    $!rag = do {
+      when GRemoteActionGroup {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GRemoteActionGroup, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GRemoteActionGroupAncestry $group, :$ref = True) {
+    return Nil unless $group;
+
+    my $o = self.bless( :$group );
+    $o.ref if $ref;
+    $o;
+  }
+
+}
+
 
 ### /usr/include/glib-2.0/gio/gremoteactiongroup.h
 
 sub g_remote_action_group_activate_action_full (
   GRemoteActionGroup $remote,
-  Str $action_name,
-  GVariant $parameter,
-  GVariant $platform_data
+  Str                $action_name,
+  GVariant           $parameter,
+  GVariant           $platform_data
 )
   is native(gio)
   is export
@@ -76,9 +114,9 @@ sub g_remote_action_group_activate_action_full (
 
 sub g_remote_action_group_change_action_state_full (
   GRemoteActionGroup $remote,
-  Str $action_name,
-  GVariant $value,
-  GVariant $platform_data
+  Str                $action_name,
+  GVariant           $value,
+  GVariant           $platform_data
 )
   is native(gio)
   is export
@@ -89,3 +127,9 @@ sub g_remote_action_group_get_type ()
   is native(gio)
   is export
 { * }
+
+# our %GIO::RemoteActionGroup::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::RemoteActionGroup::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_remote_action_group_');
+# }
