@@ -13,10 +13,10 @@ use GIO::Raw::Structs;
 unit package GIO::Raw::Proxy;
 
 sub g_proxy_connect (
-  GProxy $proxy,
-  GIOStream $connection,
-  GProxyAddress $proxy_address,
-  GCancellable $cancellable,
+  GProxy                  $proxy,
+  GIOStream               $connection,
+  GProxyAddress           $proxy_address,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GIOStream
@@ -25,20 +25,20 @@ sub g_proxy_connect (
 { * }
 
 sub g_proxy_connect_async (
-  GProxy $proxy,
-  GIOStream $connection,
-  GProxyAddress $proxy_address,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GProxy              $proxy,
+  GIOStream           $connection,
+  GProxyAddress       $proxy_address,
+  GCancellable        $cancellable,
+                      &callback (GProxy, GAsyncResult, gpointer),
+  gpointer            $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_proxy_connect_finish (
-  GProxy $proxy,
-  GAsyncResult $result,
+  GProxy                  $proxy,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns GIOStream
