@@ -8,12 +8,10 @@ use GIO::Raw::PollableOutputStream;
 
 use GLib::Source;
 
-role GIO::Roles::PollableOutputStream {
-  has GPollableOutputStream $!pos;
+use GLib::Roles::Object;
 
-  submethod BUILD (:$pollable) {
-    $!pos = $pollable if $pollable;
-  }
+role GIO::Roles::PollableOutputStream does GLib::Roles::Object {
+  has GPollableOutputStream $!pos;
 
   method roleInit-PollableOutputStream is also<roleInit_PollableOutputStream> {
     return if $!pos;
@@ -25,12 +23,6 @@ role GIO::Roles::PollableOutputStream {
   method GIO::Raw::Definitions::GPollableOutputStream
     is also<GPollableOutputStream>
   { $!pos }
-
-  method new-pollableoutputstream-obj (GPollableOutputStream $pollable)
-    is also<new_pollableoutputstream_obj>
-  {
-    $pollable ?? self.bless( :$pollable ) !! Nil;
-  }
 
   method can_poll is also<can-poll> {
     so g_pollable_output_stream_can_poll($!pos);
@@ -45,7 +37,7 @@ role GIO::Roles::PollableOutputStream {
     my $s = g_pollable_output_stream_create_source($!pos, $cancellable);
 
     $s ??
-      ( $raw ?? $s !! GLib::Source.new($s) )
+      ( $raw ?? $s !! GLib::Source.new($s, :!ref) )
       !!
       Nil;
   }
@@ -88,19 +80,19 @@ role GIO::Roles::PollableOutputStream {
 
   multi method writev_nonblocking (
                             @vectors,
-    GCancellable()          $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error       = gerror,
+    CArray[Pointer[GError]] $error        = gerror,
+    GCancellable()          :$cancellable = GCancellable,
   ) {
-    my $rv = samewith(
-      GLib::Roles::TypedBuffer[GOutputVector].new(@vectors).p,
-      @vectors.elems,
-      $,
-      $cancellable,
-      $error,
-      :all
+    return-with-all(
+      samewith(
+        GLib::Roles::TypedBuffer[GOutputVector].new(@vectors).p,
+        @vectors.elems,
+        $,
+        $cancellable,
+        $error,
+        :all
+      )
     );
-
-    $rv[0] ?? $rv[1] !! Nil;
   }
   multi method writev_nonblocking (
     Pointer                 $vectors,
@@ -110,7 +102,7 @@ role GIO::Roles::PollableOutputStream {
     CArray[Pointer[GError]] $error         = gerror,
                             :$all          = False
   ) {
-    my gsize ($n, $bw) = ($n_vectors, $bw);
+    my gsize ($n, $bw) = ($n_vectors, 0);
 
     clear_error;
     my $rv = g_pollable_output_stream_writev_nonblocking(
@@ -124,6 +116,43 @@ role GIO::Roles::PollableOutputStream {
     set_error($error);
     $bytes_written = $bw;
     $all ?? $rv !! ($rv, $bytes_written);
+  }
+
+}
+
+
+our subset GPollableOutputStreamAncestry is export of Mu
+  where GPollableOutputStream | GObject;
+
+class GIO::PollableOutputStream does GIO::Roles::PollableOutputStream {
+
+  submethod BUILD (:$pollable) {
+    self.setGPollableOutputStream($pollable) if $pollable;
+  }
+
+  method setGPollableOutputStream (GPollableOutputStreamAncestry $_) {
+    my $to-parent;
+
+    $!pos = do {
+      when GPollableOutputStream {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GPollableOutputStream, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GPollableOutputStreamAncestry $pollable, :$ref = True) {
+    return Nil unless $pollable;
+
+    my $o = self.bless( :$pollable );
+    $o.ref if $ref;
+    $o
   }
 
 }
