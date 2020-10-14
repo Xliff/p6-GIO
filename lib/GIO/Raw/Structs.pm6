@@ -8,26 +8,37 @@ use GIO::Raw::Definitions;
 
 unit package GIO::Raw::Structs;
 
+sub resolve-buffer ($_, $cn = '') is rw {
+  when CArray       { cast( Pointer, $_ )                    }
+  when Str          { cast( Pointer, explicitly-manage($_) ) }
+  when Pointer      { $_                                     }
+  when .defined.not { Pointer                                }
+
+  default      { die "Unknown type '{ .^name }' used for { $cn }.buffer!" }
+}
+
 class GInputVector  is repr('CStruct') does GLib::Roles::Pointers is export {
   has Pointer       $.buffer;
   has gssize        $.size;
 
   submethod BUILD (:$buffer, :$!size) {
-    $!buffer := cast( Pointer, explicitly-manage($buffer) ) if $buffer ~~ Str;
+    $!buffer := resolve-buffer($buffer, ::?CLASS.^shortname);
   }
 
-  method new ($buffer, $size) { self.bless(:$buffer, :$size) }
+  multi method new ($buffer, $size) { self.bless(:$buffer, :$size) }
+  multi method new                  { self.bless(bsize => 0)       }
 }
 
 class GOutputVector is repr('CStruct') does GLib::Roles::Pointers is export {
   has Pointer       $.buffer;
   has gssize        $.size;
 
-  submethod BUILD (:$buffer, :$!size) {
-    $!buffer := cast( Pointer, explicitly-manage($buffer) ) if $buffer ~~ Str;
+  submethod BUILD (:$buffer, Int() :$!size) {
+    $!buffer := resolve-buffer($buffer, ::?CLASS.^shortname);
   }
 
-  method new ($buffer, $size) { self.bless(:$buffer, :$size) }
+  multi method new ($buffer, $size) { self.bless(:$buffer, :$size) }
+  multi method new                  { self.bless(size => 0)        }
 }
 
 class GSocketControlMessage is repr('CStruct') does GLib::Roles::Pointers is export {
