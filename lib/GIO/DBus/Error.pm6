@@ -10,14 +10,10 @@ use GIO::DBus::Raw::Types;
 use GIO::DBus::Raw::Error;
 
 use GLib::Roles::TypedBuffer;
+use GLib::Roles::StaticClass;
 
 class GIO::DBus::Error {
-
-  method new (|) {
-    warn 'GIO::DBus::Error is a static class and does not need instantiation.';
-
-    GIO::DBus::Error;
-  }
+  also does GLib::Roles::StaticClass;
 
   method encode_gerror (GError $error) is also<encode-gerror> {
     g_dbus_error_encode_gerror($error);
@@ -52,7 +48,7 @@ class GIO::DBus::Error {
     is also<register-error>
   {
     my GQuark $ed = $error_domain;
-    my gint $ec = $error_code;
+    my gint   $ec = $error_code;
 
     g_dbus_error_register_error($ed, $ec, $dbus_error_name);
   }
@@ -69,7 +65,7 @@ class GIO::DBus::Error {
     is also<unregister-error>
   {
     my GQuark $ed = $error_domain;
-    my gint $ec = $error_code;
+    my gint   $ec = $error_code;
 
     g_dbus_error_unregister_error($ed, $ec, $dbus_error_name);
   }
@@ -79,7 +75,7 @@ class GIO::DBus::Error {
   { * }
 
   multi method set_dbus_error (
-    $error is rw,
+          $error is rw,
     Str() $dbus_error_name,
     Str() $dbus_error_message,
     Str() $dbus_error_prefix,
@@ -92,9 +88,9 @@ class GIO::DBus::Error {
   }
   multi method set_dbus_error (
     CArray[Pointer[GError]] $error,
-    Str() $dbus_error_name,
-    Str() $dbus_error_message,
-    Str() $dbus_error_prefix
+    Str()                   $dbus_error_name,
+    Str()                   $dbus_error_message,
+    Str()                   $dbus_error_prefix
   ) {
     g_dbus_error_set_dbus_error (
       $error,
@@ -111,22 +107,22 @@ class GIO::DBus::Error {
 
   multi method register_error_domain (
     Str $error_domain_quark_name,
-    @entries,
+        @entries,
   ) {
     my $b = GLib::Roles::TypedBuffer[GDBusErrorEntry].new(@entries);
     samewith($error_domain_quark_name, $b);
   }
   multi method register_error_domain (
-    Str $error_domain_quark_name,
+    Str                                       $error_domain_quark_name,
     GLib::Roles::TypedBuffer[GDBusErrorEntry] $b
   ) {
     samewith($error_domain_quark_name, $, $b.p,  $b.elems);
   }
   multi register_error_domain (
-    Str $error_domain_quark_name,
-    $quark_volatile is rw,
-    Pointer $entries,               # const GDBusErrorEntry *entries
-    Int() $num_entries
+    Str     $error_domain_quark_name,
+            $quark_volatile is rw,
+    Pointer $entries,                 # const GDBusErrorEntry *entries
+    Int()   $num_entries
   ) {
     my guint $n = $num_entries;
     my gsize $q = 0;
