@@ -7,16 +7,14 @@ use GIO::Raw::Types;
 
 use GLib::Value;
 
-role GIO::Roles::TlsServerConnection {
-  has GTlsServerConnection $!tsc;
+use GLib::Roles::Object;
 
-  submethod BUILD (:$server-connection) {
-    $!tsc = $server-connection;
-  }
+role GIO::Roles::TlsServerConnection does GLib::Roles::Object {
+  has GTlsServerConnection $!tsc;
 
   method roleInit-TlsServerConnection is also<roleInit_TlsServerConnection> {
     return if $!tsc;
-    
+
     my \i = findProperImplementor(self.^attributes);
     $!tsc = cast( GTlsServerConnection, i.get_value(self) );
   }
@@ -24,30 +22,6 @@ role GIO::Roles::TlsServerConnection {
   method GIO::Raw::Definitions::GTlsServerConnection
     is also<GTlsServerConnection>
   { $!tsc }
-
-  proto method new-tlsserverconnection-obj (|)
-      is also<new_tlsserverconnection_obj>
-  { * }
-
-  multi method new-tlsserverconnection-obj (
-    GTlsServerConnection $server-connection
-  ) {
-    self.bless( :$server-connection )
-  }
-  multi method new-tlsserverconnection-obj (
-    GIOStream() $base,
-    GTlsCertificate() $certificate,
-    CArray[Pointer[GError]] $error = gerror
-  ) {
-    clear_error;
-    my $server-connection = g_tls_server_connection_new(
-      $base,
-      $certificate,
-      $error
-    );
-    set_error($error);
-    self.bless( :$server-connection );
-  }
 
   # Type: GTlsAuthenticationMode
   method authentication-mode is rw  is also<authentication_mode> {
@@ -74,6 +48,58 @@ role GIO::Roles::TlsServerConnection {
 
 }
 
+our subset GTlsServerConnectionAncestry is export of Mu
+  where GTlsServerConnection | GObject;
+
+class GIO::TlsServerConnection does GIO::Roles::TlsServerConnection {
+
+  submethod BUILD (:$server-connection) {
+    self.setGTlsServerConnection($server-connection) if $server-connection;
+  }
+
+  method setGTlsServerConnection (GTlsServerConnectionAncestry $_) {
+    my $to-parent;
+
+    $!tsc = do {
+      when GTlsServerConnection {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GTlsServerConnection, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  multi method new (
+    GTlsServerConnectionAncestry $server-connection,
+                                 :$ref               = True
+  ) {
+    return Nil unless $server-connection;
+
+    my $o = self.bless( :$server-connection );
+    $o.ref if $ref;
+    $o;
+  }
+  multi method new (
+    GIOStream()             $base,
+    GTlsCertificate()       $certificate,
+    CArray[Pointer[GError]] $error        = gerror
+  ) {
+    clear_error;
+    my $server-connection = g_tls_server_connection_new(
+      $base,
+      $certificate,
+      $error
+    );
+    set_error($error);
+    $server-connection ?? self.bless( :$server-connection ) !! Nil;
+  }
+}
+
 sub g_tls_server_connection_get_type ()
   returns GType
   is native(gio)
@@ -81,11 +107,17 @@ sub g_tls_server_connection_get_type ()
 { * }
 
 sub g_tls_server_connection_new (
-  GIOStream $base_io_stream,
-  GTlsCertificate $certificate,
+  GIOStream               $base_io_stream,
+  GTlsCertificate         $certificate,
   CArray[Pointer[GError]] $error
 )
   returns GIOStream
   is native(gio)
   is export
 { * }
+
+# our %GIO::Roles::TlsServerConnection::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::Roles::TlsServerConnection::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_tls_server_connection_');
+# }
