@@ -8,8 +8,8 @@ use GIO::DBus::Raw::Types;
 unit package GIO::DBus::Raw::Message;
 
 sub g_dbus_message_bytes_needed (
-  Blob $blob,
-  gsize $blob_len,
+  Blob                    $blob,
+  gsize                   $blob_len,
   CArray[Pointer[GError]] $error
 )
   returns gssize
@@ -18,7 +18,7 @@ sub g_dbus_message_bytes_needed (
 { * }
 
 sub g_dbus_message_copy (
-  GDBusMessage $message,
+  GDBusMessage            $message,
   CArray[Pointer[GError]] $error
 )
   returns GDBusMessage
@@ -33,7 +33,7 @@ sub g_dbus_message_get_arg0 (GDBusMessage $message)
 { * }
 
 sub g_dbus_message_get_header (
-  GDBusMessage $message,
+  GDBusMessage            $message,
   GDBusMessageHeaderField $header_field
 )
   returns GVariant
@@ -71,9 +71,9 @@ sub g_dbus_message_new ()
 { * }
 
 sub g_dbus_message_new_from_blob (
-  Blob $blob,
-  gsize $blob_len,
-  GDBusCapabilityFlags $capabilities,
+  Blob                    $blob,
+  gsize                   $blob_len,
+  GDBusCapabilityFlags    $capabilities,
   CArray[Pointer[GError]] $error
 )
   returns GDBusMessage
@@ -94,8 +94,8 @@ sub g_dbus_message_new_method_call (
 
 sub g_dbus_message_new_method_error_literal (
   GDBusMessage $method_call_message,
-  Str $error_name,
-  Str $error_message
+  Str          $error_name,
+  Str          $error_message
 )
   returns GDBusMessage
   is native(gio)
@@ -132,18 +132,18 @@ sub g_dbus_message_print (GDBusMessage $message, guint $indent)
 { * }
 
 sub g_dbus_message_set_header (
-  GDBusMessage $message,
+  GDBusMessage            $message,
   GDBusMessageHeaderField $header_field,
-  GVariant $value
+  GVariant                $value
 )
   is native(gio)
   is export
 { * }
 
 sub g_dbus_message_to_blob (
-  GDBusMessage $message,
-  gsize $out_size is rw,
-  GDBusCapabilityFlags $capabilities,
+  GDBusMessage            $message,
+  gsize                   $out_size is rw,
+  GDBusCapabilityFlags    $capabilities,
   CArray[Pointer[GError]] $error
 )
   returns CArray[Str]
@@ -152,7 +152,7 @@ sub g_dbus_message_to_blob (
 { * }
 
 sub g_dbus_message_to_gerror (
-  GDBusMessage $message,
+  GDBusMessage            $message,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -256,7 +256,7 @@ sub g_dbus_message_set_body (GDBusMessage $message, GVariant $body)
 { * }
 
 sub g_dbus_message_set_byte_order (
-  GDBusMessage $message,
+  GDBusMessage          $message,
   GDBusMessageByteOrder $byte_order
 )
   is native(gio)
@@ -289,7 +289,7 @@ sub g_dbus_message_set_member (GDBusMessage $message, Str $value)
 { * }
 
 sub g_dbus_message_set_message_type (
-  GDBusMessage $message,
+  GDBusMessage     $message,
   GDBusMessageType $type
 )
   is native(gio)
@@ -328,7 +328,7 @@ sub g_dbus_message_set_signature (GDBusMessage $message, Str $value)
 
 sub g_dbus_message_set_unix_fd_list (
   GDBusMessage $message,
-  GUnixFDList $fd_list
+  GUnixFDList  $fd_list
 )
   is native(gio)
   is export
