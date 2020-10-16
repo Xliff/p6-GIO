@@ -91,8 +91,8 @@ sub g_dbus_method_invocation_get_user_data (GDBusMethodInvocation $invocation)
 
 sub g_dbus_method_invocation_return_dbus_error (
   GDBusMethodInvocation $invocation,
-  Str $error_name,
-  Str $error_message
+  Str                   $error_name,
+  Str                   $error_message
 )
   is native(gio)
   is export
@@ -100,16 +100,16 @@ sub g_dbus_method_invocation_return_dbus_error (
 
 sub g_dbus_method_invocation_return_error_literal (
   GDBusMethodInvocation $invocation,
-  GQuark $domain,
-  gint $code,
-  Str $message
+  GQuark                $domain,
+  gint                  $code,
+  Str                   $message
 )
   is native(gio)
   is export
 { * }
 
 sub g_dbus_method_invocation_return_gerror (
-  GDBusMethodInvocation $invocation,
+  GDBusMethodInvocation   $invocation,
   CArray[Pointer[GError]] $error
 )
   is native(gio)
@@ -118,7 +118,7 @@ sub g_dbus_method_invocation_return_gerror (
 
 sub g_dbus_method_invocation_return_value (
   GDBusMethodInvocation $invocation,
-  GVariant $parameters
+  GVariant              $parameters
 )
   is native(gio)
   is export
@@ -126,15 +126,15 @@ sub g_dbus_method_invocation_return_value (
 
 sub g_dbus_method_invocation_return_value_with_unix_fd_list (
   GDBusMethodInvocation $invocation,
-  GVariant $parameters,
-  GUnixFDList $fd_list
+  GVariant              $parameters,
+  GUnixFDList           $fd_list
 )
   is native(gio)
   is export
 { * }
 
 sub g_dbus_method_invocation_take_error (
-  GDBusMethodInvocation $invocation,
+  GDBusMethodInvocation   $invocation,
   CArray[Pointer[GError]] $error
 )
   is native(gio)
