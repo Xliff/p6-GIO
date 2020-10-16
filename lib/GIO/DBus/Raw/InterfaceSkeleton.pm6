@@ -8,9 +8,9 @@ use GIO::DBus::Raw::Types;
 unit package GIO::DBus::Raw::InterfaceSkeleton;
 
 sub g_dbus_interface_skeleton_export (
-  GDBusInterfaceSkeleton $interface,
-  GDBusConnection $connection,
-  Str $object_path,
+  GDBusInterfaceSkeleton  $interface,
+  GDBusConnection         $connection,
+  Str                     $object_path,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -75,7 +75,7 @@ sub g_dbus_interface_skeleton_get_vtable (GDBusInterfaceSkeleton $interface)
 
 sub g_dbus_interface_skeleton_has_connection (
   GDBusInterfaceSkeleton $interface,
-  GDBusConnection $connection
+  GDBusConnection        $connection
 )
   returns uint32
   is native(gio)
@@ -89,7 +89,7 @@ sub g_dbus_interface_skeleton_unexport (GDBusInterfaceSkeleton $interface)
 
 sub g_dbus_interface_skeleton_unexport_from_connection (
   GDBusInterfaceSkeleton $interface,
-  GDBusConnection $connection
+  GDBusConnection        $connection
 )
   is native(gio)
   is export
@@ -102,7 +102,7 @@ sub g_dbus_interface_skeleton_get_flags (GDBusInterfaceSkeleton $interface)
 { * }
 
 sub g_dbus_interface_skeleton_set_flags (
-  GDBusInterfaceSkeleton $interface,
+  GDBusInterfaceSkeleton      $interface,
   GDBusInterfaceSkeletonFlags $flags
 )
   is native(gio)
