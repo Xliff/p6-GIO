@@ -22,7 +22,7 @@ class GIO::DBus::AuthObserver {
     self.setGDBusAuthObserver($observer) if $observer;
   }
 
-  method setGDBusAuthObserver (GDBusAuthObserverAncestry $_) {
+  method setGDBusAuthObserver (GDBusAuthObeserverAncestry $_) {
      my $to-parent;
 
      $!dao = do {
@@ -43,7 +43,7 @@ class GIO::DBus::AuthObserver {
     is also<GDBusAuthObserver>
   { $!dao }
 
-  multi method new (GDBusAuthObserver $observer, :$ref = True) {
+  multi method new (GDBusAuthObeserverAncestry $observer, :$ref = True) {
     return Nil unless $observer;
 
     my $o = self.bless( :$observer );
@@ -53,7 +53,7 @@ class GIO::DBus::AuthObserver {
   multi method new {
     my $observer = g_dbus_auth_observer_new();
 
-    $o ?? self.bless( :$observer ) !! Nil;
+    $observer ?? self.bless( :$observer ) !! Nil;
   }
 
   # Is originally:
