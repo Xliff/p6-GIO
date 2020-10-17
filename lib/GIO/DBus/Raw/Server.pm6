@@ -38,11 +38,11 @@ sub g_dbus_server_is_active (GDBusServer $server)
 { * }
 
 sub g_dbus_server_new_sync (
-  Str $address,
-  GDBusServerFlags $flags,
-  Str $guid,
-  GDBusAuthObserver $observer, 
-  GCancellable $cancellable,
+  Str                     $address,
+  GDBusServerFlags        $flags,
+  Str                     $guid,
+  GDBusAuthObserver       $observer,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GDBusServer
