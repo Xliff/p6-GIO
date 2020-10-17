@@ -978,7 +978,32 @@ sub test-writev-empty-vectors {
   }
 }
 
-# Continue from line 1339
+sub test-writev-too-big-vectors {
+  subtest 'WriteV, Too Big Vectors', {
+    my $iostream;
+    my $buffer    = Pointer[uint8].new(1);
+    my @vectors   = GOutputVector.new($buffer, G_MAXSIZE / 2) xx 3;
+    my $file      = GIO::File.new_tmp('g_file_writev_XXXXXX', $iostream);
+
+    ok  no-error,                                       'No error generating tmpfile name';
+    ok  $iostream,                                      'IOStream returned from .new_tmp is defined';
+
+    my $ostream = $iostream.get-output-stream;
+    my $ubw     = $ostream.writev-all(@vectors);
+    ok  $ERROR,                                         'Error detected during call to .writev-all';
+    #is  $ERROR.domain, $G_IO_ERROR,                     'Error is in the G_IO_ERROR domain';
+    is  $ERROR.code,   G_IO_ERROR_INVALID_ARGUMENT.Int, 'Error code is G_IO_ERROR_INVALID_ARGUMENT';
+    # cw: Not checking bytes_writte == 0, due to the way this API works as opposed to C
+    nok $ubw.defined,                               'Call to .writev-all returned no defined values';
+
+    my  ($res, $contents, $length) = ( $iostream.close );
+    ok  no-error,                                   'No error detected when closing iostream';
+    ok  $res,                                       '.close operation returned True';
+    ok  compare-buffer($contents, $length),         'Buffer comparison succeeded';
+
+    .delete && .unref with $file;
+  }
+}
 
 # cw: -XXX- 20201013
 #
@@ -1037,3 +1062,4 @@ test-writev;
 test-writev-no-bytes-written;
 test-writev-no-vectors;
 test-writev-empty-vectors;
+test-writev-too-big-vectors;
