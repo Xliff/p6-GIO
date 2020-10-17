@@ -56,14 +56,14 @@ sub g_dbus_is_unique_name (Str $string)
 
 # GDBus Name Owning
 sub g_bus_own_name (
-  GBusType $bus_type,
-  Str $name,
+  GBusType           $bus_type,
+  Str                $name,
   GBusNameOwnerFlags $flags,
-  &bus_acquired_handler (GDBusConnection, Str, Pointer),
-  &name_acquired_handler (GDBusConnection, Str, Pointer),
-  &name_lost_handler (GDBusConnection, Str, Pointer),
-  gpointer $user_data,
-  GDestroyNotify $user_data_free_func
+                     &bus_acquired_handler  (GDBusConnection, Str, Pointer),
+                     &name_acquired_handler (GDBusConnection, Str, Pointer),
+                     &name_lost_handler     (GDBusConnection, Str, Pointer),
+  gpointer           $user_data,
+  GDestroyNotify     $user_data_free_func
 )
   returns guint
   is native(gio)
@@ -71,13 +71,13 @@ sub g_bus_own_name (
 { * }
 
 sub g_bus_own_name_on_connection (
-  GDBusConnection $connection,
-  Str $name,
+  GDBusConnection    $connection,
+  Str                $name,
   GBusNameOwnerFlags $flags,
-  &name_acquired_handler (GDBusConnection, Str, Pointer),
-  &name_lost_handler (GDBusConnection, Str, Pointer),
-  gpointer $user_data,
-  GDestroyNotify $user_data_free_func
+                     &name_acquired_handler (GDBusConnection, Str, Pointer),
+                     &name_lost_handler     (GDBusConnection, Str, Pointer),
+  gpointer           $user_data,
+  GDestroyNotify     $user_data_free_func
 )
   returns guint
   is native(gio)
@@ -85,11 +85,11 @@ sub g_bus_own_name_on_connection (
 { * }
 
 sub g_bus_own_name_on_connection_with_closures (
-  GDBusConnection $connection,
-  Str $name,
+  GDBusConnection    $connection,
+  Str                $name,
   GBusNameOwnerFlags $flags,
-  GClosure $name_acquired_closure,
-  GClosure $name_lost_closure
+  GClosure           $name_acquired_closure,
+  GClosure           $name_lost_closure
 )
   returns guint
   is native(gio)
@@ -97,12 +97,12 @@ sub g_bus_own_name_on_connection_with_closures (
 { * }
 
 sub g_bus_own_name_with_closures (
-  GBusType $bus_type,
-  Str $name,
+  GBusType           $bus_type,
+  Str                $name,
   GBusNameOwnerFlags $flags,
-  GClosure $bus_acquired_closure,
-  GClosure $name_acquired_closure,
-  GClosure $name_lost_closure
+  GClosure           $bus_acquired_closure,
+  GClosure           $name_acquired_closure,
+  GClosure           $name_lost_closure
 )
   returns guint
   is native(gio)
@@ -121,13 +121,13 @@ sub g_bus_unwatch_name (guint $watcher_id)
 
 # GDBus Name watching
 sub g_bus_watch_name (
-  GBusType $bus_type,
-  Str $name,
+  GBusType             $bus_type,
+  Str                  $name,
   GBusNameWatcherFlags $flags,
-  &name_appeared_handler (GDBusConnection, Str, Str, Pointer),
-  &name_vanished_handler (GDBusConnection, Str, Pointer),
-  gpointer $user_data,
-  GDestroyNotify $user_data_free_func
+                       &name_appeared_handler (GDBusConnection, Str, Str, Pointer),
+                       &name_vanished_handler (GDBusConnection, Str, Pointer),
+  gpointer             $user_data,
+  GDestroyNotify       $user_data_free_func
 )
   returns guint
   is native(gio)
@@ -135,13 +135,13 @@ sub g_bus_watch_name (
 { * }
 
 sub g_bus_watch_name_on_connection (
-  GDBusConnection $connection,
-  Str $name,
+  GDBusConnection      $connection,
+  Str                  $name,
   GBusNameWatcherFlags $flags,
-  &name_appeared_handler (GDBusConnection, Str, Str, Pointer),
-  &name_vanished_handler (GDBusConnection, Str, Pointer),
-  gpointer $user_data,
-  GDestroyNotify $user_data_free_func
+                       &name_appeared_handler (GDBusConnection, Str, Str, Pointer),
+                       &name_vanished_handler (GDBusConnection, Str, Pointer),
+  gpointer             $user_data,
+  GDestroyNotify       $user_data_free_func
 )
   returns guint
   is native(gio)
@@ -149,11 +149,11 @@ sub g_bus_watch_name_on_connection (
 { * }
 
 sub g_bus_watch_name_on_connection_with_closures (
-  GDBusConnection $connection,
-  Str $name,
+  GDBusConnection      $connection,
+  Str                  $name,
   GBusNameWatcherFlags $flags,
-  GClosure $name_appeared_closure,
-  GClosure $name_vanished_closure
+  GClosure             $name_appeared_closure,
+  GClosure             $name_vanished_closure
 )
   returns guint
   is native(gio)
@@ -161,11 +161,11 @@ sub g_bus_watch_name_on_connection_with_closures (
 { * }
 
 sub g_bus_watch_name_with_closures (
-  GBusType $bus_type,
-  Str $name,
+  GBusType             $bus_type,
+  Str                  $name,
   GBusNameWatcherFlags $flags,
-  GClosure $name_appeared_closure,
-  GClosure $name_vanished_closure
+  GClosure             $name_appeared_closure,
+  GClosure             $name_vanished_closure
 )
   returns guint
   is native(gio)

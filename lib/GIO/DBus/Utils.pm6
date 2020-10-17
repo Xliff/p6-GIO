@@ -3,23 +3,20 @@ use v6.c;
 use Method::Also;
 
 use GIO::Raw::Types;
-use GIO::DBus::Raw::Types;
-
 use GIO::DBus::Raw::Utils;
 
+use GLib::Roles::StaticClass;
+
 class GIO::DBus::Utils {
-
-  method new (|) {
-    warn 'GIO::DBus::Utils is a static class and does not need instantiation';
-
-    GIO::DBus::Utils;
-  }
+  also does GLib::Roles::StaticClass;
 
   method generate_guid is also<generate-guid> {
     g_dbus_generate_guid();
   }
 
-  method gvalue_to_gvariant (GValue() $gvalue, Int() $type) is also<gvalue-to-gvariant> {
+  method gvalue_to_gvariant (GValue() $gvalue, Int() $type)
+    is also<gvalue-to-gvariant>
+  {
     my GVariantType $t = $type;
 
     g_dbus_gvalue_to_gvariant($gvalue, $t);
@@ -59,16 +56,16 @@ class GIO::DBus::Utils {
   }
 
   method own_name (
-    Int() $bus_type,
-    Str() $name,
-    Int() $flags,
-    &bus_acquired_handler,
-    &name_acquired_handler,
-    &name_lost_handler,
-    gpointer $user_data                 = gpointer,
-    GDestroyNotify $user_data_free_func = gpointer
+    Int()          $bus_type,
+    Str()          $name,
+    Int()          $flags                  = 0,
+                   &bus_acquired_handler   = Callable,
+                   &name_acquired_handler  = Callable,
+                   &name_lost_handler      = Callable,
+    gpointer       $user_data              = gpointer,
+    GDestroyNotify &user_data_free_func    = Callable
   ) {
-    my GBusType $b = $bus_type;
+    my GBusType           $b = $bus_type;
     my GBusNameOwnerFlags $f = $flags;
 
     g_bus_own_name(
@@ -79,18 +76,18 @@ class GIO::DBus::Utils {
       &name_acquired_handler,
       &name_lost_handler,
       $user_data,
-      $user_data_free_func
+      &user_data_free_func
     );
   }
 
   method own_name_on_connection (
     GDBusConnection() $connection,
-    Str() $name,
-    Int() $flags,
-    &name_acquired_handler,
-    &name_lost_handler,
-    gpointer $user_data                 = gpointer,
-    GDestroyNotify $user_data_free_func = gpointer
+    Str()             $name,
+    Int()             $flags,
+                      &name_acquired_handler = Callable,
+                      &name_lost_handler     = Callable,
+    gpointer          $user_data             = gpointer,
+                      &user_data_free_func   = Callable
   ) {
     my GBusNameOwnerFlags $f = $flags;
 
@@ -101,16 +98,16 @@ class GIO::DBus::Utils {
       &name_acquired_handler,
       &name_lost_handler,
       $user_data,
-      $user_data_free_func
+      &user_data_free_func
     );
   }
 
   method own_name_on_connection_with_closures (
     GDBusConnection() $connection,
-    Str() $name,
-    Int() $flags,
-    GClosure() $name_acquired_closure,
-    GClosure() $name_lost_closure
+    Str()             $name,
+    Int()             $flags                 = 0,
+    GClosure()        $name_acquired_closure = GClosure,
+    GClosure()        $name_lost_closure     = GClosure
   ) {
     my GBusNameOwnerFlags $f = $flags;
 
@@ -124,14 +121,14 @@ class GIO::DBus::Utils {
   }
 
   method own_name_with_closures (
-    Int() $bus_type,
-    Str() $name,
-    Int() $flags,
-    GClosure() $bus_acquired_closure,
-    GClosure() $name_acquired_closure,
-    GClosure() $name_lost_closure
+    Int()      $bus_type,
+    Str()      $name,
+    Int()      $flags                 = 0,
+    GClosure() $bus_acquired_closure  = GClosure,
+    GClosure() $name_acquired_closure = GClosure,
+    GClosure() $name_lost_closure     = GClosure
   ) {
-    my GBusType $b = $bus_type;
+    my GBusType           $b = $bus_type;
     my GBusNameOwnerFlags $f = $flags;
 
     g_bus_own_name_with_closures(
@@ -157,13 +154,13 @@ class GIO::DBus::Utils {
   }
 
   method watch_name (
-    Int() $bus_type,
-    Str() $name,
-    Int() $flags,
-    &name_appeared_handler,
-    &name_vanished_handler,
-    gpointer $user_data                 = gpointer,
-    GDestroyNotify $user_data_free_func = gpointer
+    Int()          $bus_type,
+    Str()          $name,
+    Int()          $flags                  = 0,
+                   &name_appeared_handler  = Callable,
+                   &name_vanished_handler  = Callable,
+    gpointer       $user_data              = gpointer,
+                   &user_data_free_func    = Callable
   ) {
     my GBusType $b = $bus_type;
     my GBusNameWatcherFlags $f = $flags;
@@ -175,18 +172,18 @@ class GIO::DBus::Utils {
       &name_appeared_handler,
       &name_vanished_handler,
       $user_data,
-      $user_data_free_func
+      &user_data_free_func
     );
   }
 
   method watch_name_on_connection (
     GDBusConnection() $connection,
-    Str() $name,
-    Int() $flags,
-    &name_appeared_handler,
-    &name_vanished_handler,
-    gpointer $user_data                 = gpointer,
-    GDestroyNotify $user_data_free_func = gpointer
+    Str()             $name,
+    Int()             $flags                  = 0,
+                      &name_appeared_handler  = Callable,
+                      &name_vanished_handler  = Callable,
+    gpointer          $user_data              = gpointer,
+                      &user_data_free_func    = Callable
   ) {
     my GBusNameWatcherFlags $f = $flags;
 
@@ -197,16 +194,16 @@ class GIO::DBus::Utils {
       &name_appeared_handler,
       &name_vanished_handler,
       $user_data,
-      $user_data_free_func
+      &user_data_free_func
     );
   }
 
   method watch_name_on_connection_with_closures (
     GDBusConnection() $connection,
-    Str() $name,
-    Int() $flags,
-    GClosure() $name_appeared_closure,
-    GClosure() $name_vanished_closure
+    Str()             $name,
+    Int()             $flags                 = 0,
+    GClosure()        $name_appeared_closure = GClosure,
+    GClosure()        $name_vanished_closure = GClosure
   ) {
     my GBusNameWatcherFlags $f = $flags;
 
@@ -220,13 +217,13 @@ class GIO::DBus::Utils {
   }
 
   method watch_name_with_closures (
-    Int() $bus_type,
-    Str() $name,
-    Int() $flags,
-    GClosure() $name_appeared_closure,
-    GClosure() $name_vanished_closure
+    Int()      $bus_type,
+    Str()      $name,
+    Int()      $flags                 = 0,
+    GClosure() $name_appeared_closure = GClosure,
+    GClosure() $name_vanished_closure = GClosure
   ) {
-    my GBusType $b = $bus_type;
+    my GBusType             $b = $bus_type;
     my GBusNameWatcherFlags $f = $flags;
 
     g_bus_watch_name_with_closures(
