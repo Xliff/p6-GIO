@@ -33,7 +33,7 @@ sub g_dbus_interface_get_object (GDBusInterface $interface)
 
 sub g_dbus_interface_set_object (
   GDBusInterface $interface,
-  GDBusObject $object
+  GDBusObject    $object
 )
   is native(gio)
   is export
