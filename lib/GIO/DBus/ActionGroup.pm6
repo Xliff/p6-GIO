@@ -90,7 +90,7 @@ sub g_dbus_action_group_get_type ()
   is export
 { * }
 
-# our %GIO::DBus::ActionGroup::ActionGroup::RAW-DEFS;
+# our %GIO::DBus::ActionGroup::RAW-DEFS;
 # for MY::.pairs {
 #   %GIO::DBus::ActionGroup::RAW-DEFS{.key} := .value
 #     if .key.starts-with('&g_dbus_action_group_');
