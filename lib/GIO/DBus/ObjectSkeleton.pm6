@@ -28,7 +28,7 @@ class GIO::DBus::ObjectSkeleton {
     my $to-parent;
 
     $!dos = do {
-      when GDBusMethodInvocation {
+      when GDBusObjectSkeleton {
         $to-parent = cast(GObject, $_);
         $_;
       }
@@ -36,12 +36,12 @@ class GIO::DBus::ObjectSkeleton {
       when GDBusObject {
         $to-parent = cast(GObject, $_);
         $!do       = $_;
-        cast(GDBusMethodInvocation, $_);
+        cast(GDBusObjectSkeleton, $_);
       }
 
       default {
         $to-parent = $_;
-        cast(GDBusMethodInvocation, $_);
+        cast(GDBusObjectSkeleton, $_);
       }
     }
 
@@ -61,9 +61,9 @@ class GIO::DBus::ObjectSkeleton {
     $o;
   }
   multi method new (Str() $object_path) {
-    my $s = g_dbus_object_skeleton_new($object_path);
+    my $skeleton = g_dbus_object_skeleton_new($object_path);
 
-    $s ?? self.bless( skeleton => $s ) !! Nil;
+    $skeleton ?? self.bless( :$skeleton ) !! Nil;
   }
 
   # Type: Str
@@ -90,7 +90,7 @@ class GIO::DBus::ObjectSkeleton {
   }
 
   # Is originally:
-  # GDBusObjectSkeleton, GDBusInterfaceSkeleton, GDBusMethodInvocation, gpointer --> gboolean
+  # GDBusObjectSkeleton, GDBusInterfaceSkeleton, GDBusObjectSkeleton, gpointer --> gboolean
   method authorize-method is also<authorize_method> {
     self.connect-authorize-method($!dos);
   }
