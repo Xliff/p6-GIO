@@ -28,8 +28,6 @@ role GIO::Roles::NetworkMonitor does GLib::Roles::Object {
     $!nm = cast( GNetworkMonitor, i.get_value(self) );
   }
 
-  method new_initable (|) { ... }
-
   method GIO::Raw::Definitions::GNetworkMonitor
     is also<GNetworkMonitor>
   { $!nm }
@@ -198,11 +196,11 @@ our subset GNetworkMonitorAncestry is export of Mu
 
 class GIO::NetworkMonitor does GIO::Roles::NetworkMonitor {
 
-  submethod BUILD (:$monitor) {
-    self.setGMonitor($monitor) if $monitor;
+  submethod BUILD (:$monitor, :$init, :$cancellable) {
+    self.setGMonitor($monitor, :$init, :$cancellable) if $monitor;
   }
 
-  method setGMonitor (GNetworkMonitorAncestry $_) {
+  method setGMonitor (GNetworkMonitorAncestry $_, :$init, :$cancellable) {
     my $to-parent;
 
     $!nm = do {
@@ -223,23 +221,15 @@ class GIO::NetworkMonitor does GIO::Roles::NetworkMonitor {
       }
     }
     self!setObject($to-parent);
-    self.roleInit-Initable;
+    self.roleInit-Initable($init, $cancellable);
   }
 
-  method new (GNetworkMonitorAncestry $monitor, :$ref = True) {
+  multi method new (GNetworkMonitorAncestry $monitor, :$ref = True) {
     return Nil unless $monitor;
 
     my $o = self.bless( :$monitor );
     $o.ref if $ref;
     $o;
-  }
-
-  method new_initable (
-    GCancellable() $cancellable = GCancellable,
-                         :$init = True
-  ) {
-    my $monitor = ...
-    self.bless( :$monitor, :$cancellable, :$init );
   }
 
 }
