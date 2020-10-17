@@ -12,29 +12,61 @@ use GLib::Value;
 use GLib::Roles::Properties;
 use GIO::DBus::Roles::Object;
 
+our subset GDBusObjectSkeletonAncestry is export of Mu
+  where GDBusObjectSkeleton | GDBusObjectAncestry;
+
 class GIO::DBus::ObjectSkeleton {
-  also does GLib::Roles::Properties;
   also does GIO::DBus::Roles::Object;
 
   has GDBusObjectSkeleton $!dos is implementor;
 
   submethod BUILD (:$skeleton) {
-    $!dos = $skeleton;
+    self.setGDBusObjectSkeleton($skeleton) if $skeleton;
+  }
 
-    self.roleInit-Object;
+  method setGDBusObjectSkeleton (GDBusObjectSkeletonAncestry $_) {
+    my $to-parent;
+
+    $!dos = do {
+      when GDBusMethodInvocation {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      when GDBusObject {
+        $to-parent = cast(GObject, $_);
+        $!do       = $_;
+        cast(GDBusMethodInvocation, $_);
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GDBusMethodInvocation, $_);
+      }
+    }
+
+    self!setObject($to-parent);
     self.roleInit-DBusObject;
   }
 
-  method GTK::Compat::TYpes::GDBusObjectSkeleton
+  method GIO::Raw::Definition::GDBusObjectSkeleton
+    is also<GDBusObjectSkeleton>
   { * }
 
-  method new (Str() $object_path) {
+  multi method new (GDBusObjectSkeleton $skeleton, :$ref = True) {
+    return Nil unless $skeleton;
+
+    my $o = self.bless( :$skeleton );
+    $o.ref if $ref;
+    $o;
+  }
+  multi method new (Str() $object_path) {
     my $s = g_dbus_object_skeleton_new($object_path);
 
     $s ?? self.bless( skeleton => $s ) !! Nil;
   }
 
-  # Type: gchar
+  # Type: Str
   method g-object-path is rw
     is also<
       g_object_path
