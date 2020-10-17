@@ -10,30 +10,55 @@ use GIO::DBus::Raw::Types;
 use GLib::Value;
 use GIO::DBus::Connection;
 
-use GLib::Roles::Properties;
+use GLib::Roles::Object;
 
-class GIO::DBus::ObjectProperty {
-  also does GLib::Roles::Properties;
+our subset GDBusObjectProxyAncestry is export of Mu
+  where GDBusObjectProxy | GObject;
+
+class GIO::DBus::ObjectProxy {
+  also does GLib::Roles::Object;
 
   has GDBusObjectProxy $!dop is implementor;
 
-  submethod BUILD (:$object-proxy) {
-    $!dop = $object-proxy;
+  method BUILD (:$object-proxy) {
+    self.setGDBusObjectProxy($object-proxy) if $object-proxy;
+  }
 
-    self.roleInit-Object;
+  method setGDBusObjectProxy (GDBusObjectProxyAncestry $_) {
+    my $to-parent;
+
+    $!dop = do {
+      when GDBusObjectProxy {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GDBusObjectProxy, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GDBusObjectProxy
     is also<GDBusObjectProxy>
   { $!dop }
 
-  method new (GDBusConnection() $connection, Str() $object_path) {
-    my $c = g_dbus_object_proxy_new($connection, $object_path);
+  multi method new (GDBusObjectProxyAncestry $object-proxy, :$ref = True) {
+    return Nil unless $object-proxy;
 
-    $c ?? self.bless( object-proxy => $c ) !! Nil;
+    my $o = self.bless( :$object-proxy );
+    $o.ref if $ref;
+    $o;
+  }
+  multi method new (GDBusConnection() $connection, Str() $object_path) {
+    my $op = g_dbus_object_proxy_new($connection, $object_path);
+
+    $op ?? self.bless( object-proxy => $op ) !! Nil;
   }
 
-  # Type: gchar
+  # Type: Str
   method g-object-path is rw
     is also<
       g_object_path
@@ -65,7 +90,7 @@ class GIO::DBus::ObjectProperty {
     my $c = g_dbus_object_proxy_get_connection($!dop);
 
     $c ??
-      ( $raw ?? $c !! GIO::DBus::Connection.new($c) )
+      ( $raw ?? $c !! GIO::DBus::Connection.new($c, :!ref) )
       !!
       Nil;
   }
@@ -95,3 +120,9 @@ sub g_dbus_object_proxy_new (GDBusConnection $connection, Str $object_path)
   is native(gio)
   is export
 { * }
+
+# our %GIO::DBus::ObjectProxy::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::DBus::ObjectProxy::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_dbus_object_proxy_');
+# }
