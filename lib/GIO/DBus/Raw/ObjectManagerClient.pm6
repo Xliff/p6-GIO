@@ -42,23 +42,33 @@ sub g_dbus_object_manager_client_get_type ()
 { * }
 
 sub g_dbus_object_manager_client_new (
-  GDBusConnection $connection,
+  GDBusConnection               $connection,
   GDBusObjectManagerClientFlags $flags,
-  Str $name,
-  Str $object_path,
-  &get_proxy_type_func (GDBusObjectManagerClient, Str, Str, gpointer --> GType),
-  gpointer $get_proxy_type_user_data,
-  GDestroyNotify $get_proxy_type_destroy_notify,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  Str                           $name,
+  Str                           $object_path,
+                                &get_proxy_type_func (
+                                  GDBusObjectManagerClient,
+                                  Str,
+                                  Str,
+                                  gpointer
+                                  --> GType
+                                ),
+  gpointer                      $get_proxy_type_user_data,
+  GDestroyNotify                $get_proxy_type_destroy_notify,
+  GCancellable                  $cancellable,
+                                &callback (
+                                  GDBusObjectManagerClient,
+                                  GAsyncResult,
+                                  gpointer
+                                ),
+  gpointer                      $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_dbus_object_manager_client_new_finish (
-  GAsyncResult $res,
+  GAsyncResult            $res,
   CArray[Pointer[GError]] $error
 )
   returns GDBusObjectManager
@@ -67,23 +77,33 @@ sub g_dbus_object_manager_client_new_finish (
 { * }
 
 sub g_dbus_object_manager_client_new_for_bus (
-  GBusType $bus_type,
+  GBusType                      $bus_type,
   GDBusObjectManagerClientFlags $flags,
-  Str $name,
-  Str $object_path,
-  &get_proxy_type_func (GDBusObjectManagerClient, Str, Str, gpointer --> GType),
-  gpointer $get_proxy_type_user_data,
-  GDestroyNotify $get_proxy_type_destroy_notify,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  Str                           $name,
+  Str                           $object_path,
+                                &get_proxy_type_func (
+                                  GDBusObjectManagerClient,
+                                  Str,
+                                  Str,
+                                  gpointer
+                                  --> GType
+                                ),
+  gpointer                      $get_proxy_type_user_data,
+  GDestroyNotify                $get_proxy_type_destroy_notify,
+  GCancellable                  $cancellable,
+                                &callback (
+                                  GDBusObjectManagerClient,
+                                  GAsyncResult,
+                                  gpointer
+                                ),
+  gpointer                      $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_dbus_object_manager_client_new_for_bus_finish (
-  GAsyncResult $res,
+  GAsyncResult            $res,
   CArray[Pointer[GError]] $error
 )
   returns GDBusObjectManagerClient
@@ -92,15 +112,21 @@ sub g_dbus_object_manager_client_new_for_bus_finish (
 { * }
 
 sub g_dbus_object_manager_client_new_for_bus_sync (
-  GBusType $bus_type,
+  GBusType                      $bus_type,
   GDBusObjectManagerClientFlags $flags,
-  Str $name,
-  Str $object_path,
-  &get_proxy_type_func (GDBusObjectManagerClient, Str, Str, gpointer --> GType),
-  gpointer $get_proxy_type_user_data,
-  GDestroyNotify $get_proxy_type_destroy_notify,
-  GCancellable $cancellable,
-  CArray[Pointer[GError]] $error
+  Str                           $name,
+  Str                           $object_path,
+                                &get_proxy_type_func (
+                                  GDBusObjectManagerClient,
+                                  Str,
+                                  Str,
+                                  gpointer
+                                  --> GType
+                                ),
+  gpointer                      $get_proxy_type_user_data,
+                                &get_proxy_type_destroy_notify (gpointer),
+  GCancellable                  $cancellable,
+  CArray[Pointer[GError]]       $error
 )
   returns GDBusObjectManagerClient
   is native(gio)
@@ -108,15 +134,21 @@ sub g_dbus_object_manager_client_new_for_bus_sync (
 { * }
 
 multi sub g_dbus_object_manager_client_new_sync (
-  GDBusConnection $connection,
+  GDBusConnection               $connection,
   GDBusObjectManagerClientFlags $flags,
-  Str $name,
-  Str $object_path,
-  &get_proxy_type_func (GDBusObjectManagerClient, Str, Str, gpointer --> GType),
-  gpointer $get_proxy_type_user_data,
-  GDestroyNotify $get_proxy_type_destroy_notify,
-  GCancellable $cancellable,
-  CArray[Pointer[GError]] $error
+  Str                           $name,
+  Str                           $object_path,
+                                &get_proxy_type_func (
+                                  GDBusObjectManagerClient,
+                                  Str,
+                                  Str,
+                                  gpointer
+                                  --> GType
+                                ),
+  gpointer                      $get_proxy_type_user_data,
+                                &get_proxy_type_destroy_notify (gpointer),
+  GCancellable                  $cancellable,
+  CArray[Pointer[GError]]       $error
 )
   returns GDBusObjectManagerClient
   is native(gio)

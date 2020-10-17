@@ -20,7 +20,7 @@ role GIO::DBus::Roles::Signals::ObjectManagerClient {
       $hid = g-connect-interface-proxy-properties-changed($obj, $signal,
         -> $, $dop, $dp, $v, $sv, $ud {
           CATCH {
-            default { $s.note($_) }
+            default { $s.note($_); .backtrace.summary.say }
           }
 
           $s.emit( [self, $dop, $dp, $v, $sv, $ud ] );
@@ -33,7 +33,7 @@ role GIO::DBus::Roles::Signals::ObjectManagerClient {
     %!signals-domc{$signal}[0];
   }
 
-  # GDBusObjectManagerClient, GDBusObjectProxy, GDBusProxy, gchar, gchar, GVariant, gpointer
+  # GDBusObjectManagerClient, GDBusObjectProxy, GDBusProxy, Str, Str, GVariant, gpointer
   method connect-interface-proxy-signal (
     $obj,
     $signal = 'interface-proxy-signal',
@@ -45,7 +45,7 @@ role GIO::DBus::Roles::Signals::ObjectManagerClient {
       $hid = g-connect-interface-proxy-signal($obj, $signal,
         -> $, $dop, $dp, $s1, $s2, $v, $ud {
           CATCH {
-            default { $s.note($_) }
+            default { $s.note($_); .backtrace.summary.say }
           }
 
           $s.emit( [self, $dop, $dp, $s1, $s2, $v, $ud ] );
@@ -62,23 +62,23 @@ role GIO::DBus::Roles::Signals::ObjectManagerClient {
 # GDBusObjectManagerClient, GDBusObjectProxy, GDBusProxy, GVariant, GStrv, gpointer
 sub g-connect-interface-proxy-properties-changed(
   Pointer $app,
-  Str $name,
-  &handler (Pointer, GDBusObjectProxy, GDBusProxy, GVariant, GStrv, Pointer),
+  Str     $name,
+          &handler (Pointer, GDBusObjectProxy, GDBusProxy, GVariant, GStrv, Pointer),
   Pointer $data,
-  uint32 $flags
+  uint32  $flags
 )
 returns uint64
 is native(gobject)
 is symbol('g_signal_connect_object')
 { * }
 
-# GDBusObjectManagerClient, GDBusObjectProxy, GDBusProxy, gchar, gchar, GVariant, gpointer
+# GDBusObjectManagerClient, GDBusObjectProxy, GDBusProxy, Str, Str, GVariant, gpointer
 sub g-connect-interface-proxy-signal(
   Pointer $app,
-  Str $name,
-  &handler (Pointer, GDBusObjectProxy, GDBusProxy, gchar, gchar, GVariant, Pointer),
+  Str     $name,
+          &handler (Pointer, GDBusObjectProxy, GDBusProxy, Str, Str, GVariant, Pointer),
   Pointer $data,
-  uint32 $flags
+  uint32  $flags
 )
 returns uint64
 is native(gobject)
