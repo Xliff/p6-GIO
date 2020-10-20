@@ -8,22 +8,22 @@ use GIO::DBus::Raw::Types;
 unit package GIO::DBus::Raw::Proxy;
 
 sub g_dbus_proxy_call (
-  GDBusProxy $proxy,
-  Str $method_name,
-  GVariant $parameters,
+  GDBusProxy     $proxy,
+  Str            $method_name,
+  GVariant       $parameters,
   GDBusCallFlags $flags,
-  gint $timeout_msec,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  gint           $timeout_msec,
+  GCancellable   $cancellable,
+                 &callback (GDBusProxy, GAsyncResult, gpointer),
+  gpointer       $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_dbus_proxy_call_finish (
-  GDBusProxy $proxy,
-  GAsyncResult $res,
+  GDBusProxy              $proxy,
+  GAsyncResult            $res,
   CArray[Pointer[GError]] $error
 )
   returns GVariant
@@ -32,12 +32,12 @@ sub g_dbus_proxy_call_finish (
 { * }
 
 sub g_dbus_proxy_call_sync (
-  GDBusProxy $proxy,
-  Str $method_name,
-  GVariant $parameters,
-  GDBusCallFlags $flags,
-  gint $timeout_msec,
-  GCancellable $cancellable,
+  GDBusProxy              $proxy,
+  Str                     $method_name,
+  GVariant                $parameters,
+  GDBusCallFlags          $flags,
+  gint                    $timeout_msec,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GVariant
@@ -46,24 +46,24 @@ sub g_dbus_proxy_call_sync (
 { * }
 
 sub g_dbus_proxy_call_with_unix_fd_list (
-  GDBusProxy $proxy,
-  Str $method_name,
-  GVariant $parameters,
+  GDBusProxy     $proxy,
+  Str            $method_name,
+  GVariant       $parameters,
   GDBusCallFlags $flags,
-  gint $timeout_msec,
-  GUnixFDList $fd_list,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  gint           $timeout_msec,
+  GUnixFDList    $fd_list,
+  GCancellable   $cancellable,
+                 &callback (GDBusProxy, GAsyncResult, gpointer),
+  gpointer       $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_dbus_proxy_call_with_unix_fd_list_finish (
-  GDBusProxy $proxy,
-  GUnixFDList $out_fd_list,
-  GAsyncResult $res,
+  GDBusProxy              $proxy,
+  GUnixFDList             $out_fd_list,
+  GAsyncResult            $res,
   CArray[Pointer[GError]] $error
 )
   returns GVariant
@@ -72,14 +72,14 @@ sub g_dbus_proxy_call_with_unix_fd_list_finish (
 { * }
 
 sub g_dbus_proxy_call_with_unix_fd_list_sync (
-  GDBusProxy $proxy,
-  Str $method_name,
-  GVariant $parameters,
-  GDBusCallFlags $flags,
-  gint $timeout_msec,
-  GUnixFDList $fd_list,
-  GUnixFDList $out_fd_list,
-  GCancellable $cancellable,
+  GDBusProxy              $proxy,
+  Str                     $method_name,
+  GVariant                $parameters,
+  GDBusCallFlags          $flags,
+  gint                    $timeout_msec,
+  GUnixFDList             $fd_list,
+  GUnixFDList             $out_fd_list,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GVariant
@@ -142,22 +142,22 @@ sub g_dbus_proxy_get_type ()
 { * }
 
 sub g_dbus_proxy_new (
-  GDBusConnection $connection,
-  GDBusProxyFlags $flags,
+  GDBusConnection    $connection,
+  GDBusProxyFlags    $flags,
   GDBusInterfaceInfo $info,
-  Str $name,
-  Str $object_path,
-  Str $interface_name,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  Str                $name,
+  Str                $object_path,
+  Str                $interface_name,
+  GCancellable       $cancellable,
+                     &callback (GDBusProxy, GAsyncResult, gpointer),
+  gpointer           $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_dbus_proxy_new_finish (
-  GAsyncResult $res,
+  GAsyncResult            $res,
   CArray[Pointer[GError]] $error
 )
   returns GDBusProxy
@@ -166,22 +166,22 @@ sub g_dbus_proxy_new_finish (
 { * }
 
 sub g_dbus_proxy_new_for_bus (
-  GBusType $bus_type,
-  GDBusProxyFlags $flags,
+  GBusType           $bus_type,
+  GDBusProxyFlags    $flags,
   GDBusInterfaceInfo $info,
-  Str $name,
-  Str $object_path,
-  Str $interface_name,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  Str                $name,
+  Str                $object_path,
+  Str                $interface_name,
+  GCancellable       $cancellable,
+                     &callback (GDBusProxy, GAsyncResult, gpointer),
+  gpointer           $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_dbus_proxy_new_for_bus_finish (
-  GAsyncResult $res,
+  GAsyncResult            $res,
   CArray[Pointer[GError]] $error
 )
   returns GDBusProxy
@@ -190,13 +190,13 @@ sub g_dbus_proxy_new_for_bus_finish (
 { * }
 
 sub g_dbus_proxy_new_for_bus_sync (
-  GBusType $bus_type,
-  GDBusProxyFlags $flags,
-  GDBusInterfaceInfo $info,
-  Str $name,
-  Str $object_path,
-  Str $interface_name,
-  GCancellable $cancellable,
+  GBusType                $bus_type,
+  GDBusProxyFlags         $flags,
+  GDBusInterfaceInfo      $info,
+  Str                     $name,
+  Str                     $object_path,
+  Str                     $interface_name,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GDBusProxy
@@ -205,13 +205,13 @@ sub g_dbus_proxy_new_for_bus_sync (
 { * }
 
 sub g_dbus_proxy_new_sync (
-  GDBusConnection $connection,
-  GDBusProxyFlags $flags,
-  GDBusInterfaceInfo $info,
-  Str $name,
-  Str $object_path,
-  Str $interface_name,
-  GCancellable $cancellable,
+  GDBusConnection         $connection,
+  GDBusProxyFlags         $flags,
+  GDBusInterfaceInfo      $info,
+  Str                     $name,
+  Str                     $object_path,
+  Str                     $interface_name,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GDBusProxy
@@ -221,8 +221,8 @@ sub g_dbus_proxy_new_sync (
 
 sub g_dbus_proxy_set_cached_property (
   GDBusProxy $proxy,
-  Str $property_name,
-  GVariant $value
+  Str        $property_name,
+  GVariant   $value
 )
   is native(gio)
   is export
@@ -246,7 +246,7 @@ sub g_dbus_proxy_set_default_timeout (GDBusProxy $proxy, gint $timeout_msec)
 { * }
 
 sub g_dbus_proxy_set_interface_info (
-  GDBusProxy $proxy,
+  GDBusProxy         $proxy,
   GDBusInterfaceInfo $info
 )
   is native(gio)
