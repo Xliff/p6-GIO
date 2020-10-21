@@ -4,8 +4,7 @@ use NativeCall;
 
 use Test;
 
-use GTK::Compat::Types;
-use GTK::Compat::FileTypes;
+use GIO::Raw::Types;
 
 use GIO::DataInputStream;
 use GIO::MemoryInputStream;
@@ -13,7 +12,7 @@ use GIO::MemoryInputStream;
 sub swap-endian ($bits, $i, :$signed = False) {
   my $b = Buf.new;
   my $s = $signed ?? '' !! 'u';
-  
+
   $b."write-{$s}int{$bits}"(0, $i);
   $b."read-{$s}int{$bits}"(0, BigEndian);
 }
