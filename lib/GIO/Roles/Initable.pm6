@@ -25,6 +25,26 @@ role GIO::Roles::Initable does GLib::Roles::Object {
     is also<GInitable>
   { $!i }
 
+  proto method new (|)
+  { * }
+
+  multi method new (
+    :$init        =  True,
+    :$cancellable =  Callable,
+    :$initable    is required,
+    *%options
+  ) {
+    self.new_initable(:$init, :$cancellable, |%options);
+  }
+  multi method new_initable (:$init = True,  :$cancellable = Callable, *%options)
+    is also<new-initable>
+  {
+    my $initable-object = self.new_object_with_properties( |%options );
+
+    $initable-object ?? self.bless( :$initable-object, :$init, :$cancellable)
+                     !! Nil;
+  }
+
   method initable_get_type is also<initable-get-type> {
     state ($n, $t);
 
@@ -38,8 +58,6 @@ role GIO::Roles::Initable does GLib::Roles::Object {
     so g_initable_init($!i, $cancellable, $error);
   }
 
-  method new_initable (|) { ... }
-
 }
 
 our subset GInitableAncestry is export of Mu
@@ -52,7 +70,11 @@ class GIO::Initable does GIO::Roles::Initable {
     self.init($cancellable)      if $init;
   }
 
-  method setGInitable (GInitableAncestry $_) {
+  method setGInitable (
+    GInitableAncestry $_,
+                      :$init,
+                      :$cancellable
+  ) {
     my $to-parent;
 
     $!i = do {
@@ -67,9 +89,10 @@ class GIO::Initable does GIO::Roles::Initable {
       }
     }
     self!setObject($to-parent);
+    self.roleInit-Initable($init, $cancellable);
   }
 
-  method new (
+  multi method new (
     GInitableAncestry $initable,
     GCancellable      :$cancellable = GCancellable,
                       :$init        = False,
@@ -80,13 +103,6 @@ class GIO::Initable does GIO::Roles::Initable {
     my $o = self.bless(:$initable, $cancellable, :$init);
     $o.ref if $ref;
     $o;
-  }
-
-  method new_initable {
-    die qq:to/DIE/;
-      .new_initable is not to be called from the Role-based object!{
-      ''} Please use the subclass constructor, if available!
-      DIE
   }
 
 }
