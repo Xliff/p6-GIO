@@ -142,7 +142,7 @@ sub icon-to-string {
   {
     my $uri = '/path/to/somewhere with whitespace.png';
     my $i = GIO::Icon.new_for_string($uri);
-    nok $ERROR, "No error when consturcting Icon with URI '{$uri}'";
+    nok $ERROR, "No error when constructing Icon with URI '{$uri}'";
 
     my $d = $i.to_string;
     ok  $*SPEC.splitdir($d) cmp «path to "somewhere with whitespace.png"»,
@@ -161,7 +161,7 @@ sub icon-to-string {
   {
     my $uri = "sftp:///path/to/somewhere.png";
     my $i   = GIO::Icon.new_for_string($uri);
-    nok $ERROR, "No error when consturcting Icon with URI '{$uri}'";
+    nok $ERROR, "No error when constructing Icon with URI '{$uri}'";
 
     my $d = $i.to_string;
     is  $uri, $d,
@@ -179,14 +179,14 @@ sub icon-to-string {
 
     my $d = $i.to_string;
     my $i2 = GIO::Icon.new_for_string($d);
-    nok $ERROR, "No error when consturcting Icon with URI '{$_}'";
+    nok $ERROR, "No error when constructing Icon with URI '{$_}'";
     ok $i.equal($i2), 'ThemeIcon and Icon from same URI, are equivalent';
   }
 
   compareEmblem(-> $a {
     my $d  = $a.to_string;
     my $i5 = GIO::Icon.new_for_string($d);
-    nok $ERROR, "No error when consturcting Icon with URI '{$d}'";
+    nok $ERROR, "No error when constructing Icon with URI '{$d}'";
 
     $i5;
   });
