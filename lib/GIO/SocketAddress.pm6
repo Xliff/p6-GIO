@@ -20,21 +20,27 @@ class GIO::SocketAddress {
   has GSocketAddress $!sa is implementor;
 
   submethod BUILD (:$address) {
-    self.setSocketAddress($address) if $address;
+    self.setGSocketAddress($address) if $address;
   }
 
-  method setSocketAddress (GSocketAddressAncestry $_) {
+  method setGSocketAddress (GSocketAddressAncestry $_) {
     my $to-parent;
 
     $!sa = do {
-      when GSocketConnectable {
+      when GSocketAddress {
         $to-parent = cast(GObject, $_);
         $_;
       }
 
+      when GSocketConnectable {
+        $to-parent = cast(GObject, $_);
+        $!sc = $_;
+        cast(GSocketAddress, $_);
+      }
+
       default {
         $to-parent = $_;
-        cast(GSocketConnectable, $_);
+        cast(GSocketAddress, $_);
       }
     }
     self!setObject($to-parent);
