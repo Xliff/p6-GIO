@@ -168,9 +168,9 @@ sub test-symbolic-icon {
 sub test-tree {
   subtest 'Tree', {
     for 'x-content/' «~« <image-dcf unix-software win32-software> {
-      my $p = 't'.IO.add($_);
+      my $p     = 't'.IO.add($_);
       die "Cannot find directory '{ $p.absolute }'" unless $p.d;
-      my $path = GIO::Roles::File.new_for_path($p.absolute);
+      my $path  = GIO::File.new_for_path($p.absolute);
       my $types = GIO::ContentType.guess-for-tree($path);
       is $_, $types,                                       "Content type matches '{ $_ }'";
     }
