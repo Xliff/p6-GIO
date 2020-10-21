@@ -5462,23 +5462,35 @@ Adding alias in GIO::NetworkService for get-type...
 Roles: ((Object) (SocketConnectable))
 R: GLib::Roles::Object
 R: GIO::Roles::SocketConnectable
- === GIO::PropertyAction ===
+===== GIO::PropertyAction =====
 Stage start      :   0.000
 
     precomp lib/GIO/PropertyAction.pm6
     Stage start      :   0.000
-    [31m===[0mSORRY![31m===[0m Error while compiling /home/cbwood/Projects/p6-GIO/lib/GIO/PropertyAction.pm6 (GIO::PropertyAction)
-    Invalid typename 'name' in parameter declaration.  Did you mean 'Same'?
-    at /home/cbwood/Projects/p6-GIO/lib/GIO/PropertyAction.pm6 (GIO::PropertyAction):65
-    ------> [32m   Str()            $property_name, name[33m⏏[31m,[0m
-[31m===[0mSORRY![31m===[0m Error while compiling -e
-Stage start      :   0.000
-[31m===[0mSORRY![31m===[0m Error while compiling /home/cbwood/Projects/p6-GIO/lib/GIO/PropertyAction.pm6 (GIO::PropertyAction)
-Invalid typename 'name' in parameter declaration.  Did you mean 'Same'?
-at /home/cbwood/Projects/p6-GIO/lib/GIO/PropertyAction.pm6 (GIO::PropertyAction):65
-------> [32m   Str()            $property_name, name[33m⏏[31m,[0m
+    Stage parse      :   2.438
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.024
+    Stage mast       :   0.081
+    Stage mbc        :   0.013
+Adding alias in GIO::PropertyAction for GPropertyAction...
 
-at -e:1
+Stage parse      :   3.911
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.000
+Stage moar       :   0.000
+Adding alias in GIO::PropertyAction for invert_boolean...
+Adding alias in GIO::PropertyAction for parameter_type...
+Adding alia
+s in GIO::PropertyAction for property_name...
+Adding alias in GIO::PropertyAction for state_type...
+Adding alias in GIO::PropertyAction for get-type...
+Roles: ((Object) (Action))
+R: GLib::Roles::Object
+R: GIO::Roles::Action
  === GIO::ProxyAddress ===
 Stage start      :   0.000
 
@@ -7300,7 +7312,3 @@ Adding alias in GIO::SocketClient for connect-to-uri-finish...
 Adding alias in GIO::SocketClient for get-type...
 Roles: ((Object))
 R: GLib::Roles::Object
-
-real 1107.74
-user 1326.72
-sys 80.14
