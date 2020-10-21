@@ -906,6 +906,9 @@ sub test-writev-helper (
 ) {
   my $iostream;
   my $file = GIO::File.new_tmp('g_file_writev_XXXXXX', $iostream);
+  diag $iostream;
+  diag "IO:" ~ $iostream.GObject;
+  diag "FO:" ~ $file.GObject;
 
   ok  $file,                          '$file is non-Nil';
   ok  $iostream,                      '$iostream is non-Nil';
@@ -919,6 +922,7 @@ sub test-writev-helper (
   my $res = $iostream.close;
   nok $ERROR,                         'No errors detected when closing the iostream';
   ok  $res,                           '.close returned True';
+  diag $iostream.GObject;
   $iostream.unref;
 
   my ($contents, $length, $) = $file.load_contents($contents, $length, $);
