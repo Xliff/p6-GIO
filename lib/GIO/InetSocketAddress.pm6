@@ -15,10 +15,10 @@ class GIO::InetSocketAddress is GIO::SocketAddress {
   has GInetSocketAddress $!isa is implementor;
 
   submethod BUILD (:$inetsocketaddr) {
-    self.setInetSocketAddr($inetsocketaddr) if $inetsocketaddr;
+    self.setGInetSocketAddr($inetsocketaddr) if $inetsocketaddr;
   }
 
-  method setInetSocketAddr(GInetSocketAddressAncestry $_) {
+  method setGInetSocketAddr(GInetSocketAddressAncestry $_) {
     my $to-parent;
 
     $!isa = do {
@@ -32,7 +32,7 @@ class GIO::InetSocketAddress is GIO::SocketAddress {
         cast(GInetSocketAddress, $_);
       }
     };
-    self.setSocketAddress($to-parent);
+    self.setGSocketAddress($to-parent);
   }
 
   method GIO::Raw::Definitions::GInetSocketAddress
