@@ -58,7 +58,7 @@ class GIO::ApplicationCommandLine {
     my $f = g_application_command_line_create_file_for_arg($!cl, $arg);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::GFile.new-file-obj($f, :!ref) )
+      ( $raw ?? $f !! GIO::File.new($f, :!ref) )
       !!
       Nil;
   }

@@ -76,7 +76,7 @@ class GIO::ConverterOutputStream is GIO::FilterOutputStream {
     my $c = g_converter_output_stream_get_converter($!cos);
 
     $c ??
-      ( $raw ?? $c !! GIO::Roles::Converter.new-converter-obj($c) )
+      ( $raw ?? $c !! GIO::Converter.new($c, :!ref) )
       !!
       Nil;
   }

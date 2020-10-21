@@ -119,7 +119,10 @@ class GIO::SocketClient {
       FETCH => sub ($) {
         my $pr = g_socket_client_get_proxy_resolver($!sc);
 
-        $raw ?? $pr !! GIO::Roles::ProxyResolver.new-role-obj($pr, :!ref);
+        $pr ??
+          ( $raw ?? $pr !! GIO::ProxyResolver.new($pr, :!ref) )
+          !!
+          Nil;
       },
       STORE => sub ($, GProxyResolver() $proxy_resolver is copy) {
         g_socket_client_set_proxy_resolver($!sc, $proxy_resolver);

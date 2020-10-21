@@ -142,7 +142,7 @@ class GIO::VolumeMonitor {
     my $v = g_volume_monitor_adopt_orphan_mount($mount);
 
     $v ??
-      ( $raw ?? $v !! GIO::Roles::Volume.new-volume-obj($v, :!ref) )
+      ( $raw ?? $v !! GIO::Volume.new($v, :!ref) )
       !!
       Nil;
   }
@@ -153,7 +153,7 @@ class GIO::VolumeMonitor {
 
     $dl ?? ( $raw ?? $dl.Array
                   !! $dl.Array.map({
-                       GIO::Roles::Drive.new-drive-obj($_, :!ref)
+                       GIO::Drive.new($_, :!ref)
                      }) )
         !! Nil;
   }
@@ -164,7 +164,7 @@ class GIO::VolumeMonitor {
     my $m = g_volume_monitor_get_mount_for_uuid($!vm, $uuid);
 
     $m ??
-      ( $raw ?? $m !! GIO::Roles::Mount.new-mount-obj($m, :!ref) )
+      ( $raw ?? $m !! GIO::Mount.new($m, :!ref) )
       !!
       Nil;
   }
@@ -174,9 +174,7 @@ class GIO::VolumeMonitor {
       but GLib::Roles::ListData[GMount];
 
     $ml ?? ( $raw ?? $ml.Array
-                  !! $ml.Array.map({
-                        GIO::Roles::Mount.new-mount-obj($_, :!ref)
-                     }) )
+                  !! $ml.Array.map({ GIO::Mount.new($_, :!ref) }) )
         !! Nil;
   }
 
@@ -192,7 +190,7 @@ class GIO::VolumeMonitor {
     my $v = g_volume_monitor_get_volume_for_uuid($!vm, $uuid);
 
     $v ??
-      ( $raw ?? $v !! GIO::Roles::Volume.new-volume-obj($v, :!ref) )
+      ( $raw ?? $v !! GIO::Volume.new($v, :!ref) )
       !!
       Nil;
   }
@@ -202,7 +200,7 @@ class GIO::VolumeMonitor {
 
     $vl ?? ( $raw ?? $vl.Array
                   !! $vl.Array.map({
-                       GIO::Roles::Volume.new-volume-obj($_, :!ref)
+                       GIO::Volume.new($_, :!ref)
                      }) )
         !! Nil
   }

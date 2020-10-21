@@ -116,7 +116,7 @@ class GIO::ProxyAddressEnumerator {
         $o = cast(GProxyResolver, $o);
         return $o if $raw;
 
-        GIO::Roles::ProxyResolver.new-proxyresolver-obj($o, :!ref)
+        GIO::ProxyResolver.new($o, :!ref)
       },
       STORE => -> $, GProxyResolver() $val is copy {
         $gv.object = $val;

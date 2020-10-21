@@ -66,7 +66,7 @@ class GIO::VFS {
     my $f = g_vfs_get_file_for_path($!fs, $path);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::GFile.new-file-obj($f, :!ref) )
+      ( $raw ?? $f !! GIO::File.new($f, :!ref) )
       !!
       Nil;
   }
@@ -77,7 +77,7 @@ class GIO::VFS {
     my $f = g_vfs_get_file_for_uri($!fs, $uri);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::GFile.new-file-obj($f, :!ref) )
+      ( $raw ?? $f !! GIO::File.new($f, :!ref) )
       !!
       Nil;
   }
@@ -106,7 +106,7 @@ class GIO::VFS {
     my $f = g_vfs_parse_name($!fs, $parse_name);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::GFile.new-file-obj($f, :!ref) )
+      ( $raw ?? $f !! GIO::File.new($f, :!ref) )
       !!
       Nil;
   }

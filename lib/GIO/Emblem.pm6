@@ -75,7 +75,7 @@ class GIO::Emblem {
     my $i = g_emblem_get_icon($!e);
 
     $i ??
-      ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i, :!ref) )
+      ( $raw ?? $i !! GIO::Icon.new($i, :!ref) )
       !!
       Nil
   }

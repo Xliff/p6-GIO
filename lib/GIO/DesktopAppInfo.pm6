@@ -378,7 +378,7 @@ class GIO::DesktopAppInfo {
     my $ai = g_desktop_app_info_lookup_get_default_for_uri_scheme($uri_scheme);
 
     $ai ??
-      ( $raw ?? $ai !! GIO::Roles::AppInfo.new-appinfo-obj($ai) )
+      ( $raw ?? $ai !! GIO::AppInfo.new($ai, :!ref) )
       !!
       Nil;
   }
