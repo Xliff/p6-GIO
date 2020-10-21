@@ -37,6 +37,8 @@ class GIO::Stream {
         cast(GIOStream, $_);
       }
     }
+    say "GIOStream Parent: $to-parent" if $DEBUG;
+
     self!setObject($to-parent);
   }
 
@@ -57,7 +59,7 @@ class GIO::Stream {
   }
 
   method close (
-    GCancellable()          $cancellable,
+    GCancellable()          $cancellable  = GCancellable,
     CArray[Pointer[GError]] $error        = gerror
   ) {
     clear_error;
