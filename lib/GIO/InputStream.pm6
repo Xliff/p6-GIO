@@ -262,7 +262,7 @@ class GIO::InputStream {
   }
 
   method read_bytes (
-    Int() $count,
+    Int()                   $count,
     GCancellable()          $cancellable = GCancellable,
     CArray[Pointer[GError]] $error       = gerror()
   )
@@ -361,11 +361,11 @@ class GIO::InputStream {
   multi method skip_async (
     Int()          $count,
                    &callback,
-    gpointer       $user_data    = Pointer,
-    Int()          :$io_priority = 0,
-    GCancellable() :$cancellable = GCancellable
+    gpointer       $user_data                  = Pointer,
+    Int()          :io_priority(:$io-priority) = G_PRIORITY_DEFAULT,
+    GCancellable() :$cancellable               = GCancellable
   ) {
-    samewith($count, $io_priority, $cancellable, &callback, $user_data);
+    samewith($count, $io-priority, $cancellable, &callback, $user_data);
   }
   multi method skip_async (
     Int()          $count,
