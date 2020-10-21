@@ -1,46 +1,32 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
 
 use GLib::Value;
 
-role GIO::Roles::TlsFileDatabase {
+use GLib::Roles::Object;
+
+role GIO::Roles::TlsFileDatabase does GLib::Roles::Object {
   has GTlsFileDatabase $!tfd;
 
   method roleInit-TlsFileDatabase is also<roleInit_TlsFileDatabase> {
     die 'Must use GLib::Roles::Properties!'
       unless self ~~ GLib::Roles::Properties;
+    return if $!tfd;
 
     my \i = findProperImplementor(self.^attributes);
 
     $!tfd = cast( GTlsFileDatabase, i.get_value(self) );
   }
 
-  proto method new-tlsfiledatabase-obj (|)
-      is also<new_tlsfiledatabase_obj>
-  { * }
-
-  multi method new-tlsfiledatabase-obj (GTlsFileDatabase $file-database) {
-    self.bless( :$file-database );
-  }
-  multi method new-tlsfiledatabase-obj (
-    Str() $anchor-file,
-    CArray[Pointer[GError]] $error = gerror
-  ) {
-    clear_error;
-    my $file-database = g_tls_file_database_new($anchor-file, $error);
-    set_error($error);
-    self.bless( :$file-database );
-  }
-
   method GIO::Raw::Definitions::GTlsFileDatabase
+    is also<GTlsFileDatabase>
   { $!tfd }
 
-  # Type: gchar
+  # Type: Str
   method anchors is rw  {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
@@ -57,10 +43,63 @@ role GIO::Roles::TlsFileDatabase {
     );
   }
 
-  method get_type is also<get-type> {
+  method get_tlsfiledatabase_type is also<get-tlsfiledatabase-type> {
     state ($n, $t);
 
     unstable_get_type( self.^name, &g_tls_file_database_get_type, $n, $t );
+  }
+
+}
+
+our subset GTlsFileDatabaseAncestry is export of Mu
+  where GTlsFileDatabase | GObject;
+
+class GIO::TlsFileDatabase does GIO::Roles::TlsFileDatabase {
+
+  submethod BUILD (:$file-database) {
+    self.setGTlsFileDatabase($file-database) if $file-database;
+  }
+
+  method setGTlsFileDatabase (GTlsFileDatabaseAncestry $_) {
+    my $to-parent;
+
+    $!tfd = do {
+      when GTlsFileDatabase {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GTlsFileDatabase, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+
+  proto method new (|)
+      is also<new_tlsfiledatabase_obj>
+  { * }
+
+  multi method new (
+    GTlsFileDatabase $file-database,
+                     :$ref = True
+  ) {
+    return Nil unless $file-database;
+
+    my $o = self.bless( :$file-database );
+    $o.ref if $ref;
+    $o;
+  }
+  multi method new (
+    Str()                   $anchor-file,
+    CArray[Pointer[GError]] $error = gerror
+  ) {
+    clear_error;
+    my $file-database = g_tls_file_database_new($anchor-file, $error);
+    set_error($error);
+    $file-database ?? self.bless( :$file-database ) !! Nil;
   }
 
 }
@@ -76,3 +115,9 @@ sub g_tls_file_database_new (Str $anchors, CArray[Pointer[GError]] $error)
   is native(gio)
   is export
 { * }
+
+# our %GIO::Roles::TlsFileDatabase::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::Roles::TlsFileDatabase::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_tls_file_database_');
+# }

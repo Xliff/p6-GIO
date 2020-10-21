@@ -7,9 +7,9 @@ use GIO::Raw::Types;
 unit package GIO::Raw::Credentials;
 
 sub g_credentials_get_native (
-  GCredentials $credentials,
+  GCredentials     $credentials,
   GCredentialsType $native_type
-)  
+)
   returns Pointer
   is native(gio)
   is export
@@ -22,7 +22,7 @@ sub g_credentials_get_type ()
 { * }
 
 sub g_credentials_get_unix_pid (
-  GCredentials $credentials,
+  GCredentials            $credentials,
   CArray[Pointer[GError]] $error
 )
   returns pid_t
@@ -31,7 +31,7 @@ sub g_credentials_get_unix_pid (
 { * }
 
 sub g_credentials_get_unix_user (
-  GCredentials $credentials,
+  GCredentials            $credentials,
   CArray[Pointer[GError]] $error
 )
   returns uid_t
@@ -40,8 +40,8 @@ sub g_credentials_get_unix_user (
 { * }
 
 sub g_credentials_is_same_user (
-  GCredentials $credentials,
-  GCredentials $other_credentials,
+  GCredentials            $credentials,
+  GCredentials            $other_credentials,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -56,17 +56,17 @@ sub g_credentials_new ()
 { * }
 
 sub g_credentials_set_native (
-  GCredentials $credentials,
+  GCredentials     $credentials,
   GCredentialsType $native_type,
-  gpointer $native
+  gpointer         $native
 )
   is native(gio)
   is export
 { * }
 
 sub g_credentials_set_unix_user (
-  GCredentials $credentials,
-  uid_t $uid,
+  GCredentials            $credentials,
+  uid_t                   $uid,
   CArray[Pointer[GError]] $error
 )
   returns uint32

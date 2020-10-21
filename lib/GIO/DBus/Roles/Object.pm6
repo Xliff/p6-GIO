@@ -13,16 +13,13 @@ use GIO::DBus::Roles::Interface;
 
 use GLib::Roles::ListData;
 
+use GLib::Roles::Object;
 use GIO::DBus::Roles::Signals::Object;
 
-role GIO::DBus::Roles::Object {
+role GIO::DBus::Roles::Object does GLib::Roles::Object {
   also does GIO::DBus::Roles::Signals::Object;
 
   has GDBusObject $!do;
-
-  submethod BUILD (:$object) {
-    $!do = $object if $object;
-  }
 
   method roleInit-DBusObject is also<roleInit_DBusObject> {
     my \i = findProperImplementor(self.^attributes);
@@ -33,10 +30,6 @@ role GIO::DBus::Roles::Object {
   method GIO::Raw::Definitions::GDBusObject
     is also<GDBusObject>
   { $!do }
-
-  method new_dbusobject_obj (GDBusObject $object) is also<new-dbusobject-obj> {
-    self.bless(:$object);
-  }
 
   # Is originally:
   # GDBusObject, GDBusInterface, gpointer --> void
@@ -56,7 +49,7 @@ role GIO::DBus::Roles::Object {
     my $i = g_dbus_object_get_interface($!do, $interface_name);
 
     $i ??
-      ( $raw ?? $i !! GIO::DBus::Roles::Interface.new-interface-obj($i) )
+      ( $raw ?? $i !! GIO::DBus::Interface.new($i, :!ref) )
       !!
       Nil;
   }
@@ -65,13 +58,13 @@ role GIO::DBus::Roles::Object {
     my $il = g_dbus_object_get_interfaces($!do);
 
     return Nil unless $il;
-    return $il if     $glist;
+    return $il if     $glist && $raw;
 
     $il = $il but GLib::Roles::ListData[GDBusInterface];
-    $raw ??
-      $il.Array
-      !!
-      $il.Array.map({ GIO::DBus::Roles::Interface.new-interface-obj($_) });
+    return $il if $glist;
+
+    $raw ?? $il.Array
+         !! $il.Array.map({ GIO::DBus::Interface.new($_, :!ref) });
   }
 
   method get_object_path is also<get-object-path> {
@@ -82,6 +75,44 @@ role GIO::DBus::Roles::Object {
     state ($n, $t);
 
     unstable_get_type( self.^name, &g_dbus_object_get_type, $n, $t );
+  }
+
+}
+
+our subset GDBusObjectAncestry is export of Mu
+  where GDBusObject | GObject;
+
+class GIO::DBus::Object does GIO::DBus::Roles::Object {
+
+  submethod BUILD ( :$dbus-object ) {
+    self.setGDBusObject($dbus-object) if $dbus-object;
+  }
+
+  method setGDBusObject (GDBusObjectAncestry $_) {
+    my $to-parent;
+
+    $!do = do {
+      when GDBusMethodInvocation {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GDBusObject, $_);
+      }
+    }
+
+    self!setObject($to-parent);
+    self.roleInit-DBusObject;
+  }
+
+  method new (GDBusObjectAncestry $dbus-object, :$ref = True) {
+    return Nil unless $dbus-object;
+
+    my $o = self.bless( :$dbus-object );
+    $o.ref if $ref;
+    $o;
   }
 
 }
@@ -109,3 +140,9 @@ sub g_dbus_object_get_type ()
   is native(gio)
   is export
 { * }
+
+# our %GIO::DBus::Object::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::DBus::Object::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_dbus_object_');
+# }

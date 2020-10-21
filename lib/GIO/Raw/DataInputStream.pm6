@@ -31,8 +31,8 @@ sub g_data_input_stream_new (GInputStream $base_stream)
 { * }
 
 sub g_data_input_stream_read_byte (
-  GDataInputStream $stream,
-  GCancellable $cancellable,
+  GDataInputStream        $stream,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint8
@@ -41,8 +41,8 @@ sub g_data_input_stream_read_byte (
 { * }
 
 sub g_data_input_stream_read_int16 (
-  GDataInputStream $stream,
-  GCancellable $cancellable,
+  GDataInputStream        $stream,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gint16
@@ -51,8 +51,8 @@ sub g_data_input_stream_read_int16 (
 { * }
 
 sub g_data_input_stream_read_int32 (
-  GDataInputStream $stream,
-  GCancellable $cancellable,
+  GDataInputStream        $stream,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gint32
@@ -61,8 +61,8 @@ sub g_data_input_stream_read_int32 (
 { * }
 
 sub g_data_input_stream_read_int64 (
-  GDataInputStream $stream,
-  GCancellable $cancellable,
+  GDataInputStream        $stream,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gint64
@@ -71,9 +71,9 @@ sub g_data_input_stream_read_int64 (
 { * }
 
 sub g_data_input_stream_read_line (
-  GDataInputStream $stream,
-  gsize $length,
-  GCancellable $cancellable,
+  GDataInputStream        $stream,
+  gsize                   $length is rw,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns Str
@@ -82,20 +82,20 @@ sub g_data_input_stream_read_line (
 { * }
 
 sub g_data_input_stream_read_line_async (
-  GDataInputStream $stream,
-  gint $io_priority,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GDataInputStream    $stream,
+  gint                $io_priority,
+  GCancellable        $cancellable,
+                      &callback (GDataInputStream, GAsyncResult, gpointer),
+  gpointer            $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_data_input_stream_read_line_finish (
-  GDataInputStream $stream,
-  GAsyncResult $result,
-  gsize $length,
+  GDataInputStream        $stream,
+  GAsyncResult            $result,
+  gsize                   $length is rw,
   CArray[Pointer[GError]] $error
 )
   returns Str
@@ -104,9 +104,9 @@ sub g_data_input_stream_read_line_finish (
 { * }
 
 sub g_data_input_stream_read_line_finish_utf8 (
-  GDataInputStream $stream,
-  GAsyncResult $result,
-  gsize $length,
+  GDataInputStream        $stream,
+  GAsyncResult            $result,
+  gsize                   $length is rw,
   CArray[Pointer[GError]] $error
 )
   returns Str
@@ -115,9 +115,9 @@ sub g_data_input_stream_read_line_finish_utf8 (
 { * }
 
 sub g_data_input_stream_read_line_utf8 (
-  GDataInputStream $stream,
-  gsize $length,
-  GCancellable $cancellable,
+  GDataInputStream        $stream,
+  gsize                   $length is rw,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns Str
@@ -126,8 +126,8 @@ sub g_data_input_stream_read_line_utf8 (
 { * }
 
 sub g_data_input_stream_read_uint16 (
-  GDataInputStream $stream,
-  GCancellable $cancellable,
+  GDataInputStream        $stream,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns guint16
@@ -136,8 +136,8 @@ sub g_data_input_stream_read_uint16 (
 { * }
 
 sub g_data_input_stream_read_uint32 (
-  GDataInputStream $stream,
-  GCancellable $cancellable,
+  GDataInputStream        $stream,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns guint32
@@ -146,8 +146,8 @@ sub g_data_input_stream_read_uint32 (
 { * }
 
 sub g_data_input_stream_read_uint64 (
-  GDataInputStream $stream,
-  GCancellable $cancellable,
+  GDataInputStream        $stream,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns guint64
@@ -156,11 +156,11 @@ sub g_data_input_stream_read_uint64 (
 { * }
 
 sub g_data_input_stream_read_upto (
-  GDataInputStream $stream,
-  Str $stop_chars,
-  gssize $stop_chars_len,
-  gsize $length,
-  GCancellable $cancellable,
+  GDataInputStream        $stream,
+  Str                     $stop_chars,
+  gssize                  $stop_chars_len,
+  gsize                   $length is rw,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns Str
@@ -170,21 +170,21 @@ sub g_data_input_stream_read_upto (
 
 sub g_data_input_stream_read_upto_async (
   GDataInputStream $stream,
-  Str $stop_chars,
-  gssize $stop_chars_len,
-  gint $io_priority,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  Str              $stop_chars,
+  gssize           $stop_chars_len,
+  gint             $io_priority,
+  GCancellable     $cancellable,
+                   &callback (GDataInputStream, GAsyncResult, gpointer),
+  gpointer         $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_data_input_stream_read_upto_finish (
-  GDataInputStream $stream,
-  GAsyncResult $result,
-  gsize $length,
+  GDataInputStream        $stream,
+  GAsyncResult            $result,
+  gsize                   $length is rw,
   CArray[Pointer[GError]] $error
 )
   returns Str
@@ -193,7 +193,7 @@ sub g_data_input_stream_read_upto_finish (
 { * }
 
 sub g_data_input_stream_set_byte_order (
-  GDataInputStream $stream,
+  GDataInputStream     $stream,
   GDataStreamByteOrder $order
 )
   is native(gio)
@@ -201,7 +201,7 @@ sub g_data_input_stream_set_byte_order (
 { * }
 
 sub g_data_input_stream_set_newline_type (
-  GDataInputStream $stream,
+  GDataInputStream       $stream,
   GDataStreamNewlineType $type
 )
   is native(gio)

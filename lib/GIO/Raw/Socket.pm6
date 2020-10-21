@@ -4,11 +4,17 @@ use NativeCall;
 
 use GIO::Raw::Types;
 
-unit package GIO::Raw::Socket;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 sub g_socket_accept (
-  GSocket $socket,
-  GCancellable $cancellable,
+  GSocket                 $socket,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GSocket
@@ -17,9 +23,9 @@ sub g_socket_accept (
 { * }
 
 sub g_socket_bind (
-  GSocket $socket,
-  GSocketAddress $address,
-  gboolean $allow_reuse,
+  GSocket                 $socket,
+  GSocketAddress          $address,
+  gboolean                $allow_reuse,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -28,7 +34,7 @@ sub g_socket_bind (
 { * }
 
 sub g_socket_check_connect_result (
-  GSocket $socket,
+  GSocket                 $socket,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -49,10 +55,10 @@ sub g_socket_condition_check (GSocket $socket, GIOCondition $condition)
 { * }
 
 sub g_socket_condition_timed_wait (
-  GSocket $socket,
-  GIOCondition $condition,
-  gint64 $timeout_us,
-  GCancellable $cancellable,
+  GSocket                 $socket,
+  GIOCondition            $condition,
+  gint64                  $timeout_us,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -61,9 +67,9 @@ sub g_socket_condition_timed_wait (
 { * }
 
 sub g_socket_condition_wait (
-  GSocket $socket,
-  GIOCondition $condition,
-  GCancellable $cancellable,
+  GSocket                 $socket,
+  GIOCondition            $condition,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -72,9 +78,9 @@ sub g_socket_condition_wait (
 { * }
 
 sub g_socket_connect (
-  GSocket $socket,
-  GSocketAddress $address,
-  GCancellable $cancellable,
+  GSocket                 $socket,
+  GSocketAddress          $address,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -83,7 +89,7 @@ sub g_socket_connect (
 { * }
 
 sub g_socket_create_source (
-  GSocket $socket,
+  GSocket      $socket,
   GIOCondition $condition,
   GCancellable $cancellable
 )
@@ -99,7 +105,7 @@ sub g_socket_get_available_bytes (GSocket $socket)
 { * }
 
 sub g_socket_get_credentials (
-  GSocket $socket,
+  GSocket                 $socket,
   CArray[Pointer[GError]] $error
 )
   returns GCredentials
@@ -120,7 +126,7 @@ sub g_socket_get_fd (GSocket $socket)
 { * }
 
 sub g_socket_get_local_address (
-  GSocket $socket,
+  GSocket                 $socket,
   CArray[Pointer[GError]] $error
 )
   returns GSocketAddress
@@ -129,10 +135,10 @@ sub g_socket_get_local_address (
 { * }
 
 sub g_socket_get_option (
-  GSocket $socket,
-  gint $level,
-  gint $optname,
-  gint $value,
+  GSocket                 $socket,
+  gint                    $level,
+  gint                    $optname,
+  gint                    $value    is rw,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -147,7 +153,7 @@ sub g_socket_get_protocol (GSocket $socket)
 { * }
 
 sub g_socket_get_remote_address (
-  GSocket $socket,
+  GSocket                 $socket,
   CArray[Pointer[GError]] $error
 )
   returns GSocketAddress
@@ -180,10 +186,10 @@ sub g_socket_is_connected (GSocket $socket)
 { * }
 
 sub g_socket_join_multicast_group (
-  GSocket $socket ,
-  GInetAddress $group,
-  gboolean $source_specific,
-  Str $iface,
+  GSocket                 $socket,
+  GInetAddress            $group,
+  gboolean                $source_specific,
+  Str                     $iface,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -192,10 +198,10 @@ sub g_socket_join_multicast_group (
 { * }
 
 sub g_socket_join_multicast_group_ssm (
-  GSocket $socket,
-  GInetAddress $group,
-  GInetAddress $source_specific,
-  Str $iface,
+  GSocket                 $socket,
+  GInetAddress            $group,
+  GInetAddress            $source_specific,
+  Str                     $iface,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -204,10 +210,10 @@ sub g_socket_join_multicast_group_ssm (
 { * }
 
 sub g_socket_leave_multicast_group (
-  GSocket $socket,
-  GInetAddress $group,
-  gboolean $source_specific,
-  Str $iface,
+  GSocket                 $socket,
+  GInetAddress            $group,
+  gboolean                $source_specific,
+  Str                     $iface,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -216,10 +222,10 @@ sub g_socket_leave_multicast_group (
 { * }
 
 sub g_socket_leave_multicast_group_ssm (
-  GSocket $socket,
-  GInetAddress $group,
-  GInetAddress $source_specific,
-  Str $iface,
+  GSocket                 $socket,
+  GInetAddress            $group,
+  GInetAddress            $source_specific,
+  Str                     $iface,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -234,9 +240,9 @@ sub g_socket_listen (GSocket $socket, CArray[Pointer[GError]] $error)
 { * }
 
 sub g_socket_new (
-  GSocketFamily $family,
-  GSocketType $type,
-  GSocketProtocol $protocol,
+  GSocketFamily           $family,
+  GSocketType             $type,
+  GSocketProtocol         $protocol,
   CArray[Pointer[GError]] $error
 )
   returns GSocket
@@ -251,10 +257,10 @@ sub g_socket_new_from_fd (gint $fd, CArray[Pointer[GError]] $error)
 { * }
 
 sub g_socket_receive (
-  GSocket $socket,
-  Pointer $buffer,
-  gsize $size,
-  GCancellable $cancellable,
+  GSocket                 $socket,
+  Pointer                 $buffer,
+  gsize                   $size,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gssize
@@ -263,11 +269,11 @@ sub g_socket_receive (
 { * }
 
 sub g_socket_receive_from (
-  GSocket $socket,
-  Pointer $address,
-  Pointer $buffer,
-  gsize $size,
-  GCancellable $cancellable,
+  GSocket                 $socket,
+  Pointer                 $address,
+  Pointer                 $buffer,
+  gsize                   $size,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gssize
@@ -276,14 +282,14 @@ sub g_socket_receive_from (
 { * }
 
 sub g_socket_receive_message (
-  GSocket $socket,
-  CArray[GSocketAddress] $address,
-  Pointer $vectors,
-  gint $num_vectors,
-  Pointer $messages,
-  gint $num_messages,
-  gint $flags,
-  GCancellable $cancellable,
+  GSocket                 $socket,
+  CArray[GSocketAddress]  $address,
+  Pointer                 $vectors,
+  gint                    $num_vectors,
+  Pointer                 $messages,
+  gint                    $num_messages  is rw,
+  gint                    $flags         is rw,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gssize
@@ -292,11 +298,11 @@ sub g_socket_receive_message (
 { * }
 
 sub g_socket_receive_messages (
-  GSocket $socket,
-  Pointer $messages,              # GInputMessage * == Array
-  guint $num_messages,
-  gint $flags,
-  GCancellable $cancellable,
+  GSocket                 $socket,
+  Pointer                 $messages,              # GInputMessage * == Array
+  guint                   $num_messages,
+  gint                    $flags,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gint
@@ -305,11 +311,11 @@ sub g_socket_receive_messages (
 { * }
 
 sub g_socket_receive_with_blocking (
-  GSocket $socket,
-  Pointer $buffer,
-  gsize $size,
-  gboolean $blocking,
-  GCancellable $cancellable,
+  GSocket                 $socket,
+  Pointer                 $buffer,
+  gsize                   $size,
+  gboolean                $blocking,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gssize
@@ -318,10 +324,10 @@ sub g_socket_receive_with_blocking (
 { * }
 
 sub g_socket_send (
-  GSocket $socket,
-  Pointer $buffer,
-  gsize $size,
-  GCancellable $cancellable,
+  GSocket                 $socket,
+  Pointer                 $buffer,
+  gsize                   $size,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gssize
@@ -330,14 +336,14 @@ sub g_socket_send (
 { * }
 
 sub g_socket_send_message (
-  GSocket $socket,
-  CArray[GSocketAddress] $address,
-  Pointer $vectors,
-  gint $num_vectors,
-  Pointer $messages, #= GSocketControlMessage **
-  gint $num_messages,
-  gint $flags,
-  GCancellable $cancellable,
+  GSocket                 $socket,
+  CArray[GSocketAddress]  $address,
+  Pointer                 $vectors,
+  gint                    $num_vectors,
+  Pointer                 $messages, #= GSocketControlMessage **
+  gint                    $num_messages,
+  gint                    $flags,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gssize
@@ -346,16 +352,16 @@ sub g_socket_send_message (
 { * }
 
 sub g_socket_send_message_with_timeout (
-  GSocket $socket,
-  CArray[GSocketAddress] $address,
-  Pointer $vectors,
-  gint $num_vectors,
-  Pointer $messages, #= GSocketControlMessage **
-  gint $num_messages,
-  gint $flags,
-  gint64 $timeout_us,
-  gsize $bytes_written is rw,
-  GCancellable $cancellable,
+  GSocket                 $socket,
+  CArray[GSocketAddress]  $address,
+  Pointer                 $vectors,
+  gint                    $num_vectors,
+  Pointer                 $messages, #= GSocketControlMessage **
+  gint                    $num_messages,
+  gint                    $flags,
+  gint64                  $timeout_us,
+  gsize                   $bytes_written is rw,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GPollableReturn
@@ -364,11 +370,11 @@ sub g_socket_send_message_with_timeout (
 { * }
 
 sub g_socket_send_messages (
-  GSocket $socket,
-  Pointer $messages,                # GOutputMessage * == Array
-  guint $num_messages,
-  gint $flags,
-  GCancellable $cancellable,
+  GSocket                 $socket,
+  Pointer                 $messages,                # GOutputMessage * == Array
+  guint                   $num_messages,
+  gint                    $flags,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gint
@@ -377,11 +383,11 @@ sub g_socket_send_messages (
 { * }
 
 sub g_socket_send_to (
-  GSocket $socket,
-  GSocketAddress $address,
-  Pointer $buffer,
-  gsize $size,
-  GCancellable $cancellable,
+  GSocket                 $socket,
+  GSocketAddress          $address,
+  Pointer                 $buffer,
+  gsize                   $size,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gssize
@@ -390,11 +396,11 @@ sub g_socket_send_to (
 { * }
 
 sub g_socket_send_with_blocking (
-  GSocket $socket,
-  Pointer $buffer,
-  gsize $size,
-  gboolean $blocking,
-  GCancellable $cancellable,
+  GSocket                 $socket,
+  Pointer                 $buffer,
+  gsize                   $size,
+  gboolean                $blocking,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gssize
@@ -403,10 +409,10 @@ sub g_socket_send_with_blocking (
 { * }
 
 sub g_socket_set_option (
-  GSocket $socket,
-  gint $level,
-  gint $optname,
-  gint $value,
+  GSocket                 $socket,
+  gint                    $level,
+  gint                    $optname,
+  gint                    $value,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -415,9 +421,9 @@ sub g_socket_set_option (
 { * }
 
 sub g_socket_shutdown (
-  GSocket $socket,
-  gboolean $shutdown_read,
-  gboolean $shutdown_write,
+  GSocket                 $socket,
+  gboolean                $shutdown_read,
+  gboolean                $shutdown_write,
   CArray[Pointer[GError]] $error
 )
   returns uint32

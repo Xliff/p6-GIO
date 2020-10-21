@@ -19,7 +19,7 @@ sub g_mount_operation_new ()
 { * }
 
 sub g_mount_operation_reply (
-  GMountOperation $op,
+  GMountOperation       $op,
   GMountOperationResult $result
 )
   is native(gio)
@@ -97,7 +97,7 @@ sub g_mount_operation_set_domain (GMountOperation $op, Str $domain)
 
 sub g_mount_operation_set_is_tcrypt_hidden_volume (
   GMountOperation $op,
-  gboolean $hidden_volume
+  gboolean        $hidden_volume
 )
   is native(gio)
   is export
@@ -105,7 +105,7 @@ sub g_mount_operation_set_is_tcrypt_hidden_volume (
 
 sub g_mount_operation_set_is_tcrypt_system_volume (
   GMountOperation $op,
-  gboolean $system_volume
+  gboolean        $system_volume
 )
   is native(gio)
   is export
@@ -118,7 +118,7 @@ sub g_mount_operation_set_password (GMountOperation $op, Str $password)
 
 sub g_mount_operation_set_password_save (
   GMountOperation $op,
-  GPasswordSave $save
+  GPasswordSave   $save
 )
   is native(gio)
   is export

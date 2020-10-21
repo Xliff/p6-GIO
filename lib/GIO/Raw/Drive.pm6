@@ -2,8 +2,12 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
-
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::Drive;
 
@@ -38,20 +42,20 @@ sub g_drive_can_stop (GDrive $drive)
 { * }
 
 sub g_drive_eject_with_operation (
-  GDrive $drive,
-  GMountUnmountFlags $flags,
-  GMountOperation $mount_operation,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GDrive              $drive,
+  GMountUnmountFlags  $flags,
+  GMountOperation     $mount_operation,
+  GCancellable        $cancellable,
+                      &callback (GDrive, GAsyncResult, gpointer),
+  gpointer            $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_drive_eject_with_operation_finish (
-  GDrive $drive,
-  GAsyncResult $result,
+  GDrive                  $drive,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -144,18 +148,18 @@ sub g_drive_is_removable (GDrive $drive)
 { * }
 
 sub g_drive_poll_for_media (
-  GDrive $drive,
+  GDrive       $drive,
   GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+               &callback (GDrive, GAsyncResult, gpointer),
+  gpointer     $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_drive_poll_for_media_finish (
-  GDrive $drive,
-  GAsyncResult $result,
+  GDrive                  $drive,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -164,20 +168,20 @@ sub g_drive_poll_for_media_finish (
 { * }
 
 sub g_drive_start (
-  GDrive $drive,
+  GDrive           $drive,
   GDriveStartFlags $flags,
-  GMountOperation $mount_operation,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GMountOperation  $mount_operation,
+  GCancellable     $cancellable,
+                   &callback (GDrive, GAsyncResult, gpointer),
+  gpointer         $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_drive_start_finish (
-  GDrive $drive,
-  GAsyncResult $result,
+  GDrive                  $drive,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -186,20 +190,20 @@ sub g_drive_start_finish (
 { * }
 
 sub g_drive_stop (
-  GDrive $drive,
+  GDrive             $drive,
   GMountUnmountFlags $flags,
-  GMountOperation $mount_operation,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GMountOperation    $mount_operation,
+  GCancellable       $cancellable,
+                     &callback (GDrive, GAsyncResult, gpointer),
+  gpointer           $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_drive_stop_finish (
-  GDrive $drive,
-  GAsyncResult $result,
+  GDrive                  $drive,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns uint32

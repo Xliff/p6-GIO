@@ -14,6 +14,9 @@ use GIO::DBus::Connection;
 
 use GLib::Roles::Properties;
 
+our subset GDBusObjectManagerClientAncestry is export of Mu
+  where GDBusObjectManagerClient | GObject;
+
 class GIO::DBus::ObjectManagerClient {
   also does GLib::Roles::Properties;
 
@@ -25,40 +28,76 @@ class GIO::DBus::ObjectManagerClient {
     self.roleInit-Object;
   }
 
+  method setGDBusObjectManagerClient (GDBusObjectManagerClientAncestry $_) {
+    my $to-parent;
+
+    $!domc = do {
+      when GDBusObjectManagerClient {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GDBusObjectManagerClient, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
   method GIO::Raw::Definitions::GDBusObjectManagerClient
   { $!domc }
 
-  multi method new (GDBusObjectManagerClient $client) {
-    self.bless( :$client );
+  multi method new (GDBusObjectManagerClientAncestry $client, :$ref = True) {
+    return Nil unless $client;
+
+    my $o = self.bless( :$client );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (
-    GDBusConnection() $connection,
-    Int() $flags,
-    Str() $name,
-    Str() $object_path
+    GDBusConnection()       $connection,
+    Int()                   $flags,
+    Str()                   $name,
+    Str()                   $object_path,
+                            &get_proxy_type_func           = Callable,
+    gpointer                $get_proxy_type_user_data      = gpointer,
+    GDestroyNotify          $get_proxy_type_destroy_notify = gpointer,
+    GCancellable()          $cancellable                   = GCancellable,
+    CArray[Pointer[GError]] $error                         = gerror
   ) {
-    self.new($connection, $flags, $name, $object_path, gpointer);
+    self.new(
+      $connection,
+      $flags,
+      $name,
+      $object_path,
+      &get_proxy_type_func,
+      $get_proxy_type_user_data,
+      $get_proxy_type_destroy_notify,
+      $cancellable,
+      $error
+    );
   }
   multi method new (
-    GDBusConnection() $connection,
-    Int() $flags,
-    Str() $name,
-    Str() $object_path,
-    $get_proxy_type_func,
-    gpointer $get_proxy_type_user_data            = gpointer,
-    GDestroyNotify $get_proxy_type_destroy_notify = gpointer,
-    GCancellable() $cancellable                   = GCancellable,
-    CArray[Pointer[GError]] $error                = gerror
+    GDBusConnection()       $connection,
+    Int()                   $flags,
+    Str()                   $name,
+    Str()                   $object_path,
+                            &get_proxy_type_func,
+    gpointer                $get_proxy_type_user_data      = gpointer,
+    GDestroyNotify          $get_proxy_type_destroy_notify = gpointer,
+    GCancellable()          $cancellable                   = GCancellable,
+    CArray[Pointer[GError]] $error                         = gerror
   ) {
     my GDBusObjectManagerClientFlags $f = $flags;
 
     clear_error;
-    my $omc = g_dbus_object_manager_client_new_sync(
+    my $client = g_dbus_object_manager_client_new_sync(
       $connection,
       $f,
       $name,
       $object_path,
-      $get_proxy_type_func,
+      &get_proxy_type_func,
       $get_proxy_type_user_data,
       $get_proxy_type_destroy_notify,
       $cancellable,
@@ -66,7 +105,7 @@ class GIO::DBus::ObjectManagerClient {
     );
     set_error($error);
 
-    $omc ?? self.bless( client => $omc ) !! Nil;
+    $client ?? self.bless( :$client ) !! Nil;
   }
 
   proto method new_async (|)
@@ -75,60 +114,16 @@ class GIO::DBus::ObjectManagerClient {
 
   multi method new (
     GDBusConnection() $connection,
-    Int() $flags,
-    Str() $name,
-    Str() $object_path,
-    &callback,
-    gpointer $user_data = gpointer,
-    GDestroyNotify $get_proxy_type_destroy_notify = gpointer,
-    GCancellable() $cancellable = GCancellable,
-    :$async is required
-  ) {
-    self.new_async(
-      $connection,
-      $flags,
-      $object_path,
-      &callback,
-      $user_data,
-      $get_proxy_type_destroy_notify,
-      $cancellable
-    );
-  }
-  multi method new_async (
-    GDBusConnection() $connection,
-    Int() $flags,
-    Str() $name,
-    Str() $object_path,
-    &callback,
-    gpointer $user_data = gpointer,
-    GDestroyNotify $get_proxy_type_destroy_notify = gpointer,
-    GCancellable() $cancellable = GCancellable
-  ) {
-    self.new_async(
-      $connection,
-      $flags,
-      $name,
-      $object_path,
-      Callable,
-      gpointer,
-      $get_proxy_type_destroy_notify,
-      $cancellable,
-      &callback,
-      $user_data
-    );
-  }
-  multi method new (
-    GDBusConnection() $connection,
-    Int() $flags,
-    Str() $name,
-    Str() $object_path,
-    &get_proxy_type_func,
-    gpointer $get_proxy_type_user_data,
-    GDestroyNotify $get_proxy_type_destroy_notify,
-    GCancellable() $cancellable,
-    &callback,
-    gpointer $user_data = gpointer,
-    :$async is required
+    Str()             $name,
+    Str()             $object_path,
+                      &callback,
+    gpointer          $user_data                      =  gpointer,
+                      :$async                         is required,
+    Int()             :$flags                         =  0,
+                      :&get_proxy_type_func           =  Callable,
+    gpointer          :$get_proxy_type_user_data      =  gpointer,
+                      :&get_proxy_type_destroy_notify =  Callable,
+    GCancellable()    :$cancellable                   =  GCancellable
   ) {
     self.new_async(
       $connection,
@@ -137,7 +132,33 @@ class GIO::DBus::ObjectManagerClient {
       $object_path,
       &get_proxy_type_func,
       $get_proxy_type_user_data,
-      $get_proxy_type_destroy_notify,
+      &get_proxy_type_destroy_notify,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method new (
+    GDBusConnection() $connection,
+    Int()             $flags,
+    Str()             $name,
+    Str()             $object_path,
+                      &get_proxy_type_func,
+    gpointer          $get_proxy_type_user_data,
+                      &get_proxy_type_destroy_notify,
+    GCancellable()    $cancellable,
+                      &callback,
+    gpointer          $user_data                      =  gpointer,
+                      :$async                         is required
+  ) {
+    samewith(
+      $connection,
+      $flags,
+      $name,
+      $object_path,
+      &get_proxy_type_func,
+      $get_proxy_type_user_data,
+      &get_proxy_type_destroy_notify,
       $cancellable,
       &callback,
       $user_data
@@ -145,49 +166,77 @@ class GIO::DBus::ObjectManagerClient {
   }
   multi method new_async (
     GDBusConnection() $connection,
-    Int() $flags,
-    Str() $name,
-    Str() $object_path,
-    &get_proxy_type_func,
-    gpointer $get_proxy_type_user_data,
-    GDestroyNotify $get_proxy_type_destroy_notify,
-    GCancellable() $cancellable,
-    &callback,
-    gpointer $user_data = gpointer
+    Str()             $name,
+    Str()             $object_path,
+                      &callback,
+    gpointer          $user_data                      = gpointer,
+    Int()             :$flags                         = 0,
+                      :&get_proxy_type_func           = Callable,
+    gpointer          :$get_proxy_type_user_data      = gpointer,
+                      :&get_proxy_type_destroy_notify = Callable,
+    GCancellable()    :$cancellable                   = GCancellable
+  ) {
+    self.new_async(
+      $connection,
+      $flags,
+      $name,
+      $object_path,
+      &get_proxy_type_func,
+      $get_proxy_type_user_data,
+      &get_proxy_type_destroy_notify,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method new_async (
+    GDBusConnection() $connection,
+    Int()             $flags,
+    Str()             $name,
+    Str()             $object_path,
+                      &get_proxy_type_func,
+    gpointer          $get_proxy_type_user_data,
+                      &get_proxy_type_destroy_notify,
+    GCancellable()    $cancellable,
+                      &callback,
+    gpointer          $user_data                      = gpointer
   ) {
     my GDBusObjectManagerClientFlags $f = $flags;
 
-    g_dbus_object_manager_client_new(
+    my $c = g_dbus_object_manager_client_new(
       $connection,
       $f,
       $name,
       $object_path,
       &get_proxy_type_func,
       $get_proxy_type_user_data,
-      $get_proxy_type_destroy_notify,
+      &get_proxy_type_destroy_notify,
       $cancellable,
       &callback,
       $user_data
     );
+
+    $c ?? self.new( client => $c ) !! Nil;
   }
 
   multi method new (
-    GAsyncResult() $res,
-    CArray[Pointer[GError]] $error = gerror,
-    :$finish is required
+    GAsyncResult()          $res,
+    CArray[Pointer[GError]] $error   = gerror,
+                            :$finish is required
   ) {
     self.new_finish($res, $error);
   }
   method new_finish (
-    GAsyncResult() $res,
+    GAsyncResult()          $res,
     CArray[Pointer[GError]] $error = gerror
   )
     is also<new-finish>
   {
     clear_error;
-    my $omc = g_dbus_object_manager_client_new_finish($res, $error);
+    my $client = g_dbus_object_manager_client_new_finish($res, $error);
     set_error($error);
-    $omc ?? self.bless( client => $omc ) !! Nil;
+
+    $client ?? self.bless( :$client ) !! Nil;
   }
 
   proto method new_for_bus (|)
@@ -195,33 +244,39 @@ class GIO::DBus::ObjectManagerClient {
   { * }
 
   multi method new (
-    Int() $bus_type,
-    Int() $flags,
-    Str() $name,
-    Str() $object_path,
-    :$bus is required
+    Int()                   $bus_type,
+    Str()                   $name,
+    Str()                   $object_path,
+    CArray[Pointer[GError]] $error                          =  gerror,
+                            :$bus                           is required,
+    Int()                   :$flags                         =  0,
+                            :$get_proxy_type_func           =  Callable,
+    gpointer                :$get_proxy_type_user_data      =  gpointer,
+    GDestroyNotify          :$get_proxy_type_destroy_notify =  gpointer,
+    GCancellable()          :$cancellable                   =  GCancellable
   ) {
-    self.new_for_bus($bus_type, $flags, $name, $object_path);
-  }
-  multi method new_for_bus (
-    Int() $bus_type,
-    Int() $flags,
-    Str() $name,
-    Str() $object_path,
-  ) {
-    self.new_for_bus($bus_type, $flags, $name, $object_path, gpointer);
+    self.new_for_bus(
+      $bus_type,
+      $flags,
+      $name,
+      $object_path,
+      $get_proxy_type_func,
+      $get_proxy_type_user_data,
+      $cancellable,
+      $error
+    );
   }
   multi method new (
-    Int() $bus_type,
-    Int() $flags,
-    Str() $name,
-    Str() $object_path,
-    $get_proxy_type_func,
-    gpointer $get_proxy_type_user_data            = gpointer,
-    GDestroyNotify $get_proxy_type_destroy_notify = gpointer,
-    GCancellable() $cancellable                   = GCancellable,
-    CArray[Pointer[GError]] $error                = gerror,
-    :$bus is required
+    Int()                   $bus_type,
+    Int()                   $flags,
+    Str()                   $name,
+    Str()                   $object_path,
+                            $get_proxy_type_func           =  Callable,
+    gpointer                $get_proxy_type_user_data      =  gpointer,
+    GDestroyNotify          $get_proxy_type_destroy_notify =  gpointer,
+    GCancellable()          $cancellable                   =  GCancellable,
+    CArray[Pointer[GError]] $error                         =  gerror,
+                            :$bus                          is required
   ) {
     self.new_for_bus(
       $bus_type,
@@ -235,21 +290,34 @@ class GIO::DBus::ObjectManagerClient {
     );
   }
   multi method new_for_bus (
-    Int() $bus_type,
-    Int() $flags,
-    Str() $name,
-    Str() $object_path,
-    $get_proxy_type_func,
-    gpointer $get_proxy_type_user_data            = gpointer,
-    GDestroyNotify $get_proxy_type_destroy_notify = gpointer,
-    GCancellable() $cancellable                   = GCancellable,
-    CArray[Pointer[GError]] $error                = gerror
+    Int()                   $bus_type,
+    Str()                   $name,
+    Str()                   $object_path,
+    CArray[Pointer[GError]] $error                          = gerror,
+    Int()                   :$flags                         = 0,
+                            :$get_proxy_type_func           = Callable,
+    gpointer                :$get_proxy_type_user_data      = gpointer,
+    GDestroyNotify          :$get_proxy_type_destroy_notify = gpointer,
+    GCancellable()          :$cancellable                   = GCancellable
   ) {
-    my GBusType $b = $bus_type;
+    self.new_for_bus($bus_type, $flags, $name, $object_path, gpointer);
+  }
+  multi method new_for_bus (
+    Int()                   $bus_type,
+    Int()                   $flags,
+    Str()                   $name,
+    Str()                   $object_path,
+                            $get_proxy_type_func           = Callable,
+    gpointer                $get_proxy_type_user_data      = gpointer,
+    GDestroyNotify          $get_proxy_type_destroy_notify = gpointer,
+    GCancellable()          $cancellable                   = GCancellable,
+    CArray[Pointer[GError]] $error                         = gerror
+  ) {
+    my GBusType                      $b = $bus_type;
     my GDBusObjectManagerClientFlags $f = $flags;
 
     clear_error;
-    my $omc = g_dbus_object_manager_client_new_for_bus_sync(
+    my $client = g_dbus_object_manager_client_new_for_bus_sync(
       $!domc,
       $flags,
       $name,
@@ -262,7 +330,7 @@ class GIO::DBus::ObjectManagerClient {
     );
     set_error($error);
 
-    $omc ?? self.bless( client => $omc ) !! Nil;
+    $client ?? self.bless( :$client ) !! Nil;
   }
 
   proto method new_for_bus_async (|)
@@ -270,59 +338,42 @@ class GIO::DBus::ObjectManagerClient {
   { * }
 
   multi method new (
-    Int() $bus_type,
-    Int() $flags,
-    Str() $name,
-    Str() $object_path,
-    &callback,
-    gpointer $user_data         = gpointer,
-    GCancellable() $cancellable = GCancellable,
-    :bus_async(:$bus-async) is required
+    Int()          $bus_type,
+    Str()          $name,
+    Str()          $object_path,
+                   &callback,
+    gpointer       $user_data                       =  gpointer,
+                   :bus_async(:$bus-async)          is required,
+    GCancellable() :$cancellable                    =  GCancellable,
+    Int()          :$flags                          =  0,
+                   :&get_proxy_type_func            =  Callable,
+    gpointer       :$get_proxy_type_user_data       =  gpointer,
+                   :&get_proxy_type_destroy_notify  =  Callable
   ) {
     self.new_for_bus_async(
       $bus_type,
       $flags,
       $name,
       $object_path,
-      &callback,
-      $user_data,
-      $cancellable
-    );
-  }
-  multi method new_for_bus_async (
-    Int() $bus_type,
-    Int() $flags,
-    Str() $name,
-    Str() $object_path,
-    &callback,
-    gpointer $user_data         = gpointer,
-    GCancellable() $cancellable = GCancellable
-  ) {
-    self.new_for_bus_async(
-      $bus_type,
-      $flags,
-      $name,
-      $object_path,
-      Callable,
-      gpointer,
-      gpointer,
+      &get_proxy_type_func,
+      $get_proxy_type_user_data,
       $cancellable,
       &callback,
       $user_data
     );
   }
   multi method new (
-    Int() $bus_type,
-    Int() $flags,
-    Str() $name,
-    Str() $object_path,
-    &get_proxy_type_func,
-    gpointer $get_proxy_type_user_data,
-    GDestroyNotify $get_proxy_type_destroy_notify,
-    GCancellable $cancellable,
-    &callback,
-    gpointer $user_data = gpointer,
-    :bus_async(:$bus-async) is required
+    Int()          $bus_type,
+    Int()          $flags,
+    Str()          $name,
+    Str()          $object_path,
+                   &get_proxy_type_func,
+    gpointer       $get_proxy_type_user_data,
+                   &get_proxy_type_destroy_notify,
+    GCancellable() $cancellable,
+                   &callback,
+    gpointer       $user_data                      =  gpointer,
+                   :bus_async(:$bus-async)         is required
   ) {
     self.new_for_bus_async(
       $bus_type,
@@ -337,18 +388,42 @@ class GIO::DBus::ObjectManagerClient {
     );
   }
   multi method new_for_bus_async (
-    Int() $bus_type,
-    Int() $flags,
-    Str() $name,
-    Str() $object_path,
-    &get_proxy_type_func,
-    gpointer $get_proxy_type_user_data,
-    GDestroyNotify $get_proxy_type_destroy_notify,
-    GCancellable $cancellable,
-    &callback,
-    gpointer $user_data = gpointer
+    Int()          $bus_type,
+    Str()          $name,
+    Str()          $object_path,
+                   &callback,
+    gpointer       $user_data                       = gpointer,
+    GCancellable() :$cancellable                    = GCancellable,
+    Int()          :$flags                          = 0,
+                   :&get_proxy_type_func            = Callable,
+    gpointer       :$get_proxy_type_user_data       = gpointer,
+                   :&get_proxy_type_destroy_notify  = Callable,
   ) {
-    my GBusType $b = $bus_type;
+    samewith(
+      $bus_type,
+      $flags,
+      $name,
+      $object_path,
+      &get_proxy_type_func,
+      $get_proxy_type_user_data,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method new_for_bus_async (
+    Int()          $bus_type,
+    Int()          $flags,
+    Str()          $name,
+    Str()          $object_path,
+                   &get_proxy_type_func,
+    gpointer       $get_proxy_type_user_data,
+                   &get_proxy_type_destroy_notify,
+    GCancellable() $cancellable,
+                   &callback,
+    gpointer       $user_data                      = gpointer
+  ) {
+    my GBusType                      $b = $bus_type;
     my GDBusObjectManagerClientFlags $f = $flags;
 
     g_dbus_object_manager_client_new_for_bus(
@@ -358,7 +433,7 @@ class GIO::DBus::ObjectManagerClient {
       $object_path,
       &get_proxy_type_func,
       $get_proxy_type_user_data,
-      $get_proxy_type_destroy_notify,
+      &get_proxy_type_destroy_notify,
       $cancellable,
       &callback,
       $user_data
@@ -366,14 +441,14 @@ class GIO::DBus::ObjectManagerClient {
   }
 
   multi method new (
-    GAsyncResult() $res,
-    CArray[Pointer[GError]] $error = gerror,
-    :bus_finish(:$bus-finish) is required
+    GAsyncResult()            $res,
+    CArray[Pointer[GError]]   $error =  gerror,
+    :bus_finish(:$bus-finish)        is required
   ) {
     self.new_for_bus_finish($res, $error);
   }
   method new_for_bus_finish (
-    GAsyncResult() $res,
+    GAsyncResult()          $res,
     CArray[Pointer[GError]] $error = gerror
   )
     is also<new-for-bus-finish>
@@ -390,12 +465,12 @@ class GIO::DBus::ObjectManagerClient {
     my $c = g_dbus_object_manager_client_get_connection($!domc);
 
     $c ??
-      ( $raw ?? $c !! GIO::DBus::Connection.new($c) )
+      ( $raw ?? $c !! GIO::DBus::Connection.new($c, :!ref) )
       !!
       Nil;
   }
 
-  # Type: gchar
+  # Type: Str
   method object-path is rw  is also<object_path> {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
@@ -418,7 +493,7 @@ class GIO::DBus::ObjectManagerClient {
   }
 
   # Is originally:
-  # GDBusObjectManagerClient, GDBusObjectProxy, GDBusProxy, gchar, gchar, GVariant, gpointer --> void
+  # GDBusObjectManagerClient, GDBusObjectProxy, GDBusProxy, Str, gchar, GVariant, gpointer --> void
   method interface-proxy-signal is also<interface_proxy_signal> {
     self.connect-interface-proxy-signal($!domc);
   }

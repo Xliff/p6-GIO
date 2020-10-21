@@ -2,8 +2,13 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
-
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::Volume;
 
@@ -20,20 +25,20 @@ sub g_volume_can_mount (GVolume $volume)
 { * }
 
 sub g_volume_eject_with_operation (
-  GVolume $volume,
+  GVolume            $volume,
   GMountUnmountFlags $flags,
-  GMountOperation $mount_operation,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GMountOperation    $mount_operation,
+  GCancellable       $cancellable,
+                     &callback (GVolume, GAsyncResult, gpointer),
+  gpointer           $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_volume_eject_with_operation_finish (
-  GVolume $volume,
-  GAsyncResult $result,
+  GVolume                 $volume,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -108,20 +113,20 @@ sub g_volume_get_uuid (GVolume $volume)
 { * }
 
 sub g_volume_mount (
-  GVolume $volume,
+  GVolume          $volume,
   GMountMountFlags $flags,
-  GMountOperation $mount_operation,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data)
-
+  GMountOperation  $mount_operation,
+  GCancellable     $cancellable,
+                   &callback (GVolume, GAsyncResult, gpointer),
+  gpointer         $user_data
+)
   is native(gio)
   is export
 { * }
 
 sub g_volume_mount_finish (
-  GVolume $volume,
-  GAsyncResult $result,
+  GVolume                 $volume,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns uint32

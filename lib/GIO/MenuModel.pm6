@@ -4,7 +4,6 @@ use Method::Also;
 use NativeCall;
 
 use GIO::Raw::Types;
-
 use GIO::Raw::MenuModel;
 
 use GIO::MenuAttributeIter;
@@ -20,6 +19,9 @@ sub EXPORT {
   );
 }
 
+our subset GMenuModelAncestry is export of Mu
+  where GMenuModel | GObject;
+
 class GIO::MenuModel {
   also does GLib::Roles::Object;
   also does GIO::Roles::Signals::MenuModel;
@@ -34,14 +36,29 @@ class GIO::MenuModel {
     self.disconnect-all(%_) for %!signals-mm;
   }
 
-  method setMenuModel(GMenuModel $model) {
-    $!mm = $model;
+  method setMenuModel(GMenuModelAncestry $_) {
+    my $to-parent;
 
-    self.roleInit-Object;
+    $!mm = do {
+      when GMenuModel {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GMenuModel, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
-  method new (GMenuModel $model) {
-    self.bless( :$model );
+  method new (GMenuModelAncestry $model, :$ref = True) {
+    return Nil unless $model;
+
+    my $o = self.bless( :$model );
+    $o.ref if $ref;
+    $o;
   }
 
   method GIO::Raw::Definitions::GMenuModel
@@ -63,31 +80,41 @@ class GIO::MenuModel {
 
   # ↓↓↓↓ METHODS ↓↓↓↓
   method get_item_attribute_value (
-    Int() $item_index,
-    Str() $attribute,
-    GVariantType $expected_type
+    Int()          $item_index,
+    Str()          $attribute,
+    GVariantType() $expected_type,
+                   :$raw = False
   )
     is also<get-item-attribute-value>
   {
     my gint $ii = $item_index;
-
-    g_menu_model_get_item_attribute_value(
+    my $v = g_menu_model_get_item_attribute_value(
       $!mm,
       $ii,
       $attribute,
       $expected_type
     );
+
+    $v ??
+      ( $raw ?? $v !! GLib::Variant.new($v, :!ref) )
+      !!
+      Nil;
   }
 
   method get_item_link (
     Int() $item_index,
-    Str() $link
+    Str() $link,
+          :$raw = False
   )
     is also<get-item-link>
   {
     my gint $ii = $item_index;
+    my $ml = g_menu_model_get_item_link($!mm, $ii, $link);
 
-    g_menu_model_get_item_link($!mm, $ii, $link);
+    $ml ??
+      ( $raw ?? $ml !! GIO::MenuModel.new($ml, :!ref) )
+      !!
+      Nil;
   }
 
   method get_n_items
@@ -100,7 +127,7 @@ class GIO::MenuModel {
   }
 
   method is_mutable is also<is-mutable> {
-    g_menu_model_is_mutable($!mm);
+    so g_menu_model_is_mutable($!mm);
   }
 
   method emit_items_changed (
@@ -110,8 +137,7 @@ class GIO::MenuModel {
   )
     is also<emit-items-changed>
   {
-    my @i = ($position, $removed, $added);
-    my gint ($p, $r, $a) = @i;
+    my gint ($p, $r, $a) = ($position, $removed, $added);
 
     g_menu_model_items_changed($!mm, $position, $removed, $added);
   }

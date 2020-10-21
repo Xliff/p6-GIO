@@ -14,7 +14,7 @@ sub g_pollable_output_stream_can_poll (GPollableOutputStream $stream)
 
 sub g_pollable_output_stream_create_source (
   GPollableOutputStream $stream,
-  GCancellable $cancellable
+  GCancellable          $cancellable
 )
   returns GSource
   is native(gio)
@@ -34,10 +34,10 @@ sub g_pollable_output_stream_is_writable (GPollableOutputStream $stream)
 { * }
 
 sub g_pollable_output_stream_write_nonblocking (
-  GPollableOutputStream $stream,
-  Pointer $buffer,
-  gsize $count,
-  GCancellable $cancellable,
+  GPollableOutputStream   $stream,
+  Pointer                 $buffer,
+  gsize                   $count,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gssize
@@ -46,11 +46,11 @@ sub g_pollable_output_stream_write_nonblocking (
 { * }
 
 sub g_pollable_output_stream_writev_nonblocking (
-  GPollableOutputStream $stream,
-  GOutputVector $vectors,
-  gsize $n_vectors,
-  gsize $bytes_written,
-  GCancellable $cancellable,
+  GPollableOutputStream   $stream,
+  Pointer                 $vectors,
+  gsize                   $n_vectors,
+  gsize                   $bytes_written is rw,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GPollableReturn

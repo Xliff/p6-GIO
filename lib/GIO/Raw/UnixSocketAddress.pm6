@@ -2,7 +2,13 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::UnixSocketAddress;
 
@@ -49,8 +55,8 @@ sub g_unix_socket_address_new (Str $path)
 { * }
 
 sub g_unix_socket_address_new_with_type (
-  Str $path,
-  gint $path_len,
+  Str                    $path,
+  gint                   $path_len,
   GUnixSocketAddressType $type
 )
   returns GUnixSocketAddress

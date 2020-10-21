@@ -24,11 +24,20 @@ class GIO::CharsetConverter {
 
   has GCharsetConverter $!cc is implementor;
 
-  submethod BUILD (:$char-converter) {
-    self.setGCharsetConverter($char-converter) if $char-converter;
+  submethod BUILD (
+    :initable-object(:$char-converter),
+    :$init,
+    :$cancellable
+  ) {
+    self.setGCharsetConverter($char-converter, :$init, :$cancellable)
+      if $char-converter;
   }
 
-  method setGCharsetConverter (GCharsetConverterAncestry $_) {
+  method setGCharsetConverter (
+    GCharsetConverterAncestry $_,
+                              :$init,
+                              :$cancellable
+  ) {
     my $to-parent;
 
     $!cc = do {
@@ -56,21 +65,25 @@ class GIO::CharsetConverter {
     }
 
     self.roleInit-Object;
-    self.roleInit-Converter unless $!c;
-    self.roleInit-Initable  unless $!i;
+    self.roleInit-Converter;
+    self.roleInit-Initable($init, $cancellable);
   }
 
   method GTK::Compat::Raw::GCharsetConverter
     is also<GCharsetConverter>
   { $!cc }
 
-  multi method new (GCharsetConverter $char-converter) {
-    $char-converter ?? self.bless( :$char-converter ) !! Nil;
+  multi method new (GCharsetConverterAncestry $char-converter, :$ref = True) {
+    return Nil unless $char-converter;
+
+    my $o = self.bless( :$char-converter );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (
-    Str() $to_charset,
-    Str() $from_charset,
-    CArray[Pointer[GError]] $error = gerror
+    Str()                   $to_charset,
+    Str()                   $from_charset,
+    CArray[Pointer[GError]] $error        = gerror
   ) {
     clear_error;
     my $char-converter = g_charset_converter_new(
@@ -94,20 +107,7 @@ class GIO::CharsetConverter {
                              !! die "Attribute '{ $key }' does not exist"
   }
 
-  method new_initable (:$init = True, :$cancellable = Callable, *%options)
-    is also<new-initable>
-  {
-    my $char-converter = self.new_object_with_properties(:raw, |%options);
-
-    $char-converter ?? self.bless(
-                        :$char-converter,
-                        :$init,
-                        :$cancellable
-                       )
-                    !! Nil
-  }
-
-  # Type: gchar
+  # Type: Str
   method from-charset is rw  is also<from_charset> {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
@@ -124,7 +124,7 @@ class GIO::CharsetConverter {
     );
   }
 
-  # Type: gchar
+  # Type: Str
   method to-charset is rw  is also<to_charset> {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(

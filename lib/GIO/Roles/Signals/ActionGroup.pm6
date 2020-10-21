@@ -9,7 +9,7 @@ use GLib::Roles::Signals::Generic;
 role GIO::Roles::Signals::ActionGroup {
   has %!signals-ag;
 
-  # GActionGroup, gchar, gboolean, gpointer
+  # GActionGroup, Str, gboolean, gpointer
   method connect-action-enabled-changed (
     $obj,
     $signal = 'action-enabled-changed',
@@ -34,7 +34,7 @@ role GIO::Roles::Signals::ActionGroup {
     %!signals-ag{$signal}[0];
   }
 
-  # GActionGroup, gchar, GVariant, gpointer
+  # GActionGroup, Str, GVariant, gpointer
   method connect-action-state-changed (
     $obj,
     $signal = 'action-state-changed',
@@ -61,11 +61,11 @@ role GIO::Roles::Signals::ActionGroup {
 
 }
 
-# GActionGroup, gchar, gboolean, gpointer
+# GActionGroup, Str, gboolean, gpointer
 sub g-connect-action-enabled-changed(
   Pointer $app,
   Str $name,
-  &handler (Pointer, gchar, gboolean, Pointer),
+  &handler (Pointer, Str, gboolean, Pointer),
   Pointer $data,
   uint32 $flags
 )
@@ -74,11 +74,11 @@ sub g-connect-action-enabled-changed(
   is symbol('g_signal_connect_object')
 { * }
 
-# GActionGroup, gchar, GVariant, gpointer
+# GActionGroup, Str, GVariant, gpointer
 sub g-connect-action-state-changed(
   Pointer $app,
   Str $name,
-  &handler (Pointer, gchar, GVariant, Pointer),
+  &handler (Pointer, Str, GVariant, Pointer),
   Pointer $data,
   uint32 $flags
 )

@@ -1,7 +1,6 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
@@ -15,22 +14,16 @@ role GIO::Roles::Volume {
 
   has GVolume $!v;
 
-  submethod BUILD (:$volume) {
-    $!v = $volume;
-  }
-
   method roleInit-Volume is also<roleInit_Volume> {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!v;
 
+    my \i = findProperImplementor(self.^attributes);
     $!v = cast( GVolume, i.get_value(self) );
   }
 
   method GIO::Raw::Definitions::GVolume
+    is also<GVolume>
   { $!v }
-
-  method new-volume-obj (GVolume :$volume) is also<new_volume_obj> {
-    self.bless( :$volume );
-  }
 
   # Is originally:
   # GVolume, gpointer --> void
@@ -57,36 +50,37 @@ role GIO::Roles::Volume {
   { * }
 
   multi method eject_with_operation (
-    Int() $flags,
-    Int() $mount_operation,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Int()          $flags,
+    Int()          $mount_operation,
+                   &callback,
+    gpointer       $user_data        = gpointer,
+    GCancellable() $cancellable      = GCancellable
   ) {
-    samewith($flags, $mount_operation, GCancellable, $callback, $user_data);
+    samewith($flags, $mount_operation, $cancellable, &callback, $user_data);
   }
   multi method eject_with_operation (
-    Int() $flags,
-    Int() $mount_operation,
+    Int()          $flags,
+    Int()          $mount_operation,
     GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+                   &callback,
+    gpointer       $user_data        = gpointer
   ) {
     my GMountUnmountFlags $f = $flags;
-    my GMountOperation $m = $mount_operation;
+    my GMountOperation    $m = $mount_operation;
 
     g_volume_eject_with_operation(
       $!v,
       $f,
       $m,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method eject_with_operation_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<eject-with-operation-finish>
   {
@@ -104,7 +98,7 @@ role GIO::Roles::Volume {
     my $f = g_volume_get_activation_root($!v);
 
     $f ??
-      ( $raw ?? $f !! GTK::Compat::Roles::File.new-file-obj($f) )
+      ( $raw ?? $f !! GIO::File.new($f, :!ref) )
       !!
       Nil;
   }
@@ -113,7 +107,7 @@ role GIO::Roles::Volume {
     my $d = g_volume_get_drive($!v);
 
     $d ??
-      ( $raw ?? $d !! ::('GIO::Roles::Drive').new-drive-obj($d) )
+      ( $raw ?? $d !! ::('GIO::Drive').new($d, :!ref) )
       !!
       Nil;
   }
@@ -122,7 +116,7 @@ role GIO::Roles::Volume {
     my $i = g_volume_get_icon($!v);
 
     $i ??
-      ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i) )
+      ( $raw ?? $i !! GIO::Icon.new($i, :!ref) )
       !!
       Nil;
   }
@@ -135,7 +129,7 @@ role GIO::Roles::Volume {
     my $m = g_volume_get_mount($!v);
 
     $m ??
-      ( $raw ?? $m !! ::('GIO::Roles::Mount').new-mount-obj($m) )
+      ( $raw ?? $m !! ::('GIO::Mount').new($m, :!ref) )
       !!
       Nil;
   }
@@ -152,7 +146,7 @@ role GIO::Roles::Volume {
     my $i = g_volume_get_symbolic_icon($!v);
 
     $i ??
-      ( $raw ?? $i !! GTK::Compat::Roles::Icon.new-icon-obj($i) )
+      ( $raw ?? $i !! GIO::Icon.new($i, :!ref) )
       !!
       Nil;
   }
@@ -168,36 +162,38 @@ role GIO::Roles::Volume {
   }
 
   multi method mount (
-    Int() $flags,
-    Int() $mount_operation,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Int()        $flags,
+    Int()        $mount_operation,
+                 &callback,
+    gpointer     $user_data                                   = gpointer,
+    GCancellable :$cancellable                                = GCancellable
+
   ) {
-    samewith($flags, $mount_operation, GCancellable, $callback, $user_data);
+    samewith($flags, $mount_operation, $cancellable, &callback, $user_data);
   }
   multi method mount (
-    Int() $flags,
-    Int() $mount_operation,
+    Int()          $flags,
+    Int()          $mount_operation,
     GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+                   &callback,
+    gpointer       $user_data = gpointer
   ) {
     my GMountUnmountFlags $f = $flags;
-    my GMountOperation $m = $mount_operation;
+    my GMountOperation    $m = $mount_operation;
 
     g_volume_mount(
       $!v,
       $flags,
       $mount_operation,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method mount_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<mount-finish>
   {

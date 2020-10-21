@@ -6,10 +6,16 @@ use NativeCall;
 use GIO::Raw::Types;
 use GIO::Raw::ContentType;
 
+use GLib::GList;
+use GIO::ThemedIcon;
+
 use GLib::Roles::ListData;
+use GLib::Roles::Object;
+use GLib::Roles::StaticClass;
 
 # STATIC CATCH-ALL
 class GIO::ContentType {
+  also does GLib::Roles::StaticClass;
 
   method can_be_executable (Str() $type) is also<can-be-executable> {
     so g_content_type_can_be_executable($type);
@@ -23,7 +29,7 @@ class GIO::ContentType {
     g_content_type_from_mime_type($mime_type);
   }
 
-  method get_registered (:$glist = False)
+  method get_registered (:$glist = False, :$raw = False)
     is also<
       get-registered
       registered
@@ -32,11 +38,12 @@ class GIO::ContentType {
     my $list = g_content_types_get_registered();
 
     return Nil   unless $list;
-    return $list if     $glist;
+    return $list if     $glist && $raw;
 
-    (
-      GLib::GList.new($list) but GLib::Roles::ListData[Str]
-    ).Array
+    $list = GLib::GList.new($list) but GLib::Roles::ListData[Str];
+    return $list if $glist;
+
+    $list.Array;
   }
 
   method get_description (Str() $type) is also<get-description> {
@@ -47,39 +54,57 @@ class GIO::ContentType {
     g_content_type_get_generic_icon_name($type);
   }
 
-  method get_icon (Str() $type) is also<get-icon> {
-    g_content_type_get_icon($type);
+  method get_icon (Str() $type, :$raw = False) is also<get-icon> {
+    my $i = g_content_type_get_icon($type);
+
+    # cw: Returned value is a GThemedIcon, from the source.
+    $i ??
+      ( $raw ?? $i !! GIO::ThemedIcon.new($i, :!ref) )
+      !!
+      Nil;
   }
 
   method get_mime_type (Str() $type) is also<get-mime-type> {
     g_content_type_get_mime_type($type);
   }
 
-  method get_symbolic_icon (Str() $type) is also<get-symbolic-icon> {
-    g_content_type_get_symbolic_icon($type);
+  method get_symbolic_icon (Str() $type, :$raw = False)
+    is also<get-symbolic-icon>
+  {
+    my $si = g_content_type_get_symbolic_icon($type);
+
+    # cw: Returned value is a GThemedIcon, from the source.
+    $si ??
+      ( $raw ?? $si !! GIO::ThemedIcon.new($si, :!ref) )
+      !!
+      Nil;
   }
 
-  method guess (
+  multi method guess (
+    Str() $filename,
+    Str() $data      = Str,
+    Int() $data_size = 0,
+  ) {
+    samewith($filename, $data, $data_size, $, :all);
+  }
+  multi method guess (
     Str() $filename,
     Str() $data,
     Int() $data_size,
-    $result_uncertain is rw
+          $result_uncertain is rw,
+          :$all             =  False
   ) {
     my gulong $ds = $data_size;
-    my guint $ru = 0;
-    my $rc = g_content_type_guess($filename, $data, $ds, $ru);
+    my guint $ru  = 0;
+    my $ct        = g_content_type_guess($filename, $data, $ds, $ru);
 
-    $result_uncertain = $ru.defined ?? $ru !! Nil;
+    $result_uncertain = $ru;
     # GLib::Memory.free($rc);
-    $rc;
+    $all.not ?? $ct !! ($ct, $result_uncertain);
   }
 
   method guess_for_tree (GFile() $root) is also<guess-for-tree> {
-    my CArray[Str] $guesses = g_content_type_guess_for_tree($root);
-    my ($gc, @guess_list) = (0);
-
-    @guess_list.push( $guesses[$gc++] ) while $guesses[$gc].defined;
-    @guess_list;
+    CStringArrayToArray( g_content_type_guess_for_tree($root) );
   }
 
   method is_a (Str() $type, Str() $supertype) is also<is-a> {

@@ -43,8 +43,8 @@ sub g_inet_address_mask_matches (GInetAddressMask $mask, GInetAddress $address)
 { * }
 
 sub g_inet_address_mask_new (
-  GInetAddress $addr,
-  guint $length,
+  GInetAddress            $addr,
+  guint                   $length,
   CArray[Pointer[GError]] $error
 )
   returns GInetAddressMask
@@ -53,7 +53,7 @@ sub g_inet_address_mask_new (
 { * }
 
 sub g_inet_address_mask_new_from_string (
-  Str $mask_string,
+  Str                     $mask_string,
   CArray[Pointer[GError]] $error
 )
   returns GInetAddressMask

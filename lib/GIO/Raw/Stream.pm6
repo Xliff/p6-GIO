@@ -12,8 +12,8 @@ sub g_io_stream_clear_pending (GIOStream $stream)
 { * }
 
 sub g_io_stream_close (
-  GIOStream $stream,
-  GCancellable $cancellable,
+  GIOStream               $stream,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -22,19 +22,19 @@ sub g_io_stream_close (
 { * }
 
 sub g_io_stream_close_async (
-  GIOStream $stream,
-  gint $io_priority,
+  GIOStream    $stream,
+  gint         $io_priority,
   GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+               &callback (GIOStream, GAsyncResult, gpointer),
+  gpointer     $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_io_stream_close_finish (
-  GIOStream $stream,
-  GAsyncResult $result,
+  GIOStream               $stream,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -79,20 +79,20 @@ sub g_io_stream_set_pending (GIOStream $stream, CArray[Pointer[GError]] $error)
 { * }
 
 sub g_io_stream_splice_async (
-  GIOStream $stream1,
-  GIOStream $stream2,
+  GIOStream            $stream1,
+  GIOStream            $stream2,
   GIOStreamSpliceFlags $flags,
-  gint $io_priority,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  gint                 $io_priority,
+  GCancellable         $cancellable,
+                       &callback (GIOStream, GAsyncResult, gpointer),
+  gpointer             $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_io_stream_splice_finish (
-  GAsyncResult $result,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns uint32

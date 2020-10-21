@@ -2,13 +2,19 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::UnixFDList;
 
 sub g_unix_fd_list_append (
-  GUnixFDList $list,
-  gint $fd,
+  GUnixFDList             $list,
+  gint                    $fd,
   CArray[Pointer[GError]] $error
 )
   returns gint
@@ -17,8 +23,8 @@ sub g_unix_fd_list_append (
 { * }
 
 sub g_unix_fd_list_get (
-  GUnixFDList $list,
-  gint $index_,
+  GUnixFDList             $list,
+  gint                    $index,
   CArray[Pointer[GError]] $error
 )
   returns gint

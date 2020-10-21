@@ -32,9 +32,9 @@ sub g_list_model_get_object (GListModel $list, guint $position)
 
 sub g_list_model_items_changed (
   GListModel $list,
-  guint $position,
-  guint $removed,
-  guint $added
+  guint      $position,
+  guint      $removed,
+  guint      $added
 )
   is native(gio)
   is export

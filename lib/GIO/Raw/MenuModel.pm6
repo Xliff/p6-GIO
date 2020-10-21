@@ -4,13 +4,12 @@ use NativeCall;
 
 use GIO::Raw::Types;
 
-
 # va_list...
 sub g_menu_model_get_item_attribute (
-  GMenuModel $model,
-  gint $item_index,
-  Str $attribute,
-  Str $format_string,
+  GMenuModel      $model,
+  gint            $item_index,
+  Str             $attribute,
+  Str             $format_string,
   CArray[Pointer]
 )
   returns gboolean
@@ -44,8 +43,8 @@ sub g_menu_link_iter_get_name (GMenuLinkIter $iter)
 
 sub g_menu_link_iter_get_next (
   GMenuLinkIter $iter,
-  Str $out_link,
-  GMenuModel $value
+  Str           $out_link,
+  GMenuModel    $value
 )
   returns uint32
   is native(gio)
@@ -71,9 +70,9 @@ sub g_menu_link_iter_next (GMenuLinkIter $iter)
   { * }
 
 sub g_menu_model_get_item_attribute_value (
-  GMenuModel $model,
-  gint $item_index,
-  Str $attribute,
+  GMenuModel   $model,
+  gint         $item_index,
+  Str          $attribute,
   GVariantType $expected_type
 )
   returns GVariant
@@ -83,8 +82,8 @@ sub g_menu_model_get_item_attribute_value (
 
 sub g_menu_model_get_item_link (
   GMenuModel $model,
-  gint $item_index,
-  Str $link
+  gint       $item_index,
+  Str        $link
 )
   returns GMenuModel
   is native(gio)
@@ -105,9 +104,9 @@ sub g_menu_model_is_mutable (GMenuModel $model)
 
 sub g_menu_model_items_changed (
   GMenuModel $model,
-  gint $position,
-  gint $removed,
-  gint $added
+  gint       $position,
+  gint       $removed,
+  gint       $added
 )
   is native(gio)
   is export
@@ -115,7 +114,7 @@ sub g_menu_model_items_changed (
 
 sub g_menu_model_iterate_item_attributes (
   GMenuModel $model,
-  gint $item_index
+  gint       $item_index
 )
   returns GMenuAttributeIter
   is native(gio)
@@ -124,7 +123,7 @@ sub g_menu_model_iterate_item_attributes (
 
 sub g_menu_model_iterate_item_links (
   GMenuModel $model,
-  gint $item_index
+  gint       $item_index
 )
   returns GMenuLinkIter
   is native(gio)

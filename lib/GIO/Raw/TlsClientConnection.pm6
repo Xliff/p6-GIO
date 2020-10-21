@@ -2,8 +2,13 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
-
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::TlsClientConnection;
 
@@ -28,8 +33,8 @@ sub g_tls_client_connection_get_type ()
 { * }
 
 sub g_tls_client_connection_new (
-  GIOStream $base_io_stream,
-  GSocketConnectable $server_identity,
+  GIOStream               $base_io_stream,
+  GSocketConnectable      $server_identity,
   CArray[Pointer[GError]] $error
 )
   returns GTlsClientConnection
@@ -57,7 +62,7 @@ sub g_tls_client_connection_get_validation_flags (GTlsClientConnection $conn)
 
 sub g_tls_client_connection_set_server_identity (
   GTlsClientConnection $conn,
-  GSocketConnectable $identity
+  GSocketConnectable   $identity
 )
   is native(gio)
   is export
@@ -65,7 +70,7 @@ sub g_tls_client_connection_set_server_identity (
 
 sub g_tls_client_connection_set_use_ssl3 (
   GTlsClientConnection $conn,
-  gboolean $use_ssl3
+  gboolean             $use_ssl3
 )
   is native(gio)
   is export

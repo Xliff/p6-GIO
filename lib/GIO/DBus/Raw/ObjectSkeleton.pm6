@@ -8,7 +8,7 @@ use GIO::DBus::Raw::Types;
 unit package GIO::DBus::Raw::ObjectSkeleton;
 
 sub g_dbus_object_skeleton_add_interface (
-  GDBusObjectSkeleton $object,
+  GDBusObjectSkeleton    $object,
   GDBusInterfaceSkeleton $interface
 )
   is native(gio)
@@ -33,7 +33,7 @@ sub g_dbus_object_skeleton_new (Str $object_path)
 { * }
 
 sub g_dbus_object_skeleton_remove_interface (
-  GDBusObjectSkeleton $object,
+  GDBusObjectSkeleton    $object,
   GDBusInterfaceSkeleton $interface
 )
   is native(gio)
@@ -42,7 +42,7 @@ sub g_dbus_object_skeleton_remove_interface (
 
 sub g_dbus_object_skeleton_remove_interface_by_name (
   GDBusObjectSkeleton $object,
-  Str $interface_name
+  Str                 $interface_name
 )
   is native(gio)
   is export
@@ -50,7 +50,7 @@ sub g_dbus_object_skeleton_remove_interface_by_name (
 
 sub g_dbus_object_skeleton_set_object_path (
   GDBusObjectSkeleton $object,
-  Str $object_path
+  Str                 $object_path
 )
   is native(gio)
   is export

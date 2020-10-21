@@ -7,24 +7,19 @@ use GIO::Raw::Proxy;
 
 use GIO::Stream;
 
-role GIO::Roles::Proxy {
-  has GProxy $!p;
+use GLib::Roles::Object;
 
-  submethod BUILD (:$proxy) {
-    $!p = $proxy if $proxy;
-  }
+role GIO::Roles::Proxy does GLib::Roles::Object {
+  has GProxy $!p;
 
   submethod GIO::Raw::Definitions::GProxy
   { $!p }
 
   method roleInit-Proxy {
+    return if $!p;
+
     my \i = findProperImplementor(self.^attributes);
-
     $!p = cast( GProxy, i.get_vale(self) );
-  }
-
-  method newProxy (GProxy $proxy) {
-    self.bless( :$proxy );
   }
 
   method get_default_for_protocol (Str() $protocol) {
@@ -32,45 +27,61 @@ role GIO::Roles::Proxy {
   }
 
   method connect (
-    GIOStream() $connection,
-    GProxyAddress() $proxy_address,
-    GCancellable $cancellable,
-    CArray[Pointer[GError]] $error = gerror,
+    GIOStream()             $connection,
+    GProxyAddress()         $proxy_address,
+    GCancellable()          $cancellable    = GCancellable,
+    CArray[Pointer[GError]] $error          = gerror,
     :$raw = False
   ) {
     clear_error;
     my $ios =
       g_proxy_connect($!p, $connection, $proxy_address, $cancellable, $error);
     set_error($error);
-    $raw ?? $ios !! GIO::Stream.new($ios);
+    $raw ?? $ios !! GIO::Stream.new($ios, :!ref);
   }
 
-  method connect_async (
-    GIOStream() $connection,
-    GProxyAddress() $proxy_address,
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = Pointer
+  proto method connect_async (|)
+  { * }
+
+  multi method connect_async (
+    GIOStream()         $connection,
+    GProxyAddress()     $proxy_address,
+                        &callback,
+    gpointer            $user_data      = Pointer,
+    GCancellable()      :$cancellable   = GCancellable
+  ) {
+    samewith($connection, $proxy_address, &callback, $user_data);
+  }
+  multi method connect_async (
+    GIOStream()         $connection,
+    GProxyAddress()     $proxy_address,
+    GCancellable()      $cancellable,
+                        &callback,
+    gpointer            $user_data      = Pointer
   ) {
     g_proxy_connect_async(
       $!p,
       $connection,
       $proxy_address,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method connect_finish (
-    GAsyncResult() $result,
+    GAsyncResult()          $result,
     CArray[Pointer[GError]] $error = gerror,
-    :$raw = False;
+                            :$raw  = False;
   ) {
     clear_error;
     my $ios = g_proxy_connect_finish($!p, $result, $error);
     set_error($error);
-    $raw ?? $ios !! GIO::Stream.new($ios);
+
+    $ios ??
+      ( $raw ?? $ios !! GIO::Stream.new($ios, :!ref) )
+      !!
+      Nil;
   }
 
   method proxy_get_type {
@@ -80,7 +91,43 @@ role GIO::Roles::Proxy {
   }
 
   method supports_hostname {
-    g_proxy_supports_hostname($!p);
+    so g_proxy_supports_hostname($!p);
+  }
+
+}
+
+our subset GProxyAncestry is export of Mu
+  where GProxy | GObject;
+
+class GIO::Proxy does GIO::Roles::Proxy {
+
+  submethod BUILD (:$proxy) {
+    self.setGProxy($proxy) if $proxy;
+  }
+
+  method setGProxy (GProxyAncestry $_) {
+    my $to-parent;
+
+    $!p = do {
+      when GProxy {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GProxy, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GProxyAncestry $proxy, :$ref = True) {
+    return Nil unless $proxy;
+
+    my $o = self.bless( :$proxy );
+    $o.ref if $ref;
+    $o;
   }
 
 }

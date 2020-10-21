@@ -7,27 +7,19 @@ use GIO::Raw::FilterInputStream;
 
 use GIO::InputStream;
 
-our subset FilterInputStreamAncestry is export of Mu
+our subset GFilterInputStreamAncestry is export of Mu
   where GFilterInputStream | GInputStream;
 
 class GIO::FilterInputStream is GIO::InputStream {
   has GFilterInputStream $!fis is implementor;
 
   submethod BUILD (:$filter-stream) {
-    given $filter-stream {
-      when FilterInputStreamAncestry {
-        self.setFilterInputStream($filter-stream);
-      }
-
-      when GIO::FilterInputStream {
-      }
-
-      default {
-      }
-    }
+    self.setGFilterInputStream($filter-stream) if $filter-stream;
   }
 
-  method setFilterInputStream (FilterInputStreamAncestry $_) {
+  method setGFilterInputStream (GFilterInputStreamAncestry $_)
+    is also<setFilterInputStream>
+  {
     my $to-parent;
 
     $!fis = do {
@@ -51,8 +43,12 @@ class GIO::FilterInputStream is GIO::InputStream {
   proto method new(|)
   { * }
 
-  multi method new (GFilterInputStream $filter-stream) {
-    self.bless( :$filter-stream );
+  multi method new (GFilterInputStreamAncestry $filter-stream, :$ref = True) {
+    return Nil if $filter-stream;
+
+    my $o = self.bless( :$filter-stream );
+    $o.ref if $ref;
+    $o;
   }
 
   method close_base_stream is rw is also<close-base-stream> {

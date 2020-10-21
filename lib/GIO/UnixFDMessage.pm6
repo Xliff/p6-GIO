@@ -10,28 +10,19 @@ use GIO::Raw::UnixFDMessage;
 use GIO::SocketControlMessage;
 use GIO::UnixFDList;
 
-our subset UnixFDMessageAncestry is export of Mu
-  where GUnixFDMessage | SocketControlMessageAncestry;
+our subset GUnixFDMessageAncestry is export of Mu
+  where GUnixFDMessage | GSocketControlMessageAncestry;
 
 class GIO::UnixFDMessage is GIO::SocketControlMessage {
   has GUnixFDMessage $!fdm is implementor;
 
   submethod BUILD (:$fd-message) {
-    given $fd-message {
-      when UnixFDMessageAncestry {
-        self.setFDMessage($fd-message);
-      }
-
-      when GIO::UnixFDMessage {
-      }
-
-      default {
-      }
-    }
+    self.setFDMessage($fd-message) if $fd-message;
   }
 
-  method setFDMessage (UnixFDMessageAncestry $_) {
+  method setFDMessage (GUnixFDMessageAncestry $_) {
     my $to-parent;
+
     $!fdm = do {
       when GUnixFDMessage {
         $to-parent = cast(GSocketControlMessage, $_);
@@ -43,26 +34,47 @@ class GIO::UnixFDMessage is GIO::SocketControlMessage {
         cast(GUnixFDMessage, $_);
       }
     }
-    self.setSocketControlMessage($to-parent);
+    self.setGSocketControlMessage($to-parent);
   }
 
   method GIO::Raw::Definitions::GUnixFDMessage
     is also<GUnixFDMessage>
   { $!fdm }
 
-  multi method new (UnixFDMessageAncestry $fd-message) {
-    self.bless( :$fd-message );
+  multi method new (GUnixFDMessageAncestry $fd-message, :$ref = True) {
+    return Nil unless $fd-message;
+
+    my $o = self.bless( :$fd-message );
+    $o.ref if $ref;
+    $o;
   }
   multi method new {
-    self.bless( fd-message => g_unix_fd_message_new() );
-  }
+    my $fd-message = g_unix_fd_message_new();
 
+    $fd-message ?? self.bless( :$fd-message ) !! Nil;
+  }
+  multi method new (
+    GUnixFDList() $list,
+
+    :with_fd_list(
+      :with-fd-list(
+        :fd_list(
+          :fd-list( :$fdlist )
+        )
+      )
+    ) is required
+  ) {
+    self.new_with_fd_list($list);
+  }
+  
   method new_with_fd_list (GUnixFDList() $list) is also<new-with-fd-list> {
-    self.bless( fd-message => g_unix_fd_message_new_with_fd_list($list) );
+    my $fd-message = g_unix_fd_message_new_with_fd_list($list);
+
+    $fd-message ?? self.bless( :$fd-message ) !! Nil;
   }
 
   method append_fd (
-    Int() $fd,
+    Int()                   $fd,
     CArray[Pointer[GError]] $error = gerror
   )
     is also<append-fd>
@@ -70,7 +82,7 @@ class GIO::UnixFDMessage is GIO::SocketControlMessage {
     my gint $ffd = $fd;
 
     clear_error;
-    my $rv = g_unix_fd_message_append_fd($!fdm, $fd, $error);
+    my $rv = so g_unix_fd_message_append_fd($!fdm, $fd, $error);
     set_error($error);
     $rv;
   }
@@ -78,7 +90,10 @@ class GIO::UnixFDMessage is GIO::SocketControlMessage {
   method get_fd_list (:$raw = False) is also<get-fd-list> {
     my $fds = g_unix_fd_message_get_fd_list($!fdm);
 
-    $raw ?? $fds !! GIO::UnixFDList.new($fds);
+    $fds ??
+      ( $raw ?? $fds !! GIO::UnixFDList.new($fds, :!ref) )
+      !!
+      Nil;
   }
 
   method get_type is also<get-type> {
@@ -87,14 +102,23 @@ class GIO::UnixFDMessage is GIO::SocketControlMessage {
     unstable_get_type( self.^name, &g_unix_fd_message_get_type, $n, $t );
   }
 
-  method steal_fds ($length, :$raw = False) is also<steal-fds> {
+  proto method steal_fds (|)
+    is also<steal-fds>
+  { * }
+
+  multi method steal_fds ( :$raw = False ) {
+    samewith($, :$raw);
+  }
+  multi method steal_fds ($length is rw, :$raw = False)  {
     my gint ($l, $idx) = (0, 0);
 
     my $fds = g_unix_fd_message_steal_fds($!fdm, $l);
-    return $fds if $raw;
+    $length = $l;
 
-    my @fds;
-    @fds.push: $fds[$idx++] for ^$l;
+    return Nil  unless $fds;
+    return $fds if     $raw;
+
+    CArrayToArray($fds, $length);
   }
 
 }

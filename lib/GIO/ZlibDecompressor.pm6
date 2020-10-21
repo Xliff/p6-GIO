@@ -1,7 +1,6 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
@@ -9,19 +8,35 @@ use GIO::Raw::Types;
 use GLib::Value;
 use GIO::FileInfo;
 
-use GLib::Roles::Properties;
 use GIO::Roles::Converter;
 
+our subset GZlibDecompressorAncestry is export of Mu
+  where GZlibDecompressor | GConverter | GObject;
+
 class GIO::ZlibDecompressor {
-  also does GLib::Roles::Properties;
   also does GIO::Roles::Converter;
 
   has GZlibDecompressor $!zd is implementor;
 
   submethod BUILD (:$decompressor) {
-    $!zd = $decompressor;
+    self.setGLibDecompressor($decompressor) if $decompressor;
+  }
 
-    self.roleInit-Object;
+  method setGLibDecompressor (GZlibDecompressorAncestry $_) {
+    my $to-parent;
+
+    $!zd = do {
+      when GZlibDecompressor {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GZlibDecompressor, $_);
+      }
+    }
+    self!setObject($to-parent);
     self.roleInit-Converter;
   }
 
@@ -29,10 +44,18 @@ class GIO::ZlibDecompressor {
     is also<GZlibDecompressor>
   { $!zd }
 
-  method new (Int() $format) {
-    my GZlibCompressorFormat $f = $format;
+  multi method new (GZlibDecompressorAncestry $decompressor, :$ref = True) {
+    return Nil unless $decompressor;
 
-    self.bless( decompressor => g_zlib_decompressor_new($f) );
+    my $o = self.bless( :$decompressor );
+    $o.ref if $ref;
+    $o;
+  }
+  multi method new (Int() $format) {
+    my GZlibCompressorFormat $f            = $format;
+    my                       $decompressor = g_zlib_decompressor_new($f);
+
+    $decompressor ?? self.bless( :$decompressor ) !! Nil;
   }
 
   # Type: GZlibCompressorFormat
@@ -57,7 +80,7 @@ class GIO::ZlibDecompressor {
     my $fi = g_zlib_decompressor_get_file_info($!zd);
 
     $fi ??
-      ( $raw ?? $fi !! GIO::FileInfo.new($fi) )
+      ( $raw ?? $fi !! GIO::FileInfo.new($fi, :!ref) )
       !!
       Nil;
   }

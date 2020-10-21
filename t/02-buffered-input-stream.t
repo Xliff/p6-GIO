@@ -2,7 +2,7 @@ use v6.c;
 
 use Test;
 
-use GTK::Compat::Types;
+use GIO::Raw::Types;
 
 use GLib::MainContext;
 
@@ -107,7 +107,6 @@ sub test-set-buffer-size {
 
 sub test-read-byte {
   use GIO::Raw::Quarks;
-  use GTK::Compat::FileTypes;
 
   my ($data, $base, $in) = tests-init('abcdefgh');
 
@@ -200,10 +199,13 @@ sub test-read {
 
 my $result;
 sub result-cb ($, $r, $) {
-  CATCH { default { .message.say } }
+  CATCH { default { .message.say; .backtrace.summary.say } }
 
   $result = GIO::Task.new($r).ref;
 }
+
+# cw: $buffer performs best outside the scope of test-read-async()
+my $buffer;
 
 sub test-read-async {
   my ($data, $base, $in) = tests-init(
@@ -215,8 +217,6 @@ sub test-read-async {
   is  $in.available, 0,
       'No bytes available after stream init.';
 
-  my $buffer;
-
   sub getChunk ($cmp = '', $size = 16) {
     if $size == 8 {
       $in.fill-async($size, G_PRIORITY_DEFAULT, &result-cb);
@@ -225,7 +225,7 @@ sub test-read-async {
       $in.read-async($buffer, $size, G_PRIORITY_DEFAULT, &result-cb);
     }
 
-repeat { GLib::MainContext.iteration } until $result;
+    repeat { GLib::MainContext.iteration } until $result;
 
     is  $in.fill-finish($result), $size,
         "Async read operation returned proper number of bytes ({$size})";
@@ -284,7 +284,7 @@ sub test-skip-async {
   }
 
   for <7 k 10 v 20 Q>.rotor(2) -> ($s, $l) {
-    $in.skip-async($s, G_PRIORITY_DEFAULT, &result-cb);
+    $in.skip-async($s, &result-cb);
 
     repeat { GLib::MainContext.iteration } until $result;
 
@@ -297,7 +297,7 @@ sub test-skip-async {
   }
 
   for 8, 0 {
-    $in.skip-async(10, G_PRIORITY_DEFAULT, &result-cb);
+    $in.skip-async(10, &result-cb);
 
     repeat { GLib::MainContext.iteration } until $result;
 

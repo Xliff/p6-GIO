@@ -8,6 +8,9 @@ use GIO::Raw::NetworkService;
 use GLib::Roles::Object;
 use GIO::Roles::SocketConnectable;
 
+our subset GNetworkServiceAncestry is export of Mu
+  where GNetworkService | GSocketConnectable | GObject;
+
 class GIO::NetworkService {
   also does GLib::Roles::Object;
   also does GIO::Roles::SocketConnectable;
@@ -15,18 +18,47 @@ class GIO::NetworkService {
   has GNetworkService $!s is implementor;
 
   submethod BUILD (:$service) {
-    $!s = $service;
+    self.setGNetworkService($service) if $service;
+  }
 
-    self.roleInit-SocketConnectable;
+  method setGNetworkService (GNetworkServiceAncestry $_) {
+    my $to-parent;
+
+    $!s = do {
+      when GNetworkService {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      when GSocketConnectable {
+        $to-parent = cast(GObject, $_);
+        $!sc = $_;
+        cast(GNetworkService, $_);
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GNetworkService, $_);
+      }
+    }
+    self.roleInit-SocketConnectable unless $!sc;
   }
 
   method GIO::Raw::Definitions::GNetworkService
+    is also<GNetworkService>
   { $!s }
 
-  method new (Str() $service, Str() $protocol, Str() $domain) {
-    self.bless(
-      service => g_network_service_new($service, $protocol, $domain)
-    );
+  multi method new (GNetworkServiceAncestry $service, :$ref = True) {
+    return Nil unless $service;
+
+    my $o = self.bless(:$service);
+    $o.ref if $ref;
+    $o;
+  }
+  multi method new (Str() $ser, Str() $protocol, Str() $domain) {
+    my $service = g_network_service_new($ser, $protocol, $domain);
+
+    $service ?? self.bless( :$service ) !! Nil;
   }
 
   method scheme is rw {
@@ -70,7 +102,7 @@ class GIO::NetworkService {
   method get_type is also<get-type> {
     state ($n, $t);
 
-    unstable_get_type( self.^name, &g_network_service_get_type(), $n, $t );
+    unstable_get_type( self.^name, &g_network_service_get_type, $n, $t );
   }
 
 }

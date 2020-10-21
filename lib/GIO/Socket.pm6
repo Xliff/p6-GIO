@@ -1,7 +1,6 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
@@ -23,8 +22,12 @@ class GIO::Socket {
 
   has GSocket $!s is implementor;
 
-  submethod BUILD (:$socket, :$cancellable, :$init) {
-    self.setGSocket($socket) if $socket;
+  submethod BUILD (
+    :initable-object( :$socket ),
+    :$cancellable,
+    :$init
+  ) {
+    self.setGSocket($socket, :$init, :$cancellable) if $socket;
   }
 
   method setGSocket (GSocketAncestry $_, :$init, :$cancellable) {
@@ -56,24 +59,28 @@ class GIO::Socket {
 
     self!setObject($to-parent);
     self.roleInit-Initable(:$cancellable, :$init);
-    self.roleInit-DatagramBased unless $!d;
+    self.roleInit-DatagramBased;
   }
 
   method GIO::Raw::Definitions::GSocket
     is also<GSocket>
   { $!s }
 
-  multi method new (GSocket $socket) {
-    $socket ?? self.bless( :$socket ) !! Nil;
+  multi method new (GSocketAncestry $socket, :$ref = True) {
+    return Nil unless $socket;
+
+    my $o = self.bless( :$socket );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (
-    Int() $family,
-    Int() $type,
-    Int() $protocol                = G_SOCKET_PROTOCOL_DEFAULT,
-    CArray[Pointer[GError]] $error = gerror
+    Int()                   $family,
+    Int()                   $type,
+    Int()                   $protocol = G_SOCKET_PROTOCOL_DEFAULT,
+    CArray[Pointer[GError]] $error    = gerror
   ) {
-    my GSocketFamily $f = $family;
-    my GSocketType $t = $type;
+    my GSocketFamily   $f = $family;
+    my GSocketType     $t = $type;
     my GSocketProtocol $p = $protocol;
 
     clear_error;
@@ -91,14 +98,6 @@ class GIO::Socket {
     my $socket = g_socket_new_from_fd($!s, $error);
     set_error($error);
     $socket ?? self.bless( :$socket ) !! Nil;
-  }
-
-  method new_initable (:$init = True, :$cancellable = Callable, *%options)
-    is also<new-initable>
-  {
-    my $socket = self.new_object_with_properties( |%options );
-
-    $socket ?? self.bless( :$socket, :$init, $cancellable ) !! Nil;
   }
 
   method blocking is rw {
@@ -206,24 +205,24 @@ class GIO::Socket {
   }
 
   method accept (
-    GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
+                            :$raw        = False
   ) {
     clear_error;
     my $s = g_socket_accept($!s, $cancellable, $error);
     set_error($error);
 
     $s ??
-      ( $raw ?? $s !! GIO::Socket.new($s) )
+      ( $raw ?? $s !! GIO::Socket.new($s, :!ref) )
       !!
       Nil
   }
 
   method bind (
-    GSocketAddress() $address,
-    Int() $allow_reuse,
-    CArray[Pointer[GError]] $error = gerror
+    GSocketAddress()        $address,
+    Int()                   $allow_reuse,
+    CArray[Pointer[GError]] $error        = gerror
   ) {
     my gboolean $ar = $allow_reuse;
     clear_error;
@@ -257,27 +256,32 @@ class GIO::Socket {
   }
 
   method condition_timed_wait (
-    Int() $condition,
-    Int() $timeout_us,
-    GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Int()                   $condition,
+    Int()                   $timeout_us,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   )
     is also<condition-timed-wait>
   {
-    my GIOCondition $c = $condition;
-    my gint64 $to-μs = $timeout_us;
+    my GIOCondition $c     = $condition;
+    my gint64       $to-μs = $timeout_us;
 
     clear_error;
-    my $rv =
-     so g_socket_condition_timed_wait($!s, $c, $to-μs, $cancellable, $error);
+    my $rv = so g_socket_condition_timed_wait(
+      $!s,
+      $c,
+      $to-μs,
+      $cancellable,
+      $error
+    );
     set_error($error);
     $rv;
   }
 
   method condition_wait (
-    Int() $condition,
-    GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Int()                   $condition,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   )
     is also<condition-wait>
   {
@@ -290,9 +294,9 @@ class GIO::Socket {
   }
 
   method connect (
-    GSocketAddress() $address,
-    GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GSocketAddress()        $address,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     clear_error;
     my $rv = so g_socket_connect($!s, $address, $cancellable, $error);
@@ -301,7 +305,7 @@ class GIO::Socket {
   }
 
   method create_source (
-    Int() $condition,
+    Int()          $condition,
     GCancellable() $cancellable = GCancellable
   )
     is also<create-source>
@@ -326,7 +330,8 @@ class GIO::Socket {
   }
 
   method get_credentials (
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error = gerror,
+                            :$raw  = False
   )
     is also<
       get-credentials
@@ -334,8 +339,13 @@ class GIO::Socket {
     >
   {
     clear_error;
-    g_socket_get_credentials($!s, $error);
+    my $c = g_socket_get_credentials($!s, $error);
     set_error($error);
+
+    $c ??
+      ( $raw ?? $c !! GIO::Credentials.new($c, :!ref) )
+      !!
+      Nil;
   }
 
   method get_family
@@ -356,13 +366,13 @@ class GIO::Socket {
     g_socket_get_fd($!s);
   }
 
-  method local_address (:$raw) is also<local-address> {
+  method local_address (:$raw = False) is also<local-address> {
     self.get_local_address(:$raw);
   }
 
   method get_local_address (
     CArray[Pointer[GError]] $error = gerror,
-    :$raw = False;
+                            :$raw  = False;
   )
     is also<get-local-address>
   {
@@ -371,25 +381,39 @@ class GIO::Socket {
     set_error($error);
 
     $la ??
-      ( $raw ?? $la !! GIO::SocketAddress.new($la) )
+      ( $raw ?? $la !! GIO::SocketAddress.new($la, :!ref) )
       !!
       Nil
   }
 
-  method get_option (
-    Int() $level,
-    Int() $optname,
-    Int() $value,
-    CArray[Pointer[GError]] $error = gerror
-  )
+  proto method get_option (|)
     is also<get-option>
+  { * }
+
+  multi method get_option (
+    Int()                   $level,
+    Int()                   $optname,
+    CArray[Pointer[GError]] $error    = gerror,
+  ) {
+    return-with-all(
+      samewith($level, $optname, $, $error, :all)
+    );
+  }
+  multi method get_option (
+    Int()                   $level,
+    Int()                   $optname,
+    Int()                   $value    is rw,
+    CArray[Pointer[GError]] $error    =  gerror,
+                            :$all     =  False
+  )
   {
-    my gint ($l, $o, $v) = ($level, $optname, $value);
+    my gint ($l, $o, $v) = ($level, $optname, 0);
 
     clear_error;
     my $rv = so g_socket_get_option($!s, $l, $o, $v, $error);
+    $value = $v;
     set_error($error);
-    $rv;
+    $all.not ?? $rv !! ($rv, $value);
   }
 
   method get_protocol
@@ -407,7 +431,7 @@ class GIO::Socket {
 
   method get_remote_address (
     CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+                            :$raw  = False
   )
     is also<get-remote-address>
   {
@@ -416,7 +440,7 @@ class GIO::Socket {
     set_error($error);
 
     $ra ??
-      ( $raw ?? $ra !! GIO::SocketAddress($ra) )
+      ( $raw ?? $ra !! GIO::SocketAddress($ra, :!ref) )
       !!
       Nil;
   }
@@ -446,26 +470,26 @@ class GIO::Socket {
   }
 
   method join_multicast_group (
-    GInetAddress() $group,
-    Int() $source_specific,
-    Str() $iface,
-    CArray[Pointer[GError]] $error = gerror
+    GInetAddress()          $group,
+    Int()                   $source_specific,
+    Str()                   $iface,
+    CArray[Pointer[GError]] $error            = gerror
   )
     is also<join-multicast-group>
   {
     my gboolean $ss = $source_specific;
 
     clear_error;
-    my $rc = so g_socket_join_multicast_group($!s, $group, $ss, $iface, $error);
+    my $rv = so g_socket_join_multicast_group($!s, $group, $ss, $iface, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method join_multicast_group_ssm (
-    GInetAddress() $group,
-    GInetAddress() $source_specific,
-    Str() $iface,
-    CArray[Pointer[GError]] $error = gerror
+    GInetAddress()          $group,
+    GInetAddress()          $source_specific,
+    Str()                   $iface,
+    CArray[Pointer[GError]] $error            = gerror
   )
     is also<join-multicast-group-ssm>
   {
@@ -482,27 +506,32 @@ class GIO::Socket {
   }
 
   method leave_multicast_group (
-    GInetAddress() $group,
-    Int() $source_specific,
-    Str() $iface,
-    CArray[Pointer[GError]] $error = gerror
+    GInetAddress()          $group,
+    Int()                   $source_specific,
+    Str()                   $iface,
+    CArray[Pointer[GError]] $error            = gerror
   )
     is also<leave-multicast-group>
   {
     my gboolean $ss = $source_specific;
 
     clear_error;
-    my $rv =
-      so g_socket_leave_multicast_group($!s, $group, $ss, $iface, $error);
+    my $rv = so g_socket_leave_multicast_group(
+      $!s,
+      $group,
+      $ss,
+      $iface,
+      $error
+    );
     set_error($error);
     $rv;
   }
 
   method leave_multicast_group_ssm (
-    GInetAddress() $group,
-    GInetAddress() $source_specific,
-    Str() $iface,
-    CArray[Pointer[GError]] $error = gerror
+    GInetAddress()          $group,
+    GInetAddress()          $source_specific,
+    Str()                   $iface,
+    CArray[Pointer[GError]] $error            = gerror
   )
     is also<leave-multicast-group-ssm>
   {
@@ -528,28 +557,29 @@ class GIO::Socket {
   }
 
   multi method receive (
-    Int() $size,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False,
-    :$encoding = 'utf-8';
+    Int()                   $size,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
+                            :$raw        = False,
+                            :$encoding   = 'utf-8';
   ) {
     my $b = CArray[uint8].allocate($size);
-    my $rv = samewith($, $size, $cancellable, $error, :all, :$raw, :$encoding);
 
-    $rv[0] ?? $rv[1] !! Nil
+    return-with-all(
+      samewith($, $size, $cancellable, $error, :all, :$raw, :$encoding)
+    );
   }
   multi method receive (
-    $buffer is rw,
-    Int() $size,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False,
-    :$raw = False,
-    :$encoding = 'utf-8'
+                            $buffer      is rw,
+    Int()                   $size,
+    GCancellable()          $cancellable =  GCancellable,
+    CArray[Pointer[GError]] $error       =  gerror,
+                            :$all        =  False,
+                            :$raw        =  False,
+                            :$encoding   =  'utf-8'
   ) {
     my gsize $s = $size;
-    my $b = CArray[uint8].allocate($size);
+    my       $b = CArray[uint8].allocate($size);
 
     clear_error;
     my $rv = g_socket_receive($!s, $buffer, $s, $cancellable, $error);
@@ -565,40 +595,39 @@ class GIO::Socket {
   { * }
 
   multi method receive_from (
-    Int() $size,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False,
-    :$encoding = 'utf-8';
+    Int()                   $size,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
+                            :$raw        = False,
+                            :$encoding   = 'utf-8';
   ) {
-    my $rv = samewith(
-      $,
-      $,
-      $size,
-      $cancellable,
-      $error,
-      :all,
-      :$raw,
-      :$encoding
+    return-with-all(
+      samewith(
+        $,
+        $,
+        $size,
+        $cancellable,
+        $error,
+        :all,
+        :$raw,
+        :$encoding
+      )
     );
-
-    return $rv[0] ?? $rv.skip(1) !! Nil;
   }
   multi method receive_from (
-    $address is rw,
-    $buffer is rw,
-    Int() $size,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False,
-    :$raw = False,
-    :$encoding = 'utf-8'
+                            $address     is rw,
+                            $buffer      is rw,
+    Int()                   $size,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
+                            :$all        = False,
+                            :$raw        = False,
+                            :$encoding   = 'utf-8'
   ) {
     my gsize $s = $size;
-    my $a = CArray[GSocketAddress].new;
-    my $b = CArray[uint8].allocate($size);
-    $a[0] = GSocketAddress;
-
+    my       $a = CArray[GSocketAddress].new;
+    my       $b = CArray[uint8].allocate($size);
+    $a[0]       = GSocketAddress;
 
     clear_error;
     my $rv = g_socket_receive_from(
@@ -614,7 +643,7 @@ class GIO::Socket {
     $buffer = $raw ?? $b !! Buf.new($b).decode($encoding);
 
     $address = $a ??
-      ( $raw ?? $a !! GIO::SocketAddress.new($a) )
+      ( $raw ?? $a !! GIO::SocketAddress.new($a, :!ref) )
       !!
       Nil;
 
@@ -626,87 +655,91 @@ class GIO::Socket {
   { * }
 
   multi method receive_message (
-    @vectors,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+                            @vectors,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
+                            :$raw        = False
   ) {
-    my $rv = samewith(
-      $,
-      GLib::Roles::TypedBuffer.new(@vectors).p,
-      @vectors,
-      $,
-      $,
-      $,
-      $cancellable,
-      $error,
-      :all,
-      :$raw
+    return-with-all(
+      samewith(
+        $,
+        GLib::Roles::TypedBuffer.new(@vectors).p,
+        @vectors,
+        $,
+        $,
+        $,
+        $cancellable,
+        $error,
+        :all,
+        :$raw
+      )
     );
-
-    $rv[0] ?? $rv.skip(1) !! Nil;
   }
   multi method receive_message (
-    Buf() $vectors,
-    Int() $num_vectors = $vectors.bytes / nativesizeof(GInputVector),
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
+    Buf()                   $vectors,
+    Int()                   $num_vectors = $vectors.bytes /
+                                           nativesizeof(GInputVector),
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
     :$raw = False
   ) {
-    my $rv = samewith(
-      $,
-      CArray[uint8].new($vectors),
-      $num_vectors,
-      $,
-      $,
-      $,
-      $cancellable,
-      $error,
-      :all,
-      :$raw
+    return-with-all(
+      samewith(
+        $,
+        CArray[uint8].new($vectors),
+        $num_vectors,
+        $,
+        $,
+        $,
+        $cancellable,
+        $error,
+        :all,
+        :$raw
+      )
     );
-
-    $rv[0] ?? $rv.skip(1) !! Nil;
   }
   multi method receive_message (
-    CArray[uint8] $vectors,
-    Int() $num_vectors,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw,
+    CArray[uint8]           $vectors,
+    Int()                   $num_vectors,
+    GCancellable()          $cancellable  = GCancellable,
+    CArray[Pointer[GError]] $error        = gerror,
+                            :$raw         = False,
   ) {
-    my $rv = samewith(
-      $,
-      cast(Pointer, $vectors),
-      $num_vectors,
-      $,
-      $,
-      $,
-      $cancellable,
-      $error,
-      :all,
-      :$raw
+    return-with-all(
+      samewith(
+        $,
+        cast(Pointer, $vectors),
+        $num_vectors,
+        $,
+        $,
+        $,
+        $cancellable,
+        $error,
+        :all,
+        :$raw
+      )
     );
-
-    $rv[0] ?? $rv.skip(1) !! Nil;
   }
   multi method receive_message (
-    $address is rw,
-    Pointer $vectors,
-    Int() $num_vectors,
-    $messages is rw,
-    $num_messages is rw,
-    $flags is rw,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False,
-    :$raw = False
+                            $address            is rw,
+    Pointer                 $vectors,
+    Int()                   $num_vectors,
+                            $messages              is rw,
+                            $num_messages          is rw,
+                            $flags                 is rw,
+    GCancellable()          $cancellable           =  GCancellable,
+    CArray[Pointer[GError]] $error                 =  gerror,
+                                          :$all    =  False,
+                                          :$carray =  False,
+                                          :$raw    =  False
   ) {
-    my $a = CArray[GSocketAddress].new;
-    $a[0] = GSocketAddress;
+    my $a                  = CArray[GSocketAddress].new;
+    $a[0]                  = GSocketAddress;
     my gint ($nv, $nm, $f) = ($num_vectors, 0, $flags);
-    my $m = CArray[Pointer[Pointer[GSocketControlMessage]]].new;
-    $m[0] = Pointer[Pointer[GSocketControlMessage]];
+    my $m                  = CArray[
+                                Pointer[Pointer[GSocketControlMessage]]
+                             ].new;
+    $m[0]                  = Pointer[Pointer[GSocketControlMessage]];
 
     clear_error;
     my $br = g_socket_receive_message(
@@ -724,11 +757,13 @@ class GIO::Socket {
     ($address, $num_messages, $flags) = (ppr($a), $nm, $f);
 
     $address = $address ??
-      ( $raw ?? $address !! GIO::SocketAddress.new($address) )
+      ( $raw ?? $address !! GIO::SocketAddress.new($address, :!ref) )
       !!
       Nil;
 
-    $messages = ($m && $m[0]) ?? CArrayToArray($m[0][0], $nm) !! Nil;
+    $messages = ($m && $m[0]) ?? ( $carray ?? $m[0][0]
+                                           !! CArrayToArray($m[0][0], $nm) )
+                              !! Nil;
     $all.not ?? $br !! ($br, $address, $messages, $num_messages, $flags);
   }
 
@@ -737,62 +772,62 @@ class GIO::Socket {
   { * }
 
   multi method receive_messages (
-    @messages,
-    Int() $flags,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+                            @messages,
+    Int()                   $flags,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
-    my $rv = samewith(
-      GLib::Roles::TypedBuffer[GInputMessage].new(@messages).p,
-      @messages.elems,
-      $flags,
-      $cancellable,
-      $error
+    return-with-all(
+      samewith(
+        GLib::Roles::TypedBuffer[GInputMessage].new(@messages).p,
+        @messages.elems,
+        $flags,
+        $cancellable,
+        $error
+      )
     );
-
-    $rv[0] ?? $rv[1] !! Nil;
   }
   multi method receive_messages (
-    Buf() $messages,        # GInputMessage() $messages,
-    Int() $num_messages,
-    Int() $flags,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Buf()                   $messages,     # GInputMessage() $messages,
+    Int()                   $num_messages,
+    Int()                   $flags,
+    GCancellable()          $cancellable   = GCancellable,
+    CArray[Pointer[GError]] $error         = gerror
   ) {
-    my $rv = samewith(
-      CArray[uint8].new($messages),
-      $num_messages,
-      $flags,
-      $cancellable,
-      $error
+    return-with-all(
+      samewith(
+        CArray[uint8].new($messages),
+        $num_messages,
+        $flags,
+        $cancellable,
+        $error
+      )
     );
-
-    $rv[0] ?? $rv[1] !! Nil;
   }
   multi method receive_messages (
-    CArray[uint8] $messages,        # GInputMessage() $messages,
-    Int() $num_messages,
-    Int() $flags,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[uint8]           $messages,     # GInputMessage() $messages,
+    Int()                   $num_messages,
+    Int()                   $flags,
+    GCancellable()          $cancellable   = GCancellable,
+    CArray[Pointer[GError]] $error         = gerror
   ) {
-    my $rv = samewith(
-      cast(Pointer, $messages),
-      $num_messages,
-      $flags,
-      $cancellable,
-      $error
+    return-with-all(
+      samewith(
+        cast(Pointer, $messages),
+        $num_messages,
+        $flags,
+        $cancellable,
+        $error
+      )
     );
-
-    $rv[0] ?? $rv[1] !! Nil;
   }
   multi method receive_messages (
-    Pointer $messages,        # GInputMessage() $messages,
-    Int() $num_messages,
-    Int() $flags,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False
+    Pointer                 $messages,     # GInputMessage() $messages,
+    Int()                   $num_messages,
+    Int()                   $flags,
+    GCancellable()          $cancellable   = GCancellable,
+    CArray[Pointer[GError]] $error         = gerror,
+                            :$all          = False
   ) {
     my guint $nm = $num_messages;
     my gint $f = $flags;
@@ -823,84 +858,86 @@ class GIO::Socket {
   { * }
 
   multi method receive_with_blocking (
-    Int() $size,
-    Int() $blocking,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False,
-    :$raw = False,
-    :$encoding = 'utf-8'
+    Int()                   $size,
+    Int()                   $blocking,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
+                            :$all        = False,
+                            :$raw        = False,
+                            :$encoding   = 'utf-8'
   ) {
-    my $rv = samewith(
-      CArray[uint8].allocate($size),
-      $size,
-      $blocking,
-      $cancellable,
-      $error,
-      :all,
-      :$raw,
-      :$encoding,
+    return-with-all(
+      samewith(
+        CArray[uint8].allocate($size),
+        $size,
+        $blocking,
+        $cancellable,
+        $error,
+        :all,
+        :$raw,
+        :$encoding,
+      )
     );
-
-    $rv[0] ?? $rv[1] !! Nil;
   }
   multi method receive_with_blocking (
-    $buffer is rw,
-    Int() $size,
-    Int() $blocking,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False,
-    :$raw = False,
-    :$encoding = 'utf-8'
+                            $buffer      is rw,
+    Int()                   $size,
+    Int()                   $blocking,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
+                            :$all        = False,
+                            :$raw        = False,
+                            :$encoding   = 'utf-8'
   ) {
-    my $rv = samewith(
-      CArray[uint8].allocate($size),
-      $size,
-      $blocking,
-      $cancellable,
-      $error,
-      :all,
-      :$raw,
-      :$encoding,
+    return-with-all(
+      samewith(
+        CArray[uint8].allocate($size),
+        $size,
+        $blocking,
+        $cancellable,
+        $error,
+        :all,
+        :$raw,
+        :$encoding,
+      )
     );
-    $buffer = Nil;
-
-    $rv[0] ?? ($buffer = $rv[1]) !! Nil;
   }
   multi method receive_with_blocking (
-    CArray[uint8] $buffer,
-    Int() $size,
-    Int() $blocking,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False,
-    :$raw = False,
-    :$encoding = 'utf-8'
+    CArray[uint8]           $buffer,
+    Int()                   $size,
+    Int()                   $blocking,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
+                            :$all        = False,
+                            :$raw        = False,
+                            :$encoding   = 'utf-8'
   ) {
-    my $rv = samewith(
-      cast(Pointer, $buffer),
-      $size,
-      $blocking,
-      $cancellable,
-      $error,
-      :all,
-      :$raw,
-      :$encoding
+    return-with-all(
+      samewith(
+        cast(Pointer, $buffer),
+        $size,
+        $blocking,
+        $cancellable,
+        $error,
+        :all,
+        :$raw,
+        :$encoding
+      )
     );
-
-    $rv[0] ?? ($buffer = $rv[1]) !! Nil;
   }
   multi method receive_with_blocking (
-    Pointer $buffer,
-    Int() $size,
-    Int() $blocking,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False,
-    :$raw = False,
-    :$encoding = 'utf-8'
+                            $buffer      is rw,
+    Int()                   $size,
+    Int()                   $blocking,
+    GCancellable()          $cancellable =  GCancellable,
+    CArray[Pointer[GError]] $error       =  gerror,
+                            :$all        =  False,
+                            :$raw        =  False,
+                            :$encoding   =  'utf-8'
   ) {
+    die '$buffer must be a Pointer!' unless $buffer ~~ Pointer;
+    die '$buffer must be allocated!' unless $buffer;
+
     my gsize $s = $size;
     my gboolean $b = $blocking;
 
@@ -914,22 +951,22 @@ class GIO::Socket {
       $error
     );
     set_error($error);
-    $buffer = $raw ?? $b !! Buf.new($b).decode($encoding);
+    $buffer = Buf.new($buffer).decode($encoding) unless $raw;
     $all.not ?? $rv !! ($rv, $buffer);
   }
 
   method send (
-    Str() $buffer,
-    Int() $size,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Str()                   $buffer,
+    Int()                   $size,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     my gsize $s = $size;
 
     clear_error;
-    my $rv = g_socket_send($!s, $buffer, $s, $cancellable, $error);
+    my $rs = g_socket_send($!s, $buffer, $s, $cancellable, $error);
     set_error($error);
-    $rv;
+    $rs;
   }
 
   proto method send_message (|)
@@ -937,12 +974,12 @@ class GIO::Socket {
   { * }
 
   multi method send_message (
-    GSocketAddress() $address,
-    @vectors,
-    @messages,
-    Int() $flags,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GSocketAddress()        $address,
+                            @vectors,
+                            @messages,
+    Int()                   $flags,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     samewith(
       $address,
@@ -956,14 +993,14 @@ class GIO::Socket {
     );
   }
   multi method send_message (
-    GSocketAddress() $address,
-    Buf() $vectors, #= Array of GOutputVector
-    Int() $num_vectors,
-    Buf() $messages,
-    Int() $num_messages,
-    Int() $flags,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GSocketAddress()        $address,
+    Buf()                   $vectors,      #= Array of GOutputVector
+    Int()                   $num_vectors,
+    Buf()                   $messages,
+    Int()                   $num_messages,
+    Int()                   $flags,
+    GCancellable()          $cancellable   = GCancellable,
+    CArray[Pointer[GError]] $error         = gerror
   ) {
     samewith(
       $address,
@@ -977,14 +1014,14 @@ class GIO::Socket {
     );
   }
   multi method send_message (
-    GSocketAddress() $address,
-    CArray[uint8] $vectors, #= Array of GOutputVector
-    Int() $num_vectors,
-    CArray[uint8] $messages,
-    Int() $num_messages,
-    Int() $flags,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GSocketAddress()        $address,
+    CArray[uint8]           $vectors,      #= Array of GOutputVector
+    Int()                   $num_vectors,
+    CArray[uint8]           $messages,
+    Int()                   $num_messages,
+    Int()                   $flags,
+    GCancellable()          $cancellable   = GCancellable,
+    CArray[Pointer[GError]] $error         = gerror
   ) {
     samewith(
       $address,
@@ -998,21 +1035,21 @@ class GIO::Socket {
     );
   }
   multi method send_message (
-    GSocketAddress() $address,
-    Pointer $vectors, #= Array of GOutputVector
-    Int() $num_vectors,
-    Pointer $messages,
-    Int() $num_messages,
-    Int() $flags,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GSocketAddress()        $address,
+    Pointer                 $vectors,      #= Array of GOutputVector
+    Int()                   $num_vectors,
+    Pointer                 $messages,
+    Int()                   $num_messages,
+    Int()                   $flags,
+    GCancellable()          $cancellable   = GCancellable,
+    CArray[Pointer[GError]] $error         = gerror
   ) {
     my gint ($nv, $nm, $f) = ($num_vectors, $num_messages, $flags);
     my $m = CArray[Pointer];
     $m[0] = $messages;
 
     clear_error;
-    my $rv = g_socket_send_message(
+    my $rs = g_socket_send_message(
       $!s,
       $address,
       $vectors,
@@ -1024,7 +1061,7 @@ class GIO::Socket {
       $error
     );
     set_error($error);
-    $rv;
+    $rs;
   }
 
   proto method send_message_with_timeout (|)
@@ -1032,100 +1069,100 @@ class GIO::Socket {
   { * }
 
   multi method send_message_with_timeout (
-    GSocketAddress() $address,
-    @vectors,
-    @messages,
-    Int() $flags,
-    Int() $timeout_us,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GSocketAddress()        $address,
+                            @vectors,
+                            @messages,
+    Int()                   $flags,
+    Int()                   $timeout_us,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
-    my $rv = samewith(
-      $address,
-      GLib::Roles::TypedBuffer[GOutputVector].new(@vectors).p,
-      @vectors.elems,
-      GLib::Roles::TypedBuffer[GSocketControlMessage].new(@messages).p,
-      @messages.elems,
-      $flags,
-      $timeout_us,
-      $cancellable,
-      $error,
-      :all
+    return-with-all(
+      samewith(
+        $address,
+        GLib::Roles::TypedBuffer[GOutputVector].new(@vectors).p,
+        @vectors.elems,
+        GLib::Roles::TypedBuffer[GSocketControlMessage].new(@messages).p,
+        @messages.elems,
+        $flags,
+        $timeout_us,
+        $cancellable,
+        $error,
+        :all
+      )
     );
-
-    $rv[0] ?? $rv[1] !! Nil;
   }
   multi method send_message_with_timeout (
-    GSocketAddress() $address,
-    Buf() $vectors,
-    Int() $num_vectors,
-    Buf() $messages,
-    Int() $num_messages,
-    Int() $flags,
-    Int() $timeout_us,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GSocketAddress()        $address,
+    Buf()                   $vectors,
+    Int()                   $num_vectors,
+    Buf()                   $messages,
+    Int()                   $num_messages,
+    Int()                   $flags,
+    Int()                   $timeout_us,
+    GCancellable()          $cancellable   = GCancellable,
+    CArray[Pointer[GError]] $error         = gerror
   ) {
-    my $rv = samewith(
-      $address,
-      CArray[uint8].new($vectors),
-      $num_vectors,
-      CArray[uint8].new($messages),
-      $num_messages,
-      $flags,
-      $timeout_us,
-      $cancellable,
-      $error,
-      :all
+    return-with-all(
+      samewith(
+        $address,
+        CArray[uint8].new($vectors),
+        $num_vectors,
+        CArray[uint8].new($messages),
+        $num_messages,
+        $flags,
+        $timeout_us,
+        $cancellable,
+        $error,
+        :all
+      )
     );
-
-    $rv[0] ?? $rv[1] !! Nil;
   }
   multi method send_message_with_timeout (
-    GSocketAddress() $address,
-    CArray[uint8] $vectors,
-    Int() $num_vectors,
-    CArray[uint8] $messages,
-    Int() $num_messages,
-    Int() $flags,
-    Int() $timeout_us,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GSocketAddress()        $address,
+    CArray[uint8]           $vectors,
+    Int()                   $num_vectors,
+    CArray[uint8]           $messages,
+    Int()                   $num_messages,
+    Int()                   $flags,
+    Int()                   $timeout_us,
+    GCancellable()          $cancellable   = GCancellable,
+    CArray[Pointer[GError]] $error         = gerror
   ) {
-    my $rv = samewith(
-      $address,
-      cast(Pointer, $vectors),
-      $num_vectors,
-      cast(Pointer, $messages),
-      $num_messages,
-      $flags,
-      $timeout_us,
-      $cancellable,
-      $error,
-      :all
+    return-with-all(
+      samewith(
+        $address,
+        cast(Pointer, $vectors),
+        $num_vectors,
+        cast(Pointer, $messages),
+        $num_messages,
+        $flags,
+        $timeout_us,
+        $cancellable,
+        $error,
+        :all
+      )
     );
-
-    $rv[0] ?? $rv[1] !! Nil;
   }
   multi method send_message_with_timeout (
-    GSocketAddress() $address,
-    Pointer $vectors, #= Array of GOutputVector
-    Int() $num_vectors,
-    Pointer $messages, #= Pointer to Array of GSocketControlMessage
-    Int() $num_messages,
-    Int() $flags,
-    Int() $timeout_us,
-    $bytes_written is rw,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False
+    GSocketAddress()        $address,
+    Pointer                 $vectors,                       #= Array of GOutputVector
+    Int()                   $num_vectors,
+    Pointer                 $messages,                      #= Pointer to Array of GSocketControlMessage
+    Int()                   $num_messages,
+    Int()                   $flags,
+    Int()                   $timeout_us,
+                            $bytes_written is rw,
+    GCancellable()          $cancellable   =  GCancellable,
+    CArray[Pointer[GError]] $error         =  gerror,
+                            :$all          =  False
   ) {
-    my gint ($nv, $nm, $f) = ($num_vectors, $num_messages, $flags);
-    my gint64 $to-μs = $timeout_us;
-    my gsize $bw = 0;
+    my gint           ($nv, $nm, $f) = ($num_vectors, $num_messages, $flags);
+    my gint64          $to-μs        = $timeout_us;
+    my gsize           $bw           = 0;
 
     clear_error;
-    my $rv = g_socket_send_message_with_timeout(
+    my $rs = g_socket_send_message_with_timeout(
       $!s,
       $address,
       $vectors,
@@ -1141,7 +1178,7 @@ class GIO::Socket {
     $bytes_written = $bw;
     set_error($error);
 
-    $all.not ?? $rv !! ($rv, $bytes_written);
+    $all.not ?? $rs !! ($rs, $bytes_written);
   }
 
   proto method send_messages (|)
@@ -1149,10 +1186,10 @@ class GIO::Socket {
   { * }
 
   multi method send_messages (
-    @messages,
-    Int() $flags,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+                            @messages,
+    Int()                   $flags,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     samewith(
       GLib::Roles::TypedBuffer[GOutputMessage].new(@messages).p,
@@ -1163,11 +1200,11 @@ class GIO::Socket {
     );
   }
   multi method send_messages (
-    Buf() $messages, #= Array of GOutputMessage
-    Int() $num_messages,
-    Int() $flags,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Buf()                   $messages,                     #= Array of GOutputMessage
+    Int()                   $num_messages,
+    Int()                   $flags,
+    GCancellable()          $cancellable   = GCancellable,
+    CArray[Pointer[GError]] $error         = gerror
   ) {
     samewith(
       CArray[uint8].new($messages),
@@ -1178,11 +1215,11 @@ class GIO::Socket {
     );
   }
   multi method send_messages (
-    CArray[uint8] $messages, #= Array of GOutputMessage
-    Int() $num_messages,
-    Int() $flags,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[uint8]           $messages,                       #= Array of GOutputMessage
+    Int()                   $num_messages,
+    Int()                   $flags,
+    GCancellable()          $cancellable   = GCancellable,
+    CArray[Pointer[GError]] $error         = gerror
   ) {
     samewith(
       cast(Pointer, $messages),
@@ -1193,20 +1230,26 @@ class GIO::Socket {
     );
   }
   multi method send_messages (
-    Pointer $messages, #= Array of GOutputMessage
-    Int() $num_messages,
-    Int() $flags,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Pointer                 $messages,                     #= Array of GOutputMessage
+    Int()                   $num_messages,
+    Int()                   $flags,
+    GCancellable()          $cancellable   = GCancellable,
+    CArray[Pointer[GError]] $error         = gerror
   ) {
     my guint $nm = $num_messages;
-    my gint $f = $flags;
+    my gint  $f  = $flags;
 
     clear_error;
-    my $rv =
-      g_socket_send_messages($!s, $messages, $nm, $f, $cancellable, $error);
+    my $rs = g_socket_send_messages(
+      $!s,
+      $messages,
+      $nm,
+      $f,
+      $cancellable,
+      $error
+    );
     set_error($error);
-    $rv;
+    $rs;
   }
 
   proto method send_to (|)
@@ -1214,11 +1257,11 @@ class GIO::Socket {
   { * }
 
   multi method send_to (
-    GSocketAddress() $address,
-    Str() $buffer,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$encoding = 'utf-8'
+    GSocketAddress()        $address,
+    Str()                   $buffer,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
+                            :$encoding   = 'utf-8'
   ) {
     my $b = $buffer.encode($encoding);
 
@@ -1232,11 +1275,11 @@ class GIO::Socket {
     );
   }
   multi method send_to (
-    GSocketAddress() $address,
-    Buf() $buffer,
-    Int() $size,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GSocketAddress()        $address,
+    Buf()                   $buffer,
+    Int()                   $size,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     samewith(
       $!s,
@@ -1248,11 +1291,11 @@ class GIO::Socket {
     );
   }
   multi method send_to (
-    GSocketAddress() $address,
-    CArray[uint8] $buffer,
-    Int() $size,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GSocketAddress()        $address,
+    CArray[uint8]           $buffer,
+    Int()                   $size,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     samewith(
       $!s,
@@ -1264,11 +1307,11 @@ class GIO::Socket {
     );
   }
   multi method send_to (
-    GSocketAddress() $address,
-    Pointer $buffer,
-    Int() $size,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GSocketAddress()        $address,
+    Pointer                 $buffer,
+    Int()                   $size,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     my gsize $s = $size;
 
@@ -1290,10 +1333,10 @@ class GIO::Socket {
   { * }
 
   multi method send_with_blocking (
-    @buffer,
-    Int() $blocking,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+                            @buffer,
+    Int()                   $blocking,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     samewith(
       CArray[uint8].new(@buffer),
@@ -1304,22 +1347,22 @@ class GIO::Socket {
     );
   }
   multi method send_with_blocking (
-    Str() $buffer,
-    Int() $blocking,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$encoding = 'utf-8'
+    Str()                   $buffer,
+    Int()                   $blocking,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
+                            :$encoding   = 'utf-8'
   ) {
     my $b = $buffer.encode($encoding);
 
     samewith($b, $b.bytes, $blocking, $cancellable, $error);
   }
   multi method send_with_blocking (
-    Buf() $buffer,
-    Int() $size,
-    Int() $blocking,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Buf()                   $buffer,
+    Int()                   $size,
+    Int()                   $blocking,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     samewith(
       CArray[uint8].new($buffer),
@@ -1330,11 +1373,11 @@ class GIO::Socket {
     );
   }
   multi method send_with_blocking (
-    CArray[uint8] $buffer,
-    Int() $size,
-    Int() $blocking,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[uint8]           $buffer,
+    Int()                   $size,
+    Int()                   $blocking,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     samewith(
       cast(Pointer, $buffer),
@@ -1345,26 +1388,32 @@ class GIO::Socket {
     );
   }
   multi method send_with_blocking (
-    Pointer $buffer,
-    Int() $size,
-    Int() $blocking,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Pointer                 $buffer,
+    Int()                   $size,
+    Int()                   $blocking,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     my gsize    $s = $size;
     my gboolean $b = $blocking;
 
     clear_error;
-    my $rv =
-      g_socket_send_with_blocking($!s, $buffer, $s, $b, $cancellable, $error);
+    my $rs = g_socket_send_with_blocking(
+      $!s,
+      $buffer,
+      $s,
+      $b,
+      $cancellable,
+      $error
+    );
     set_error($error);
-    $rv;
+    $rs;
   }
 
   method set_option (
-    Int() $level,
-    Int() $optname,
-    Int() $value,
+    Int()                   $level,
+    Int()                   $optname,
+    Int()                   $value,
     CArray[Pointer[GError]] $error = gerror
   )
     is also<set-option>
@@ -1378,9 +1427,9 @@ class GIO::Socket {
   }
 
   method shutdown (
-    Int() $shutdown_read,
-    Int() $shutdown_write,
-    CArray[Pointer[GError]] $error = gerror
+    Int()                   $shutdown_read,
+    Int()                   $shutdown_write,
+    CArray[Pointer[GError]] $error           = gerror
   ) {
     my gboolean ($sr, $sw) = ($shutdown_read, $shutdown_write).map( *.so.Int );
 

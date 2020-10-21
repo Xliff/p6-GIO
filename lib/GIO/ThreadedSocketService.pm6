@@ -7,49 +7,52 @@ use GIO::Raw::Types;
 
 use GIO::SocketService;
 
-our subset ThreadedSocketServiceAncestry is export of Mu
-  where GThreadedSocketService | SocketServiceAncestry;
+our subset GThreadedSocketServiceAncestry is export of Mu
+  where GThreadedSocketService | GSocketServiceAncestry;
 
 class GIO::ThreadedSocketService is GIO::SocketService {
   has GThreadedSocketService $!tss is implementor;
 
   submethod BUILD (:$socket-service) {
-    given $socket-service {
-      when ThreadedSocketServiceAncestry {
-        my $to-parent;
+    self.setGThreadSocketService($socket-service) if $socket-service;
+  }
 
-        $!tss = do {
-          when GThreadedSocketService {
-            $to-parent = cast(GSocketService, $_);
-            $_;
-          }
+  method setGThreadSocketService (GThreadedSocketServiceAncestry $_) {
+    my $to-parent;
 
-          default {
-            $to-parent = $_;
-            cast(GThreadedSocketService, $_);
-          }
-        }
-        self.setSocketService($to-parent);
-      }
-
-      when GIO::ThreadedSocketService {
+    $!tss = do {
+      when GThreadedSocketService {
+        $to-parent = cast(GSocketService, $_);
+        $_;
       }
 
       default {
+        $to-parent = $_;
+        cast(GThreadedSocketService, $_);
       }
     }
+    self.setSocketService($to-parent);
   }
 
   method GIO::Raw::Definitions::GThreadedSocketService
     is also<GThreadedSocketService>
   { $!tss }
 
-  method new (Int() $max) {
-    my gint $m = $max;
+  multi method new (
+    GThreadedSocketServiceAncestry $socket-service,
+                                   :$ref = True
+  ) {
+    return Nil unless $socket-service;
 
-    self.bless(
-      socket-service => g_threaded_socket_service_new($max)
-    );
+    my $o = self.bless( :$socket-service );
+    $o.ref if $ref;
+    $o;
+  }
+  multi method new (Int() $max) {
+    my gint $m              = $max;
+    my      $socket-service = g_threaded_socket_service_new($max);
+
+    $socket-service ?? self.bless( :$socket-service ) !! Nil;
   }
 
   method get_type is also<get-type> {
@@ -76,3 +79,9 @@ sub g_threaded_socket_service_new (gint $max_threads)
   is native(gio)
   is export
 { * }
+
+# our %GIO::ThreadedSocketService::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::ThreadedSocketService::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_threaded_socket_service_');
+# }

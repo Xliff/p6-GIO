@@ -1,7 +1,6 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
@@ -14,7 +13,7 @@ use GLib::Roles::Object;
 use GLib::Roles::Pointers;
 use GIO::Roles::AsyncResult;
 
-our subset TaskAncestry is export of Mu
+our subset GTaskAncestry is export of Mu
   where GTask | GAsyncResult | GObject;
 
 class GIO::Task {
@@ -24,31 +23,30 @@ class GIO::Task {
   has GTask $!t is implementor;
 
   submethod BUILD (:$task) {
-    given $task {
-      when TaskAncestry {
-        self.setTask($task);
-      }
-
-      when GIO::Task {
-      }
-
-      default {
-      }
-    }
+    self.setGTask($task) if $task;
   }
 
-  # Not as efficient as it could be, but... less typing!
-  method setTask (TaskAncestry $_) {
+  method setGTask (GTaskAncestry $_) {
+    my $to-parent;
+
     $!t = do {
       when GTask {
+        $to-parent = cast(GObject, $_);
         $_;
       }
 
-      when GAsyncResult | GObject {
+      when GAsyncResult {
+        $to-parent = cast(GObject, $_);
+        $!ar = $_;
+        cast(GTask, $_);
+      }
+
+      default {
+        $to-parent = $_;
         cast(GTask, $_);
       }
     }
-    self.roleInit-Object;
+    self!setObject($to-parent);
     self.roleInit-AsyncResult;
   }
 
@@ -56,21 +54,25 @@ class GIO::Task {
     is also<GTask>
   { $!t }
 
-  multi method new (TaskAncestry $task) {
-    $task ?? self.bless( :$task ) !! Nil;
+  multi method new (GTaskAncestry $task, :$ref = True) {
+    return Nil unless $task;
+
+    my $o = self.bless( :$task );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (
     GObject() $source,
-    &callback,
-    gpointer $callback_data = gpointer
+              &callback,
+    gpointer  $callback_data = gpointer
   ) {
     samewith($source, GCancellable, &callback, $callback_data);
   }
   multi method new (
-    GObject() $source,
+    GObject()      $source,
     GCancellable() $cancellable,
-    &callback,
-    gpointer $callback_data = gpointer
+                   &callback,
+    gpointer       $callback_data = gpointer
   ) {
     my $task = g_task_new($source, $cancellable, &callback, $callback_data);
 
@@ -141,23 +143,22 @@ class GIO::Task {
   method task_data is rw is also<task-data> {
     Proxy.new:
       FETCH => -> $ { self.get-task-data },
+
       STORE => -> $, $val {
         self.set-task-data(
-          $val ~~ (Pointer, GLib::Roles::Pointers).any ??
-            $val
-            !!
-            cast(
-              Pointer,
-              do given $val {
-                when GLib::Roles::Object { $val.GObject }
-                when .REPR eq 'CStruct'  { $_           }
+          do given $val {
+            when Pointer               { $_                 }
+            when GLib::Roles::Pointers { .p                 }
+            when GLib::Roles::Object   { $val.GObject.p     }
 
-                default {
-                  die "Cannot store object of type { .^name } as task data!"
-                }
-              }
-            )
-        );
+                                       # May not accept change of REPR
+            when .REPR eq 'CStruct'    { cast(Pointer, $_); }
+
+            default {
+              die "Cannot store object of type { .^name } as task data!"
+            }
+          }
+        )
       };
   }
 
@@ -174,7 +175,7 @@ class GIO::Task {
     my $c = g_task_get_cancellable($!t);
 
     $c ??
-      ( $raw ?? $c !! GIO::Cancellable.new($c) )
+      ( $raw ?? $c !! GIO::Cancellable.new($c, :!ref) )
       !!
       Nil;
   }
@@ -197,7 +198,7 @@ class GIO::Task {
     my $c = g_task_get_context($!t);
 
     $c ??
-      ( $raw ?? $c !! GLib::MainContext.new($c) )
+      ( $raw ?? $c !! GLib::MainContext.new($c, :!ref) )
       !!
       Nil;
   }
@@ -212,7 +213,7 @@ class GIO::Task {
     my $o = g_task_get_source_object($!t);
 
     $o ??
-      ( $raw ?? $o !! GLib::Roles::Object.new-object-obj($o) )
+      ( $raw ?? $o !! GLib::Roles::Object.new-object-obj($o, :!ref) )
       !!
       Nil;
   }
@@ -235,7 +236,7 @@ class GIO::Task {
   method is_valid (
     GIO::Task:U:
     GAsyncResult() $result,
-    GObject() $source_object
+    GObject()      $source_object
   )
     is also<is-valid>
   {
@@ -246,36 +247,36 @@ class GIO::Task {
     is also<propagate-boolean>
   {
     clear_error;
-    my $rv = g_task_propagate_boolean($!t, $error);
+    my $b = so g_task_propagate_boolean($!t, $error);
     set_error($error);
-    $rv;
+    $b;
   }
 
   method propagate_int (CArray[Pointer[GError]] $error = gerror)
     is also<propagate-int>
   {
     clear_error;
-    my $rv = g_task_propagate_int($!t, $error);
+    my $i = g_task_propagate_int($!t, $error);
     set_error($error);
-    $rv;
+    $i;
   }
 
   method propagate_pointer (CArray[Pointer[GError]] $error = gerror)
     is also<propagate-pointer>
   {
     clear_error;
-    my $rv = g_task_propagate_pointer($!t, $error);
+    my $p = g_task_propagate_pointer($!t, $error);
     set_error($error);
-    $rv;
+    $p;
   }
 
   method report_error (
     GIO::Task:U:
-    GObject() $source_object,
-    &callback,
-    gpointer $callback_data,
-    gpointer $source_tag,
-    CArray[Pointer[GError]] $error = gerror
+    GObject()               $source_object,
+                            &callback,
+    gpointer                $callback_data,
+    gpointer                $source_tag,
+    CArray[Pointer[GError]] $error          = gerror
   )
     is also<report-error>
   {
@@ -293,7 +294,7 @@ class GIO::Task {
   method report_new_error (
     GIO::Task:U:
     GObject()           $source_object,
-    &callback,
+                        &callback,
     gpointer            $callback_data,
     gpointer            $source_tag,
     GQuark              $domain,
@@ -317,9 +318,9 @@ class GIO::Task {
   }
 
   method return_boolean (Int() $result) is also<return-boolean> {
-    my gboolean $r = $result;
+    my gboolean $r = $result.so.Int;
 
-    g_task_return_boolean($!t, $r);
+    so g_task_return_boolean($!t, $r);
   }
 
   method return_error (GError() $error) is also<return-error> {
@@ -350,11 +351,11 @@ class GIO::Task {
 
   method return_pointer (
     gpointer $result,
-    GDestroyNotify $result_destroy = GDestroyNotify
+             &result_destroy = Callable
   )
     is also<return-pointer>
   {
-    g_task_return_pointer($!t, $result, $result_destroy);
+    g_task_return_pointer($!t, $result, &result_destroy);
   }
 
   method run_in_thread (&task_func) is also<run-in-thread> {
@@ -369,11 +370,11 @@ class GIO::Task {
 
   method set_task_data (
     gpointer $task_data,
-    GDestroyNotify $task_data_destroy = GDestroyNotify
+             &task_data_destroy = Callable
   )
     is also<set-task-data>
   {
-    g_task_set_task_data($!t, $task_data, $task_data_destroy);
+    g_task_set_task_data($!t, $task_data, &task_data_destroy);
   }
 
 }

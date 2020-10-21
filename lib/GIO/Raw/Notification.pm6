@@ -2,14 +2,20 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::Notification;
 
 sub g_notification_add_button (
   GNotification $notification,
-  Str $label,
-  Str $detailed_action
+  Str           $label,
+  Str           $detailed_action
 )
   is native(gio)
   is export
@@ -17,9 +23,9 @@ sub g_notification_add_button (
 
 sub g_notification_add_button_with_target_value (
   GNotification $notification,
-  Str $label,
-  Str $action,
-  GVariant $target
+  Str           $label,
+  Str           $action,
+  GVariant      $target
 )
   is native(gio)
   is export
@@ -44,7 +50,7 @@ sub g_notification_set_body (GNotification $notification, Str $body)
 
 sub g_notification_set_default_action (
   GNotification $notification,
-  Str $detailed_action
+  Str           $detailed_action
 )
   is native(gio)
   is export
@@ -52,8 +58,8 @@ sub g_notification_set_default_action (
 
 sub g_notification_set_default_action_and_target_value (
   GNotification $notification,
-  Str $action,
-  GVariant $target
+  Str           $action,
+  GVariant      $target
 )
   is native(gio)
   is export
@@ -65,7 +71,7 @@ sub g_notification_set_icon (GNotification $notification, GIcon $icon)
   { * }
 
 sub g_notification_set_priority (
-  GNotification $notification,
+  GNotification         $notification,
   GNotificationPriority $priority
 )
   is native(gio)

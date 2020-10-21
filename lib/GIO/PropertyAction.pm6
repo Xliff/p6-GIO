@@ -1,24 +1,50 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
 
 use GLib::Value;
+
+use GLib::Roles::Object;
 use GIO::Roles::Action;
 
+our subset GPropertyActionAncestry is export of Mu
+  where GPropertyAction | GAction | GObject;
+
 class GIO::PropertyAction {
+  also does GLib::Roles::Object;
   also does GIO::Roles::Action;
 
   has GPropertyAction $!pa is implementor;
 
   submethod BUILD (:$action) {
-    $!pa = $action;
+    self.setGPropertyAction($action) if $action;
+  }
 
-    self.roleInit-Object;
-    self!roleInit-Action;
+  method setGPropertyAction(GPropertyActionAncestry $_) {
+    my $to-parent;
+
+    $!pa = do {
+      when GPropertyAction {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      when GAction {
+        $to-parent = cast(GObject, $_);
+        $!a = $_;
+        cast(GPropertyAction, $_);
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GPropertyAction, $_);
+      }
+    }
+    self!setObject($to-parent);
+    self.roleInit-Action;
   }
 
   method GIO::Raw::Definitions::GPropertyAction
@@ -28,23 +54,36 @@ class GIO::PropertyAction {
   proto method new (|)
   { * }
 
-  multi method new (
-    Str() $name,
-    GObject() $object
-  ) {
-    samewith($name, $object, $name);
+  multi method new (GPropertyActionAncestry $action, :$ref = True) {
+    return Nil unless $action;
+
+    my $o = self.bless( :$action );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (
-    Str() $name,
-    Str $property_name,
-    GObject() $object
+    Str()            $property_name,
+    GObjectOrPointer $object is copy;
+  ) {
+    # Shortcut where <action-name> is also the <property-name>
+    samewith($property_name, $object, $property_name);
+  }
+  multi method new (
+    Str()            $name,
+    Str()            $property_name,
+    GObjectOrPointer $object         is copy
   ) {
     samewith($name, $object, $property_name);
   }
-  multi method new (Str() $name, GObject() $object, Str() $property_name) {
-    my $a = g_property_action_new($name, $object, $property_name);
+  multi method new (
+    Str()            $name,
+    GObjectOrPointer $object         is copy,
+    Str()            $property_name
+  ) {
+    $object .= GObject if $object ~~ GLib::Roles::Object;
+    my $action = g_property_action_new($name, $object, $property_name);
 
-    $a ?? self.bless( action => $a ) !! Nil;
+    $action ?? self.bless( :$action ) !! Nil;
   }
 
   # Type: gboolean
@@ -58,7 +97,7 @@ class GIO::PropertyAction {
         $gv.boolean;
       },
       STORE => -> $, Int() $val is copy {
-        warn "enabled does not allow writing"
+        warn '.enabled does not allow writing'
       }
     );
   }
@@ -80,7 +119,7 @@ class GIO::PropertyAction {
     );
   }
 
-  # Type: gchar
+  # Type: Str
   method name is rw  {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
@@ -102,7 +141,8 @@ class GIO::PropertyAction {
     my GLib::Value $gv .= new( G_TYPE_OBJECT );
     Proxy.new(
       FETCH => -> $ {
-        warn 'object does not allow reading'
+        warn '.object does not allow reading' if $DEBUG;
+        GObject;
       },
       STORE => -> $, GObject() $val is copy {
         $gv.object = $val;
@@ -120,25 +160,27 @@ class GIO::PropertyAction {
           self.prop_get('parameter-type', $gv)
         );
 
-        do if $gv.pointer {
-          my $vt = cast(GVariantType, $gv.pointer);
-          $raw ?? $vt !! GLib::VariantType.new($vt);
-        } else {
-          Nil;
-        }
+        my $o = $gv.object;
+        return Nil unless $o;
+
+        $o = cast(GVariantType, $o);
+        return $o if $raw;
+
+        GLib::VariantType.new($o, :!ref);
       },
       STORE => -> $,  $val is copy {
-        warn 'parameter-type does not allow writing';
+        warn '.parameter-type does not allow writing';
       }
     );
   }
 
-  # Type: gchar
+  # Type: Str
   method property-name is rw  is also<property_name> {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
       FETCH => -> $ {
-        warn 'property-name does not allow reading'
+        warn '.property-name does not allow reading' if $DEBUG;
+        '';
       },
       STORE => -> $, Str() $val is copy {
         $gv.string = $val;
@@ -156,15 +198,16 @@ class GIO::PropertyAction {
           self.prop_get('state', $gv)
         );
 
-        do if $gv.object {
-          my $v = cast(GVariant, $gv.object);
-          $raw ?? $v !! $GLib::Variant.new($v, :!ref);
-        } else {
-          Nil;
-        }
+        my $o = $gv.object;
+        return Nil unless $o;
+
+        $o = cast(GVariant, $o);
+        return $o if $raw;
+
+        GLib::Variant.new($o, :!ref);
       },
       STORE => -> $,  $val is copy {
-        warn 'state does not allow writing'
+        warn '.state does not allow writing'
       }
     );
   }
@@ -177,12 +220,14 @@ class GIO::PropertyAction {
         $gv = GLib::Value.new(
           self.prop_get('state-type', $gv)
         );
-        do if $gv.pointer {
-          my $vt = cast(GVariantType, $gv.pointer);
-          $raw ?? $vt !! GLib::VariantType.new($vt);
-        } else {
-          Nil;
-        }
+
+        my $o = $gv.object;
+        return Nil unless $o;
+
+        $o = cast(GVariantType, $o);
+        return $o if $raw;
+
+        GLib::VariantType.new($o, :!ref);
       },
       STORE => -> $, $val is copy {
         warn 'state-type does not allow writing';
@@ -209,3 +254,9 @@ sub g_property_action_new (Str $name, gpointer $object, Str $property_name)
   is native(gio)
   is export
   { * }
+
+# our %GIO::PropertyAction::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::PropertyAction::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_property_action_');
+# }

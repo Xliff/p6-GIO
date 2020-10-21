@@ -8,14 +8,39 @@ use GIO::Raw::Definitions;
 
 unit package GIO::Raw::Structs;
 
+sub resolve-buffer ($_, $cn = '') is rw {
+  return Pointer unless $_ =:= Any || .^shortname eq 'Any';
+
+  when CArray           { cast( Pointer, $_ )                    }
+  when Str              { cast( Pointer, explicitly-manage($_) ) }
+  when $_ =:= Pointer   { Pointer                                }
+  when Pointer          { Pointer.new(+$_)                       }
+
+  default      { die "Unknown type '{ .^name }' used for { $cn }.buffer!" }
+}
+
 class GInputVector  is repr('CStruct') does GLib::Roles::Pointers is export {
   has Pointer       $.buffer;
   has gssize        $.size;
+
+  submethod BUILD (:$buffer, :$!size) {
+    $!buffer := resolve-buffer($buffer, ::?CLASS.^shortname);
+  }
+
+  multi method new ($buffer, $size) { self.bless(:$buffer, :$size) }
+  multi method new                  { self.bless( size => 0 )      }
 }
 
 class GOutputVector is repr('CStruct') does GLib::Roles::Pointers is export {
   has Pointer       $.buffer;
   has gssize        $.size;
+
+  submethod BUILD (:$buffer, Int() :$!size) {
+    $!buffer := resolve-buffer($buffer, ::?CLASS.^shortname);
+  }
+
+  multi method new ($buffer, $size) { self.bless(:$buffer, :$size) }
+  multi method new                  { self.bless(size => 0)        }
 }
 
 class GSocketControlMessage is repr('CStruct') does GLib::Roles::Pointers is export {

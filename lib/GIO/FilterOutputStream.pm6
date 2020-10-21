@@ -7,27 +7,17 @@ use GIO::Raw::FilterOutputStream;
 
 use GIO::OutputStream;
 
-our subset FilterOutputStreamAncestry is export of Mu
+our subset GFilterOutputStreamAncestry is export of Mu
   where GFilterOutputStream | GOutputStream;
 
 class GIO::FilterOutputStream is GIO::OutputStream {
   has GFilterOutputStream $!fis is implementor;
 
   submethod BUILD (:$filter-stream) {
-    given $filter-stream {
-      when FilterOutputStreamAncestry {
-        self.setFilterOutputStream($filter-stream);
-      }
-
-      when GIO::FilterOutputStream {
-      }
-
-      default {
-      }
-    }
+    self.setFilterOutputStream($filter-stream) if $filter-stream;
   }
 
-  method setFilterOutputStream (FilterOutputStreamAncestry $_) {
+  method setFilterOutputStream (GFilterOutputStreamAncestry $_) {
     my $to-parent;
 
     $!fis = do {
@@ -51,8 +41,12 @@ class GIO::FilterOutputStream is GIO::OutputStream {
   proto method new(|)
   { * }
 
-  multi method new (GFilterOutputStream $filter-stream) {
-    self.bless( :$filter-stream );
+  multi method new (GFilterOutputStreamAncestry $filter-stream, :$ref = True) {
+    return Nil unless $filter-stream;
+
+    my $o = self.bless( :$filter-stream );
+    $o.ref if $ref;
+    $o;
   }
 
   method close_base_stream is rw is also<close-base-stream> {
@@ -61,13 +55,12 @@ class GIO::FilterOutputStream is GIO::OutputStream {
         so g_filter_output_stream_get_close_base_stream($!fis);
       },
       STORE => sub ($, Int() $close_base is copy) {
-        my gboolean $c  = $close_base;
+        my gboolean $c  = $close_base.so.Int;
 
         g_filter_output_stream_set_close_base_stream($!fis, $c);
       }
     );
   }
-
 
   method get_base_stream (:$raw = False)
     is also<
@@ -79,7 +72,7 @@ class GIO::FilterOutputStream is GIO::OutputStream {
     my $bs = g_filter_output_stream_get_base_stream($!fis);
 
     $bs ??
-      ( $raw ?? $bs !! GIO::OutputStream.new($bs) )
+      ( $raw ?? $bs !! GIO::OutputStream.new($bs, :!ref) )
       !!
       Nil;
   }

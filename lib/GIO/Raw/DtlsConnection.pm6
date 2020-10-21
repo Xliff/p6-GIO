@@ -2,14 +2,18 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
-
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::DtlsConnection;
 
 sub g_dtls_connection_close (
-  GDtlsConnection $conn,
-  GCancellable $cancellable,
+  GDtlsConnection         $conn,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -18,19 +22,19 @@ sub g_dtls_connection_close (
 { * }
 
 sub g_dtls_connection_close_async (
-  GDtlsConnection $conn,
-  gint $io_priority,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GDtlsConnection     $conn,
+  gint                $io_priority,
+  GCancellable        $cancellable,
+                      &callback (GTlsConnection, GAsyncResult, gpointer),
+  gpointer            $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_dtls_connection_close_finish (
-  GDtlsConnection $conn,
-  GAsyncResult $result,
+  GDtlsConnection         $conn,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -39,8 +43,8 @@ sub g_dtls_connection_close_finish (
 { * }
 
 sub g_dtls_connection_emit_accept_certificate (
-  GDtlsConnection $conn,
-  GTlsCertificate $peer_cert,
+  GDtlsConnection      $conn,
+  GTlsCertificate      $peer_cert,
   GTlsCertificateFlags $errors
 )
   returns uint32
@@ -73,8 +77,8 @@ sub g_dtls_connection_get_type ()
 { * }
 
 sub g_dtls_connection_handshake (
-  GDtlsConnection $conn,
-  GCancellable $cancellable,
+  GDtlsConnection         $conn,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -83,19 +87,19 @@ sub g_dtls_connection_handshake (
 { * }
 
 sub g_dtls_connection_handshake_async (
-  GDtlsConnection $conn,
-  gint $io_priority,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GDtlsConnection     $conn,
+  gint                $io_priority,
+  GCancellable        $cancellable,
+                      &callback (GTlsConnection, GAsyncResult, gpointer),
+  gpointer            $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_dtls_connection_handshake_finish (
-  GDtlsConnection $conn,
-  GAsyncResult $result,
+  GDtlsConnection         $conn,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -104,10 +108,10 @@ sub g_dtls_connection_handshake_finish (
 { * }
 
 sub g_dtls_connection_shutdown (
-  GDtlsConnection $conn,
-  gboolean $shutdown_read,
-  gboolean $shutdown_write,
-  GCancellable $cancellable,
+  GDtlsConnection         $conn,
+  gboolean                $shutdown_read,
+  gboolean                $shutdown_write,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -117,20 +121,20 @@ sub g_dtls_connection_shutdown (
 
 sub g_dtls_connection_shutdown_async (
   GDtlsConnection $conn,
-  gboolean $shutdown_read,
-  gboolean $shutdown_write,
-  gint $io_priority,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  gboolean        $shutdown_read,
+  gboolean        $shutdown_write,
+  gint            $io_priority,
+  GCancellable    $cancellable,
+                  &callback (GTlsConnection, GAsyncResult, gpointer),
+  gpointer        $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_dtls_connection_shutdown_finish (
-  GDtlsConnection $conn,
-  GAsyncResult $result,
+  GDtlsConnection         $conn,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -178,7 +182,7 @@ sub g_dtls_connection_set_certificate (
 
 sub g_dtls_connection_set_database (
   GDtlsConnection $conn,
-  GTlsDatabase $database
+  GTlsDatabase    $database
 )
   is native(gio)
   is export
@@ -202,7 +206,7 @@ sub g_dtls_connection_set_interaction (
 
 sub g_dtls_connection_set_require_close_notify (
   GDtlsConnection $conn,
-  gboolean $require_close_notify
+  gboolean        $require_close_notify
 )
   is native(gio)
   is export
@@ -210,7 +214,7 @@ sub g_dtls_connection_set_require_close_notify (
 
 sub g_dtls_connection_set_advertised_protocols (
   GDtlsConnection $conn,
-  CArray[Str] $protocols
+  CArray[Str]     $protocols
 )
   is native(gio)
   is export

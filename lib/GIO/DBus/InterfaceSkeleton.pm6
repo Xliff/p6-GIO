@@ -16,6 +16,9 @@ use GLib::Roles::ListData;
 
 use GIO::DBus::Roles::Signals::InterfaceSkeleton;
 
+our subset GDBusInterfaceSkeletonAncestry is export of Mu
+  where GDBusInterfaceSkeleton | GObject;
+
 class GIO::DBus::InterfaceSkeleton {
   also does GLib::Roles::Object;
   also does GIO::DBus::Roles::Signals::InterfaceSkeleton;
@@ -23,9 +26,24 @@ class GIO::DBus::InterfaceSkeleton {
   has GDBusInterfaceSkeleton $!dis is implementor;
 
   submethod BUILD (:$skeleton) {
-    $!dis = $skeleton;
+    self.setGDBusInterfaceSkeleton($skeleton) if $skeleton;
+  }
 
-    self.roleInit-Object;
+  submethod setGDBusInterfaceSkeleton (GDBusInterfaceSkeletonAncestry $_) {
+    my $to-parent;
+
+    $!dis = do {
+      when GDBusInterfaceSkeleton {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GDBusInterfaceSkeleton, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GDBusInterfaceSkeleton
@@ -54,9 +72,9 @@ class GIO::DBus::InterfaceSkeleton {
   }
 
   method export (
-    GDBusConnection() $connection,
-    Str() $object_path,
-    CArray[Pointer[GError]] $error = gerror
+    GDBusConnection()       $connection,
+    Str()                   $object_path,
+    CArray[Pointer[GError]] $error        = gerror
   ) {
     clear_error;
     my $rv = so g_dbus_interface_skeleton_export(
@@ -82,7 +100,7 @@ class GIO::DBus::InterfaceSkeleton {
     my $c = g_dbus_interface_skeleton_get_connection($!dis);
 
     $c ??
-      ( $raw ?? $c !! GIO::DBus::Connection.new($c) )
+      ( $raw ?? $c !! GIO::DBus::Connection.new($c, :!ref) )
       !!
       Nil;
   }
@@ -96,11 +114,13 @@ class GIO::DBus::InterfaceSkeleton {
     my $cl = g_dbus_interface_skeleton_get_connections($!dis);
 
     return Nil unless $cl;
-    return $cl if     $glist;
+    return $cl if     $glist && $raw;
 
-    $cl = GLib::GList.new($cl)
-      but GLib::Roles::ListData[GDBusConnection];
-    $raw ?? $cl.Array !! $cl.Array.map({ GIO::DBus::Connection.new($_) });
+    $cl = GLib::GList.new($cl) but GLib::Roles::ListData[GDBusConnection];
+    return $cl if $glist;
+
+    $raw ?? $cl.Array
+         !! $cl.Array.map({ GIO::DBus::Connection.new($_, :!ref) });
   }
 
   method get_info

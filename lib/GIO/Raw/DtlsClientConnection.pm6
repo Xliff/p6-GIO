@@ -2,8 +2,12 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
-
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::DtlsClientConnection;
 
@@ -20,8 +24,8 @@ sub g_dtls_client_connection_get_type ()
 { * }
 
 sub g_dtls_client_connection_new (
-  GDatagramBased $base_io_stream,
-  GSocketConnectable $server_identity,
+  GDatagramBased          $base_io_stream,
+  GSocketConnectable      $server_identity,
   CArray[Pointer[GError]] $error
 )
   returns GDtlsClientConnection
@@ -43,7 +47,7 @@ sub g_dtls_client_connection_get_validation_flags (GDtlsClientConnection $conn)
 
 sub g_dtls_client_connection_set_server_identity (
   GDtlsClientConnection $conn,
-  GSocketConnectable $identity
+  GSocketConnectable    $identity
 )
   is native(gio)
   is export
@@ -51,7 +55,7 @@ sub g_dtls_client_connection_set_server_identity (
 
 sub g_dtls_client_connection_set_validation_flags (
   GDtlsClientConnection $conn,
-  GTlsCertificateFlags $flags
+  GTlsCertificateFlags  $flags
 )
   is native(gio)
   is export

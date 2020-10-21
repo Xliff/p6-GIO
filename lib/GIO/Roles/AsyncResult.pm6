@@ -6,16 +6,15 @@ use NativeCall;
 use GIO::Raw::Types;
 use GIO::Raw::AsyncResult;
 
-role GIO::Roles::AsyncResult {
+use GLib::Roles::Object;
+
+role GIO::Roles::AsyncResult does GLib::Roles::Object {
   has GAsyncResult $!ar;
 
-  submethod BUILD (:$result) {
-    $!ar = $result if $result;
-  }
-
   method roleInit-AsyncResult is also<roleInit_AsyncResult> {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!ar;
 
+    my \i = findProperImplementor(self.^attributes);
     $!ar = cast( GAsyncResult, i.get_value(self) );
   }
 
@@ -23,15 +22,11 @@ role GIO::Roles::AsyncResult {
     is also<GAsyncResult>
   { $!ar }
 
-  method new-asyncresult-obj (GAsyncResult $result) {
-    self.bless( :$result );
-  }
-
   method get_source_object (:$raw = False) is also<get-source-object> {
     my $o = g_async_result_get_source_object($!ar);
 
     $o ??
-      ( $raw ?? $o !! GLib::Roles::Object.new-object-obj($o) )
+      ( $raw ?? $o !! GLib::Roles::Object.new-object-obj($o, :!ref) )
       !!
       Nil;
   }
@@ -50,13 +45,61 @@ role GIO::Roles::AsyncResult {
     so g_async_result_is_tagged($!ar, $source_tag);
   }
 
-  method legacy_propagate_error (CArray[Pointer[GError]] $error = gerror)
+  proto method legacy_propagate_error (|)
     is also<legacy-propagate-error>
-  {
-    clear_error;
-    my $rv = g_async_result_legacy_propagate_error($!ar, $error);
-    set_error($error);
-    $rv;
+  { * }
+
+  multi method legacy_propagate_error ($error is rw) {
+    my $e = CArray[Pointer[GError]].new;
+    $e[0] = Pointer[GError];
+
+    $error = return-with-all( samewith($e, :all) );
+  }
+  multi method legacy_propagate_error (
+    CArray[Pointer[GError]] $error,
+                            :$all   = False
+  ) {
+    # cw: XXX - There is doubt here that the global $ERROR should be used.
+    #clear_error;
+    my $e = so g_async_result_legacy_propagate_error($!ar, $error);
+    #set_error($error);
+    ppr($e);
+  }
+
+}
+
+our subset GAsyncResultAncestry is export of Mu
+  where GAsyncResult | GObject;
+
+class GIO::AsyncResult does GIO::Roles::AsyncResult {
+
+  submethod BUILD (:$result) {
+    self.setAsyncResult($result) if $result;
+  }
+
+  method setGAsyncResult (GAsyncResultAncestry $_) {
+    my $to-parent;
+
+    $!ar = do {
+      when GAsyncResult {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GAsyncResult, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GAsyncResultAncestry $result, :$ref = True) {
+    return Nil unless $result;
+
+    my $o = self.bless( :$result );
+    $o.ref if $ref;
+    $o;
   }
 
 }

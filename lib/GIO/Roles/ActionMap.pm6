@@ -5,9 +5,10 @@ use NativeCall;
 
 use GIO::Raw::Types;
 
+use GLib::Roles::Object;
 use GLib::Roles::TypedBuffer;
 
-role GIO::Roles::ActionMap {
+role GIO::Roles::ActionMap does GLib::Roles::Object {
   has GActionMap $!actmap;
 
   method GIO::Raw::Definitions::GActionMap
@@ -15,12 +16,10 @@ role GIO::Roles::ActionMap {
   { $!actmap }
 
   method roleInit-ActionMap {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!actmap;
 
-    $!actmap = cast(
-      GActionMap,
-      i.get_value(self)
-    );
+    my \i = findProperImplementor(self.^attributes);
+    $!actmap = cast( GActionMap, i.get_value(self) );
   }
 
   method add_action (GAction() $action)
@@ -51,9 +50,9 @@ role GIO::Roles::ActionMap {
     samewith($lb.p, @entries.elems, $user_data);
   }
   multi method add_action_entries (
-    Pointer $entries,              # BLOCK of GActionEntry structs
-    Int() $n_entries,
-    gpointer $user_data = Pointer
+    Pointer  $entries,              # BLOCK of GActionEntry structs
+    Int()    $n_entries,
+    gpointer $user_data  = Pointer
   ) {
     my gint $n = $n_entries;
 
@@ -76,9 +75,44 @@ role GIO::Roles::ActionMap {
 
 }
 
+our subset GActionMapAncestry is export of Mu
+  where GActionMap | GObject;
+
+class GIO::ActionMap does GIO::Roles::ActionMap {
+
+  submethod BUILD (:$action-map) {
+    self.setGActionMap($action-map) if $action-map;
+  }
+
+  method setGActionMap (GActionMapAncestry $_) {
+    my $to-parent;
+
+    $!actmap = do {
+      when GActionMap {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GActionMap, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GActionMapAncestry $action-map, :$ref = True) {
+    return Nil unless $action-map;
+
+    my $o = self.bless( :$action-map );
+    $o.ref if $ref;
+    $o;
+  }
+}
+
 sub g_action_map_add_action (
   GActionMap $action_map,
-  GAction $action
+  GAction    $action
 )
   is native(gio)
   is export
@@ -86,9 +120,9 @@ sub g_action_map_add_action (
 
 sub g_action_map_add_action_entries (
   GActionMap $action_map,
-  Pointer $entries,                   # BLOCK of GActionEntry
-  gint $n_entries,
-  gpointer $user_data
+  Pointer    $entries,                   # BLOCK of GActionEntry
+  gint       $n_entries,
+  gpointer   $user_data
 )
   is native(gio)
   is export
@@ -102,7 +136,7 @@ sub g_action_map_get_type ()
 
 sub g_action_map_lookup_action (
   GActionMap $action_map,
-  Str $action_name
+  Str        $action_name
 )
   returns GAction
   is native(gio)
@@ -111,8 +145,14 @@ sub g_action_map_lookup_action (
 
 sub g_action_map_remove_action (
   GActionMap $action_map,
-  Str $action_name
+  Str        $action_name
 )
   is native(gio)
   is export
   { * }
+
+# our %GIO::Roles::ActionMap::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::Roles::ActionMap::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_action_map_');
+# }

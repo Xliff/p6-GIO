@@ -8,22 +8,15 @@ use GIO::Raw::Action;
 
 use GLib::Variant;
 
-use GLib::Roles::Properties;
+use GLib::Roles::Object;
 
-role GIO::Roles::Action {
-  also does GLib::Roles::Properties;
-
+role GIO::Roles::Action does GLib::Roles::Object {
   has GAction $!a;
 
-  submethod BUILD (:$action) {
-    $!a = $action;
-
-    self!roleInit-Object;
-  }
-
   method !roleInit-Action {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!a;
 
+    my \i = findProperImplementor(self.^attributes);
     $!a = cast( GAction, i.get_value(self) );
   }
 
@@ -33,10 +26,6 @@ role GIO::Roles::Action {
       Action
     >
   { $!a }
-
-  method new-action-object (GAction $action) {
-    $action ?? self.bless( :$action ) !! Nil;
-  }
 
   method activate (GVariant() $parameter) {
     g_action_activate($!a, $parameter);
@@ -74,7 +63,7 @@ role GIO::Roles::Action {
     my $v = g_action_get_parameter_type($!a);
 
     $v ??
-      ( $raw ?? $v !! GLib::Variant.new($v) )
+      ( $raw ?? $v !! GLib::Variant.new($v, :!ref) )
       !!
       Nil;
   }
@@ -88,7 +77,7 @@ role GIO::Roles::Action {
     my $v = g_action_get_state($!a);
 
     $v ??
-      ( $raw ?? $v !! GLib::Variant.new($v) )
+      ( $raw ?? $v !! GLib::Variant.new($v, :!ref) )
       !!
       Nil;
   }
@@ -103,7 +92,7 @@ role GIO::Roles::Action {
     my $v = g_action_get_state_hint($!a);
 
     $v ??
-      ( $raw ?? $v !! GLib::Variant.new($v) )
+      ( $raw ?? $v !! GLib::Variant.new($v, :!ref) )
       !!
       Nil;
   }
@@ -118,7 +107,7 @@ role GIO::Roles::Action {
     my $v = g_action_get_state_type($!a);
 
     $v ??
-      ( $raw ?? $v !! GLib::Variant.new($v) )
+      ( $raw ?? $v !! GLib::Variant.new($v, :!ref) )
       !!
       Nil;
   }
@@ -133,31 +122,84 @@ role GIO::Roles::Action {
     so g_action_name_is_valid($action_name);
   }
 
-  proto method parse_detailed_name (|)
-    is also<parse-detailed-name>
-  { * }
 
-  multi method parse_detailed_name (
-    Str() $detailed_name,
-    Str() $action_name,
-    GVariant() $target_value,
-    CArray[Pointer[GError]] $error = gerror
+  proto method parse_detailed_name (
+    Str()                   $detailed_name,
+    Str()                   $action_name,
+    CArray[Pointer[GError]] $error         = gerror
   ) {
+    my $rv = samewith($detailed_name, $action_name, $, $error, :all);
+
+    $rv[0] ?? $rv[1] !! Nil;
+  }
+  multi method parse_detailed_name (
+    Str()                   $detailed_name,
+    Str()                   $action_name,
+                            $target_value is rw,
+    CArray[Pointer[GError]] $error        = gerror,
+                            :$all         = False,
+                            :$raw         = False
+  ) {
+    my $tv = CArray[GVariant].new;
+    $tv[0] = GVariant;
+
     clear_error;
-    my $rc = so g_action_parse_detailed_name(
+    my $rv = so g_action_parse_detailed_name(
       $detailed_name,
       $action_name,
-      $target_value,
+      $tv,
       $error
     );
     set_error($error);
-    $rc;
+
+    $tv = ppr($tv);
+    $tv = GLib::Variant.new($tv) unless $tv.not || $raw;
+    $target_value = $tv;
+
+    $all.not ?? $rv !! ($rv, $target_value);
   }
-  multi method print_detailed_name (
+
+  method print_detailed_name (
     Str() $action_name,
     GVariant() $target_value
   ) {
     g_action_print_detailed_name($action_name, $target_value);
+  }
+
+}
+
+our subset GActionAncestry is export of Mu
+  where GAction | GObject;
+
+class GIO::Action does GIO::Roles::Action {
+
+  submethod BUILD (:$action) {
+    self.setGAction($action) if $action;
+  }
+
+  method setGAction (GActionAncestry $_) {
+    my $to-parent;
+
+    $!a = do {
+      when GAction {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GAction, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GActionAncestry $action, :$ref = True) {
+    return Nil unless $action;
+
+    my $o = self.bless( :$action );
+    $o.ref if $ref;
+    $o;
   }
 
 }

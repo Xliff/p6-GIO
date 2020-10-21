@@ -4,326 +4,326 @@ use NativeCall;
 
 use GIO::Raw::Types;
 
-unit package gio::Compat::Raw::AppInfo;
+unit package GIO::Raw::AppInfo;
 
 sub g_app_info_add_supports_type (
-  GAppInfo $appinfo,
-  gchar $content_type,
-  GError $error is rw
+  GAppInfo                $appinfo,
+  Str                     $content_type,
+  CArray[Pointer[GError]] $error
 )
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_can_delete (GAppInfo $appinfo)
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_can_remove_supports_type (GAppInfo $appinfo)
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_create_from_commandline (
-  gchar $commandline,
-  gchar $application_name,
-  uint32 $flags,                # GAppInfoCreateFlags $flags,
-  GError $error is rw
+  Str                     $commandline,
+  Str                     $application_name,
+  uint32                  $flags,                 # GAppInfoCreateFlags $flags,
+  CArray[Pointer[GError]] $error
 )
   returns GAppInfo
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_delete (GAppInfo $appinfo)
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_dup (GAppInfo $appinfo)
   returns GAppInfo
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_equal (GAppInfo $appinfo1, GAppInfo $appinfo2)
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_launch_context_get_display (
   GAppLaunchContext $context,
-  GAppInfo $info,
-  GList $files
+  GAppInfo          $info,
+  GList             $files
 )
-  returns gchar
+  returns Str
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_launch_context_get_environment (GAppLaunchContext $context)
   returns CArray[Str]
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_launch_context_get_startup_notify_id (
   GAppLaunchContext $context,
-  GAppInfo $info,
-  GList $files
+  GAppInfo          $info,
+  GList             $files
 )
-  returns gchar
+  returns Str
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_launch_context_launch_failed (
   GAppLaunchContext $context,
-  gchar $startup_notify_id
+  Str               $startup_notify_id
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_launch_context_new ()
   returns GAppLaunchContext
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_launch_context_setenv (
   GAppLaunchContext $context,
-  gchar $variable,
-  gchar $value
+  Str               $variable,
+  Str               $value
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_launch_context_unsetenv (
   GAppLaunchContext $context,
-  gchar $variable
+  Str               $variable
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_get_all ()
   returns GList
   is native(gio)
   is export
-  { * }
+{ * }
 
-sub g_app_info_get_all_for_type (gchar $content_type)
+sub g_app_info_get_all_for_type (Str $content_type)
   returns GList
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_get_commandline (GAppInfo $appinfo)
-  returns gchar
+  returns Str
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_get_default_for_type (
-  gchar $content_type,
+  Str      $content_type,
   gboolean $must_support_uris
 )
   returns GAppInfo
   is native(gio)
   is export
-  { * }
+{ * }
 
-sub g_app_info_get_default_for_uri_scheme (gchar $uri_scheme)
+sub g_app_info_get_default_for_uri_scheme (Str $uri_scheme)
   returns GAppInfo
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_get_description (GAppInfo $appinfo)
-  returns gchar
+  returns Str
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_get_display_name (GAppInfo $appinfo)
-  returns gchar
+  returns Str
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_get_executable (GAppInfo $appinfo)
-  returns gchar
+  returns Str
   is native(gio)
   is export
-  { * }
+{ * }
 
-sub g_app_info_get_fallback_for_type (gchar $content_type)
+sub g_app_info_get_fallback_for_type (Str $content_type)
   returns GList
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_get_icon (GAppInfo $appinfo)
   returns GIcon
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_get_id (GAppInfo $appinfo)
-  returns gchar
+  returns Str
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_get_name (GAppInfo $appinfo)
-  returns gchar
+  returns Str
   is native(gio)
   is export
-  { * }
+{ * }
 
-sub g_app_info_get_recommended_for_type (gchar $content_type)
+sub g_app_info_get_recommended_for_type (Str $content_type)
   returns GList
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_get_supported_types (GAppInfo $appinfo)
-  returns CArray[gchar]
+  returns CArray[Str]
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_launch (
-  GAppInfo $appinfo,
-  GList $files,
-  GAppLaunchContext $context,
-  GError $error is rw
+  GAppInfo                $appinfo,
+  GList                   $files,
+  GAppLaunchContext       $context,
+  CArray[Pointer[GError]] $error
 )
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_launch_default_for_uri (
-  gchar $uri,
-  GAppLaunchContext $context,
-  GError $error is rw
+  Str                     $uri,
+  GAppLaunchContext       $context,
+  CArray[Pointer[GError]] $error
 )
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_launch_default_for_uri_async (
-  gchar $uri,
-  GAppLaunchContext $context,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  Str                 $uri,
+  GAppLaunchContext   $context,
+  GCancellable        $cancellable,
+                      &callback (GAppInfo, GAsyncResult, gpointer),
+  gpointer            $user_data
 )
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_launch_default_for_uri_finish (
-  GAsyncResult $result,
-  GError $error is rw
+  GAsyncResult            $result,
+  CArray[Pointer[GError]] $error
 )
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_launch_uris (
-  GAppInfo $appinfo,
-  GList $uris,
-  GAppLaunchContext $context,
-  GError $error is rw
+  GAppInfo                $appinfo,
+  GList                   $uris,
+  GAppLaunchContext       $context,
+  CArray[Pointer[GError]] $error
 )
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_monitor_get ()
   returns GAppInfoMonitor
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_monitor_get_type ()
   returns GType
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_remove_supports_type (
-  GAppInfo $appinfo,
-  gchar $content_type,
-  GError $error is rw
+  GAppInfo                $appinfo,
+  Str                     $content_type,
+  CArray[Pointer[GError]] $error
 )
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
-sub g_app_info_reset_type_associations (gchar $content_type)
+sub g_app_info_reset_type_associations (Str $content_type)
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_set_as_default_for_extension (
-  GAppInfo $appinfo,
-  gchar $extension,
-  GError $error is rw
+  GAppInfo                $appinfo,
+  Str                     $extension,
+  CArray[Pointer[GError]] $error
 )
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_set_as_default_for_type (
-  GAppInfo $appinfo,
-  gchar $content_type,
-  GError $error is rw
+  GAppInfo                $appinfo,
+  Str                     $content_type,
+  CArray[Pointer[GError]] $error
 )
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_set_as_last_used_for_type (
-  GAppInfo $appinfo,
-  gchar $content_type,
-  GError $error is rw
+  GAppInfo                $appinfo,
+  Str                     $content_type,
+  CArray[Pointer[GError]] $error
 )
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_should_show (GAppInfo $appinfo)
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_supports_files (GAppInfo $appinfo)
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }
 
 sub g_app_info_supports_uris (GAppInfo $appinfo)
   returns uint32
   is native(gio)
   is export
-  { * }
+{ * }

@@ -1,12 +1,10 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
 use GIO::DBus::Raw::Types;
-
 use GIO::DBus::Raw::MethodInvocation;
 
 use GIO::DBus::Connection;
@@ -14,20 +12,46 @@ use GIO::DBus::Message;
 
 use GLib::Roles::Object;
 
+our subset GDBusMethodInvocationAncestry is export of Mu
+  where GDBusMethodInvocation | GObject;
+
 class GIO::DBus::MethodInvocation {
   also does GLib::Roles::Object;
 
   has GDBusMethodInvocation $!dmi is implementor;
 
   submethod BUILD (:$invocation) {
-    $!dmi = $invocation;
+    self.setGDBusMethodInvocation($invocation) if $invocation;
+  }
 
-    self.roleInit-Object;
+  method setGDBusMethodInvocation (GDBusMethodInvocationAncestry $_) {
+    my $to-parent;
+
+    $!dmi = do {
+      when GDBusMethodInvocation {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GDBusMethodInvocation, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GDBusMethodInvocation
     is also<GDBusMethodInvocation>
   { $!dmi }
+
+  method new (GDBusMethodInvocationAncestry $invocation, :$ref = True) {
+    return Nil unless $invocation;
+
+    my $o = self.bless( :$invocation );
+    $o.ref if $ref;
+    $o;
+  }
 
   method get_connection (:$raw = False)
     is also<
@@ -38,7 +62,7 @@ class GIO::DBus::MethodInvocation {
     my $c = g_dbus_method_invocation_get_connection($!dmi);
 
     $c ??
-      ( $raw ?? $c !! GIO::DBus::Connection.new($c) )
+      ( $raw ?? $c !! GIO::DBus::Connection.new($c, :!ref) )
       !!
       Nil;
   }
@@ -62,7 +86,7 @@ class GIO::DBus::MethodInvocation {
     my $m = g_dbus_method_invocation_get_message($!dmi);
 
     $m ??
-      ( $raw ?? $m !! GIO::DBus::Message.new($m) )
+      ( $raw ?? $m !! GIO::DBus::Message.new($m, :!ref) )
       !!
       Nil;
   }
@@ -144,7 +168,11 @@ class GIO::DBus::MethodInvocation {
   method return_dbus_error (Str() $error_name, Str() $error_message)
     is also<return-dbus-error>
   {
-    g_dbus_method_invocation_return_dbus_error($!dmi, $error_name, $error_message);
+    g_dbus_method_invocation_return_dbus_error(
+      $!dmi,
+      $error_name,
+      $error_message
+    );
   }
 
   method return_error(
@@ -170,7 +198,12 @@ class GIO::DBus::MethodInvocation {
   {
     my gint $c = $code;
 
-    g_dbus_method_invocation_return_error_literal($!dmi, $domain, $code, $message);
+    g_dbus_method_invocation_return_error_literal(
+      $!dmi,
+      $domain,
+      $code,
+      $message
+    );
   }
 
   method return_gerror (GError() $error) is also<return-gerror> {
@@ -182,7 +215,7 @@ class GIO::DBus::MethodInvocation {
   }
 
   method return_value_with_unix_fd_list (
-    GVariant() $parameters,
+    GVariant()    $parameters,
     GUnixFDList() $fd_list
   )
     is also<return-value-with-unix-fd-list>

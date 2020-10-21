@@ -13,10 +13,9 @@ sub g_cancellable_cancel (GCancellable $cancellable)
 
 sub g_cancellable_connect (
   GCancellable $cancellable,
-  &callback (GCancellable, gpointer),
-  GCallback $callback,
-  gpointer $data,
-  GDestroyNotify $data_destroy_func
+               &callback (GCancellable, gpointer),
+  gpointer     $data,
+               &data_destroy_func
 )
   returns gulong
   is native(gio)
@@ -85,7 +84,7 @@ sub g_cancellable_reset (GCancellable $cancellable)
 { * }
 
 sub g_cancellable_set_error_if_cancelled (
-  GCancellable $cancellable,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32

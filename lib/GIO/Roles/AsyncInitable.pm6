@@ -1,23 +1,22 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
-
 use GIO::Raw::AsyncInitable;
 
+use GLib::Roles::Object;
 use GLib::Roles::TypedBuffer;
 
-role GIO::Roles::AsyncInitable {
+role GIO::Roles::AsyncInitable does GLib::Roles::Object {
   has GAsyncInitable $!ai;
 
   method roleInit-AsyncInitable {
     return if $!ai;
-    my \i = findProperImplementor(self.^attributes);
 
-    $!ai = cast(GAsyncInitable, i.get_value(self) );
+    my \i = findProperImplementor(self.^attributes);
+    $!ai = cast(GAsyncInitable, i.getP4_value(self) );
   }
 
   method GIO::Raw::Definitions::GAsyncInitable
@@ -47,10 +46,10 @@ role GIO::Roles::AsyncInitable {
     $s.Supply;
   }
   multi method init (
-    Int() $io_priority,
-    &callback,
-    gpointer $user_data = gpointer,
-    :$async is required
+    Int()    $io_priority,
+             &callback,
+    gpointer $user_data    =  gpointer,
+             :$async       is required
   ) {
     self.init_async(
       $io_priority,
@@ -59,9 +58,9 @@ role GIO::Roles::AsyncInitable {
     );
   }
   multi method init_async (
-    Int() $io_priority,
-    &callback,
-    gpointer $user_data = gpointer
+    Int()    $io_priority,
+             &callback,
+    gpointer $user_data     = gpointer
   ) {
     self.init_async(
       $io_priority,
@@ -71,11 +70,11 @@ role GIO::Roles::AsyncInitable {
     );
   }
   multi method init (
-    Int() $io_priority,
+    Int()          $io_priority,
     GCancellable() $cancellable,
-    &callback,
-    gpointer $user_data = gpointer,
-    :$async is required
+                   &callback,
+    gpointer       $user_data    = gpointer,
+                   :$async       is required
   ) {
     self.init_async(
       $io_priority,
@@ -85,10 +84,10 @@ role GIO::Roles::AsyncInitable {
     );
   }
   multi method init_async (
-    Int() $io_priority,
+    Int()          $io_priority,
     GCancellable() $cancellable,
-    &callback,
-    gpointer $user_data = gpointer
+                   &callback,
+    gpointer       $user_data    = gpointer
   ) {
     my gint $i = $io_priority;
 
@@ -102,7 +101,7 @@ role GIO::Roles::AsyncInitable {
   }
 
   method init_finish (
-    GAsyncResult() $res,
+    GAsyncResult()          $res,
     CArray[Pointer[GError]] $error = gerror
   )
     is also<init-finish>
@@ -114,15 +113,26 @@ role GIO::Roles::AsyncInitable {
   }
 
   method new_finish (
-    GAsyncResult() $res,
+    GAsyncResult()          $res,
     CArray[Pointer[GError]] $error = gerror,
+                            :$raw  = False
   )
     is also<new-finish>
   {
     clear_error
     my $o = g_async_initable_new_finish($!ai, $res, $error);
     set_error($error);
-    $o ?? GLib::Roles::Object.new-object-obj($o) !! Nil;
+
+    $o = $o ??
+      ( $raw ?? $o !! GLib::Roles::Object.new-object-obj($o, :!ref) )
+      !!
+      Nil;
+
+    unless $raw {
+      $o = $o but GIO::Roles::AsyncInitable;
+      $o.roleInit-AsyncInitable;
+    }
+    $o;
   }
 
   proto method new_async (|)
@@ -133,8 +143,8 @@ role GIO::Roles::AsyncInitable {
     Int() $io_priority,
     Int() $object_type,
           *@parameters,
-    :$async is required,
-    :$list  is required
+          :$async       is required,
+          :$list        is required
   ) {
     self.new_async(
       $io_priority,
@@ -146,7 +156,7 @@ role GIO::Roles::AsyncInitable {
     Int() $io_priority,
     Int() $object_type,
           @parameters,
-    :$async is required,
+          :$async       is required,
   ) {
     self.new_async(
       $io_priority,
@@ -179,7 +189,7 @@ role GIO::Roles::AsyncInitable {
           @parameters,
     Int() $io_priority,
           &callback,
-          :$async is required
+          :$async       is required
   ) {
     self.new_async(
       $object_type,
@@ -213,8 +223,8 @@ role GIO::Roles::AsyncInitable {
     gpointer  $parameters,
     Int()     $io_priority,
               &callback,
-    gpointer  $user_data = gpointer,
-              :$async is required
+    gpointer  $user_data     =  gpointer,
+              :$async        is required
   ) {
     self.new_async(
       $object_type,
@@ -231,7 +241,7 @@ role GIO::Roles::AsyncInitable {
     gpointer  $parameters,
     Int()     $io_priority,
               &callback,
-    gpointer  $user_data = gpointer
+    gpointer  $user_data     = gpointer
   ) {
     self.new_async(
       $object_type,
@@ -249,8 +259,8 @@ role GIO::Roles::AsyncInitable {
     Int()                $io_priority,
     GCancellable()       $cancellable,
                          &callback,
-    gpointer             $user_data = gpointer,
-                         :$async is required
+    gpointer             $user_data     = gpointer,
+                         :$async        is required
   ) {
     self.new_async(
       $object_type,
@@ -268,8 +278,8 @@ role GIO::Roles::AsyncInitable {
     gpointer             $parameters,
     Int()                $io_priority,
     GCancellable()       $cancellable,
-    GAsyncReadyCallback  $callback,
-    gpointer             $user_data = gpointer
+                         &callback,
+    gpointer             $user_data     = gpointer
   ) {
     my GType $o = $object_type;
     my guint $n = $n_parameters;
@@ -281,9 +291,49 @@ role GIO::Roles::AsyncInitable {
       $parameters,
       $i,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
+  }
+
+}
+
+our subset GAsyncInitableAncestry is export of Mu
+  where GAsyncInitable | GObject;
+
+class GIO::AsyncInitable does GIO::Roles::AsyncInitable {
+
+  submethod BUILD (:$async-initable) {
+    self.setGAsyncInitable($async-initable) if $async-initable;
+  }
+
+  method setGAsyncInitable (GAsyncInitableAncestry $_) {
+    my $to-parent;
+
+    $!ai = do {
+      when GAsyncInitable {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GAsyncInitable, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  multi method new (
+    GAsyncInitableAncestry $async-initable,
+                           :$ref            = True
+  ) {
+    return Nil unless $async-initable;
+
+    my $o = self.bless;
+    $o.setGAsyncInitable($async-initable);
+    $o.ref if $ref;
+    $o;
   }
 
 }

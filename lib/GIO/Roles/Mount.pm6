@@ -6,31 +6,25 @@ use NativeCall;
 use GIO::Raw::Types;
 use GIO::Raw::Mount;
 
+use GLib::Roles::Object;
 use GLib::Roles::Signals::Generic;
 use GIO::Roles::Icon;
 use GIO::Roles::Volume;
 use GIO::Roles::Drive;
 
-role GIO::Roles::Mount {
+role GIO::Roles::Mount does GLib::Roles::Object {
   has GMount $!m;
 
-  submethod BUILD (:$mount) {
-    $!m = $mount;
-  }
-
   method roleInit-Mount is also<roleInit_Mount> {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!m;
 
+    my \i = findProperImplementor(self.^attributes);
     $!m = cast(GMount, i.get_value(self) );
   }
 
   method GIO::Raw::Definitions::GMount
     is also<GMount>
   { $!m }
-
-  method new-mount-obj ($mount) is also<new_mount_obj> {
-    self.bless( :$mount );
-  }
 
   # Is originally:
   # GMount, gpointer --> void
@@ -63,37 +57,37 @@ role GIO::Roles::Mount {
   { * }
 
   multi method eject_with_operation (
-    Int() $flags,
-    Int() $mount_operation,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data         = gpointer,
-    GCancellable() $cancellable = GCancellable
+    Int()               $mount_operation,
+                        &callback,
+    gpointer            $user_data         = gpointer,
+    GCancellable()      :$cancellable      = GCancellable,
+    Int()               :$flags,
   ) {
-    samewith($flags, $mount_operation, $cancellable, $callback, $user_data);
+    samewith($flags, $mount_operation, $cancellable, &callback, $user_data);
   }
   multi method eject_with_operation (
-    Int() $flags,
-    Int() $mount_operation,
-    GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Int()               $flags,
+    Int()               $mount_operation,
+    GCancellable()      $cancellable,
+                        &callback,
+    gpointer            $user_data        = gpointer
   ) {
     my GMountUnmountFlags $f = $flags;
-    my GMountOperation $m = $mount_operation;
+    my GMountOperation    $m = $mount_operation;
 
     g_mount_eject_with_operation(
       $!m,
       $f,
       $m,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method eject_with_operation_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<eject-with-operation-finish>
   {
@@ -107,7 +101,7 @@ role GIO::Roles::Mount {
     my $f = g_mount_get_default_location($!m);
 
     $f ??
-      ( $raw ?? $f !! ::('GIO::Roles::GFile').new-file-obj($f) )
+      ( $raw ?? $f !! ::('GIO::GFile').new($f, :!ref) )
       !!
       Nil;
   }
@@ -116,7 +110,7 @@ role GIO::Roles::Mount {
     my $d = g_mount_get_drive($!m);
 
     $d ??
-      ( $raw ?? $d !! GIO::Roles::Drive.new-drive-obj($d) )
+      ( $raw ?? $d !! GIO::Drive.new($d, :!ref) )
       !!
       Nil;
   }
@@ -125,7 +119,7 @@ role GIO::Roles::Mount {
     my $i = g_mount_get_icon($!m);
 
     $i ??
-      ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i) )
+      ( $raw ?? $i !! GIO::Icon.new($i, :!ref) )
       !!
       Nil;
   }
@@ -138,7 +132,7 @@ role GIO::Roles::Mount {
     my $f = g_mount_get_root($!m);
 
     $f ??
-      ( $raw ?? $f !! ::('GIO::Roles::GFile').new-file-obj($f) )
+      ( $raw ?? $f !! ::('GIO::GFile').new($f, :!ref) )
       !!
       Nil;
   }
@@ -151,7 +145,7 @@ role GIO::Roles::Mount {
     my $i = g_mount_get_symbolic_icon($!m);
 
     $i ??
-      ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i) )
+      ( $raw ?? $i !! GIO::Icon.new($i, :!ref) )
       !!
       Nil;
   }
@@ -170,7 +164,7 @@ role GIO::Roles::Mount {
     my $v = g_mount_get_volume($!m);
 
     $v ??
-      ( $raw ?? $v !! GIO::Roles::Volume.new-volume-obj($v) )
+      ( $raw ?? $v !! GIO::Volume.new($v, :!ref) )
       !!
       Nil;
   }
@@ -180,27 +174,27 @@ role GIO::Roles::Mount {
   { * }
 
   multi method guess_content_type (
-    Int() $force_rescan,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer,
-    GCancellable() $cancellable = GCancellable
+                   &callback,
+    gpointer       $user_data     = gpointer,
+    Int()          :$force_rescan = False,
+    GCancellable() :$cancellable  = GCancellable
   ) {
-    samewith($force_rescan, $cancellable, $callback, $user_data);
+    samewith($force_rescan, $cancellable, &callback, $user_data);
   }
   multi method guess_content_type (
-    Int() $force_rescan,
+    Int()          $force_rescan,
     GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+                   &callback,
+    gpointer       $user_data     = gpointer
   ) {
     my gboolean $f = $force_rescan.so.Int;
 
-    g_mount_guess_content_type($!m, $f, $cancellable, $callback, $user_data);
+    g_mount_guess_content_type($!m, $f, $cancellable, &callback, $user_data);
   }
 
   method guess_content_type_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<guess-content-type-finish>
   {
@@ -211,13 +205,22 @@ role GIO::Roles::Mount {
     CStringArrayToArray($sa);
   }
 
-  method guess_content_type_sync (
-    Int() $force_rescan,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
-  )
+  proto method guess_content_type_sync (|)
     is also<guess-content-type-sync>
-  {
+  { * }
+
+  multi method guess_content_type_sync (
+    CArray[Pointer[GError]] $error         = gerror,
+    Int()                   :$force_rescan = False,
+    GCancellable()          :$cancellable  = GCancellable,
+  ) {
+    samewith($force_rescan, $cancellable, $error);
+  }
+  multi method guess_content_type_sync (
+    Int()                   $force_rescan,
+    GCancellable()          $cancellable,
+    CArray[Pointer[GError]] $error         = gerror
+  ) {
     my gboolean $f = $force_rescan.so.Int;
 
     clear_error;
@@ -232,29 +235,30 @@ role GIO::Roles::Mount {
   }
 
   multi method remount (
-    Int() $flags,
-    Int() $mount_operation,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Int()               $mount_operation,
+                        &callback,
+    gpointer            $user_data        = gpointer,
+    GCancellable()      :$cancellable     = GCancellable,
+    Int()               :$flags           = 0
   ) {
-    samewith($flags, $mount_operation, GCancellable, $callback, $user_data);
+    samewith($flags, $mount_operation, $cancellable, &callback, $user_data);
   }
-  method remount (
-    Int() $flags,
-    Int() $mount_operation,
-    GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+  multi method remount (
+    Int()               $flags,
+    Int()               $mount_operation,
+    GCancellable()      $cancellable,
+                        &callback,
+    gpointer            $user_data        = gpointer
   ) {
     my GMountUnmountFlags $f = $flags;
-    my GMountOperation $m = $mount_operation;
+    my GMountOperation    $m = $mount_operation;
 
-    g_mount_remount($!m, $f, $m, $cancellable, $callback, $user_data);
+    g_mount_remount($!m, $f, $m, $cancellable, &callback, $user_data);
   }
 
   method remount_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<remount-finish>
   {
@@ -273,36 +277,37 @@ role GIO::Roles::Mount {
   { * }
 
   multi method unmount_with_operation (
-    Int() $flags,
-    Int() $mount_operation,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Int()               $mount_operation,
+                        &callback,
+    gpointer            $user_data        = gpointer,
+    Int()               :$flags           = 0,
+    GCancellable()      :$cancellable     = GCancellable
   ) {
-    samewith($flags, $mount_operation, GCancellable, $callback, $user_data);
+    samewith($flags, $mount_operation, $cancellable, &callback, $user_data);
   }
   multi method unmount_with_operation (
-    Int() $flags,
-    Int() $mount_operation,
-    GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Int()               $flags,
+    Int()               $mount_operation,
+    GCancellable()      $cancellable,
+                        &callback,
+    gpointer            $user_data        = gpointer
   ) {
     my GMountUnmountFlags $f = $flags;
-    my GMountOperation $m = $mount_operation;
+    my GMountOperation    $m = $mount_operation;
 
     g_mount_unmount_with_operation(
       $!m,
       $f,
       $m,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method unmount_with_operation_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<unmount-with-operation-finish>
   {
@@ -314,6 +319,42 @@ role GIO::Roles::Mount {
 
   method unshadow {
     g_mount_unshadow($!m);
+  }
+
+}
+
+our subset GMountAncestry is export of Mu
+  where GMount | GObject;
+
+class GIO::Mount does GIO::Roles::Mount {
+
+  submethod BUILD (:$mount) {
+    self.setGMount($mount) if $mount;
+  }
+
+  method setGMount (GMountAncestry $_) {
+    my $to-parent;
+
+    $!m = do {
+      when GMount {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GMount, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GMountAncestry $mount, :$ref = True) {
+    return Nil unless $mount;
+
+    my $o = self.bless( :$mount );
+    $o.ref if $ref;
+    $o
   }
 
 }

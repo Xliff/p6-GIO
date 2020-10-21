@@ -10,8 +10,8 @@ use GIO::Raw::SocketAddress;
 use GLib::Roles::Object;
 use GIO::Roles::SocketConnectable;
 
-our subset SocketAddressAncestry is export of Mu
-  where GSocketConnectable | GSocketAddress;
+our subset GSocketAddressAncestry is export of Mu
+  where GSocketAddress | GSocketConnectable | GObject;
 
 class GIO::SocketAddress {
   also does GLib::Roles::Object;
@@ -20,44 +20,52 @@ class GIO::SocketAddress {
   has GSocketAddress $!sa is implementor;
 
   submethod BUILD (:$address) {
-    self.setSocketAddress($address) if $address;
+    self.setGSocketAddress($address) if $address;
   }
 
-  method setSocketAddress (SocketAddressAncestry $_) {
-    my $role-set = False;
+  method setGSocketAddress (GSocketAddressAncestry $_) {
+    my $to-parent;
 
-    # This is NOT the normal when processing. since it is NOT an assignment!
-    {
+    $!sa = do {
+      when GSocketAddress {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
       when GSocketConnectable {
-        self.roleInit-SocketConnectable($_);
-        $role-set = True;
-        proceed;
+        $to-parent = cast(GObject, $_);
+        $!sc = $_;
+        cast(GSocketAddress, $_);
       }
 
       default {
-        $!sa = $_ ~~ GSocketAddress ?? $_ !! cast(GSocketAddress, $_);
+        $to-parent = $_;
+        cast(GSocketAddress, $_);
       }
     }
-
-    # ALWAYS set Object first!
-    self.roleInit-Object;
-    self.roleInit-SocketConnectable unless $role-set;
+    self!setObject($to-parent);
+    self.roleInit-SocketConnectable;
   }
 
   method GIO::Raw::Definitions::GSocketAddress
     is also<GSocketAddress>
   { $!sa }
 
-  method new (GSocketAddress $address) {
-    self.bless( :$address );
+  method new (GSocketAddressAncestry $address, :$ref = True) {
+    return Nil unless $address;
+
+    my $o = self.bless( :$address );
+    $o.ref if $ref;
+    $o;
   }
 
   method new_from_native (Pointer $native, Int() $len)
     is also<new-from-native>
   {
     my gsize $l = $len;
+    my $address = g_socket_address_new_from_native($native, $l);
 
-    self.bless( address => g_socket_address_new_from_native($native, $l) )
+    $address ?? self.bless( :$address ) !! Nil;
   }
 
   method get_family
@@ -86,16 +94,16 @@ class GIO::SocketAddress {
   }
 
   method to_native (
-    Pointer $dest,
-    Int() $destlen,
-    CArray[Pointer[GError]] $error = gerror
+    Pointer                 $dest,
+    Int()                   $destlen,
+    CArray[Pointer[GError]] $error    = gerror
   )
     is also<to-native>
   {
     my gsize $dl = $destlen;
 
     clear_error;
-    my $rv = g_socket_address_to_native($!sa, $dest, $dl, $error);
+    my $rv = so g_socket_address_to_native($!sa, $dest, $dl, $error);
     set_error($error);
     $rv;
   }

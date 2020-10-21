@@ -4,14 +4,15 @@ use NativeCall;
 
 use GIO::Raw::Types;
 use GIO::DBus::Raw::Types;
-
 use GIO::DBus::Raw::Message;
 
 use GLib::Variant;
+use GIO::UnixFDList;
 
 use GLib::Roles::Object;
 
-use GIO::UnixFDList;
+our subset GDBusMessageAncestry is export of Mu
+  where GDBusMessage | GObject;
 
 class GIO::DBus::Message {
   also does GLib::Roles::Object;
@@ -19,9 +20,24 @@ class GIO::DBus::Message {
   has GDBusMessage $!dm is implementor;
 
   submethod BUILD (:$message) {
-    $!dm = $message;
+    self.setGDBusMessage($message) if $message;
+  }
 
-    self.roleInit-Object;
+  method setGDBusMessage (GDBusMessageAncestry $_) {
+    my $to-parent;
+
+    $!dm = do {
+      when GDBusMessage {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GDBusMessage, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GDBusMessage
@@ -30,21 +46,25 @@ class GIO::DBus::Message {
   proto method new (|)
   { * }
 
+  multi method new (GDBusMessageAncestry :$message, :$ref = True) {
+    return Nil unless $message;
+
+    my $o = self.bless( :$message );
+    $o.ref if $ref;
+    $o;
+  }
   multi method new {
     my $m = g_dbus_message_new();
     $m ?? self.bless( message => $m ) !! Nil;
   }
-  multi method new (GDBusMessage :$message) {
-    self.bless( :$message );
-  }
 
 
   multi method new (
-    Str() $data,
-    Int() $data_len,
-    Int() $capabilities,
-    CArray[Pointer[GError]] $error = gerror,
-    :$string is required
+    Str()                   $data,
+    Int()                   $data_len,
+    Int()                   $capabilities,
+    CArray[Pointer[GError]] $error         =  gerror,
+                            :$string       is required
   ) {
     GIO::DBus::Message.new_from_blob(
       $data.encode,
@@ -54,11 +74,11 @@ class GIO::DBus::Message {
     );
   }
   multi method new (
-    Blob  $data,
-    Int() $data_len,
-    Int() $capabilities,
-    CArray[Pointer[GError]] $error = gerror,
-    :$blob is required
+    Blob                    $data,
+    Int()                   $data_len,
+    Int()                   $capabilities,
+    CArray[Pointer[GError]] $error         =  gerror,
+                            :$blob         is required
   ) {
     GIO::DBus::Message.new_from_blob($data, $data_len, $capabilities, $error);
   }
@@ -67,10 +87,10 @@ class GIO::DBus::Message {
   { * }
 
   multi method new_from_blob (
-    Str   $data,
-    Int() $data_len,
-    Int() $capabilities,
-    CArray[Pointer[GError]] $error = gerror
+    Str                     $data,
+    Int()                   $data_len,
+    Int()                   $capabilities,
+    CArray[Pointer[GError]] $error         = gerror
   ) {
     GIO::DBus::Message.new_from_blob(
       $data.encode,
@@ -80,16 +100,21 @@ class GIO::DBus::Message {
     );
   }
   multi method new_from_blob (
-    Blob  $blob,
-    Int() $blob_len,
-    Int() $capabilities,
-    CArray[Pointer[GError]] $error = gerror
+    Blob                    $blob,
+    Int()                   $blob_len,
+    Int()                   $capabilities,
+    CArray[Pointer[GError]] $error         = gerror
   ) {
-    my gsize $b = $blob_len;
-    my GDBusCapabilityFlags $c = $capabilities;
-    my $m = g_dbus_message_new_from_blob($blob, $b, $c, $error);
+    my gsize                $b       = $blob_len;
+    my GDBusCapabilityFlags $c       = $capabilities;
+    my                      $message = g_dbus_message_new_from_blob(
+                                         $blob,
+                                         $b,
+                                         $c,
+                                         $error
+                                       );
 
-    $m ?? self.bless( message => $m ) !! Nil;
+    $message ?? self.bless( :$message ) !! Nil;
   }
 
   multi method new (
@@ -97,7 +122,9 @@ class GIO::DBus::Message {
     Str() $path,
     Str() $interface,
     Str() $method-name,
-    :method_call(:method-call(:$method)) is required
+          :method_call(
+            :method-call( :$method )
+          ) is required
   ) {
     GIO::DBus::Message.new_method_call($name, $path, $interface, $method-name);
   }
@@ -107,21 +134,21 @@ class GIO::DBus::Message {
     Str() $interface,
     Str() $method-name
   ) {
-    my $m = g_dbus_message_new_method_call(
+    my $message = g_dbus_message_new_method_call(
       $name,
       $path,
       $interface,
       $method-name
     );
 
-    $m ?? self.bless( message => $m ) !! Nil;
+    $message ?? self.bless( :$message ) !! Nil;
   }
 
   multi method new (
     GDBusMessage() $method_call_message,
-    Str() $error_name,
-    Str() $error_message,
-    :error_literal(:$error-literal) is required
+    Str()          $error_name,
+    Str()          $error_message,
+                   :error_literal(:$error-literal) is required
   ) {
     GIO::DBus::Message.new_method_error_literal(
       $method_call_message,
@@ -131,16 +158,16 @@ class GIO::DBus::Message {
   }
   method new_method_error_literal (
     GDBusMessage() $method_call_message,
-    Str() $error_name,
-    Str() $error_message
+    Str()          $error_name,
+    Str()          $error_message
   ) {
-    my $m = g_dbus_message_new_method_error_literal(
+    my $message = g_dbus_message_new_method_error_literal(
       $method_call_message,
       $error_name,
       $error_message
     );
 
-    $m ?? self.bless( message => $m ) !! Nil;
+    $message ?? self.bless( :$message ) !! Nil;
   }
 
   # method new_method_error_valist (Str $error_name, Str $error_message_format, va_list $var_args) {
@@ -151,23 +178,23 @@ class GIO::DBus::Message {
     GIO::DBus::Message.new_method_reply($method_call_message);
   }
   method new_method_reply (GDBusMessage() $method_call_message) {
-    my $m = g_dbus_message_new_method_reply($method_call_message);
+    my $message = g_dbus_message_new_method_reply($method_call_message);
 
-    $m ?? self.bless( message => $m ) !! Nil;
+    $message ?? self.bless( :$message ) !! Nil;
   }
 
   multi method new (
     Str() $path,
     Str() $interface,
     Str() $signal-name,
-    :$signal is required
+          :$signal is required
   ) {
     GIO::DBus::Message.new_signal($path, $interface, $signal-name);
   }
   method new_signal (Str() $path, Str() $interface, Str() $signal) {
-    my $m = g_dbus_message_new_signal($path, $interface, $signal);
+    my $message = g_dbus_message_new_signal($path, $interface, $signal);
 
-    $m ?? self.bless( message => $m ) !! Nil;
+    $message ?? self.bless( :$message ) !! Nil;
   }
 
   method body (:$raw = False) is rw {
@@ -355,7 +382,7 @@ class GIO::DBus::Message {
         my $fdl = g_dbus_message_get_unix_fd_list($!dm);
 
         $fdl ??
-          ( $raw ?? $fdl !! GIO::UnixFDList.new($fdl) )
+          ( $raw ?? $fdl !! GIO::UnixFDList.new($fdl, :!ref) )
           !!
           Nil;
       },
@@ -369,16 +396,16 @@ class GIO::DBus::Message {
   { * }
 
   multi method bytes_needed (
-    Str $data,
-    Int() $data_len = $data.len,
-    CArray[Pointer[GError]] $error = gerror
+    Str                     $data,
+    Int()                   $data_len = $data.len,
+    CArray[Pointer[GError]] $error    = gerror
   ) {
     samewith($data.encode, $data_len, $error);
   }
   multi method bytes_needed (
-    Blob $blob,
-    Int() $blob_len = $blob.elems,
-    CArray[Pointer[GError]] $error = gerror
+    Blob                    $blob,
+    Int()                   $blob_len = $blob.elems,
+    CArray[Pointer[GError]] $error    = gerror
   ) {
     my gsize $l = $blob_len;
 
@@ -393,7 +420,10 @@ class GIO::DBus::Message {
     my $c = g_dbus_message_copy($!dm, $error);
     set_error($error);
 
-    $raw ?? $c !! GIO::DBus::Message.new($c);
+    $c ??
+      ( $raw ?? $c !! GIO::DBus::Message.new($c, :!ref) )
+      !!
+      Nil;
   }
 
   method get_arg0 {
@@ -444,7 +474,7 @@ class GIO::DBus::Message {
   }
 
   method set_header (
-    GDBusMessageHeaderField $header_field,
+    Int()      $header_field,
     GVariant() $value
   ) {
     my GDBusMessageHeaderField $h = $header_field;
@@ -456,17 +486,17 @@ class GIO::DBus::Message {
   { * }
 
   multi method to_blob (
-    Int() $capabilities,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = True
+    Int()                   $capabilities,
+    CArray[Pointer[GError]] $error         = gerror,
+                            :$all          = True
   ) {
     samewith($, $capabilities, $error, :$all)
   }
   multi method to_blob (
-    $out_size is rw,
-    Int() $capabilities,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False
+                            $out_size      is rw,
+    Int()                   $capabilities,
+    CArray[Pointer[GError]] $error         =  gerror,
+                            :$all          = False
   ) {
     my GDBusCapabilityFlags $c = $capabilities;
     my gsize $o = 0;
@@ -475,6 +505,7 @@ class GIO::DBus::Message {
     my $rv = g_dbus_message_to_blob($!dm, $o, $c, $error);
     set_error($error);
     $out_size = $o;
+
     $all.not ?? $rv !! ($rv, $out_size);
   }
 

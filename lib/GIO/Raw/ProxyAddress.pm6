@@ -2,7 +2,13 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::ProxyAddress;
 
@@ -56,12 +62,12 @@ sub g_proxy_address_get_username (GProxyAddress $proxy)
 
 sub g_proxy_address_new (
   GInetAddress $inetaddr,
-  guint16 $port,
-  Str $protocol,
-  Str $dest_hostname,
-  guint16 $dest_port,
-  Str $username,
-  Str $password
+  guint16      $port,
+  Str          $protocol,
+  Str          $dest_hostname,
+  guint16      $dest_port,
+  Str          $username,
+  Str          $password
 )
   returns GProxyAddress
   is native(gio)

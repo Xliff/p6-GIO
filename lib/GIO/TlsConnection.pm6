@@ -4,9 +4,6 @@ use NativeCall;
 use Method::Also;
 
 use GIO::Raw::Types;
-
-
-
 use GIO::Raw::TlsConnection;
 
 use GLib::Value;
@@ -24,17 +21,7 @@ class GIO::TlsConnection is GIO::Stream {
   has GTlsConnection $!tc is implementor;
 
   submethod BUILD (:$tls-connection) {
-    given $tls-connection {
-      when TlsConnectionAncestry {
-        self.setTlsConnection($tls-connection);
-      }
-
-      when GIO::TlsConnection {
-      }
-
-      default {
-      }
-    }
+    self.setTlsConnection($tls-connection) if $tls-connection;
   }
 
   method setTlsConnection (TlsConnectionAncestry $tls) {
@@ -61,8 +48,12 @@ class GIO::TlsConnection is GIO::Stream {
   proto method new(|)
   { * }
 
-  multi method new (TlsConnectionAncestry $tls-connection) {
-    self.bless( :$tls-connection );
+  multi method new (TlsConnectionAncestry $tls-connection, :$ref = False) {
+    return Nil unless $tls-connection;
+
+    my $o = self.bless( :$tls-connection );
+    $o.ref if $ref;
+    $o;
   }
 
   # Type: GStrv
@@ -77,7 +68,9 @@ class GIO::TlsConnection is GIO::Stream {
 
         CStringArrayToArray( cast(CArray[Str], $gv.pointer) );
       },
-      STORE => -> $, $val is copy { self.set_advertised_protocols($val) }
+      STORE => -> $, gpointer $val is copy {
+        self.set_advertised_protocols($val)
+      }
     );
   }
 
@@ -89,10 +82,14 @@ class GIO::TlsConnection is GIO::Stream {
         $gv = GLib::Value.new(
           self.prop_get('base-io-stream', $gv)
         );
-        return Nil unless $gv.object;
 
-        my $b = cast(GIOStream, $gv.object);
-        $raw ?? $b !! GIO::Stream.new($b);
+        my $o = $gv.object;
+        return Nil unless $o;
+
+        $o = cast(GIOStream, $o);
+        return $o if $raw;
+
+        GIO::Stream.new($o, :!ref);
       },
       STORE => -> $, $val is copy {
         warn 'base-io-stream is does not allow writing (construct-only)!'
@@ -106,11 +103,11 @@ class GIO::TlsConnection is GIO::Stream {
         my $c = g_tls_connection_get_certificate($!tc);
 
         $c ??
-          ( $raw ?? $c !! GIO::TlsCertificate.new($c) )
+          ( $raw ?? $c !! GIO::TlsCertificate.new($c, :!ref) )
           !!
           Nil;
       },
-      STORE => sub ($, $certificate is copy) {
+      STORE => sub ($, GTlsCertificate() $certificate is copy) {
         g_tls_connection_set_certificate($!tc, $certificate);
       }
     );
@@ -122,7 +119,7 @@ class GIO::TlsConnection is GIO::Stream {
         my $d = g_tls_connection_get_database($!tc);
 
         $d ??
-          ( $raw ?? $d !! GIO::TlsDatabase.new($d) )
+          ( $raw ?? $d !! GIO::TlsDatabase.new($d, :!ref) )
           !!
           Nil;
       },
@@ -138,7 +135,7 @@ class GIO::TlsConnection is GIO::Stream {
         my $i = g_tls_connection_get_interaction($!tc);
 
         $i ??
-          ( $raw ?? $i !! GIO::TlsInteraction.new($i) )
+          ( $raw ?? $i !! GIO::TlsInteraction.new($i, :!ref) )
           !!
           Nil;
       },
@@ -165,7 +162,7 @@ class GIO::TlsConnection is GIO::Stream {
       FETCH => sub ($) {
         g_tls_connection_get_require_close_notify($!tc);
       },
-      STORE => sub ($, $require_close_notify is copy) {
+      STORE => sub ($, Int() $require_close_notify is copy) {
         g_tls_connection_set_require_close_notify($!tc, $require_close_notify);
       }
     );
@@ -191,7 +188,7 @@ class GIO::TlsConnection is GIO::Stream {
 
   method emit_accept_certificate (
     GTlsCertificate() $peer_cert,
-    Int() $errors
+    Int()             $errors
   )
     is also<emit-accept-certificate>
   {
@@ -224,7 +221,7 @@ class GIO::TlsConnection is GIO::Stream {
     my $c = g_tls_connection_get_peer_certificate($!tc);
 
     $c ??
-      ( $raw ?? $c !! GIO::TlsCertificate.new($c) )
+      ( $raw ?? $c !! GIO::TlsCertificate.new($c, :!ref) )
       !!
       Nil;
   }
@@ -248,8 +245,8 @@ class GIO::TlsConnection is GIO::Stream {
   }
 
   method handshake (
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     clear_error;
     my $rv = so g_tls_connection_handshake($!tc, $cancellable, $error);
@@ -262,17 +259,17 @@ class GIO::TlsConnection is GIO::Stream {
   { * }
 
   multi method handshake_async (
-    Int() $io_priority,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Int()    $io_priority,
+             &callback,
+    gpointer $user_data    = gpointer
   ) {
-    samewith($io_priority, GCancellable, $callback, $user_data);
+    samewith($io_priority, GCancellable, &callback, $user_data);
   }
   multi method handshake_async (
-    Int() $io_priority,
+    Int()          $io_priority,
     GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+                   &callback,
+    gpointer       $user_data    = gpointer
   ) {
     my guint $i = $io_priority;
 
@@ -280,14 +277,14 @@ class GIO::TlsConnection is GIO::Stream {
       $!tc,
       $i,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method handshake_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<handshake-finish>
   {
@@ -305,8 +302,7 @@ class GIO::TlsConnection is GIO::Stream {
     samewith( resolve-gstrv(|@p) );
   }
   multi method set_advertised_protocols (CArray[Str] $p) {
-    $p[$p.elems] = Str unless $p[* - 1] =:= Str;
-    g_tls_connection_set_advertised_protocols($!tc, $p)
+    g_tls_connection_set_advertised_protocols( $!tc, resolve-gstrv($p) )
   }
 
 }

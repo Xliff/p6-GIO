@@ -1,34 +1,26 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
 
 use GIO::SocketAddressEnumerator;
 
-role GIO::Roles::SocketConnectable {
-  has GSocketConnectable $!sc;
+use GLib::Roles::Object;
 
-  submethod BUILD (:$connectable) {
-    $!sc = $connectable;
-  }
+role GIO::Roles::SocketConnectable does GLib::Roles::Object {
+  has GSocketConnectable $!sc;
 
   method GIO::Raw::Definitions::GSocketConnectable
     is also<GSocketConnectable>
   { $!sc }
 
   method roleInit-SocketConnectable {
+    return if $!sc;
+
     my \i = findProperImplementor(self.^attributes);
-
     $!sc = cast( GSocketConnectable, i.get_value(self) );
-  }
-
-  method new-socketconnectable-obj (GSocketConnectable $connectable)
-    is also<new_socketconnectable_obj>
-  {
-    self.bless( :$connectable );
   }
 
   method enumerate (:$raw = False) {
@@ -60,6 +52,43 @@ role GIO::Roles::SocketConnectable {
 
 }
 
+our subset GSocketConnectableAncestry is export of Mu
+  where GSocketConnectable | GObject;
+
+class GIO::SocketConnectable does GIO::Roles::SocketConnectable {
+
+  submethod BUILD (:$connectable) {
+    self.setGSocketConnectable($connectable) if $connectable;
+  }
+
+  method setGSocketConnectable (GSocketConnectableAncestry $_) {
+    my $to-parent;
+
+    $!sc = do {
+      when GSocketConnectable {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GSocketConnectable, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GSocketConnectableAncestry $connectable, :$ref = True) {
+    return Nil unless $connectable;
+
+    my $o = self.bless( :$connectable );
+    $o.ref if $ref;
+    $o;
+  }
+
+
+}
+
 sub g_socket_connectable_enumerate (GSocketConnectable $connectable)
   returns GSocketAddressEnumerator
   is native(gio)
@@ -83,3 +112,9 @@ sub g_socket_connectable_to_string (GSocketConnectable $connectable)
   is native(gio)
   is export
 { * }
+
+# our %GIO::Roles::SocketConnection::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::Roles::SocketConncetion::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_socket_connection_');
+# }

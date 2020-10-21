@@ -1,14 +1,18 @@
 use v6.c;
 
+use Method::Also;
+
 use NativeCall;
 
 use GIO::Raw::Types;
-
 use GIO::Raw::ListStore;
 
 use GLib::Value;
 
 use GLib::Roles::Properties;
+
+our subset GListStoreAncestry is export of Mu
+  where GListStore | GObject;
 
 class GIO::ListStore {
   also does GLib::Roles::Properties;
@@ -16,29 +20,57 @@ class GIO::ListStore {
   has GListStore $!ls is implementor;
 
   submethod BUILD (:$store) {
-    $!ls = $store;
+    self.setGListStore($store) if $store;
+  }
 
-    self.roleInit-Object;
+  method setGListStore (GListStoreAncestry $_) {
+    my $to-parent;
+
+    $!ls = do {
+      when GListStore {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GListStore, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GListStore
+    is also<GListStore>
   { $!ls }
 
-  method new (Int() $type) {
-    my GType $t = $type;
+  multi method new (GListStoreAncestry $store, :$ref = True) {
+    return Nil unless $store;
 
-    my $ls = g_list_store_new($t);
-    $ls ?? self.bless( store => $ls ) !! Nil;
+    my $o = self.bless( :$store );
+    $o.ref if $ref;
+    $o;
+  }
+  multi method new (Int() $type) {
+    my GType $t = $type;
+    my $store = g_list_store_new($t);
+
+    $store ?? self.bless( :$store ) !! Nil;
   }
 
+  my %attributes = (
+    item-type => GLib::Value.gtypeFromType(GType);
+  );
+
   # Type: GType
-  method item-type is rw  {
+  method item-type is rw  is also<item_type> {
     my GLib::Value $gv .= new( G_TYPE_UINT64 );
     Proxy.new(
       FETCH => -> $ {
         $gv = GLib::Value.new(
           self.prop_get('item-type', $gv)
         );
+
         # YYY -
         # cw: This is the proper way to handle GType in the future!
         # 11/11/2019
@@ -64,10 +96,12 @@ class GIO::ListStore {
 
   multi method insert_sorted (
     gpointer $item,
-    GCompareDataFunc $compare_func,
+             &compare_func,
     gpointer $user_data = gpointer;
-  ) {
-    g_list_store_insert_sorted($!ls, $item, $compare_func, $user_data);
+  )
+    is also<insert-sorted>
+  {
+    g_list_store_insert_sorted($!ls, $item, &compare_func, $user_data);
   }
 
   method remove (Int() $position) {
@@ -76,21 +110,21 @@ class GIO::ListStore {
     g_list_store_remove($!ls, $p);
   }
 
-  method remove_all {
+  method remove_all is also<remove-all> {
     g_list_store_remove_all($!ls);
   }
 
   method sort (
-    GCompareDataFunc $compare_func,
+             &compare_func,
     gpointer $user_data = gpointer
   ) {
-    g_list_store_sort($!ls, $compare_func, $user_data);
+    g_list_store_sort($!ls, &compare_func, $user_data);
   }
 
   multi method splice (
     Int() $position,
     Int() $n_removals,
-    @additions
+          @additions
   ) {
     die '@additions must only contain gpointers!'
       unless @additions.all ~~ gpointer;
@@ -101,10 +135,10 @@ class GIO::ListStore {
     samewith($position, $n_removals, $aa, @additions.elems);
   }
   multi method splice (
-    Int() $position,
-    Int() $n_removals,
+    Int()            $position,
+    Int()            $n_removals,
     CArray[gpointer] $additions,
-    Int() $n_additions
+    Int()            $n_additions
   ) {
     my guint ($p, $np, $na) = ($position, $n_removals, $n_additions);
 

@@ -2,15 +2,19 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
-
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::FileAttributeInfoList;
 
 sub g_file_attribute_info_list_add (
-  GFileAttributeInfoList $list,
-  Str $name,
-  GFileAttributeType $type,
+  GFileAttributeInfoList  $list,
+  Str                     $name,
+  GFileAttributeType      $type,
   GFileAttributeInfoFlags $flags
 )
   is native(gio)

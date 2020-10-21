@@ -1,35 +1,28 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
 use GIO::Raw::AppInfo;
 
-use GLib::Roles::Object;
-use GLib::Roles::Signals::Generic;
+use GLib::GList;
 
-class GIO::Roles::AppInfo {
+use GLib::Roles::Object;
+
+role GIO::Roles::AppInfo does GLib::Roles::Object {
   has GAppInfo $!ai;
 
-  submethod BUILD (:$appinfo) {
-    $!ai = $appinfo;
-  }
-
   method roleInit-AppInfo {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!ai;
 
+    my \i = findProperImplementor(self.^attributes);
     $!ai = cast( GAppInfo, i.get_value(self) );
   }
 
   method GIO::Raw::Definitions::GAppInfo
     is also<GAppInfo>
   { $!ai }
-
-  method new_appinfo_obj (GAppInfo $appinfo) is also<new-appinfo-obj> {
-    self.bless(:$appinfo);
-  }
 
   # ↓↓↓↓ SIGNALS ↓↓↓↓
   # ↑↑↑↑ SIGNALS ↑↑↑↑
@@ -39,25 +32,26 @@ class GIO::Roles::AppInfo {
 
   # Static methods
   method create_from_commandline (
-    Str() $application_name,
-    Int() $flags,              # GAppInfoCreateFlags $flags,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    ::?CLASS:U:
+    Str()                   $application_name,
+    Int()                   $flags,            # GAppInfoCreateFlags $flags,
+    CArray[Pointer[GError]] $error             = gerror,
+                            :$raw              = False
   )
     is also<create-from-commandline>
   {
     my GAppInfoCreateFlags $f = $flags;
 
     clear_error;
-    my $ai = g_app_info_create_from_commandline(
+    my $appinfo = g_app_info_create_from_commandline(
       $application_name,
       $f,
       $error
     );
     set_error($error);
 
-    $ai ??
-      ( $raw ?? $ai !! self.bless( appinfo => $ai ) )
+    $appinfo ??
+      ( $raw ?? $appinfo !! self.bless( :$appinfo ) )
       !!
       Nil;
   }
@@ -70,17 +64,16 @@ class GIO::Roles::AppInfo {
     return Nil unless $at;
     return $at if     $glist;
 
-    my $atl = GTK::Compat::List.new($at)
-      but GLib::Roles::ListData[GAppInfo];
+    my $atl = GLib::List.new($at) but GLib::Roles::ListData[GAppInfo];
 
     $raw ?? $atl.Array !!
-            $atl.Array.map({ GIO::Roles::AppInfo.new_appinfo_obj($_) });
+            $atl.Array.map({ GIO::Roles::AppInfo.new_appinfo_obj($_, :!ref) });
   }
 
   method get_default_for_type (
     Str() $content-type,
     Int() $must_support_uris,
-    :$raw = False
+          :$raw               = False
   )
     is also<get-default-for-type>
   {
@@ -109,27 +102,26 @@ class GIO::Roles::AppInfo {
 
   method get_fallback_for_type(
     Str() $content-type,
-    :$glist = False,
-    :$raw   = False
+          :$glist        = False,
+          :$raw          = False
   )
     is also<get-fallback-for-type>
   {
     my $f = g_app_info_get_fallback_for_type($content-type);
 
     return Nil unless $f;
-    return $f if      $glist;
+    return $f  if     $glist;
 
-    my $fl = GTK::Compat::List.new($f)
-      but GLib::Roles::ListData[GAppInfo];
+    my $fl = GLib::List.new($f) but GLib::Roles::ListData[GAppInfo];
 
     $raw ?? $fl.Array !!
-            $fl.Array.map({ GIO::Roles::AppInfo.new_appinfo_obj($_) });
+            $fl.Array.map({ GIO::Roles::AppInfo.new_appinfo_obj($_, :!ref) });
   }
 
   method get_recommended_for_type(
     Str() $content-type,
-    :$glist = False,
-    :$raw   = False
+          :$glist        = False,
+          :$raw          = False
   )
     is also<get-recommended-for-type>
   {
@@ -138,17 +130,16 @@ class GIO::Roles::AppInfo {
     return Nil unless $r;
     return $r  if     $glist;
 
-    my $rl = GTK::Compat::List.new($r)
-      but GLib::Roles::ListData[GAppInfo];
+    my $rl = GLib::List.new($r) but GLib::Roles::ListData[GAppInfo];
 
     $raw ?? $rl.Array !!
-            $rl.Array.map({ GIO::Roles::AppInfo.new_appinfo_obj($_) });
+            $rl.Array.map({ GIO::Roles::AppInfo.new_appinfo_obj($_, :!ref) });
   }
 
   method launch_default_for_uri (
-    Str() $uri,
-    GAppLaunchContext() $context,
-    CArray[Pointer[GError]] $error = gerror()
+    Str()                   $uri,
+    GAppLaunchContext()     $context,
+    CArray[Pointer[GError]] $error    = gerror()
   )
     is also<launch-default-for-uri>
   {
@@ -163,39 +154,39 @@ class GIO::Roles::AppInfo {
   { * }
 
   multi launch_default_for_uri_async (
-    Str() $uri,
+    Str()               $uri,
     GAppLaunchContext() $context,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+                        &callback,
+    gpointer            $user_data = gpointer
   ) {
-    samewith($uri, $context, GCancellable, $callback, $user_data)
+    samewith($uri, $context, GCancellable, &callback, $user_data)
   }
   multi method launch_default_for_uri_async (
-    Str() $uri,
+    Str()               $uri,
     GAppLaunchContext() $context,
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data
+    GCancellable        $cancellable,
+                        &callback,
+    gpointer            $user_data    = gpointer
   ) {
     g_app_info_launch_default_for_uri_async(
       $uri,
       $context,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method launch_default_for_uri_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror();
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror();
   )
     is also<launch-default-for-uri-finish>
   {
     clear_error;
-    my $rc = so g_app_info_launch_default_for_uri_finish($result, $error);
+    my $rv = so g_app_info_launch_default_for_uri_finish($result, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method reset_type_associations(Str() $content-type)
@@ -208,15 +199,15 @@ class GIO::Roles::AppInfo {
 
   # ↓↓↓↓ METHODS ↓↓↓↓
   method add_supports_type (
-    Str() $content_type,
-    CArray[Pointer[GError]] $error = gerror()
+    Str()                   $content_type,
+    CArray[Pointer[GError]] $error         = gerror()
   )
     is also<add-supports-type>
   {
     clear_error;
-    my $rc = so g_app_info_add_supports_type($!ai, $content_type, $error);
+    my $rv = so g_app_info_add_supports_type($!ai, $content_type, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method can_delete is also<can-delete> {
@@ -235,7 +226,7 @@ class GIO::Roles::AppInfo {
     my $ai = g_app_info_dup($!ai);
 
     $ai ??
-      ( $raw ?? $ai !! GIO::Roles::AppInfo.new_appinfo_obj($ai) )
+      ( $raw ?? $ai !! GIO::Roles::AppInfo.new_appinfo_obj($ai, :!ref) )
       !!
       Nil;
   }
@@ -250,13 +241,16 @@ class GIO::Roles::AppInfo {
       all
     >
   {
-    my $a = g_app_info_get_all();
+    my $al = g_app_info_get_all();
 
-    return Nil unless $a;
-    return $a  if     $glist;
+    return Nil unless $al;
+    return $al  if     $glist && $raw;
 
-    $raw ?? $a.Array !!
-            $a.Array.map({ GIO::Roles::AppInfo.new_appinfo_obj($_) });
+    $al = GLib::GList.new($al) but GLib::Roles::ListData[GAppInfo];
+    return $al if $glist;
+
+    $raw ?? $al.Array !!
+            $al.Array.map({ GIO::Roles::AppInfo.new_appinfo_obj($_, :!ref) });
   }
 
   method get_commandline
@@ -300,7 +294,7 @@ class GIO::Roles::AppInfo {
     my $i = g_app_info_get_icon($!ai);
 
     $i ??
-      ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i) )
+      ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i, :!ref) )
       !!
       Nil;
   }
@@ -334,32 +328,32 @@ class GIO::Roles::AppInfo {
   }
 
   method launch (
-    GList() $files,
-    GAppLaunchContext() $context,
-    CArray[Pointer[GError]] $error = gerror()
+    GList()                 $files,
+    GAppLaunchContext()     $context,
+    CArray[Pointer[GError]] $error    = gerror()
   ) {
     clear_error;
-    my $rc = so g_app_info_launch($!ai, $files, $context, $error);
+    my $rv = so g_app_info_launch($!ai, $files, $context, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method launch_uris (
-    GList() $uris,
-    GAppLaunchContext() $context,
-    CArray[Pointer[GError]] $error is rw
+    GList()                 $uris,
+    GAppLaunchContext()     $context,
+    CArray[Pointer[GError]] $error    is rw
   )
     is also<launch-uris>
   {
     clear_error;
-    my $rc = so g_app_info_launch_uris($!ai, $uris, $context, $error);
+    my $rv = so g_app_info_launch_uris($!ai, $uris, $context, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method remove_supports_type (
-    Str() $content_type,
-    CArray[Pointer[GError]] $error = gerror()
+    Str()                   $content_type,
+    CArray[Pointer[GError]] $error         = gerror
   )
     is also<remove-supports-type>
   {
@@ -367,51 +361,51 @@ class GIO::Roles::AppInfo {
   }
 
   method set_as_default_for_extension (
-    Str() $extension,
-    CArray[Pointer[GError]] $error = gerror()
+    Str()                   $extension,
+    CArray[Pointer[GError]] $error      = gerror
   )
     is also<set-as-default-for-extension>
   {
     clear_error;
-    my $rc = so g_app_info_set_as_default_for_extension(
+    my $rv = so g_app_info_set_as_default_for_extension(
       $!ai,
       $extension,
       $error
     );
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method set_as_default_for_type (
-    Str() $content_type,
-    CArray[Pointer[GError]] $error = gerror()
+    Str()                   $content_type,
+    CArray[Pointer[GError]] $error         = gerror
   )
     is also<set-as-default-for-type>
   {
     clear_error;
-    my $rc = so g_app_info_set_as_default_for_type(
+    my $rv = so g_app_info_set_as_default_for_type(
       $!ai,
       $content_type,
       $error
     );
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method set_as_last_used_for_type (
-    Str() $content_type,
-    CArray[Pointer[GError]] $error = gerror()
+    Str()                   $content_type,
+    CArray[Pointer[GError]] $error         = gerror()
   )
     is also<set-as-last-used-for-type>
   {
     clear_error;
-    my $rc = so g_app_info_set_as_last_used_for_type(
+    my $rv = so g_app_info_set_as_last_used_for_type(
       $!ai,
       $content_type,
       $error
     );
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method should_show is also<should-show> {
@@ -429,48 +423,40 @@ class GIO::Roles::AppInfo {
 
 }
 
-# A bit small for its own compunit?
-class GIO::AppInfoMonitor {
-  also does GLib::Roles::Object;
-  also does GLib::Roles::Signals::Generic;
+our subset GAppInfoAncestry is export of Mu
+  where GAppInfo | GObject;
 
-  has GAppInfoMonitor $!aim;
+class GIO::AppInfo does GIO::Roles::AppInfo {
 
-  submethod BUILD (:$monitor) {
-    $!aim = $monitor;
+   submethod BUILD (:$appinfo) {
+     self.setGAppInfo($appinfo) if $appinfo;
+   }
 
-    self.roleInit-Object;
-  }
+   method setGAppInfo (GAppInfoAncestry $_) {
+     my $to-parent;
 
-  method GIO::Raw::Definitions::GAppInfoMonitor
-    is also<GAppInfoMonitor>
-  { $!aim }
+     $!ai = do {
+       when GAppInfo {
+         $to-parent = cast(GObject, $_);
+         $_;
+       }
 
-  method new_appinfomonitor_obj (GAppInfoMonitor $monitor)
-    is also<new-appinfomonitor-obj>
-  {
-    self.bless( :$monitor );
-  }
+       default {
+         $to-parent = $_;
+         cast(GAppInfo, $_);
+       }
+     }
+     self!setObject($to-parent);
+   }
 
-  method monitor_get (:$raw = False) is also<monitor-get> {
-    my $m = g_app_info_monitor_get();
+   method new (GAppInfoAncestry $appinfo, :$ref = True)
+     is also<new-appinfo-obj>
+   {
+     return Nil unless $appinfo;
 
-    return Nil unless $m;
-    return $m  if     $raw;
+     my $o = self.bless(:$appinfo);
+     $o.ref if $ref;
+     $o;
+   }
 
-    GIO::AppInfoMonitor.new-appinfomonitor($m);
-  }
-
-  # Is originally:
-  # GAppInfoMonitor, gpointer --> void
-  method changed {
-    self.connect($!aim, 'changed');
-  }
-
-  method monitor_get_type is also<get-type> {
-    state ($n, $t);
-
-    unstable_get_type( self.^name, &g_app_info_monitor_get_type, $n, $t );
-  }
-
-}
+ }

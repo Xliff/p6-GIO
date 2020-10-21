@@ -7,27 +7,49 @@ use GIO::Raw::FileMonitor;
 
 use GLib::Value;
 
-use GLib::Roles::Properties;
+use GLib::Roles::Object;
 use GIO::Roles::Signals::FileMonitor;
 
+our subset GFileMonitorAncestry is export of Mu
+  where GFileMonitor | GObject;
+
 class GIO::FileMonitor {
-  also does GLib::Roles::Properties;
+  also does GLib::Roles::Object;
   also does GIO::Roles::Signals::FileMonitor;
 
   has GFileMonitor $!m is implementor;
 
   submethod BUILD (:$monitor) {
-    $!m = $monitor;
+    self.setGFileMonitor($monitor) if $monitor;
+  }
 
-    self.roleInit-Object;
+  method setGFileMonitor (GFileMonitorAncestry $_) {
+    my $to-parent;
+
+    $!m = do {
+      when GFileMonitor {
+        $to-parent = cast(GObject, $_);
+        $_
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GFileMonitor, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GFileMonitor
     is also<GFileMonitor>
   { $!m }
 
-  method new (GFileMonitor $monitor) {
-    $monitor ?? self.bless( :$monitor ) !! Nil;
+  method new (GFileMonitor $monitor, :$ref = False) {
+    return Nil unless $monitor;
+
+    my $o = self.bless( :$monitor );
+    $o.ref if $ref;
+    $o;
   }
 
   # Type: gint
@@ -60,7 +82,7 @@ class GIO::FileMonitor {
   method emit_event (
     GFile() $child,
     GFile() $other_file,
-    Int() $event_type
+    Int()   $event_type
   )
     is also<emit-event>
   {
