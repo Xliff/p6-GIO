@@ -63,7 +63,7 @@ role GIO::Roles::Volume {
     Int()          $mount_operation,
     GCancellable() $cancellable,
                    &callback,
-    gpointer       $user_data = gpointer
+    gpointer       $user_data        = gpointer
   ) {
     my GMountUnmountFlags $f = $flags;
     my GMountOperation    $m = $mount_operation;
