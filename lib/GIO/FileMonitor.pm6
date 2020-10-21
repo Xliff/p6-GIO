@@ -7,14 +7,14 @@ use GIO::Raw::FileMonitor;
 
 use GLib::Value;
 
-use GLib::Roles::Properties;
+use GLib::Roles::Object;
 use GIO::Roles::Signals::FileMonitor;
 
 our subset GFileMonitorAncestry is export of Mu
   where GFileMonitor | GObject;
 
 class GIO::FileMonitor {
-  also does GLib::Roles::Properties;
+  also does GLib::Roles::Object;
   also does GIO::Roles::Signals::FileMonitor;
 
   has GFileMonitor $!m is implementor;
@@ -24,12 +24,20 @@ class GIO::FileMonitor {
   }
 
   method setGFileMonitor (GFileMonitorAncestry $_) {
-    $!m = do {
-      when    GFileMonitor { $_                      }
-      default              { cast(GFileMonitor, $_); }
-    }
+    my $to-parent;
 
-    self.roleInit-Object;
+    $!m = do {
+      when GFileMonitor {
+        $to-parent = cast(GObject, $_);
+        $_
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GFileMonitor, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GFileMonitor
