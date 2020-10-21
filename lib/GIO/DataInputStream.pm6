@@ -11,7 +11,7 @@ use GIO::BufferedInputStream;
 use GIO::Roles::Seekable;
 
 our subset GDataInputStreamAncestry is export of Mu
-  where GDataInputStream | BufferedInputStreamAncestry;
+  where GDataInputStream | GBufferedInputStreamAncestry;
 
 class GIO::DataInputStream is GIO::BufferedInputStream {
   also does GIO::Roles::Seekable;
@@ -19,10 +19,10 @@ class GIO::DataInputStream is GIO::BufferedInputStream {
   has GDataInputStream $!dis is implementor;
 
   submethod BUILD (:$data-stream) {
-    self.setDataInputStream($data-stream) if $data-stream;
+    self.setGDataInputStream($data-stream) if $data-stream;
   }
 
-  method setDataInputStream (GDataInputStreamAncestry $_) {
+  method setGDataInputStream (GDataInputStreamAncestry $_) {
     my $to-parent;
 
     $!dis = do {
@@ -36,7 +36,7 @@ class GIO::DataInputStream is GIO::BufferedInputStream {
         cast(GDataInputStream, $_);
       }
     }
-    self.setBufferedInputStream($to-parent);
+    self.setGBufferedInputStream($to-parent);
   }
 
   method GIO::Raw::Definitions::GDataInputStream
