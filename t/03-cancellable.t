@@ -4,12 +4,12 @@ use NativeCall;
 
 use Test;
 
-use GTK::Compat::Types;
+use GIO::Raw::Types;
 use GIO::Raw::Quarks;
 
 use GLib::MainLoop;
 use GLib::Timeout;
-use GTK::Compat::Timer;
+use GLib::Timer;
 use GIO::Cancellable;
 use GIO::Task;
 
@@ -43,7 +43,7 @@ sub mock-operation-thread ($t, $o, $d, $c) {
     last if $cancel.is-cancelled;
 
     say "THRD: { $data.requested } iteration {$_}" if $VERBOSE;
-    GTK::Compat::Timer.usleep(WAIT * 1000);
+    GLib::Timer.usleep(WAIT * 1000);
   }
 
   say "THRD: { $data.requested } stopped at {$last}" if $VERBOSE;
