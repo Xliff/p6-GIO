@@ -14,18 +14,19 @@ use GIO::Roles::AsyncInitable;
 use GIO::DBus::Roles::Object;
 use GIO::DBus::Roles::Signals::Proxy;
 use GIO::DBus::Roles::Interface;
+use GIO::DBus::Roles::SupplyCallback;
 
 our subset GDBusProxyAncestry is export of Mu
   where GDBusProxy | GAsyncInitable | GInitable | GObject;
 
 class GIO::DBus::Proxy {
   also does GLib::Roles::Object;
-  also does GIO::DBus::Roles::Signals::Proxy;
   also does GIO::Roles::Initable;
   also does GIO::Roles::AsyncInitable;
+  also does GIO::DBus::Roles::Signals::Proxy;
+  also does GIO::DBus::Roles::SupplyCallback;
 
   has GDBusProxy $!dp      is implementor;
-  has            $!supply;
 
   submethod BUILD (
     :initable-object( :$proxy ),
@@ -185,21 +186,6 @@ class GIO::DBus::Proxy {
       is also<new-async>
   { * }
 
-  sub prep-supply ($supply is rw, $callback is rw, $name) {
-    die "Cannot use \$supply and \$callback in the same call to $name!"
-      if $supply && $callback;
-
-    if $supply {
-      $supply = Supplier::Preserving.new;
-      $callback = -> *@a {
-        CATCH { default { .message.say; .backtrace.summary.say } }
-        $supply.emit(
-          GIO::AsyncResult.new( @a[1], :!ref )
-        )
-      }
-    }
-  }
-
   multi method new (
     GDBusConnection()   $connection,
     Str()               $object_path,
@@ -306,12 +292,6 @@ class GIO::DBus::Proxy {
     );
 
     $proxy ?? self.bless( :$proxy, :$supply ) !! Nil;
-  }
-
-  method tap(|c) {
-    die 'GIO::DBus::Proxy not called with :$supply' unless $!supply;
-    state $s = $!supply.Supply;
-    $s.tap(|c);
   }
 
   multi method new (
