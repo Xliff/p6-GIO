@@ -8,14 +8,12 @@ use GIO::Raw::Types;
 use GLib::Value;
 use GIO::FileInfo;
 
-use GLib::Roles::Properties;
 use GIO::Roles::Converter;
 
 our subset GZlibDecompressorAncestry is export of Mu
   where GZlibDecompressor | GConverter | GObject;
 
 class GIO::ZlibDecompressor {
-  also does GLib::Roles::Properties;
   also does GIO::Roles::Converter;
 
   has GZlibDecompressor $!zd is implementor;
@@ -46,7 +44,7 @@ class GIO::ZlibDecompressor {
     is also<GZlibDecompressor>
   { $!zd }
 
-  multi method new (GZlibDecompressorAncestry :$decompressor, :$ref = True) {
+  multi method new (GZlibDecompressorAncestry $decompressor, :$ref = True) {
     return Nil unless $decompressor;
 
     my $o = self.bless( :$decompressor );
