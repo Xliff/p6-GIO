@@ -24,11 +24,20 @@ class GIO::CharsetConverter {
 
   has GCharsetConverter $!cc is implementor;
 
-  submethod BUILD (:$char-converter) {
-    self.setGCharsetConverter($char-converter) if $char-converter;
+  submethod BUILD (
+    :initable-object(:$char-converter),
+    :$init,
+    :$cancellable
+  ) {
+    self.setGCharsetConverter($char-converter, :$init, :$cancellable)
+      if $char-converter;
   }
 
-  method setGCharsetConverter (GCharsetConverterAncestry $_) {
+  method setGCharsetConverter (
+    GCharsetConverterAncestry $_,
+                              :$init,
+                              :$cancellable
+  ) {
     my $to-parent;
 
     $!cc = do {
@@ -56,8 +65,8 @@ class GIO::CharsetConverter {
     }
 
     self.roleInit-Object;
-    self.roleInit-Converter unless $!c;
-    self.roleInit-Initable  unless $!i;
+    self.roleInit-Converter;
+    self.roleInit-Initable($init, $cancellable);
   }
 
   method GTK::Compat::Raw::GCharsetConverter
@@ -96,19 +105,6 @@ class GIO::CharsetConverter {
   method attributes ($key) {
     %attributes{$key}:exists ?? %attributes{$key}
                              !! die "Attribute '{ $key }' does not exist"
-  }
-
-  method new_initable (:$init = True, :$cancellable = Callable, *%options)
-    is also<new-initable>
-  {
-    my $char-converter = self.new_object_with_properties(:raw, |%options);
-
-    $char-converter ?? self.bless(
-                        :$char-converter,
-                        :$init,
-                        :$cancellable
-                       )
-                    !! Nil
   }
 
   # Type: Str
