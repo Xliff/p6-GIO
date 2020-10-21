@@ -96,7 +96,7 @@ class GIO::ContentType {
   ) {
     my gulong $ds = $data_size;
     my guint $ru  = 0;
-    my $ct    = g_content_type_guess($filename, $data, $ds, $ru);
+    my $ct        = g_content_type_guess($filename, $data, $ds, $ru);
 
     $result_uncertain = $ru;
     # GLib::Memory.free($rc);
