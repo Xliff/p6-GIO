@@ -22,8 +22,12 @@ class GIO::Socket {
 
   has GSocket $!s is implementor;
 
-  submethod BUILD (:$socket, :$cancellable, :$init) {
-    self.setGSocket($socket) if $socket;
+  submethod BUILD (
+    :initable-object( :$socket ),
+    :$cancellable,
+    :$init
+  ) {
+    self.setGSocket($socket, :$init, :$cancellable) if $socket;
   }
 
   method setGSocket (GSocketAncestry $_, :$init, :$cancellable) {
@@ -94,14 +98,6 @@ class GIO::Socket {
     my $socket = g_socket_new_from_fd($!s, $error);
     set_error($error);
     $socket ?? self.bless( :$socket ) !! Nil;
-  }
-
-  method new_initable (:$init = True, :$cancellable = Callable, *%options)
-    is also<new-initable>
-  {
-    my $socket = self.new_object_with_properties( |%options );
-
-    $socket ?? self.bless( :$socket, :$init, $cancellable ) !! Nil;
   }
 
   method blocking is rw {
