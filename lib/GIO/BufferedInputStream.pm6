@@ -1,8 +1,9 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
+
+use NativeHelpers::Blob;
 
 use GIO::Raw::Types;
 use GIO::Raw::BufferedInputStream;
@@ -11,7 +12,7 @@ use GIO::FilterInputStream;
 
 use GIO::Roles::Seekable;
 
-our subset BufferedInputStreamAncestry is export of Mu
+our subset GBufferedInputStreamAncestry is export of Mu
   where GBufferedInputStream | GSeekable | GFilterInputStreamAncestry;
 
 class GIO::BufferedInputStream is GIO::FilterInputStream {
@@ -20,10 +21,10 @@ class GIO::BufferedInputStream is GIO::FilterInputStream {
   has GBufferedInputStream $!bis is implementor;
 
   submethod BUILD (:$buffered-stream) {
-    self.setBufferedInputStream($_) if $buffered-stream;
+    self.setGBufferedInputStream($buffered-stream) if $buffered-stream;
   }
 
-  method setBufferedInputStream (BufferedInputStreamAncestry $_) {
+  method setGBufferedInputStream (GBufferedInputStreamAncestry $_) {
     my $to-parent;
 
     $!bis = do {
@@ -55,8 +56,8 @@ class GIO::BufferedInputStream is GIO::FilterInputStream {
   { * }
 
   multi method new (
-    BufferedInputStreamAncestry $buffered-stream,
-                                :$ref            = True)
+    GBufferedInputStreamAncestry $buffered-stream,
+                                 :$ref             = True)
   {
     return Nil unless $buffered-stream;
 
@@ -171,13 +172,28 @@ class GIO::BufferedInputStream is GIO::FilterInputStream {
 
     $raw ?? $a !! Blob.new($a);
   }
-  multi method peek (CArray[uint8] $buffer, Int() $offset, Int() $count) {
-    samewith( cast(Pointer, $buffer), $offset, $count );
+  multi method peek (Buf $buffer, Int() $offset, Int() $count) {
+    samewith(
+      pointer-to($buffer, typed => uint8),
+      $offset,
+      $count
+    );
   }
-  multi method peek (Pointer $buffer, Int() $offset, Int() $count) {
+  multi method peek (CArray[uint8] $buffer, Int() $offset, Int() $count) {
+    samewith(
+      cast(Pointer, $buffer),
+      $offset,
+      $count
+    );
+  }
+  multi method peek (
+    Pointer $buffer,
+    Int()   $offset,
+    Int()   $count,
+  ) {
     my gsize ($o, $c) = ($offset, $count);
 
-    g_buffered_input_stream_peek($!bis, $buffer, $o, $c);
+    my $b = g_buffered_input_stream_peek($!bis, $buffer, $o, $c);
   }
 
   proto method peek_buffer (|)
@@ -195,13 +211,7 @@ class GIO::BufferedInputStream is GIO::FilterInputStream {
     my $b = g_buffered_input_stream_peek_buffer($!bis, $c);
     $count = $c;
 
-    my $buf = do if $raw {
-      $b;
-    } else {
-      my $tb = Buf.allocate($count, 0);
-      $tb[$_] = $b[$_] for ^$count;
-      $b;
-    }
+    my $buf = $raw ?? $b !! Buf.new( $b[^$count] );
 
     $all.not ?? $buf !! ($buf, $count);
   }
