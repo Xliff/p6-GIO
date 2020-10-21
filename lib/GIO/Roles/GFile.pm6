@@ -188,8 +188,11 @@ role GIO::Roles::File does GLib::Roles::Object {
        $i[0]  = GFileIOStream;
 
     my $f     = self.new_tmp($tmpl, $i, $error);
+
     $iostream = ppr($i);
-    $iostream = GIO::FileIOStream.new($iostream) if $iostream && $raw.not;
+    say "F: $f / I: $iostream" if $DEBUG;
+    $iostream = GIO::FileIOStream.new($iostream, :!ref)
+      if $iostream && $raw.not;
     $f;
   }
 
