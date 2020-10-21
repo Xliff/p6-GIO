@@ -44,7 +44,7 @@ class GIO::FileIOStream is GIO::Stream {
       }
     }
     self.setGIOStream($to-parent);
-    self.roleInit-Seekable unless $!s;
+    self.roleInit-Seekable;
   }
 
   method GIO::Raw::Definitions::GFileIOStream
