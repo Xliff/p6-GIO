@@ -15,7 +15,7 @@ role GIO::Roles::DtlsServerConnection does GLib::Roles::Object {
   method roleInit-DtlsServerConnection is also<roleInit_DtlsServerConnection> {
     return if $!dtsc;
 
-    my \i = findProperImplementor(self.^attributes);
+    my \i  = findProperImplementor(self.^attributes);
     $!dtsc = cast( GDtlsServerConnection, i.get_value(self) );
   }
 
