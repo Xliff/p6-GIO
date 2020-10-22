@@ -904,20 +904,29 @@ sub test-writev-helper (
   $ec                = Buf,
   $el                = 0
 ) {
+  use GLib::Roles::Pointers;
+
   my $iostream;
-  my $file = GIO::File.new_tmp('g_file_writev_XXXXXX', $iostream);
-  diag $iostream;
-  diag "IO:" ~ $iostream.GObject;
-  diag "FO:" ~ $file.GObject;
+  my $file = GIO::File.new_tmp($iostream);
+  diag "IO:   $iostream";
+  diag "IOPV: { +$iostream.GIOStream.p }";
+  diag "IOO:  { $iostream.GObject(:object) }";
+  diag "IOGO: { $iostream.GObject // 'NOTHING' }";
+  diag "FO:   " ~ $file.GObject;
 
   ok  $file,                          '$file is non-Nil';
   ok  $iostream,                      '$iostream is non-Nil';
 
   my $ubw = $iostream.get-output-stream.writev-all(@vectors);
   nok $ERROR,                         'No errors detected during .writev-all';
+  diag "E: { $ERROR // 'NO ERROR' }";
+  if $ERROR {
+    diag $ERROR.gist;
+    diag $ERROR.message;
+  }
   ok  $ubw.defined,                   '.writev-all returned defined values';
   is  $ubw,     $el,                  'Bytes actually written matches expected length'
-     if $use-bytes-written;
+    if $use-bytes-written;
 
   my $res = $iostream.close;
   nok $ERROR,                         'No errors detected when closing the iostream';

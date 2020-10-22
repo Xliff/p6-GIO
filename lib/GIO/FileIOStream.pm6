@@ -54,12 +54,7 @@ class GIO::FileIOStream is GIO::Stream {
   method new (GFileIOStreamAncestry $fileio-stream, :$ref = True) {
     return Nil unless $fileio-stream;
 
-    say "FIOS: $fileio-stream";
-
     my $o = self.bless( :$fileio-stream );
-
-    say "!FIOS: { $o.GFileIOStream }";
-
     $o.ref if $ref;
     $o;
   }
@@ -105,7 +100,7 @@ class GIO::FileIOStream is GIO::Stream {
     Str()    $attributes,
     Int()    $io_priority,
              &callback,
-    gpointer $user_data = gpointer
+    gpointer $user_data    = gpointer
   ) {
     samewith($attributes, $io_priority, GCancellable, &callback, $user_data);
   }
@@ -131,7 +126,7 @@ class GIO::FileIOStream is GIO::Stream {
   method query_info_finish (
     GAsyncResult()          $result,
     CArray[Pointer[GError]] $error   = gerror,
-    :$raw = False;
+                            :$raw    = False;
   )
     is also<query-info-finish>
   {

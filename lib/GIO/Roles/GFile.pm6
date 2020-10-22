@@ -143,40 +143,28 @@ role GIO::Roles::File does GLib::Roles::Object {
   { * }
 
   multi method new (
-    :temp(:$tmp) is required,
-    :$raw        =  False
+                            $iostream    is rw,
+    CArray[Pointer[GError]] $error       =  gerror,
+                            :temp(:$tmp) is required,
+                            :$raw        =  False
   ) {
-    self.new_tmp(Str, :$raw);
+    self.new_tmp(Str, $iostream, $error, :$raw);
   }
   multi method new_tmp (
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+                            $iostream is rw,
+    CArray[Pointer[GError]] $error    =  gerror,
+                            :$raw     =  False
   ) {
-    self.new_tmp(Str, $, $error, :$raw);
+    samewith(Str, $iostream, $error, :$raw);
   }
-
   multi method new (
-    Str() $tmpl,
-          :temp(:$tmp) is required,
-          :$raw        =  False
-  ) {
-    self.new_tmp($tmpl, :$raw);
-  }
-  multi method new_tmp (
     Str()                   $tmpl,
-    CArray[Pointer[GError]] $error = gerror,
-                            :$raw  = False
+                            $iostream    is rw,
+    CArray[Pointer[GError]] $error       =  gerror,
+                            :temp(:$tmp) is required,
+                            :$raw        =  False
   ) {
-    self.new_tmp($tmpl, $, $error, :$raw);
-  }
-
-  multi method new (
-    Str() $tmpl,
-          $iostream    is rw,
-          :temp(:$tmp) is required,
-          :$raw        =  False,
-  ) {
-    self.new_tmp($tmpl, $iostream);
+    self.new_tmp($tmpl, $iostream, $error, :$raw);
   }
   multi method new_tmp (
     Str()                   $tmpl,
@@ -187,31 +175,17 @@ role GIO::Roles::File does GLib::Roles::Object {
     my $i     = CArray[GFileIOStream].new;
        $i[0]  = GFileIOStream;
 
-    my $f     = self.new_tmp($tmpl, $i, $error);
+    clear_error;
+    my $file = g_file_new_tmp(
+      $tmpl ?? explicitly-manage($tmpl) !! Str,
+      $i,
+      $error
+    );
+    set_error($error);
 
     $iostream = ppr($i);
-    say "F: $f / I: $iostream" if $DEBUG;
-    $iostream = GIO::FileIOStream.new($iostream, :!ref)
-      if $iostream && $raw.not;
-    $f;
-  }
-
-  multi method new (
-    Str()                   $tmpl,
-    CArray[GFileIOStream]   $iostream,
-    CArray[Pointer[GError]] $error       =  gerror,
-                            :temp(:$tmp) is required
-  ) {
-    self.new_tmp($tmpl, $iostream, $error);
-  }
-  multi method new_tmp (
-    Str()                   $tmpl,
-    CArray[GFileIOStream]   $iostream,
-    CArray[Pointer[GError]] $error     = gerror
-  ) {
-    clear_error;
-    my $file = g_file_new_tmp( explicitly-manage($tmpl), $iostream, $error );
-    set_error($error);
+    $iostream = GIO::FileIOStream.new($iostream, :!ref) unless $raw;
+    say "F: $file / I: $iostream";
 
     $file ?? self.bless(:$file) !! Nil;
   }
@@ -2924,8 +2898,6 @@ class GIO::File does GIO::Roles::File {
     return Nil unless $file;
 
     my $o = self.bless( :$file );
-    say "Identity: $o";
-
     $o.ref if $ref;
     $o
   }
