@@ -2924,6 +2924,8 @@ class GIO::File does GIO::Roles::File {
     return Nil unless $file;
 
     my $o = self.bless( :$file );
+    say "Identity: $o";
+
     $o.ref if $ref;
     $o
   }

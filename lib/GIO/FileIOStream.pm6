@@ -54,7 +54,12 @@ class GIO::FileIOStream is GIO::Stream {
   method new (GFileIOStreamAncestry $fileio-stream, :$ref = True) {
     return Nil unless $fileio-stream;
 
+    say "FIOS: $fileio-stream";
+
     my $o = self.bless( :$fileio-stream );
+
+    say "!FIOS: { $o.GFileIOStream }";
+
     $o.ref if $ref;
     $o;
   }

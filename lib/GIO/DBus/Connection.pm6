@@ -533,7 +533,7 @@ class GIO::DBus::Connection {
     Int()          :$timeout_msec            = -1,
                    :$supply          is copy = False
   ) {
-    samewith(
+    self.call_async(
       $bus_name,
       $object_path,
       $interface_name,
