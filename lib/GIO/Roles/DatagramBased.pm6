@@ -11,7 +11,7 @@ use GLib::Source;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::DatagramBased does GLib::Roles::Object {
+role GIO::Roles::DatagramBased {
   has GDatagramBased $!d;
 
   submethod roleInit-DatagramBased {
@@ -132,7 +132,7 @@ role GIO::Roles::DatagramBased does GLib::Roles::Object {
 our subset GDatagramBasedAncestry is export of Mu
   where GDatagramBased | GObject;
 
-class GIO::DatagramBased does GIO::Roles::DatagramBased {
+class GIO::DatagramBased does GLib::Roles::Object does GIO::Roles::DatagramBased {
 
   submethod BUILD (:$datagram-based) {
     self.setGDatagramBased($datagram-based) if $datagram-based;

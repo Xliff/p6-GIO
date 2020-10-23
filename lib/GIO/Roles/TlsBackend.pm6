@@ -9,7 +9,7 @@ use GIO::TlsDatabase;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::TlsBackend does GLib::Roles::Object {
+role GIO::Roles::TlsBackend {
   has GTlsBackend $!tb;
 
   method roleInit-TlsBackend is also<roleInit_TlsBackend> {
@@ -102,7 +102,7 @@ role GIO::Roles::TlsBackend does GLib::Roles::Object {
 our subset GTlsBackendAncestry is export of Mu
   where GTlsBackend | GObject;
 
-class GIO::TlsBackend does GIO::Roles::TlsBackend {
+class GIO::TlsBackend does GLib::Roles::Object does GIO::Roles::TlsBackend {
 
   submethod BUILD (:$backend) {
     self.setGTlsBackend($backend) if $backend;

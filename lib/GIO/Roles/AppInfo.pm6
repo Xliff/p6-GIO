@@ -10,7 +10,7 @@ use GLib::GList;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::AppInfo does GLib::Roles::Object {
+role GIO::Roles::AppInfo {
   has GAppInfo $!ai;
 
   method roleInit-AppInfo {
@@ -426,7 +426,7 @@ role GIO::Roles::AppInfo does GLib::Roles::Object {
 our subset GAppInfoAncestry is export of Mu
   where GAppInfo | GObject;
 
-class GIO::AppInfo does GIO::Roles::AppInfo {
+class GIO::AppInfo does GLib::Roles::Object does GIO::Roles::AppInfo {
 
    submethod BUILD (:$appinfo) {
      self.setGAppInfo($appinfo) if $appinfo;

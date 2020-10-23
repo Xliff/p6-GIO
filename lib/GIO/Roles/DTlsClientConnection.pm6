@@ -13,7 +13,7 @@ use GLib::Roles::ListData;
 use GLib::Roles::Object;
 use GIO::Roles::SocketConnectable;
 
-role GIO::Roles::DtlsClientConnection does GLib::Roles::Object {
+role GIO::Roles::DtlsClientConnection {
   also does GIO::Roles::SocketConnectable;
 
   has GDtlsClientConnection $!tdcc;
@@ -101,7 +101,9 @@ role GIO::Roles::DtlsClientConnection does GLib::Roles::Object {
 our subset GDtlsClientConnectionAncestry is export of Mu
   where GDtlsClientConnection | GObject;
 
-class GIO::DTlsClientConnection does GIO::Roles::DtlsClientConnection {
+class GIO::DTlsClientConnection does GLib::Roles::Object
+                                does GIO::Roles::DtlsClientConnection
+{
 
   submethod BUILD (:$client-connection) {
     self.setGDtlsClientConnection($client-connection) if $client-connection;

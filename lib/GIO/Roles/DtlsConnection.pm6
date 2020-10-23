@@ -15,7 +15,7 @@ use GLib::Roles::Object;
 use GIO::Roles::Signals::DtlsConnection;
 use GIO::Roles::DatagramBased;
 
-role GIO::Roles::DtlsConnection does GLib::Roles::Object {
+role GIO::Roles::DtlsConnection {
   also does GIO::Roles::Signals::DtlsConnection;
 
   has GDtlsConnection $!dtc;
@@ -408,7 +408,9 @@ role GIO::Roles::DtlsConnection does GLib::Roles::Object {
 our subset GDtlsConnectionAncestry is export of Mu
   where GDtlsConnection | GObject;
 
-class GIO::DtlsConenction does GIO::Roles::DtlsConnection {
+class GIO::DtlsConenction does GLib::Roles::Object
+                          does GIO::Roles::DtlsConnection
+{
 
   submethod BUILD ( :$dtls-connection ) {
     self.setGDtlsConnection($dtls-connection) if $dtls-connection;

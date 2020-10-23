@@ -15,7 +15,7 @@ use GIO::Roles::Signals::NetworkMonitor;
 
 class GIO::NetworkMonitor { ... }
 
-role GIO::Roles::NetworkMonitor does GLib::Roles::Object {
+role GIO::Roles::NetworkMonitor {
   also does GIO::Roles::Initable;
   also does GIO::Roles::Signals::NetworkMonitor;
 
@@ -194,7 +194,7 @@ role GIO::Roles::NetworkMonitor does GLib::Roles::Object {
 our subset GNetworkMonitorAncestry is export of Mu
   where GNetworkMonitor | GInitable | GObject;
 
-class GIO::NetworkMonitor does GIO::Roles::NetworkMonitor {
+class GIO::NetworkMonitor does GLib::Roles::Object does GIO::Roles::NetworkMonitor {
 
   submethod BUILD (:$monitor, :$init, :$cancellable) {
     self.setGMonitor($monitor, :$init, :$cancellable) if $monitor;

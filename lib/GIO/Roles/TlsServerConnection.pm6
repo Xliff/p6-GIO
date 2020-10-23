@@ -9,7 +9,7 @@ use GLib::Value;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::TlsServerConnection does GLib::Roles::Object {
+role GIO::Roles::TlsServerConnection {
   has GTlsServerConnection $!tsc;
 
   method roleInit-TlsServerConnection is also<roleInit_TlsServerConnection> {
@@ -51,7 +51,9 @@ role GIO::Roles::TlsServerConnection does GLib::Roles::Object {
 our subset GTlsServerConnectionAncestry is export of Mu
   where GTlsServerConnection | GObject;
 
-class GIO::TlsServerConnection does GIO::Roles::TlsServerConnection {
+class GIO::TlsServerConnection does GLib::Roles::Object
+                               does GIO::Roles::TlsServerConnection
+{
 
   submethod BUILD (:$server-connection) {
     self.setGTlsServerConnection($server-connection) if $server-connection;

@@ -7,7 +7,7 @@ use GIO::Raw::Types;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::Converter does GLib::Roles::Object {
+role GIO::Roles::Converter {
   has GConverter $!c;
 
   method roleInit-Converter is also<roleInit_Converter> {
@@ -78,7 +78,7 @@ role GIO::Roles::Converter does GLib::Roles::Object {
 our subset GConverterAncestry is export of Mu
   where GConverter | GObject;
 
-class GIO::Converter does GIO::Roles::Converter {
+class GIO::Converter  does GLib::Roles::Object does GIO::Roles::Converter {
 
   submethod BUILD (:$conv) {
     self.setGConverter($conv) if $conv;

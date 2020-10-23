@@ -8,7 +8,7 @@ use GIO::Raw::ListModel;
 use GLib::Roles::Object;
 use GIO::Roles::Signals::ListModel;
 
-role GIO::Roles::ListModel does GLib::Roles::Object {
+role GIO::Roles::ListModel {
   also does GIO::Roles::Signals::ListModel;
 
   has GListModel $!lm;
@@ -76,7 +76,7 @@ role GIO::Roles::ListModel does GLib::Roles::Object {
 our subset GListModelAncestry is export of Mu
   where GListModel | GObject;
 
-class GIO::ListModel does GIO::Roles::ListModel {
+class GIO::ListModel does GLib::Roles::Object does GIO::Roles::ListModel {
 
   submethod BUILD (:$model) {
     self.setGListModel($model) if $model;
@@ -108,5 +108,5 @@ class GIO::ListModel does GIO::Roles::ListModel {
     $o.ref if $ref;
     $o;
   }
-  
+
 }

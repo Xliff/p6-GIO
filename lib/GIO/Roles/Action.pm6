@@ -10,7 +10,7 @@ use GLib::Variant;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::Action does GLib::Roles::Object {
+role GIO::Roles::Action {
   has GAction $!a;
 
   method !roleInit-Action {
@@ -171,7 +171,7 @@ role GIO::Roles::Action does GLib::Roles::Object {
 our subset GActionAncestry is export of Mu
   where GAction | GObject;
 
-class GIO::Action does GIO::Roles::Action {
+class GIO::Action does GLib::Roles::Object does GIO::Roles::Action {
 
   submethod BUILD (:$action) {
     self.setGAction($action) if $action;

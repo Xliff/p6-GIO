@@ -9,7 +9,7 @@ use GIO::InputStream;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::LoadableIcon does GLib::Roles::Object {
+role GIO::Roles::LoadableIcon {
   has GLoadableIcon $!li;
 
   method roleInit-LoadableIcon {
@@ -133,7 +133,7 @@ role GIO::Roles::LoadableIcon does GLib::Roles::Object {
 our subset GLoadableIconAncestry is export of Mu
   where GLoadableIcon | GObject;
 
-class GIO::LoadableIcon does GIO::Roles::LoadableIcon {
+class GIO::LoadableIcon does GLib::Roles::Object does GIO::Roles::LoadableIcon {
 
   submethod BUILD (:$loadable-icon) {
     self.setGLoadableIcon($loadable-icon) if $loadable-icon;

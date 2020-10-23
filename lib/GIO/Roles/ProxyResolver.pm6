@@ -8,7 +8,7 @@ use GIO::Raw::ProxyResolver;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::ProxyResolver does GLib::Roles::Object {
+role GIO::Roles::ProxyResolver {
   has GProxyResolver $!pr;
 
   method roleInit-ProxyResolver {
@@ -89,7 +89,9 @@ role GIO::Roles::ProxyResolver does GLib::Roles::Object {
 our subset GProxyResolverAncestry is export of Mu
   where GProxyResolver | GObject;
 
-class GIO::ProxyResolver does GIO::Roles::ProxyResolver {
+class GIO::ProxyResolver does GLib::Roles::Object
+                         does GIO::Roles::ProxyResolver
+{
 
   submethod BUILD (:$resolver) {
     self.setGProxyResolver($resolver) if $resolver;

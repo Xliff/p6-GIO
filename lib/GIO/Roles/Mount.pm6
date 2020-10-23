@@ -12,7 +12,7 @@ use GIO::Roles::Icon;
 use GIO::Roles::Volume;
 use GIO::Roles::Drive;
 
-role GIO::Roles::Mount does GLib::Roles::Object {
+role GIO::Roles::Mount {
   has GMount $!m;
 
   method roleInit-Mount is also<roleInit_Mount> {
@@ -326,7 +326,7 @@ role GIO::Roles::Mount does GLib::Roles::Object {
 our subset GMountAncestry is export of Mu
   where GMount | GObject;
 
-class GIO::Mount does GIO::Roles::Mount {
+class GIO::Mount does GLib::Roles::Object does GIO::Roles::Mount {
 
   submethod BUILD (:$mount) {
     self.setGMount($mount) if $mount;

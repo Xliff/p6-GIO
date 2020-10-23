@@ -8,7 +8,7 @@ use GIO::Raw::AsyncResult;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::AsyncResult does GLib::Roles::Object {
+role GIO::Roles::AsyncResult {
   has GAsyncResult $!ar;
 
   method roleInit-AsyncResult is also<roleInit_AsyncResult> {
@@ -71,7 +71,7 @@ role GIO::Roles::AsyncResult does GLib::Roles::Object {
 our subset GAsyncResultAncestry is export of Mu
   where GAsyncResult | GObject;
 
-class GIO::AsyncResult does GIO::Roles::AsyncResult {
+class GIO::AsyncResult does GLib::Roles::Object does GIO::Roles::AsyncResult {
 
   submethod BUILD (:$result) {
     self.setAsyncResult($result) if $result;

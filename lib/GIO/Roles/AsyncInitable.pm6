@@ -9,7 +9,7 @@ use GIO::Raw::AsyncInitable;
 use GLib::Roles::Object;
 use GLib::Roles::TypedBuffer;
 
-role GIO::Roles::AsyncInitable does GLib::Roles::Object {
+role GIO::Roles::AsyncInitable {
   has GAsyncInitable $!ai;
 
   method roleInit-AsyncInitable {
@@ -301,7 +301,7 @@ role GIO::Roles::AsyncInitable does GLib::Roles::Object {
 our subset GAsyncInitableAncestry is export of Mu
   where GAsyncInitable | GObject;
 
-class GIO::AsyncInitable does GIO::Roles::AsyncInitable {
+class GIO::AsyncInitable does GLib::Roles::Object does GIO::Roles::AsyncInitable {
 
   submethod BUILD (:$async-initable) {
     self.setGAsyncInitable($async-initable) if $async-initable;

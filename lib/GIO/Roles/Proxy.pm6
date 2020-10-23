@@ -9,7 +9,7 @@ use GIO::Stream;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::Proxy does GLib::Roles::Object {
+role GIO::Roles::Proxy {
   has GProxy $!p;
 
   submethod GIO::Raw::Definitions::GProxy
@@ -26,12 +26,29 @@ role GIO::Roles::Proxy does GLib::Roles::Object {
     self.bless( proxy => g_proxy_get_default_for_protocol($protocol) );
   }
 
-  method connect (
+  multi method connect (
     GIOStream()             $connection,
     GProxyAddress()         $proxy_address,
-    GCancellable()          $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error          = gerror,
-    :$raw = False
+    GCancellable()          $cancellable    =  GCancellable,
+    CArray[Pointer[GError]] $error          =  gerror,
+                            :$raw           =  False,
+                            :$proxy         is required
+  ) {
+    self.proxy_connect(
+      $connection,
+      $proxy_address,
+      $cancellable,
+      $error,
+      :$raw
+    );
+  }
+  multi method proxy_connect (
+    GIOStream()             $connection,
+    GProxyAddress()         $proxy_address,
+    GCancellable()          $cancellable    =  GCancellable,
+    CArray[Pointer[GError]] $error          =  gerror,
+                            :$raw           =  False,
+                            :$proxy         is required
   ) {
     clear_error;
     my $ios =
@@ -99,7 +116,7 @@ role GIO::Roles::Proxy does GLib::Roles::Object {
 our subset GProxyAncestry is export of Mu
   where GProxy | GObject;
 
-class GIO::Proxy does GIO::Roles::Proxy {
+class GIO::Proxy does GLib::Roles::Object does GIO::Roles::Proxy {
 
   submethod BUILD (:$proxy) {
     self.setGProxy($proxy) if $proxy;

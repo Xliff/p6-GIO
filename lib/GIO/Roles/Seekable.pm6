@@ -8,7 +8,7 @@ use GIO::Raw::Seekable;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::Seekable does GLib::Roles::Object {
+role GIO::Roles::Seekable {
   has GSeekable $!s;
 
   method roleInit-Seekable is also<roleInit_Seekable> {
@@ -73,7 +73,9 @@ role GIO::Roles::Seekable does GLib::Roles::Object {
 our subset GSeekableAncestry is export of Mu
   where GSeekable | GObject;
 
-class GIO::Seekable does GIO::Roles::Seekable {
+class GIO::Seekable does GLib::Roles::Object
+                    does GIO::Roles::Seekable
+{
 
   submethod BUILD (:$seekable) {
     self.setGSeekable($seekable) if $seekable;

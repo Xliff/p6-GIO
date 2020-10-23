@@ -7,7 +7,7 @@ use GIO::Raw::Types;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::FileDescriptorBased does GLib::Roles::Object {
+role GIO::Roles::FileDescriptorBased {
   has GFileDescriptorBased $!fdb;
 
   method GIO::Raw::Definitions::GFileDescriptorBased
@@ -34,12 +34,14 @@ role GIO::Roles::FileDescriptorBased does GLib::Roles::Object {
 our subset GFileDescriptorBasedAncestry is export
   where GFileDescriptorBased | GObject;
 
-class GIO::FileDescriptorBased does GIO::Roles::FileDescriptorBased {
+class GIO::FileDescriptorBased does GLib::Roles::Object
+                               does GIO::Roles::FileDescriptorBased
+{
 
   submethod BUILD (:$descriptor-based) {
     self.setGFileDescriptorBased($descriptor-based) if $descriptor-based;
   }
-  
+
   method setGFileDescriptorBased (GFileDescriptorBasedAncestry $_) {
     my $to-parent;
 

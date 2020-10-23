@@ -12,7 +12,7 @@ use GLib::Roles::Signals::Generic;
 use GIO::Roles::Icon;
 use GIO::Roles::Volume;
 
-role GIO::Roles::Drive does GLib::Roles::Object {
+role GIO::Roles::Drive {
   has GDrive $!d;
 
   method roleInit-Drive is also<roleInit_Drive> {
@@ -292,7 +292,7 @@ role GIO::Roles::Drive does GLib::Roles::Object {
 our subset GDriveAncestry is export of Mu
   when GDrive | GObject;
 
-class GIO::Drive does GIO::Roles::Drive {
+class GIO::Drive does GLib::Roles::Object does GIO::Roles::Drive {
 
   submethod BUILD (:$drive) {
     self.setGDrive($drive) if $drive;

@@ -8,7 +8,7 @@ use GIO::Raw::Types;
 use GLib::Roles::Object;
 use GLib::Roles::TypedBuffer;
 
-role GIO::Roles::ActionMap does GLib::Roles::Object {
+role GIO::Roles::ActionMap {
   has GActionMap $!actmap;
 
   method GIO::Raw::Definitions::GActionMap
@@ -78,7 +78,7 @@ role GIO::Roles::ActionMap does GLib::Roles::Object {
 our subset GActionMapAncestry is export of Mu
   where GActionMap | GObject;
 
-class GIO::ActionMap does GIO::Roles::ActionMap {
+class GIO::ActionMap  does GLib::Roles::Object  does GIO::Roles::ActionMap {
 
   submethod BUILD (:$action-map) {
     self.setGActionMap($action-map) if $action-map;

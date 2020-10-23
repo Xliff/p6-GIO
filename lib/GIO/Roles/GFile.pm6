@@ -34,10 +34,10 @@ use GIO::Roles::Mount;
 
 enum ContentReturn is export <CARRAY ARRAY BUF BUFFER STR STRING PTR POINTER>;
 
-role  GIO::Roles::File does GLib::Roles::Object { ... }
-class GIO::File                                 { ... }
+role  GIO::Roles::File { ... }
+class GIO::File        { ... }
 
-role GIO::Roles::File does GLib::Roles::Object {
+role GIO::Roles::File {
   has GFile $!file;
 
   method roleInit-GFile {
@@ -194,17 +194,17 @@ role GIO::Roles::File does GLib::Roles::Object {
     Int()                   $flags,                         # GFileCreateFlags $flags,
     GCancellable()          $cancellable  = GCancellable,
     CArray[Pointer[GError]] $error        = gerror,
-                           :$raw          = False
+                            :$raw         = False
   )
     is also<append-to>
   {
     clear_error;
-    my guint $f = $flags;
-    my $fos = g_file_append_to($!file, $f, $cancellable, $error);
+    my guint $f   = $flags;
+    my       $fos = g_file_append_to($!file, $f, $cancellable, $error);
     set_error($error);
 
     $fos ??
-      ($raw ?? $fos !! GIO::FileOutputStream.new($fos, :!ref) )
+      ( $raw ?? $fos !! GIO::FileOutputStream.new($fos, :!ref) )
       !!
       Nil;
   }
@@ -722,8 +722,8 @@ role GIO::Roles::File does GLib::Roles::Object {
                    &callback,
     gpointer       $user_data    = Pointer
   ) {
-    my GFileQueryInfoFlags $f = $flags;
-    my gint $io = $io_priority;
+    my GFileQueryInfoFlags $f  = $flags;
+    my gint                $io = $io_priority;
 
     g_file_enumerate_children_async(
       $!file,
@@ -2859,7 +2859,7 @@ role GIO::Roles::File does GLib::Roles::Object {
 our subset GFileAncestry is export of Mu
   where GFile | GObject;
 
-class GIO::File does GIO::Roles::File {
+class GIO::File does GLib::Roles::Object does GIO::Roles::File {
 
   submethod BUILD (:$file) {
     self.setGFile($file) if $file;

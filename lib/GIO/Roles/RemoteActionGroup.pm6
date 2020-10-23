@@ -9,7 +9,7 @@ use GIO::Roles::ActionGroup;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::RemoteActionGroup does GLib::Roles::Object {
+role GIO::Roles::RemoteActionGroup {
   also does GIO::Roles::ActionGroup;
 
   has GRemoteActionGroup $!rag;
@@ -66,7 +66,9 @@ role GIO::Roles::RemoteActionGroup does GLib::Roles::Object {
 our subset GRemoteActionGroupAncestry is export of Mu
   where GRemoteActionGroup | GObject;
 
-class GIO::RemoteActionGroup does GIO::Roles::RemoteActionGroup {
+class GIO::RemoteActionGroup does GLib::Roles::Object
+                             does GIO::Roles::RemoteActionGroup
+{
 
   submethod BUILD (:$group) {
     self.setGRemoteActionGroup($group) if $group;

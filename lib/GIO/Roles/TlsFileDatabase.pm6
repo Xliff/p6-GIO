@@ -9,7 +9,7 @@ use GLib::Value;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::TlsFileDatabase does GLib::Roles::Object {
+role GIO::Roles::TlsFileDatabase {
   has GTlsFileDatabase $!tfd;
 
   method roleInit-TlsFileDatabase is also<roleInit_TlsFileDatabase> {
@@ -54,7 +54,9 @@ role GIO::Roles::TlsFileDatabase does GLib::Roles::Object {
 our subset GTlsFileDatabaseAncestry is export of Mu
   where GTlsFileDatabase | GObject;
 
-class GIO::TlsFileDatabase does GIO::Roles::TlsFileDatabase {
+class GIO::TlsFileDatabase does GLib::Roles::Object
+                           does GIO::Roles::TlsFileDatabase
+{
 
   submethod BUILD (:$file-database) {
     self.setGTlsFileDatabase($file-database) if $file-database;

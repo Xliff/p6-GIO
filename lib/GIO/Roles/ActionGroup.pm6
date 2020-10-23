@@ -8,7 +8,8 @@ use GIO::Raw::ActionGroup;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::ActionGroup does GLib::Roles::Object {
+#| Requires role: GLib::Roles::Object
+role GIO::Roles::ActionGroup {
   has GActionGroup $!ag;
 
   method !roleInit-ActionGroup is also<!roleInit_ActionGroup> {
@@ -217,8 +218,9 @@ role GIO::Roles::ActionGroup does GLib::Roles::Object {
 our subset GActionGroupAncestry is export of Mu
   where GActionGroup | GObject;
 
-class GIO::ActionGroup does GIO::Roles::ActionGroup {
-  
+#| This works for classes!
+class GIO::ActionGroup does GIO::Roles::ActionGroup does GLib::Roles::Object {
+
   submethod BUILD (:$action-group) {
     self.setGActionGroup($action-group) if $action-group;
   }

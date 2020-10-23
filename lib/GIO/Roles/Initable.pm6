@@ -8,7 +8,7 @@ use GIO::Raw::Types;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::Initable does GLib::Roles::Object {
+role GIO::Roles::Initable {
   has GInitable $!i;
 
   method roleInit-Initable (:$init = True, :$cancellable = GCancellable) {
@@ -63,7 +63,7 @@ role GIO::Roles::Initable does GLib::Roles::Object {
 our subset GInitableAncestry is export of Mu
   where GInitable | GObject;
 
-class GIO::Initable does GIO::Roles::Initable {
+class GIO::Initable does GLib::Roles::Object does GIO::Roles::Initable {
 
   submethod BUILD (:$initable, :$cancellable, :$init) {
     self.setGInitable($initable) if $initable;

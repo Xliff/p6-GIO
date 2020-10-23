@@ -9,7 +9,7 @@ use GIO::SocketAddressEnumerator;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::SocketConnectable does GLib::Roles::Object {
+role GIO::Roles::SocketConnectable {
   has GSocketConnectable $!sc;
 
   method GIO::Raw::Definitions::GSocketConnectable
@@ -55,7 +55,9 @@ role GIO::Roles::SocketConnectable does GLib::Roles::Object {
 our subset GSocketConnectableAncestry is export of Mu
   where GSocketConnectable | GObject;
 
-class GIO::SocketConnectable does GIO::Roles::SocketConnectable {
+class GIO::SocketConnectable does GLib::Roles::Object
+                             does GIO::Roles::SocketConnectable
+{
 
   submethod BUILD (:$connectable) {
     self.setGSocketConnectable($connectable) if $connectable;

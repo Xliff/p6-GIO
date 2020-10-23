@@ -208,3 +208,39 @@ role GIO::Roles::Volume {
   }
 
 }
+
+our subset GVolumeAncestry is export of Mu
+  where GVolume | GObject;
+
+class GIO::Volume does GLib::Roles::Object does GIO::Roles::Volume {
+
+  submethod BUILD (:$volume) {
+    self.setGVolume($volume) if $volume;
+  }
+
+  method setGVolume (GVolumeAncestry $_) {
+    my $to-parent;
+
+    $!v = do {
+      when GVolume {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GVolume, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GVolumeAncestry $volume, :$ref = True) {
+    return Nil unless $volume;
+
+    my $o = self.bless(:$volume);
+    $o.ref if $ref;
+    $o;
+  }
+
+}

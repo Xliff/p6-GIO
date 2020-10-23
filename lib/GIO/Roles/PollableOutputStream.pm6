@@ -10,7 +10,7 @@ use GLib::Source;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::PollableOutputStream does GLib::Roles::Object {
+role GIO::Roles::PollableOutputStream {
   has GPollableOutputStream $!pos;
 
   method roleInit-PollableOutputStream is also<roleInit_PollableOutputStream> {
@@ -124,7 +124,9 @@ role GIO::Roles::PollableOutputStream does GLib::Roles::Object {
 our subset GPollableOutputStreamAncestry is export of Mu
   where GPollableOutputStream | GObject;
 
-class GIO::PollableOutputStream does GIO::Roles::PollableOutputStream {
+class GIO::PollableOutputStream does GLib::Roles::Object
+                                does GIO::Roles::PollableOutputStream
+{
 
   submethod BUILD (:$pollable) {
     self.setGPollableOutputStream($pollable) if $pollable;

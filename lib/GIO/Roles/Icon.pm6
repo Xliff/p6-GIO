@@ -13,7 +13,7 @@ use GLib::Roles::Object;
 role  GIO::Roles::Icon { ... }
 class GIO::Icon        { ... }
 
-role GIO::Roles::Icon does GLib::Roles::Object {
+role GIO::Roles::Icon {
   has GIcon $!icon;
 
   method new_for_string (
@@ -108,7 +108,7 @@ role GIO::Roles::Icon does GLib::Roles::Object {
 our subset GIconAncestry is export of Mu
   where GIcon | GObject;
 
-class GIO::Icon does GIO::Roles::Icon {
+class GIO::Icon does GLib::Roles::Object does GIO::Roles::Icon {
 
   method BUILD (:$icon) {
     self.setGIcon($icon) if $icon;

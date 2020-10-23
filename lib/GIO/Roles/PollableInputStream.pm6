@@ -8,7 +8,7 @@ use GIO::Raw::PollableInputStream;
 
 use GLib::Roles::Object;
 
-role GIO::Roles::PollableInputStream does GLib::Roles::Object {
+role GIO::Roles::PollableInputStream {
   has GPollableInputStream $!pis;
 
   method roleInit-PollableInputStream is also<roleInit_PollableInputStream> {
@@ -74,7 +74,9 @@ role GIO::Roles::PollableInputStream does GLib::Roles::Object {
 our subset GPollableInputStreamAncestry is export of Mu
   where GPollableInputStream | GObject;
 
-class GIO::PollableInputStream does GIO::Roles::PollableInputStream {
+class GIO::PollableInputStream does GLib::Roles::Object
+                               does GIO::Roles::PollableInputStream
+{
   submethod BUILD (:$pollable-input) {
     self.setGPollableInputStream($pollable-input) if $pollable-input;
   }
