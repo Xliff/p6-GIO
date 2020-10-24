@@ -24,23 +24,23 @@ class GIO::Stream {
   }
 
   method setGIOStream (GIOStreamAncestry $_) {
+    my $param = $_;
     my $to-parent;
 
     $!ios = do {
       when GIOStream {
-        $to-parent = cast(GObject, $_);
-        $_;
+        $to-parent = cast(GObject, $param);
+        $param;
       }
 
       default {
-        $to-parent = $_;
-        cast(GIOStream, $_);
+        $to-parent = $param;
+        cast(GIOStream, $param);
       }
     }
-    say "GIOStream Parent: $to-parent" if $DEBUG;
 
     self!setObject($to-parent);
-  }
+ }
 
   method new (GIOStreamAncestry $stream, :$ref = True) {
     return Nil unless $stream;
@@ -58,7 +58,13 @@ class GIO::Stream {
     g_io_stream_clear_pending($!ios);
   }
 
-  method close (
+  multi method close (
+    CArray[Pointer[GError]] $error         = gerror,
+    GCancellable()          :$cancellable  = GCancellable
+  ) {
+    samewith($cancellable, $error);
+  }
+  multi method close (
     GCancellable()          $cancellable  = GCancellable,
     CArray[Pointer[GError]] $error        = gerror
   ) {
@@ -75,9 +81,10 @@ class GIO::Stream {
   multi method close_async (
     Int()          $io_priority,
                    &callback,
-    gpointer       $user_data    = gpointer
+    gpointer       $user_data    = gpointer,
+    GCancellable() :$cancellable = GCancellable
   ) {
-    samewith($io_priority, GCancellable, &callback, $user_data);
+    samewith($io_priority, $cancellable, &callback, $user_data);
   }
   multi method close_async (
     Int()          $io_priority,
@@ -151,28 +158,29 @@ class GIO::Stream {
   { * }
 
   multi method splice_async (
-    GIOStream()         $stream2,
-    Int()               $flags,
-    Int()               $io_priority,
-                        &callback,
-    gpointer            $user_data    = gpointer
+    GIOStream()    $stream2,
+                   &callback     = Callable,
+    gpointer       $user_data    = gpointer,
+    Int()          :$flags       = 0,
+    Int()          :$io_priority = G_PRIORITY_DEFAULT,
+    GCancellable() :$cancellable = GCancellable
   ) {
     samewith(
       $stream2,
       $flags,
       $io_priority,
-      GCancellable,
+      $cancellable,
       &callback,
       $user_data
     );
   }
   multi method splice_async (
-    GIOStream()         $stream2,
-    Int()               $flags,
-    Int()               $io_priority,
-    GCancellable()      $cancellable,
-                        &callback,
-    gpointer            $user_data    = gpointer
+    GIOStream()    $stream2,
+    Int()          $flags,
+    Int()          $io_priority,
+    GCancellable() $cancellable,
+                   &callback,
+    gpointer       $user_data    = gpointer
   ) {
     my gint                 $io = $io_priority;
     my GIOStreamSpliceFlags $f  = $flags;
