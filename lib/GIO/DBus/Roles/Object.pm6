@@ -16,7 +16,7 @@ use GLib::Roles::ListData;
 use GLib::Roles::Object;
 use GIO::DBus::Roles::Signals::Object;
 
-role GIO::DBus::Roles::Object does GLib::Roles::Object {
+role GIO::DBus::Roles::Object {
   also does GIO::DBus::Roles::Signals::Object;
 
   has GDBusObject $!do;
@@ -82,7 +82,9 @@ role GIO::DBus::Roles::Object does GLib::Roles::Object {
 our subset GDBusObjectAncestry is export of Mu
   where GDBusObject | GObject;
 
-class GIO::DBus::Object does GIO::DBus::Roles::Object {
+class GIO::DBus::Object  does GLib::Roles::Object
+                         does GIO::DBus::Roles::Object
+{
 
   submethod BUILD ( :$dbus-object ) {
     self.setGDBusObject($dbus-object) if $dbus-object;
@@ -92,7 +94,7 @@ class GIO::DBus::Object does GIO::DBus::Roles::Object {
     my $to-parent;
 
     $!do = do {
-      when GDBusMethodInvocation {
+      when GDBusObject {
         $to-parent = cast(GObject, $_);
         $_;
       }

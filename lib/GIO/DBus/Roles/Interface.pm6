@@ -8,7 +8,7 @@ use GIO::DBus::Raw::Interface;
 
 use GLib::Roles::Object;
 
-role GIO::DBus::Roles::Interface does GLib::Roles::Object {
+role GIO::DBus::Roles::Interface {
   has GDBusInterface $!di;
 
   method roleInit-GDBusInterface is also<roleInit_DBusInterface> {
@@ -56,7 +56,9 @@ role GIO::DBus::Roles::Interface does GLib::Roles::Object {
 our subset GDBusInterfaceAncestry is export of Mu
   where GDBusInterface | GObject;
 
-class GIO::DBus::Interface does GIO::DBus::Roles::Interface {
+class GIO::DBus::Interface does GLib::Roles::Object
+                           does GIO::DBus::Roles::Interface
+{
 
   submethod BUILD ( :$dbus-interface ) {
     self.setGDBusInterface($dbus-interface) if $dbus-interface;
