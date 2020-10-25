@@ -84,7 +84,15 @@ class GIO::Cancellable {
     g_cancellable_cancel($cancel);
   }
 
-  method connect (
+  multi method connect (
+             &callback,
+    gpointer $data              =  gpointer,
+             &data_destroy_func =  Callable,
+             :$cancellable      is required
+  ) {
+    self.connect_cancellable(&callback, $data, &data_destroy_func);
+  }
+  method connect_cancellable (
              &callback,
     gpointer $data              = gpointer,
              &data_destroy_func = Callable

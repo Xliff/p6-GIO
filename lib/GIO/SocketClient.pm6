@@ -190,7 +190,21 @@ class GIO::SocketClient {
     g_socket_client_add_application_proxy($!sc, $protocol);
   }
 
-  method connect (
+  multi method connect (
+    GSocketConnectable()    $connectable,
+    GCancellable()          $cancellable  = GCancellable,
+    CArray[Pointer[GError]] $error        = gerror,
+                            :$raw         = False,
+
+                            :socket_client(
+                              :socket-client(
+                                :$socketclient
+                              )
+                            ) is required
+  ) {
+    samewith($connectable, $cancellable, $error, :$raw);
+  }
+  method connect_socketclient (
     GSocketConnectable()    $connectable,
     GCancellable()          $cancellable  = GCancellable,
     CArray[Pointer[GError]] $error        = gerror,

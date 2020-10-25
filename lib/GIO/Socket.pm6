@@ -293,7 +293,15 @@ class GIO::Socket {
     $rv;
   }
 
-  method connect (
+  multi method connect (
+    GSocketAddress()        $address,
+    GCancellable()          $cancellable =  GCancellable,
+    CArray[Pointer[GError]] $error       =  gerror,
+                            :$socket     is required
+  ) {
+    self.connect_socket($address, $cancellable, $error);
+  }
+  method connect_socket (
     GSocketAddress()        $address,
     GCancellable()          $cancellable = GCancellable,
     CArray[Pointer[GError]] $error       = gerror
