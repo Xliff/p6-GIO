@@ -9,7 +9,9 @@ use GIO::Raw::Definitions;
 unit package GIO::Raw::Structs;
 
 sub resolve-buffer ($_, $cn = '') is rw {
-  return Pointer unless $_ =:= Any || .^shortname eq 'Any';
+  say "resolve-buffer given: { .^name }" if $DEBUG;
+
+  return Pointer if $_ =:= Any || .^shortname eq 'Any';
 
   when CArray           { cast( Pointer, $_ )                    }
   when Str              { cast( Pointer, explicitly-manage($_) ) }
