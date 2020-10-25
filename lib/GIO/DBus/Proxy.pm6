@@ -277,22 +277,7 @@ class GIO::DBus::Proxy {
   ) {
     my GDBusProxyFlags $f = $flags;
 
-<<<<<<< Updated upstream
     prep-supply($supply, &callback, &*ROUTINE.^name);
-=======
-    die 'Cannot use :$supply and &callback in the same call to .new_async!'
-      if $supply && &callback;
-
-    if $supply {
-      $supply = Supplier::Preserving.new;
-      &callback = -> *@a {
-        CATCH { default { .message.say; .backtrace.summary.say } }
-        $supply.emit(
-          GIO::AsyncResult.new( @a[1], :!ref )
-        )
-      }
-    }
->>>>>>> Stashed changes
 
     my $proxy = g_dbus_proxy_new(
       $connection,
@@ -307,15 +292,6 @@ class GIO::DBus::Proxy {
     );
 
     $proxy ?? self.bless( :$proxy, :$supply ) !! Nil;
-<<<<<<< Updated upstream
-=======
-  }
-
-  method tap(|c) {
-    die 'GIO::DBus::Proxy not called with :$supply' unless $!supply;
-    state $s = $!supply.Supply;
-    $s.tap(|c);
->>>>>>> Stashed changes
   }
 
   multi method new (
@@ -341,7 +317,6 @@ class GIO::DBus::Proxy {
       is also<new-for-bus>
   { * }
 
-<<<<<<< Updated upstream
   multi method new (
     GDBusConnection()       $connection,
     Str()                   $name,
@@ -352,15 +327,6 @@ class GIO::DBus::Proxy {
     Int()                   :$flags          =  0,
     GDBusInterfaceInfo      :$info           =  GDBusInterfaceInfo,
     GCancellable()          :$cancellable    =  GCancellable
-=======
-  multi method new_for_bus(
-    GDBusConnection()       $connection,
-    Int()                   $flags,
-    Str()                   $name,
-    Str()                   $object_path,
-    Str()                   $interface_name,
-    CArray[Pointer[GError]] $error = gerror
->>>>>>> Stashed changes
   ) {
     self.new_for_bus(
       $connection,
