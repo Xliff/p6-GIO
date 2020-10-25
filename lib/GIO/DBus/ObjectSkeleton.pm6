@@ -16,6 +16,7 @@ our subset GDBusObjectSkeletonAncestry is export of Mu
   where GDBusObjectSkeleton | GDBusObjectAncestry;
 
 class GIO::DBus::ObjectSkeleton {
+  also does GLib::Roles::Object;
   also does GIO::DBus::Roles::Object;
 
   has GDBusObjectSkeleton $!dos is implementor;

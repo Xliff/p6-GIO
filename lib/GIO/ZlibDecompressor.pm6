@@ -14,6 +14,7 @@ our subset GZlibDecompressorAncestry is export of Mu
   where GZlibDecompressor | GConverter | GObject;
 
 class GIO::ZlibDecompressor {
+  also does GLib::Roles::Object;
   also does GIO::Roles::Converter;
 
   has GZlibDecompressor $!zd is implementor;
