@@ -185,7 +185,7 @@ role GIO::Roles::File {
 
     $iostream = ppr($i);
     $iostream = GIO::FileIOStream.new($iostream, :!ref) unless $raw;
-    say "F: $file / I: $iostream";
+    say "F: $file / I: $iostream" if $DEBUG;
 
     $file ?? self.bless(:$file) !! Nil;
   }
