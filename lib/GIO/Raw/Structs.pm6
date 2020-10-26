@@ -8,15 +8,35 @@ use GIO::Raw::Definitions;
 
 unit package GIO::Raw::Structs;
 
-sub resolve-buffer ($_, $cn = '') is rw {
+multi sub resolve-carray ($_, $cn = '', :$type = uint8) is raw {
+  say "resolve-carray given: { .^name }" if $DEBUG;
+
+  my \CA := CArray.^parameterize[$type];
+
+  return CA if $_ =:= Any || .^shortname eq 'Any';
+
+  when $_ =:= Pointer  { CA                                       }
+  when Array           { CA.new( $_ )                             }
+  when Blob | CArray   { CA = CArray.^parameterize[.of]; proceed  }
+  when Blob            { CA.new( .Array )                         }
+  when CArray          { CA.new( $_ )                             }
+  when Pointer         { cast(CA, $_)                             }
+  when Str             { CA.new( .comb )                          }
+
+  default      { die "Unknown type '{ .^name }' used for { $cn }.buffer!" }
+}
+
+sub resolve-pointer ($_, $cn = '') is raw {
   say "resolve-buffer given: { .^name }" if $DEBUG;
 
   return Pointer if $_ =:= Any || .^shortname eq 'Any';
 
-  when CArray           { cast( Pointer, $_ )                    }
-  when Str              { cast( Pointer, explicitly-manage($_) ) }
-  when $_ =:= Pointer   { Pointer                                }
-  when Pointer          { Pointer.new(+$_)                       }
+  when $_ =:= Pointer   { Pointer                                      }
+  when Array            { cast( Pointer, CArray[uint8].new( $_ ) )     }
+  when Blob             { cast( Pointer, CArray[uint8].new( .Array ) ) }
+  when CArray           { cast( Pointer, $_ )                          }
+  when Pointer          { Pointer.new(+$_)                             }
+  when Str              { cast( Pointer, explicitly-manage($_) )       }
 
   default      { die "Unknown type '{ .^name }' used for { $cn }.buffer!" }
 }
@@ -26,7 +46,7 @@ class GInputVector  is repr('CStruct') does GLib::Roles::Pointers is export {
   has gssize        $.size;
 
   submethod BUILD (:$buffer, :$!size) {
-    $!buffer := resolve-buffer($buffer, ::?CLASS.^shortname);
+    $!buffer := resolve-pointer($buffer, ::?CLASS.^shortname);
   }
 
   multi method new ($buffer, $size) { self.bless(:$buffer, :$size) }
@@ -38,7 +58,7 @@ class GOutputVector is repr('CStruct') does GLib::Roles::Pointers is export {
   has gssize        $.size;
 
   submethod BUILD (:$buffer, Int() :$!size) {
-    $!buffer := resolve-buffer($buffer, ::?CLASS.^shortname);
+    $!buffer := resolve-pointer($buffer, ::?CLASS.^shortname);
   }
 
   multi method new ($buffer, $size) { self.bless(:$buffer, :$size) }
