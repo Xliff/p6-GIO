@@ -19,11 +19,13 @@ class GIO::BufferedOutputStream is GIO::FilterOutputStream {
   has GBufferedOutputStream $!bos is implementor;
 
   submethod BUILD (:$buffered-stream) {
-    self.setBufferedOutputStream($_) if $buffered-stream;
+    self.setGBufferedOutputStream($buffered-stream) if $buffered-stream;
   }
 
-  method setBufferedOutputStream (BufferedOutputStreamAncestry $_) {
+  method setGBufferedOutputStream (BufferedOutputStreamAncestry $_) {
     my $to-parent;
+
+    say "BOS: $_" if $DEBUG;
 
     $!bos = do {
       when GBufferedOutputStream {
@@ -69,6 +71,9 @@ class GIO::BufferedOutputStream is GIO::FilterOutputStream {
     $buffered-stream ?? self.bless( :$buffered-stream ) !! Nil;
   }
 
+  multi method new (GOutputStream() $base, Int() $size, :$sized is required) {
+    self.new_sized($base, $size);
+  }
   method new_sized (GOutputStream() $base, Int() $size) is also<new-sized> {
     my gsize $s               = $size;
     my       $buffered-stream = g_buffered_output_stream_new_sized($base, $s);
