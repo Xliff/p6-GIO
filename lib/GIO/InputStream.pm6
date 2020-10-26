@@ -223,6 +223,26 @@ class GIO::InputStream {
 
   # cw: Not complete. Missing multis for Str, CArray[uint8], Pointer
   multi method read_async (
+    CArray[uint8]  $buffer,
+    Int()          $count,
+    Int()          $io_priority,
+                   &callback,
+    gpointer       $user_data    = Pointer,
+    GCancellable() $cancellable  = GCancellable
+  ) {
+    my $b = Buf.allocate($count, 0);
+    $b[$_] = $buffer[$_] for ^$count;
+
+    samewith(
+      $b,
+      $count,
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method read_async (
     Blob()         $buffer,
     Int()          $count,
     Int()          $io_priority,
@@ -328,7 +348,7 @@ class GIO::InputStream {
     is also<read-finish>
   {
     clear_error;
-    my $s = so g_input_stream_read_finish($!is, $result, $error);
+    my $s = g_input_stream_read_finish($!is, $result, $error);
     set_error($error);
     $s;
   }
