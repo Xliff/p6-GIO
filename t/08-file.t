@@ -104,22 +104,22 @@ class CreateDeleteData {
 };
 
 sub monitor-changed ($m, $f, $of, $et, $d) {
-  CATCH { default { .message.say } }
+  CATCH { default { .message.say; .backtrace.summary.say } }
 
   my ($fo, $ofo) = ( GIO::File.new($f), GIO::File.new($of) );
-  my ($p,  $pp)  = ($f.get_path, $f.get_peek_path);
+  my ($p,  $pp)  = ($fo.get_path, $fo.peek_path);
 
   is  $d.monitor-path, $p,  'Monitored path has the correct value';
   is  $p,              $pp, 'Path and peeked path are equivalent';
 
-  $d.monitor-created++ if $et = G_FILE_MONITOR_EVENT_CREATED.Int;
-  $d.monitor-deleted++ if $et = G_FILE_MONITOR_EVENT_DELETED.Int;
-  $d.monitor-changed++ if $et = G_FILE_MONITOR_EVENT_CHANGED.Int;
+  $d.monitor-created++ if $et == G_FILE_MONITOR_EVENT_CREATED.Int;
+  $d.monitor-deleted++ if $et == G_FILE_MONITOR_EVENT_DELETED.Int;
+  $d.monitor-changed++ if $et == G_FILE_MONITOR_EVENT_CHANGED.Int;
   $d.context.wakeup;
 }
 
 sub iclosed-cb ($d, $res) {
-  CATCH { default { .message.say } }
+  CATCH { default { .message.say; .backtrace.summary.say } }
 
   my $r = $d.istream.close_finish($res);
   nok $ERROR,               'No error detected when asynchronously closing input stream';
@@ -133,73 +133,74 @@ sub iclosed-cb ($d, $res) {
 }
 
 sub read-cb ($d, $res) {
-  CATCH { default { .message.say } }
+  CATCH { default { .message.say; .backtrace.summary.say; } }
 
   my $size = $d.istream.read_finish($res);
 
   nok $ERROR, 'No errors detected when asynchronously reading input stream ';
 
   $d.pos += $size;
+  diag "POS: { $d.pos }";
   if $d.pos < $d.data.chars {
-    my $buf = $d.buffer.substr-rw($d.pos);
+    my $buf = $d.buffer.&subarray($d.pos);
 
     # cw: One day, even the naked 0 will be gone.
     $d.istream.read-async(
       $buf,
-      $buf.chars,
+      $d.buffer.elems - $d.pos,
       0,
       -> *@a { read-cb($d, @a[1]) }
     );
   } else {
-    is  $d.buffer,            $d.data, 'Buffer matches expected data';
-    nok $d.istream.is-closed,          'Input stream is NOT closed';
+    is  $d.buffer.map( *.chr ).join, $d.data, 'Buffer matches expected data';
+    nok $d.istream.is-closed,                 'Input stream is NOT closed';
 
     $d.istream.close-async( -> *@a { iclosed-cb($d, @a[1]) } );
   }
 }
 
 sub ipending-cb ($d, $res) {
-  CATCH { default { .message.say } }
+  CATCH { default { .message.say; .backtrace.summary.say } }
 
   $d.istream.read_finish($res);
 
   # cw: Expect to comment
-  ok  $ERROR.domain, $G_IO_ERROR,      'Global ERROR has the proper domain';
-  ok  $ERROR.code, G_IO_ERROR_PENDING, 'Global ERROR code is G_IO_ERROR_PENDING';
+  #ok  $ERROR.domain, $G_IO_ERROR,      'Global ERROR has the proper domain';
+  is  $ERROR.code, G_IO_ERROR_PENDING.Int, 'Global ERROR code is G_IO_ERROR_PENDING';
 }
 
 sub skipped-cb ($d, $res) {
-  CATCH { default { .message.say } }
+  CATCH { default { .message.say; .backtrace.summary.say } }
 
   my $s = $d.istream.skip-finish($res);
 
   nok $ERROR,     'No error detected during .skip-finish';
   is  $s, $d.pos, 'Size of skip and value of position are the same';
 
-  my $buf = $d.buffer.subbuf($d.pos);
+  my $buf = $d.buffer.&subarray($d.pos);
   $d.istream.read-async(
     $buf,
-    $buf.chars,
+    $d.data.chars - $d.pos,
     0,
     -> *@a {
-      CATCH { default { .message.say } }
+      CATCH { default { .message.say; .backtrace.summary.say } }
       read-cb($d, @a[1])
     }
   );
   # Should result in a pending error.
   $d.istream.read-async(
     $buf,
-    $buf.chars,
+    $d.data.chars - $d.pos,
     0,
     -> *@a {
-      CATCH { default { .message.say } }
+      CATCH { default { .message.say; .backtrace.summary.say } }
       ipending-cb($d, @a[1])
     }
   );
 }
 
 sub opened-cb ($d, $res) {
-  CATCH { default { .message.say } }
+  CATCH { default { .message.say; .backtrace.summary.say } }
 
   my $b = $d.file.read_finish($res);
 
@@ -209,10 +210,8 @@ sub opened-cb ($d, $res) {
     !! GIO::BufferedInputStream.new(:sized, $b, $d.buffersize);
   $b.unref;
 
-  # cw: XXX - Work blockage here... must figure this out.
-  $d.buffer = Buf.allocate($d.data.chars + 1, 0);
-  my $db = $d.data.encode('utf8');
-  $d.buffer[$_] = $db[$_] for ^10;
+  $d.buffer = CArray[uint8].new( $d.data.substr(0, 10).comb.map( *.ord ) );
+  $d.buffer[$d.buffer.elems] = 0;
 
   $d.pos = 10;
   $d.istream.skip-async(
@@ -249,9 +248,9 @@ sub written-cb ($d, $res) {
   nok $ERROR,                 'No error detected during .write-finished';
   $d.pos += $size;
   if $d.pos < $d.data.chars {
-    my $buf = $d.data.substr-rw($d.pos);
+    my $buf = CArray[uint8].new($d.data.comb).&subarray($d.pos);
     $d.ostream.write-async(
-      $buf, $buf.chars, -> *@a {
+      $buf, $d.data.chars - $d.pos, -> *@a {
         CATCH { default { .message.say } }
         written-cb($d, @a[1])
       }
@@ -268,9 +267,9 @@ sub written-cb ($d, $res) {
 sub opending-cb ($d, $res) {
   CATCH { default { .message.say } }
 
-  $d.ostream.write-finis($res);
+  $d.ostream.write-finish($res);
 
-  is $ERROR.domain, $G_IO_ERROR,            'Error belongs to the G_IO_ERROR domain';
+  #is $ERROR.domain, $G_IO_ERROR,            'Error belongs to the G_IO_ERROR domain';
   is $ERROR.code,   G_IO_ERROR_PENDING.Int, 'Error code is G_IO_ERROR_PENDING';
 }
 
@@ -339,10 +338,10 @@ sub test-create-delete ($buffersize) {
     my $mn = $data.monitor.objectType.name;
     if $mn ne <GPollFileMonitor GKqueueFileMonitor>.all {
       $data.monitor.rate-limit = 100;
-      # $data.monitor.changed.tap(-> $m, $f, $of, $et, $ud {
-      #   CATCH { default { .message.say } }
-      #   monitor-changed($data.monitor, $f, $of, $et, $data)
-      # });
+      $data.monitor.changed.tap(-> *@a ($m, $f, $of, $et, $ud) {
+        CATCH { default { .message.say; .backtrace.summary.say } }
+        monitor-changed($data.monitor, $f, $of, $et, $data)
+      });
       $data.timeout = GLib::Timeout.add-seconds(
         10,
         -> *@a --> gboolean {
@@ -552,7 +551,7 @@ sub test-replace-cancel {
     my $c = GIO::Cancellable;
     $c.cancel;
     $o.close($c);
-    ok  $ERROR.domain, $G_IO_ERROR,                'Error detected and is in the G_IO_ERROR domain';
+    #ok  $ERROR.domain, $G_IO_ERROR,                'Error detected and is in the G_IO_ERROR domain';
     ok  $ERROR.code,   G_IO_ERROR_CANCELLED.Int,   'Error was a G_IO_ERROR_CANCELLED';
     .unref for $c, $o;
 
@@ -1053,7 +1052,7 @@ test-parse-name;
 # cw: These tests are not currently being performed due to the lack of
 #     ability to create a sub-buffer or sub-array that can be passed to
 #     a NativeCall routine.
-#test-create-delete($_) for 0, 1, 10, 25, 4096;
+test-create-delete($_) for 0, 1, 10, 25, 4096;
 
 test-measure;
 
