@@ -13,6 +13,8 @@ use GLib::Roles::Object;
 use GIO::Roles::Initable;
 use GIO::Roles::Signals::NetworkMonitor;
 
+use GIO::Roles::NetworkMonitorBase;
+
 class GIO::NetworkMonitor { ... }
 
 role GIO::Roles::NetworkMonitor {
@@ -192,35 +194,37 @@ role GIO::Roles::NetworkMonitor {
 }
 
 our subset GNetworkMonitorAncestry is export of Mu
-  where GNetworkMonitor | GInitable | GObject;
+  where GNetworkMonitor | GInitable | GNetworkMonitorBaseAncestry;
 
-class GIO::NetworkMonitor does GLib::Roles::Object does GIO::Roles::NetworkMonitor {
+class GIO::NetworkMonitor is GIO::NetworkMonitorBase {
+  also does GLib::Roles::Object;
+  also does GIO::Roles::NetworkMonitor;
 
   submethod BUILD (:$monitor, :$init, :$cancellable) {
-    self.setGMonitor($monitor, :$init, :$cancellable) if $monitor;
+    self.setGNetworkMonitor($monitor, :$init, :$cancellable) if $monitor;
   }
 
-  method setGMonitor (GNetworkMonitorAncestry $_, :$init, :$cancellable) {
+  method setGNetworkMonitor (GNetworkMonitorAncestry $_, :$init, :$cancellable) {
     my $to-parent;
 
     $!nm = do {
       when GNetworkMonitor {
-        $to-parent = cast(GObject, $_);
+        $to-parent = cast(GNetworkMonitorBase, $_);
         $_;
       }
 
       when GInitable {
         $to-parent = cast(GObject, $_);
         $!i = $_;
-        cast(GNetworkMonitor, $_);
+        cast(GNetworkMonitorBase, $_);
       }
 
       default {
         $to-parent = $_;
-        cast(GNetworkMonitor, $_);
+        cast(GNetworkMonitorBase, $_);
       }
     }
-    self!setObject($to-parent);
+    self.setGNetworkMonitorBase($to-parent);
     self.roleInit-Initable($init, $cancellable);
   }
 
