@@ -14,6 +14,7 @@ use GLib::Source;
 use GLib::Test;
 use GLib::Timeout;
 
+use GIO::BufferedInputStream;
 use GIO::BufferedOutputStream;
 
 use GIO::Roles::GFile;
@@ -140,18 +141,21 @@ sub read-cb ($d, $res) {
   nok $ERROR, 'No errors detected when asynchronously reading input stream ';
 
   $d.pos += $size;
-  diag "POS: { $d.pos }";
+  diag "POS: { $d.pos } / { $d.data.chars }";
   if $d.pos < $d.data.chars {
     my $buf = $d.buffer.&subarray($d.pos);
 
     # cw: One day, even the naked 0 will be gone.
+    diag "B: $buf";
+
     $d.istream.read-async(
       $buf,
       $d.buffer.elems - $d.pos,
       0,
-      -> *@a { read-cb($d, @a[1]) }
+      -> *@a { read-cb($d, @a[1]); }
     );
   } else {
+    diag "—————— Async: { $d.buffer }";
     is  $d.buffer.map( *.chr ).join, $d.data, 'Buffer matches expected data';
     nok $d.istream.is-closed,                 'Input stream is NOT closed';
 
@@ -187,6 +191,7 @@ sub skipped-cb ($d, $res) {
       read-cb($d, @a[1])
     }
   );
+
   # Should result in a pending error.
   $d.istream.read-async(
     $buf,
@@ -210,12 +215,15 @@ sub opened-cb ($d, $res) {
     !! GIO::BufferedInputStream.new(:sized, $b, $d.buffersize);
   $b.unref;
 
-  $d.buffer = CArray[uint8].new( $d.data.substr(0, 10).comb.map( *.ord ) );
-  $d.buffer[$d.buffer.elems] = 0;
+  constant SUBSIZE = 10;
+  $d.buffer = CArray[uint8].allocate($d.data.chars + 1);
+  for $d.data.substr(0, SUBSIZE).comb.kv -> $k, $v {
+    $d.buffer[$k] = $v.ord;
+  }
 
-  $d.pos = 10;
+  $d.pos = SUBSIZE;
   $d.istream.skip-async(
-    10,
+    SUBSIZE,
     -> *@a {
       CATCH { default { .message.say; .backtrace.summary.say } }
       skipped-cb($d, @a[1])
@@ -224,7 +232,7 @@ sub opened-cb ($d, $res) {
 }
 
 sub oclosed-cb ($d, $res) {
-  CATCH { default { .message.say } }
+  CATCH { default { .message.say; .backtrace.summary.say } }
 
   my $ret = $d.ostream.close_finish($res);
 
@@ -234,38 +242,40 @@ sub oclosed-cb ($d, $res) {
 
   $d.file.read_async(
     -> *@a {
-      CATCH { default { .message.say } }
+      CATCH { default { .message.say; .backtrace.summary.say } }
       opened-cb($d, @a[1])
     }
   );
 }
 
 sub written-cb ($d, $res) {
-  CATCH { default { .message.say } }
+  CATCH { default { .message.say; .backtrace.summary.say } }
 
   my $size = $d.ostream.write-finish($res);
 
   nok $ERROR,                 'No error detected during .write-finished';
   $d.pos += $size;
   if $d.pos < $d.data.chars {
-    my $buf = CArray[uint8].new($d.data.comb).&subarray($d.pos);
+    my $buf = CArray[uint8].new($d.data.comb.map( *.ord )).&subarray($d.pos);
     $d.ostream.write-async(
-      $buf, $d.data.chars - $d.pos, -> *@a {
-        CATCH { default { .message.say } }
+      $buf,
+      count => $d.data.chars - $d.pos,
+      -> *@a {
+        CATCH { default { .message.say; .backtrace.summary.say } }
         written-cb($d, @a[1])
       }
     );
   } else {
     nok $d.ostream.is-closed, 'Output stream is NOT closed';
     $d.ostream.close-async(-> *@a {
-      CATCH { default { .message.say } }
+      CATCH { default { .message.say; .backtrace.summary.say } }
       oclosed-cb($d, @a[1])
     });
   }
 }
 
 sub opending-cb ($d, $res) {
-  CATCH { default { .message.say } }
+  CATCH { default { .message.say; .backtrace.summary.say } }
 
   $d.ostream.write-finish($res);
 
@@ -288,7 +298,6 @@ sub created-cb ($f, $res, $d) {
 
   $d.ostream.write-async(
     $d.data,
-    $d.data.chars,
     -> *@a {
       CATCH { default { .message.say; .backtrace.summary.say } }
       written-cb($d, @a[1])
@@ -297,7 +306,6 @@ sub created-cb ($f, $res, $d) {
   # Should generate a pending error
   $d.ostream.write-async(
     $d.data,
-    $d.data.chars,
     -> *@a {
       CATCH { default { .message.say; .backtrace.summary.say } }
       opending-cb($d, @a[1])
