@@ -10,7 +10,6 @@ use GIO::Raw::NetworkMonitor;
 use GLib::Value;
 
 use GLib::Roles::Object;
-use GIO::Roles::Initable;
 use GIO::Roles::Signals::NetworkMonitor;
 
 use GIO::Roles::NetworkMonitorBase;
@@ -18,7 +17,6 @@ use GIO::Roles::NetworkMonitorBase;
 class GIO::NetworkMonitor { ... }
 
 role GIO::Roles::NetworkMonitor {
-  also does GIO::Roles::Initable;
   also does GIO::Roles::Signals::NetworkMonitor;
 
   has GNetworkMonitor $!nm;
@@ -33,54 +31,6 @@ role GIO::Roles::NetworkMonitor {
   method GIO::Raw::Definitions::GNetworkMonitor
     is also<GNetworkMonitor>
   { $!nm }
-
-  # Type: GNetworkConnectivity
-  method connectivity is rw {
-    my $gv = GLib::Value.new( GLib::Value.gtypeFromType(GNetworkConnectivity) );
-    Proxy.new(
-      FETCH => sub ($) {
-        $gv = GLib::Value.new(
-          self.prop_get('connectivity', $gv)
-        );
-        GNetworkConnectivityEnum( $gv.enum );
-      },
-      STORE => -> $, $ {
-        warn 'connectivity does not allow writing'
-      }
-    );
-  }
-
-  # Type: gboolean
-  method network-available is rw  {
-    my $gv = GLib::Value.new( G_TYPE_BOOLEAN );
-    Proxy.new(
-      FETCH => sub ($) {
-        $gv = GLib::Value.new(
-          self.prop_get('network-available', $gv)
-        );
-        $gv.boolean;
-      },
-      STORE => -> $, $ {
-        warn 'network-available does not allow writing'
-      }
-    );
-  }
-
-  # Type: gboolean
-  method network-metered is rw  {
-    my $gv = GLib::Value.new( G_TYPE_BOOLEAN );
-    Proxy.new(
-      FETCH => sub ($) {
-        $gv = GLib::Value.new(
-          self.prop_get('network-metered', $gv)
-        );
-        $gv.boolean;
-      },
-      STORE => -> $, $ {
-        warn 'network-metered does not allow writing'
-      }
-    );
-  }
 
   # Is originally:
   # GNetworkMonitor, gboolean, gpointer --> void
@@ -147,7 +97,12 @@ role GIO::Roles::NetworkMonitor {
     $rv;
   }
 
-  method get_connectivity is also<get-connectivity> {
+  method get_connectivity
+    is also<
+      get-connectivity
+      connectivity
+    >
+  {
     GNetworkConnectivityEnum( g_network_monitor_get_connectivity($!nm) );
   }
 
@@ -194,7 +149,7 @@ role GIO::Roles::NetworkMonitor {
 }
 
 our subset GNetworkMonitorAncestry is export of Mu
-  where GNetworkMonitor | GInitable | GNetworkMonitorBaseAncestry;
+  where GNetworkMonitor | GNetworkMonitorBaseAncestry;
 
 class GIO::NetworkMonitor is GIO::NetworkMonitorBase {
   also does GLib::Roles::Object;
@@ -213,19 +168,12 @@ class GIO::NetworkMonitor is GIO::NetworkMonitorBase {
         $_;
       }
 
-      when GInitable {
-        $to-parent = cast(GObject, $_);
-        $!i = $_;
-        cast(GNetworkMonitorBase, $_);
-      }
-
       default {
         $to-parent = $_;
         cast(GNetworkMonitorBase, $_);
       }
     }
-    self.setGNetworkMonitorBase($to-parent);
-    self.roleInit-Initable($init, $cancellable);
+    self.setGNetworkMonitorBase($to-parent, :$init, :$cancellable);
   }
 
   multi method new (GNetworkMonitorAncestry $monitor, :$ref = True) {
