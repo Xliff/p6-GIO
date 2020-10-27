@@ -7,6 +7,7 @@ use NativeCall;
 use GIO::Raw::Types;
 
 use GLib::Roles::Object;
+use GIO::Roles::Initable;
 
 role GIO::Roles::NetworkMonitorBase {
   has GNetworkMonitorBase $!nmb;
@@ -20,12 +21,6 @@ role GIO::Roles::NetworkMonitorBase {
 
   method add_network (GInetAddressMask() $network) is also<add-network> {
     g_network_monitor_base_add_network($!nmb, $network);
-  }
-
-  method get_type is also<get-type> {
-    state ($n, $t);
-
-    unstable_get_type( self.^name, &g_network_monitor_base_get_type, $n, $t );
   }
 
   method remove_network (GInetAddressMask() $network) is also<remove-network> {
@@ -59,17 +54,23 @@ role GIO::Roles::NetworkMonitorBase {
 }
 
 our subset GNetworkMonitorBaseAncestry is export of Mu
-  where GNetworkMonitorBase | GObject;
+  where GNetworkMonitorBase | GInitable | GObject;
 
 class GIO::NetworkMonitorBase {
   also does GLib::Roles::Object;
+  also does GIO::Roles::Initable;
   also does GIO::Roles::NetworkMonitorBase;
 
-  submethod BUILD (:$monitor-base) {
-    self.setGNetworkMonitorBase($monitor-base) if $monitor-base;
+  submethod BUILD (:$monitor-base, :$init, :$cancellable) {
+    self.setGNetworkMonitorBase($monitor-base, :$init, :$cancellable)
+      if $monitor-base;
   }
 
-  method setGNetworkMonitorBase (GNetworkMonitorBaseAncestry $_) {
+  method setGNetworkMonitorBase (
+    GNetworkMonitorBaseAncestry $_,
+                                :$init,
+                                :$cancellable
+  ) {
     my $to-parent;
 
     $!nmb = do {
@@ -78,20 +79,33 @@ class GIO::NetworkMonitorBase {
         $_;
       }
 
+      when GInitable {
+        $to-parent = cast(GObject, $_);
+        $!i = $_;
+        cast(GNetworkMonitorBase, $_);
+      }
+
       default {
         $to-parent = $_;
         cast(GNetworkMonitorBase, $_);
       }
     }
     self!setObject($to-parent);
+    self.roleInit-Initable($init, $cancellable);
   }
 
-  method new (GNetworkMonitorBaseAncestry $monitor-base, :$ref = True) {
+  multi method new (GNetworkMonitorBaseAncestry $monitor-base, :$ref = True) {
     return Nil unless $monitor-base;
 
     my $o = self.bless( :$monitor-base );
     $o.ref if $ref;
     $o;
+  }
+
+  method get_type is also<get-type> {
+    state ($n, $t);
+
+    unstable_get_type( self.^name, &g_network_monitor_base_get_type, $n, $t );
   }
 
 }
