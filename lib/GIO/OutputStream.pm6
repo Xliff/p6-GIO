@@ -257,6 +257,23 @@ class GIO::OutputStream {
   { * }
 
   multi method write_all (
+    Str                     $buffer,
+    Int()                   $count       = $buffer.chars,
+    GCancellable            $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
+  ) {
+    return-with-all(
+      samewith(
+        cast(Pointer, $buffer),
+        $count,
+        $,
+        $cancellable,
+        $error,
+        :all
+      )
+    );
+  }
+  multi method write_all (
     Pointer                 $buffer,
     Int()                   $count,
     GCancellable            $cancellable = GCancellable,
