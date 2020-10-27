@@ -1,7 +1,7 @@
 use v6.c;
 
 use Method::Also;
-
+use NativeHelpers::Blob;
 use NativeCall;
 
 use GIO::Raw::Types;
@@ -238,7 +238,7 @@ class GIO::OutputStream {
     $n;
   }
 
-  method write (
+  multi method write (
     Pointer                 $buffer,
     Int()                   $count,
     GCancellable()          $cancellable,
@@ -362,33 +362,123 @@ class GIO::OutputStream {
     is also<write-async>
   { * }
 
-  multi method write_async (
-    Str            $buffer,
-    Int()          $count,
+  multi method write (
+    Str()          $buffer,
                    &callback,
-    gpointer       $user_data    = gpointer,
-    GCancellable() :$cancellable = GCancellable,
-    Int()          :$io_priority = 0,
-                   :$encoding    = 'utf8'
+    gpointer       $user_data    =  gpointer,
+                   :$async       is required,
+    Int()          :$count       =  $buffer.chars,
+    GCancellable() :$cancellable =  GCancellable,
+    Int()          :$io_priority =  0,
+                   :$encoding    =  'utf8'
   ) {
-    samewith(
-      cast( Pointer, CArray[uint8].new($buffer.encode($encoding)) ),
+    self.write_async(
+      $buffer,
       $count,
+      $io_priority,
+      $cancellable,
       &callback,
-      $user_data,
-      :$cancellable,
-      :$io_priority
+      $user_data
     );
   }
   multi method write_async (
+    Str()          $buffer,
+                   &callback,
+    gpointer       $user_data    =  gpointer,
+    Int()          :$count       =  $buffer.chars,
+    GCancellable() :$cancellable =  GCancellable,
+    Int()          :$io_priority =  0,
+                   :$encoding    =  'utf8'
+  ) {
+    self.write_async(
+      $buffer,
+      $count,
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method write_async (
+    Str()          $buffer,
+    Int()          $count,
+    Int()          $io_priority,
+    GCancellable() $cancellable,
+                   &callback,
+    gpointer       $user_data    = gpointer,
+    Str()          :$encoding    = 'utf8'
+  ) {
+    samewith(
+      CArray[uint8].new( $buffer.encode($encoding) ),
+      $count,
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method write (
+    CArray[uint8]  $buffer,
+                   &callback,
+    gpointer       $user_data     =  gpointer,
+    Int()          :$count        =  $buffer.elems,
+                   :$async        is required,
+    Int()          :$io_priority  =  0,
+    GCancellable() :$cancellable  =  GCancellable,
+  ) {
+    self.write_async(
+      $buffer,
+      $count,
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method write_async (
+    CArray[uint8]  $buffer,
+                   &callback,
+    gpointer       $user_data     =  gpointer,
+    Int()          :$count        =  $buffer.elems,
+    Int()          :$io_priority  =  0,
+    GCancellable() :$cancellable  =  GCancellable,
+  ) {
+    samewith(
+      $buffer,
+      $count,
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method write_async (
+    CArray[uint8]  $buffer,
+    Int()          $count,
+    Int()          $io_priority,
+    GCancellable() $cancellable,
+                   &callback,
+    gpointer       $user_data    = gpointer
+  ) {
+    samewith(
+      pointer-to($buffer),
+      $count,
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method write (
     Pointer        $buffer,
     Int()          $count,
                    &callback,
-    gpointer       $user_data    = gpointer,
-    GCancellable() :$cancellable = GCancellable,
-    Int()          :$io_priority = 0,
+    gpointer       $user_data    =  gpointer,
+                   :$async       is required,
+    GCancellable() :$cancellable =  GCancellable,
+    Int()          :$io_priority =  0,
   ) {
-    samewith(
+    self.write_async(
       $buffer,
       $count,
       $io_priority,
@@ -404,9 +494,7 @@ class GIO::OutputStream {
     GCancellable() $cancellable,
                    &callback,
     gpointer       $user_data    = gpointer
-  )
-
-  {
+  ) {
     my gint  $io = $io_priority;
     my gsize $c  = $count;
 
