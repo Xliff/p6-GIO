@@ -30,16 +30,20 @@ role GIO::Roles::Initable {
 
   multi method new (
     :$init        =  True,
-    :$cancellable =  Callable,
+    :$cancellable =  GCancellable,
     :$initable    is required,
     *%options
   ) {
     self.new_initable(:$init, :$cancellable, |%options);
   }
-  multi method new_initable (:$init = True,  :$cancellable = Callable, *%options)
+  multi method new_initable (
+    :$init        = True,
+    :$cancellable = GCancellable,
+    *%options
+  )
     is also<new-initable>
   {
-    my $initable-object = self.new_object_with_properties( |%options );
+    my $initable-object = self.new_object_with_properties( |%options, :raw );
 
     $initable-object ?? self.bless( :$initable-object, :$init, :$cancellable)
                      !! Nil;
