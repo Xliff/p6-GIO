@@ -7,10 +7,14 @@ use GIO::Raw::Types;
 
 use GIO::SocketService;
 
+use GIO::Roles::Signals::ThreadedSocketService;
+
 our subset GThreadedSocketServiceAncestry is export of Mu
   where GThreadedSocketService | GSocketServiceAncestry;
 
 class GIO::ThreadedSocketService is GIO::SocketService {
+  also does GIO::Roles::Signals::ThreadedSocketService;
+
   has GThreadedSocketService $!tss is implementor;
 
   submethod BUILD (:$socket-service) {
@@ -53,6 +57,28 @@ class GIO::ThreadedSocketService is GIO::SocketService {
     my      $socket-service = g_threaded_socket_service_new($max);
 
     $socket-service ?? self.bless( :$socket-service ) !! Nil;
+  }
+
+  # Type: gint
+  method max-threads is rw  {
+    my $gv = GLib::Value.new( G_TYPE_INT );
+    Proxy.new(
+      FETCH => sub ($) {
+        $gv = GLib::Value.new(
+          self.prop_get('max-threads', $gv)
+        );
+        $gv.int;
+      },
+      STORE => -> $, Int() $val is copy {
+        warn 'max-threads is a construct-only attribute'
+      }
+    );
+  }
+
+  # Is originally:
+  # GThreadedSocketService, GSocketConnection, GObject, gpointer --> gboolean
+  method run {
+    self.connect-run($!tss);
   }
 
   method get_type is also<get-type> {
