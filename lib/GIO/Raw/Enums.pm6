@@ -257,6 +257,14 @@ our enum GIOStreamSpliceFlagsEnum        is export (
   G_IO_STREAM_SPLICE_WAIT_FOR_BOTH => (1 +< 2)
 );
 
+constant GSocketListenerEvent            is export := uint32;
+our enum GSocketListenerEventEnum        is export <
+  G_SOCKET_LISTENER_BINDING
+  G_SOCKET_LISTENER_BOUND
+  G_SOCKET_LISTENER_LISTENING
+  G_SOCKET_LISTENER_LISTENED
+>;
+
 constant GMountMountFlags                is export := guint;
 our enum GMountMountFlagsEnum            is export (
   G_MOUNT_MOUNT_NONE => 0
