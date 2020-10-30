@@ -12,12 +12,14 @@ use GIO::Socket;
 use GIO::SocketConnection;
 
 use GLib::Roles::Object;
+use GIO::Roles::Signals::SocketListener;
 
 our subset GSocketListenerAncestry is export of Mu
   where GSocketListener | GObject;
 
 class GIO::SocketListener {
   also does GLib::Roles::Object;
+  also does GIO::Roles::Signals::SocketListener;
 
   has GSocketListener $!sl is implementor;
 
@@ -74,6 +76,12 @@ class GIO::SocketListener {
         self.prop_set('listen-backlog', $gv);
       }
     );
+  }
+
+  # Is originally:
+  # GSocketListener, GSocketListenerEvent, GSocket, gpointer --> void
+  method event {
+    self.connect-event($!sl);
   }
 
   method accept (
@@ -246,13 +254,22 @@ class GIO::SocketListener {
     $rv;
   }
 
-  method add_inet_port (
+  proto method add_inet_port (|)
+    is also<add-inet-port>
+  { * }
+
+  multi method add_inet_port (
+    Int()                   $port,
+    CArray[Pointer[GError]] $error          = gerror,
+    GObject()               :$source_object = GObject
+  ) {
+    samewith($port, $source_object, $error);
+  }
+  multi method add_inet_port (
     Int()                   $port,
     GObject()               $source_object,
     CArray[Pointer[GError]] $error          = gerror
-  )
-    is also<add-inet-port>
-  {
+  ) {
     my guint16 $p = $port;
 
     clear_error;
@@ -266,13 +283,22 @@ class GIO::SocketListener {
     $rv;
   }
 
-  method add_socket (
+  proto method add_socket (|)
+    is also<add-socket>
+  { * }
+
+  multi method add_socket (
+    GSocket()               $socket,
+    CArray[Pointer[GError]] $error          = gerror,
+    GObject()               :$source_object = GObject
+  ) {
+    samewith($socket, $source_object, $error);
+  }
+  multi method add_socket (
     GSocket()               $socket,
     GObject()               $source_object,
     CArray[Pointer[GError]] $error          = gerror
-  )
-    is also<add-socket>
-  {
+  ) {
     clear_error;
     my $rv = so g_socket_listener_add_socket(
       $!sl,
