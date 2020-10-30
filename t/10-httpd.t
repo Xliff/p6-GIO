@@ -91,12 +91,27 @@ sub handler ($s, $c, $l, $ud) {
 }
 
 sub USAGE {
-  $*USAGE.subst('port to bind to', 'port to bind to [default = 8080]').say;
+  my $u = $*USAGE;
+
+  for &MAIN.signature.params -> $p {
+    given $p.name {
+      when '$port' {
+        if $p.default -> $d {
+          $u .= subst(
+            'port to bind to',
+            "port to bind to [default = { $d() }]"
+          );
+        }
+      }
+    }
+  }
+
+  $u.say;
 }
 
 sub MAIN (
-  Str $root-directory,       #= Root directory for server
-  Int :p(:$port) = 8080      #= Local port to bind to
+  Str $root-directory,        #= Root directory for server
+  Int :p(:$port)       = 8080 #= Local port to bind to
 ) {
   my $service = GIO::ThreadedSocketService.new(10);
   if $service.add-inet-port($port).not {
