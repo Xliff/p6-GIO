@@ -215,8 +215,8 @@ class GIO::SocketListener {
     GSocketAddress()        $address,
     Int()                   $type,
     Int()                   $protocol,
-    GObject()               $source_object,
-    GSocketAddress()        $effective_address,
+    GObject()               $source_object      = GObject,
+    GSocketAddress()        $effective_address  = GSocketAddress,
     CArray[Pointer[GError]] $error              = gerror
   )
     is also<add-address>
