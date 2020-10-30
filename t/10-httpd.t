@@ -90,6 +90,10 @@ sub handler ($s, $c, $l, $ud) {
   True
 }
 
+sub USAGE {
+  $*USAGE.subst('port to bind to', 'port to bind to [default = 8080]').say;
+}
+
 sub MAIN (
   Str $root-directory,       #= Root directory for server
   Int :p(:$port) = 8080      #= Local port to bind to
