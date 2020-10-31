@@ -22,8 +22,11 @@ role GIO::Roles::Volume {
   }
 
   method GIO::Raw::Definitions::GVolume
-    is also<GVolume>
+  #  is also<GVolume>
   { $!v }
+
+  # cw: Remove when Method::Also is fixed
+  method GVolume { $!v }
 
   # Is originally:
   # GVolume, gpointer --> void
