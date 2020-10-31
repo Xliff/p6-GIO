@@ -17,10 +17,10 @@ class GIO::Permission {
   has GPermission $!p is implementor;
 
   submethod BUILD (:$permission) {
-    self.setPermission($permission) if $permission;
+    self.setGPermission($permission) if $permission;
   }
 
-  method setPermission (GPermissionAncestry $_) {
+  method setGPermission (GPermissionAncestry $_) {
     my $to-parent;
 
     $!p = do {
@@ -90,7 +90,7 @@ class GIO::Permission {
   )
     is also<acquire-finish>
   {
-    clear_error
+    clear_error;
     my $rv = so g_permission_acquire_finish($!p, $result, $error);
     set_error($error);
     $rv;
