@@ -23,8 +23,11 @@ role GIO::Roles::Mount {
   }
 
   method GIO::Raw::Definitions::GMount
-    is also<GMount>
+  #  is also<GMount>
   { $!m }
+
+  # cw: Remove when Method::Also is fixed!
+  method GMount { $!m }
 
   # Is originally:
   # GMount, gpointer --> void
@@ -97,7 +100,13 @@ role GIO::Roles::Mount {
     $rv;
   }
 
-  method get_default_location (:$raw = False) is also<get-default-location> {
+  method get_default_location (:$raw = False)
+    is also<
+      get-default-location
+      default_location
+      default-location
+    >
+  {
     my $f = g_mount_get_default_location($!m);
 
     $f ??
@@ -106,7 +115,12 @@ role GIO::Roles::Mount {
       Nil;
   }
 
-  method get_drive (:$raw = False) is also<get-drive> {
+  method get_drive (:$raw = False)
+    is also<
+      get-drive
+      drive
+    >
+  {
     my $d = g_mount_get_drive($!m);
 
     $d ??
@@ -115,7 +129,12 @@ role GIO::Roles::Mount {
       Nil;
   }
 
-  method get_icon (:$raw = False) is also<get-icon> {
+  method get_icon (:$raw = False)
+    is also<
+      get-icon
+      icon
+    >
+  {
     my $i = g_mount_get_icon($!m);
 
     $i ??
@@ -124,11 +143,21 @@ role GIO::Roles::Mount {
       Nil;
   }
 
-  method get_name is also<get-name> {
+  method get_name
+    is also<
+      get-name
+      name
+    >
+  {
     g_mount_get_name($!m);
   }
 
-  method get_root ($raw = False) is also<get-root> {
+  method get_root ($raw = False)
+    is also<
+      get-root
+      root
+    >
+  {
     my $f = g_mount_get_root($!m);
 
     $f ??
@@ -137,11 +166,23 @@ role GIO::Roles::Mount {
       Nil;
   }
 
-  method get_sort_key is also<get-sort-key> {
+  method get_sort_key
+    is also<
+      get-sort-key
+      sort_key
+      sort-key
+    >
+  {
     g_mount_get_sort_key($!m);
   }
 
-  method get_symbolic_icon (:$raw = False) is also<get-symbolic-icon> {
+  method get_symbolic_icon (:$raw = False)
+    is also<
+      get-symbolic-icon
+      symbolic_icon
+      symbolic-icon
+    >
+  {
     my $i = g_mount_get_symbolic_icon($!m);
 
     $i ??
@@ -156,11 +197,21 @@ role GIO::Roles::Mount {
     unstable_get_type( self.^name, &g_mount_get_type, $n, $t );
   }
 
-  method get_uuid is also<get-uuid> {
+  method get_uuid
+    is also<
+      get-uuid
+      uuid
+    >
+  {
     g_mount_get_uuid($!m);
   }
 
-  method get_volume (:$raw = False) is also<get-volume> {
+  method get_volume (:$raw = False)
+    is also<
+      get-volume
+      volume
+    >
+  {
     my $v = g_mount_get_volume($!m);
 
     $v ??
