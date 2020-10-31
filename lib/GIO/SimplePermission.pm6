@@ -19,6 +19,7 @@ class GIO::SimplePermission is GIO::Permission {
 
   method setGSimplePermission (GSimplePermissionAncestry $_) {
     my $to-parent;
+
     $!sp = do {
       when GSimplePermission {
         $to-parent = cast(GPermission, $_);
@@ -30,12 +31,15 @@ class GIO::SimplePermission is GIO::Permission {
         cast(GSimplePermission, $_);
       }
     };
-    self.setPermission($to-parent);
+    self.setGPermission($to-parent);
   }
 
   method GIO::Raw::Definitions::GSimplePermission
     is also<GSimplePermission>
   { $!sp }
+
+  proto method new (|)
+  { * }
 
   multi method new (GSimplePermissionAncestry $simple-permission, :$ref = True) {
     return Nil unless $simple-permission,;
@@ -48,7 +52,7 @@ class GIO::SimplePermission is GIO::Permission {
     my gboolean $a                 = $allowed.so.Int;
     my          $simple-permission = g_simple_permission_new($a);
 
-    $simple-permission ?? self.bless( $simple-permission) !! Nil;
+    $simple-permission ?? self.bless( :$simple-permission ) !! Nil;
   }
 
   method get_type is also<get-type> {
