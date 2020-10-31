@@ -7,7 +7,10 @@ use NativeCall;
 use GIO::Raw::Types;
 use GIO::Raw::Drive;
 
+use GLib::GList;
+
 use GLib::Roles::Object;
+use GLib::Roles::ListData;
 use GLib::Roles::Signals::Generic;
 use GIO::Roles::Icon;
 use GIO::Roles::Volume;
@@ -23,8 +26,11 @@ role GIO::Roles::Drive {
   }
 
   method GIO::Raw::Definitions::GDrive
-    is also<GDrive>
+  #  is also<GDrive>
   { $!d }
+
+  # cw: Remove when Method::Also is fixed
+  method GDrive { $!d }
 
   # Is originally:
   # GDrive, gpointer --> void
@@ -122,7 +128,7 @@ role GIO::Roles::Drive {
     my $i = g_drive_get_icon($!d);
 
     $i ??
-      ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i, :!ref) )
+      ( $raw ?? $i !! GIO::Icon.new($i, :!ref) )
       !!
       Nil;
   }
@@ -131,23 +137,46 @@ role GIO::Roles::Drive {
     g_drive_get_identifier($!d, $kind);
   }
 
-  method get_name is also<get-name> {
+  method get_name
+    is also<
+      get-name
+      name
+    >
+  {
     g_drive_get_name($!d);
   }
 
-  method get_sort_key is also<get-sort-key> {
+  method get_sort_key
+    is also<
+      get-sort-key
+      sort-key
+      sort_key
+    >
+  {
     g_drive_get_sort_key($!d);
   }
 
-  method get_start_stop_type is also<get-start-stop-type> {
+  method get_start_stop_type
+    is also<
+      get-start-stop-type
+      start_stop_type
+      start-stop-type
+    >
+  {
     GDriveStartStopTypeEnum( g_drive_get_start_stop_type($!d) );
   }
 
-  method get_symbolic_icon (:$raw = False) is also<get-symbolic-icon> {
+  method get_symbolic_icon (:$raw = False)
+    is also<
+      get-symbolic-icon
+      symbolic_icon
+      symbolic-icon
+    >
+  {
     my $i = g_drive_get_symbolic_icon($!d);
 
     $i ??
-      ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i, :!ref) )
+      ( $raw ?? $i !! GIO::Icon.new($i, :!ref) )
       !!
       Nil;
   }
@@ -158,7 +187,12 @@ role GIO::Roles::Drive {
     unstable_get_type( self.^name, &g_drive_get_type, $n, $t );
   }
 
-  method get_volumes (:$glist = False, :$raw = False) is also<get-volumes> {
+  method get_volumes (:$glist = False, :$raw = False)
+    is also<
+      get-volumes
+      volumes
+    >
+  {
     my $vl = g_drive_get_volumes($!d);
 
     return Nil unless $vl;
@@ -168,7 +202,7 @@ role GIO::Roles::Drive {
     return $vl if $glist;
 
     $raw ?? $vl.Array
-         !! $vl.Array.map({ GIO::Roles::Volume.new-volume-obj($_) });
+         !! $vl.Array.map({ GIO::Volume.new($_) });
   }
 
   method has_media is also<has-media> {
