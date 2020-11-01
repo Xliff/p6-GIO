@@ -18,16 +18,24 @@ class GIO::OutputStream {
   has GOutputStream $!os is implementor;
 
   submethod BUILD (:$output-stream) {
-    self.setOutputStream($output-stream) if $output-stream;
+    self.setGOutputStream($output-stream) if $output-stream;
   }
 
-  method setOutputStream (GOutputStreamAncestry $_) is also<setGOutputStream> {
-    $!os = do {
-      when GOutputStream { $_  }
-      when GObject       { cast(GOutputStream, $_) }
-    }
+  method setGOutputStream (GOutputStreamAncestry $_) {
+    my $to-parent;
 
-    self.roleInit-Object;
+    $!os = do {
+      when GOutputStream {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GOutputStream, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GOutputStream
