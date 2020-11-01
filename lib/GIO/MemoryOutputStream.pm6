@@ -2,6 +2,7 @@ use v6.c;
 
 use Method::Also;
 
+use NativeHelpers::Blob;
 use NativeCall;
 
 use GLib::Raw::Memory;
@@ -53,9 +54,9 @@ class GIO::MemoryOutputStream is GIO::OutputStream {
       }
     }
 
-    self.setOuptutStream($to-parent);
-    self.roleInit-Seekable             unless $!s;
-    self.RoleInit-PollableOutputStream unless $!pos;
+    self.setGOutputStream($to-parent);
+    self.roleInit-Seekable;
+    self.roleInit-PollableOutputStream;
   }
 
   method GIO::Raw::Definitions::GMemoryOutputStream
@@ -70,21 +71,63 @@ class GIO::MemoryOutputStream is GIO::OutputStream {
     $o;
   }
   multi method new (
-    Buf() $data,
-          &realloc_function,
-          &destroy_function = Callable
+    Buf $data,
+        :$size             =  $data.elems,
+        :&realloc_function =  Callable,
+        :&destroy_function =  Callable,
+        :$buf              is required
   ) {
     samewith(
-      cast(Pointer, $data),
-      $data.elems,
+      pointer-to($data),
+      $size,
       &realloc_function,
       &destroy_function
     )
   }
   multi method new (
+    Buf   $data,
+    Int() $size             = $data.elems,
+          &realloc_function = Callable,
+          &destroy_function = Callable
+  ) {
+    samewith(
+      pointer-to($data),
+      $size,
+      &realloc_function,
+      &destroy_function
+    )
+  }
+  multi method new (
+    CArray[uint8] $data,
+    Int()         :$size             =  $data.elems,
+                  :&realloc_function =  Callable,
+                  :&destroy_function =  Callable,
+                  :array(:$carray)   is required
+  ) {
+    samewith(
+      pointer-to($data),
+      $size,
+      &realloc_function,
+      &destroy_function
+    );
+  }
+  multi method new (
+    CArray[uint8] $data,
+    Int()         $size             = $data.elems,
+                  &realloc_function = Callable,
+                  &destroy_function = Callable
+  ) {
+    samewith(
+      pointer-to($data),
+      $size,
+      &realloc_function,
+      &destroy_function
+    );
+  }
+  multi method new (
     gpointer $data,
     Int()    $size,
-             &realloc_function,
+             &realloc_function = Callable,
              &destroy_function = Callable
   ) {
     my gsize $s = $size;
