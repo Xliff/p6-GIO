@@ -17,7 +17,7 @@ class GIO::FilterOutputStream is GIO::OutputStream {
     self.setFilterOutputStream($filter-stream) if $filter-stream;
   }
 
-  method setFilterOutputStream (GFilterOutputStreamAncestry $_) {
+  method setGFilterOutputStream (GFilterOutputStreamAncestry $_) {
     my $to-parent;
 
     $!fis = do {
@@ -31,7 +31,7 @@ class GIO::FilterOutputStream is GIO::OutputStream {
         cast(GFilterOutputStream, $_);
       }
     };
-    self.setOutputStream($to-parent);
+    self.setGOutputStream($to-parent);
   }
 
   method GIO::Raw::Definitions::GFilterOutputStream
