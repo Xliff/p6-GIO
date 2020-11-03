@@ -1171,9 +1171,7 @@ role GIO::Roles::File {
                             $etag_out is rw,
     CArray[Pointer[GError]] $error    =  gerror,
                             :$all     =  False
-  )
-    is also<load-partial-contents-finish>
-  {
+  ) {
     my gsize $l       = 0;
     my       ($c, $e) = CArray[Str].new;
 
