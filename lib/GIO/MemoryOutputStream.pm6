@@ -2,8 +2,10 @@ use v6.c;
 
 use Method::Also;
 
+use NativeHelpers::Blob;
 use NativeCall;
 
+use GLib::Raw::Memory;
 use GIO::Raw::Types;
 use GIO::Raw::MemoryOutputStream;
 
@@ -12,7 +14,7 @@ use GIO::OutputStream;
 use GIO::Roles::Seekable;
 use GIO::Roles::PollableOutputStream;
 
-our subset MemoryOutputStreamAncestry of Mu is export
+our subset GMemoryOutputStreamAncestry of Mu is export
   where GMemoryOutputStream | GSeekable | GPollableOutputStream | GOutputStream;
 
 class GIO::MemoryOutputStream is GIO::OutputStream {
@@ -22,20 +24,10 @@ class GIO::MemoryOutputStream is GIO::OutputStream {
   has GMemoryOutputStream $!mos is implementor;
 
   submethod BUILD (:$memory-output) {
-    do given $memory-output {
-      when MemoryOutputStreamAncestry {
-        self.setMemoryOutputStream($memory-output);
-      }
-
-      when GIO::MemoryOutputStream {
-      }
-
-      default {
-      }
-    }
+    self.setMemoryOutputStream($memory-output) if $memory-output;
   }
 
-  method setMemoryOutputStream (MemoryOutputStreamAncestry $_) {
+  method setMemoryOutputStream (GMemoryOutputStreamAncestry $_) {
     my $to-parent;
 
     $!mos = do {
@@ -62,54 +54,109 @@ class GIO::MemoryOutputStream is GIO::OutputStream {
       }
     }
 
-    self.setOuptutStream($to-parent);
-    self.roleInit-Seekable             unless $!s;
-    self.RoleInit-PollableOutputStream unless $!pos;
+    self.setGOutputStream($to-parent);
+    self.roleInit-Seekable;
+    self.roleInit-PollableOutputStream;
   }
 
   method GIO::Raw::Definitions::GMemoryOutputStream
     is also<GMemoryOutputStream>
   { $!mos }
 
-  multi method new (GMemoryOutputStream :$memory-output) {
-    self.bless( :$memory-output );
+  multi method new (GMemoryOutputStreamAncestry $memory-output, :$ref = True) {
+    return Nil unless $memory-output;
+
+    my $o = self.bless( :$memory-output );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (
-    Buf() $data,
-    GReallocFunc $realloc_function   = Pointer,
-    GDestroyNotify $destroy_function = Pointer
+    Buf $data,
+        :$size             =  $data.elems,
+        :&realloc_function =  Callable,
+        :&destroy_function =  Callable,
+        :$buf              is required
   ) {
     samewith(
-      cast(Pointer, $data),
-      $data.elems,
-      $realloc_function,
-      $destroy_function
+      pointer-to($data),
+      $size,
+      &realloc_function,
+      &destroy_function
     )
+  }
+  multi method new (
+    Buf   $data,
+    Int() $size             = $data.elems,
+          &realloc_function = Callable,
+          &destroy_function = Callable
+  ) {
+    samewith(
+      pointer-to($data),
+      $size,
+      &realloc_function,
+      &destroy_function
+    )
+  }
+  multi method new (
+    CArray[uint8] $data,
+    Int()         :$size             =  $data.elems,
+                  :&realloc_function =  Callable,
+                  :&destroy_function =  Callable,
+                  :array(:$carray)   is required
+  ) {
+    samewith(
+      pointer-to($data),
+      $size,
+      &realloc_function,
+      &destroy_function
+    );
+  }
+  multi method new (
+    CArray[uint8] $data,
+    Int()         $size             = $data.elems,
+                  &realloc_function = Callable,
+                  &destroy_function = Callable
+  ) {
+    samewith(
+      pointer-to($data),
+      $size,
+      &realloc_function,
+      &destroy_function
+    );
   }
   multi method new (
     gpointer $data,
-    Int() $size,
-    GReallocFunc $realloc_function   = Pointer,
-    GDestroyNotify $destroy_function = Pointer
+    Int()    $size,
+             &realloc_function = Callable,
+             &destroy_function = Callable
   ) {
     my gsize $s = $size;
+    my $memory-output = g_memory_output_stream_new(
+      $data,
+      $size,
+      &realloc_function,
+      &destroy_function
+    );
 
-    self.bless(
-      memory-output => g_memory_output_stream_new(
-        $data,
-        $size,
-        $realloc_function,
-        $destroy_function
-      )
-    )
+    $memory-output ?? self.bless( :$memory-output ) !! Nil;
+  }
+  multi method new {
+    samewith(gpointer, 0, &g_realloc, &g_free);
   }
 
   method new_resizable is also<new-resizable> {
-    self.bless( memory-output => g_memory_output_stream_new_resizable() )
+    my $memory-output = g_memory_output_stream_new_resizable();
+
+    $memory-output ?? self.bless( :$memory-output ) !! Nil;
   }
 
   method get_data (:$raw = False) is also<get-data> {
-    g_memory_output_stream_get_data($!mos);
+    my $d = g_memory_output_stream_get_data($!mos);
+
+    $d ??
+      ( $raw ?? $d !! cast(CArray[uint8], $d) )
+      !!
+      Nil;
   }
 
   method get_data_size is also<get-data-size> {
@@ -126,12 +173,22 @@ class GIO::MemoryOutputStream is GIO::OutputStream {
     unstable_get_type( self.^name, &g_memory_output_stream_get_type, $n, $t );
   }
 
-  method steal_as_bytes is also<steal-as-bytes> {
-    g_memory_output_stream_steal_as_bytes($!mos);
+  method steal_as_bytes (:$raw = False) is also<steal-as-bytes> {
+    my $b = g_memory_output_stream_steal_as_bytes($!mos);
+
+    $b ??
+      ( $raw ?? $b !! GLib::Bytes.new($b) )
+      !!
+      Nil;
   }
 
-  method steal_data is also<steal-data> {
-    g_memory_output_stream_steal_data($!mos);
+  method steal_data (:$raw = False) is also<steal-data> {
+    my $d = g_memory_output_stream_steal_data($!mos);
+
+    $d ??
+      ( $raw ?? $d !! cast(CArray[uint8], $d) )
+      !!
+      Nil;
   }
 
 }

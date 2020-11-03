@@ -3,31 +3,57 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
-
-
 use GIO::Raw::Types;
 use GIO::Raw::AppInfo;
 
-class GTK::Compat::LaunchContext {
+use GLib::Roles::Object;
+
+our subset GAppLaunchContextAncestry is export of Mu
+  where GAppLaunchContext | GObject;
+
+class GIO::LaunchContext {
+  also does GLib::Roles::Object;
+
   has GAppLaunchContext $!lc is implementor;
 
   submethod BUILD(:$context) {
-    $!lc = $context
+    self.setGAppLaunchContext($context) if $context;
   }
 
+  method setGAppLaunchContext (GAppLaunchContextAncestry $_) {
+    my $to-parent;
+
+    $!lc = do {
+      when GAppLaunchContext {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GAppLaunchContext, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  multi method new(GAppLaunchContext $context, :$ref = True) {
+    return Nil unless $context;
+
+    my $o = self.bless(:$context);
+    $o.ref if $ref;
+    $o;
+  }
   multi method new {
     my $context = g_app_launch_context_new();
-    
-    self.bless(:$context) if $context;
-  }
-  multi method new(GAppLaunchContext $context) {
-    self.bless(:$context);
+
+    $context ?? self.bless(:$context) !! Nil;
   }
 
   # ↓↓↓↓ SIGNALS ↓↓↓↓
 
   # Is originally
-  # GAppLaunchContext, gchar, gpointer
+  # GAppLaunchContext, Str, gpointer
   method launch-failed is also<launch_failed> {
     self.connect($!lc, 'launch-failed');
   }
@@ -53,7 +79,6 @@ class GTK::Compat::LaunchContext {
     CStringArrayToArray( g_app_launch_context_get_environment($!lc) );
   }
 
-  # Needs objectification.
   method get_startup_notify_id (GAppInfo() $info, GList() $files)
     is also<get-startup-notify-id>
   {

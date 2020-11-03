@@ -33,7 +33,7 @@ role GIO::DBus::Roles::Signals::Proxy {
     %!signals-dp{$signal}[0];
   }
 
-  # GDBusProxy, gchar, gchar, GVariant, gpointer
+  # GDBusProxy, Str, gchar, GVariant, gpointer
   method connect-g-signal (
     $obj,
     $signal = 'g-signal',
@@ -73,7 +73,7 @@ sub g-connect-g-properties-changed(
   is symbol('g_signal_connect_object')
 { * }
 
-# GDBusProxy, gchar, gchar, GVariant, gpointer
+# GDBusProxy, Str, Str, GVariant, gpointer
 sub g-connect-g-signal(
   Pointer $app,
   Str $name,

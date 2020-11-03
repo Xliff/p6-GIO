@@ -2,13 +2,18 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
-
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::TlsDatabase;
 
 sub g_tls_database_create_certificate_handle (
-  GTlsDatabase $self,
+  GTlsDatabase    $self,
   GTlsCertificate $certificate
 )
   returns Str
@@ -23,11 +28,11 @@ sub g_tls_database_get_type ()
 { * }
 
 sub g_tls_database_lookup_certificate_for_handle (
-  GTlsDatabase $self,
-  Str $handle,
-  GTlsInteraction $interaction,
+  GTlsDatabase            $self,
+  Str                     $handle,
+  GTlsInteraction         $interaction,
   GTlsDatabaseLookupFlags $flags,
-  GCancellable $cancellable,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GTlsCertificate
@@ -36,21 +41,21 @@ sub g_tls_database_lookup_certificate_for_handle (
 { * }
 
 sub g_tls_database_lookup_certificate_for_handle_async (
-  GTlsDatabase $self,
-  Str $handle,
-  GTlsInteraction $interaction,
+  GTlsDatabase            $self,
+  Str                     $handle,
+  GTlsInteraction         $interaction,
   GTlsDatabaseLookupFlags $flags,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GCancellable            $cancellable,
+  GAsyncReadyCallback     $callback,
+  gpointer                $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_tls_database_lookup_certificate_for_handle_finish (
-  GTlsDatabase $self,
-  GAsyncResult $result,
+  GTlsDatabase            $self,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns GTlsCertificate
@@ -59,11 +64,11 @@ sub g_tls_database_lookup_certificate_for_handle_finish (
 { * }
 
 sub g_tls_database_lookup_certificate_issuer (
-  GTlsDatabase $self,
-  GTlsCertificate $certificate,
-  GTlsInteraction $interaction,
+  GTlsDatabase            $self,
+  GTlsCertificate         $certificate,
+  GTlsInteraction         $interaction,
   GTlsDatabaseLookupFlags $flags,
-  GCancellable $cancellable,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GTlsCertificate
@@ -72,21 +77,21 @@ sub g_tls_database_lookup_certificate_issuer (
 { * }
 
 sub g_tls_database_lookup_certificate_issuer_async (
-  GTlsDatabase $self,
-  GTlsCertificate $certificate,
-  GTlsInteraction $interaction,
+  GTlsDatabase            $self,
+  GTlsCertificate         $certificate,
+  GTlsInteraction         $interaction,
   GTlsDatabaseLookupFlags $flags,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GCancellable            $cancellable,
+  GAsyncReadyCallback     $callback,
+  gpointer                $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_tls_database_lookup_certificate_issuer_finish (
-  GTlsDatabase $self,
-  GAsyncResult $result,
+  GTlsDatabase            $self,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns GTlsCertificate
@@ -95,11 +100,11 @@ sub g_tls_database_lookup_certificate_issuer_finish (
 { * }
 
 sub g_tls_database_lookup_certificates_issued_by (
-  GTlsDatabase $self,
-  GByteArray $issuer_raw_dn,
-  GTlsInteraction $interaction,
+  GTlsDatabase            $self,
+  GByteArray              $issuer_raw_dn,
+  GTlsInteraction         $interaction,
   GTlsDatabaseLookupFlags $flags,
-  GCancellable $cancellable,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GList
@@ -108,21 +113,21 @@ sub g_tls_database_lookup_certificates_issued_by (
 { * }
 
 sub g_tls_database_lookup_certificates_issued_by_async (
-  GTlsDatabase $self,
-  GByteArray $issuer_raw_dn,
-  GTlsInteraction $interaction,
+  GTlsDatabase            $self,
+  GByteArray              $issuer_raw_dn,
+  GTlsInteraction         $interaction,
   GTlsDatabaseLookupFlags $flags,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GCancellable            $cancellable,
+  GAsyncReadyCallback     $callback,
+  gpointer                $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_tls_database_lookup_certificates_issued_by_finish (
-  GTlsDatabase $self,
-  GAsyncResult $result,
+  GTlsDatabase            $self,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns GList
@@ -131,13 +136,13 @@ sub g_tls_database_lookup_certificates_issued_by_finish (
 { * }
 
 sub g_tls_database_verify_chain (
-  GTlsDatabase $self,
-  GTlsCertificate $chain,
-  Str $purpose,
-  GSocketConnectable $identity,
-  GTlsInteraction $interaction,
+  GTlsDatabase            $self,
+  GTlsCertificate         $chain,
+  Str                     $purpose,
+  GSocketConnectable      $identity,
+  GTlsInteraction         $interaction,
   GTlsDatabaseVerifyFlags $flags,
-  GCancellable $cancellable,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GTlsCertificateFlags
@@ -146,23 +151,23 @@ sub g_tls_database_verify_chain (
 { * }
 
 sub g_tls_database_verify_chain_async (
-  GTlsDatabase $self,
-  GTlsCertificate $chain,
-  Str $purpose,
-  GSocketConnectable $identity,
-  GTlsInteraction $interaction,
+  GTlsDatabase            $self,
+  GTlsCertificate         $chain,
+  Str                     $purpose,
+  GSocketConnectable      $identity,
+  GTlsInteraction         $interaction,
   GTlsDatabaseVerifyFlags $flags,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GCancellable            $cancellable,
+  GAsyncReadyCallback     $callback,
+  gpointer                $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_tls_database_verify_chain_finish (
-  GTlsDatabase $self,
-  GAsyncResult $result,
+  GTlsDatabase            $self,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns GTlsCertificateFlags

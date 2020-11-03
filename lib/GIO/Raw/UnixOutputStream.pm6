@@ -2,7 +2,13 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::UnixOutputStream;
 
@@ -32,7 +38,7 @@ sub g_unix_output_stream_get_close_fd (GUnixOutputStream $stream)
 
 sub g_unix_output_stream_set_close_fd (
   GUnixOutputStream $stream,
-  gboolean $close_fd
+  gboolean          $close_fd
 )
   is native(gio)
   is export

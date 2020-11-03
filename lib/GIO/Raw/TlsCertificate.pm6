@@ -2,8 +2,13 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
-
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::TlsCertificate;
 
@@ -29,7 +34,7 @@ sub g_tls_certificate_is_same (
 { * }
 
 sub g_tls_certificate_list_new_from_file (
-  Str $file,
+  Str                     $file,
   CArray[Pointer[GError]] $error
 )
   returns GList
@@ -44,8 +49,8 @@ sub g_tls_certificate_new_from_file (Str $file, CArray[Pointer[GError]] $error)
 { * }
 
 sub g_tls_certificate_new_from_files (
-  Str $cert_file,
-  Str $key_file,
+  Str                     $cert_file,
+  Str                     $key_file,
   CArray[Pointer[GError]] $error
 )
   returns GTlsCertificate
@@ -54,8 +59,8 @@ sub g_tls_certificate_new_from_files (
 { * }
 
 sub g_tls_certificate_new_from_pem (
-  Str $data,
-  gssize $length,
+  Pointer                 $data,
+  gssize                  $length,
   CArray[Pointer[GError]] $error
 )
   returns GTlsCertificate
@@ -64,9 +69,9 @@ sub g_tls_certificate_new_from_pem (
 { * }
 
 sub g_tls_certificate_verify (
-  GTlsCertificate $cert,
+  GTlsCertificate    $cert,
   GSocketConnectable $identity,
-  GTlsCertificate $trusted_ca
+  GTlsCertificate    $trusted_ca
 )
   returns GTlsCertificateFlags
   is native(gio)

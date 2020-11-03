@@ -7,9 +7,10 @@ use NativeCall;
 use GIO::Raw::Types;
 use GIO::Raw::FilenameCompleter;
 
-
-
 use GLib::Roles::Object;
+
+our subset GFilenameCompleterAncestry is export of Mu
+  where GFilenameCompleter | GObject;
 
 class GIO::FilenameCompleter {
   also does GLib::Roles::Object;
@@ -17,20 +18,41 @@ class GIO::FilenameCompleter {
   has GFilenameCompleter $!fc is implementor;
 
   submethod BUILD (:$completer) {
-    $!fc = $completer;
+    self.setGFilenameCompleter($completer) if $completer;
+  }
 
-    self.roleInit-Object;
+  method setGFilenameCompleter (GFilenameCompleterAncestry $_) {
+    my $to-parent;
+
+    $!fc = do {
+      when GFilenameCompleter {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GFilenameCompleter, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GFilenameCompleter
     is also<GFilenameCompleter>
   { $!fc }
 
-  multi method new (GFilenameCompleter $completer) {
-    self.bless( :$completer );
+  multi method new (GFilenameCompleterAncestry $completer, :$ref = True) {
+    return Nil unless $completer;
+
+    my $o = self.bless( :$completer );
+    $o.ref if $ref;
+    $o;
   }
   multi method new {
-    self.bless( completer => g_filename_completer_new() );
+    my $completer = g_filename_completer_new();
+
+    $completer ?? self.bless( :$completer ) !! Nil;
   }
 
   method get_completion_suffix (Str() $initial_text)
@@ -52,7 +74,7 @@ class GIO::FilenameCompleter {
   }
 
   method set_dirs_only (Int() $dirs_only) is also<set-dirs-only> {
-    my gboolean $d = $dirs_only;
+    my gboolean $d = $dirs_only.so.Int;
 
     g_filename_completer_set_dirs_only($!fc, $d);
   }

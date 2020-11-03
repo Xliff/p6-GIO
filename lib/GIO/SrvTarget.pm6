@@ -9,8 +9,8 @@ use GLib::GList;
 
 use GLib::Roles::ListData;
 
+# BOXED
 class GIO::SrvTarget {
-  # BOXED
   has GSrvTarget $!st is implementor;
 
   submethod BUILD (:$srv) {
@@ -22,19 +22,20 @@ class GIO::SrvTarget {
   { $!st }
 
   multi method new (GSrvTarget $srv) {
-    self.bless( :$srv );
+    $srv ?? self.bless( :$srv ) !! Nil;
   }
   multi method new (Str() $host, Int() $port, Int() $priority, Int() $weight) {
     my guint16 ($pt, $pr, $w) = ($port, $priority, $weight);
+    my         $srv           = g_srv_target_new($host, $pt, $pr, $w);
 
-    self.bless( srv => g_srv_target_new($host, $pt, $pr, $w) );
+    $srv ?? self.bless( :$srv ) !! Nil;
   }
 
   method copy (:$raw = False) {
     my $c = g_srv_target_copy($!st);
 
     $c ??
-      ( $raw ?? $c !! GIO::SrvTarget.new($c) )
+      ( $raw ?? $c !! GIO::SrvTarget.new($c, :!ref) )
       !!
       Nil;
   }
@@ -87,22 +88,22 @@ class GIO::SrvTarget {
 
   method list_sort (
     GIO::SrvTarget:U:
-    GList() $targets,
-    :$glist = False,
-    :$raw = False
+    GList()           $targets,
+                      :$glist   = False,
+                      :$raw     = False
   )
     is also<list-sort>
   {
     my $tl = g_srv_target_list_sort($targets);
+
+    return Nil unless $tl;
+    return $tl if $glist && $raw;
+
+    $tl = GLib::GList.new($tl) but GLib::Roles::ListData[GSrvTarget];
     return $tl if $glist;
 
-    $tl = GLib::GList.new($tl) but
-      GLib::Roles::ListData[GSrvTarget];
-
-    $tl ??
-      ( $raw ?? $tl.Array !! $tl.Array.map({ GIO::SrvTarget.new($_) }) )
-      !!
-      Nil
+    $raw ?? $tl.Array
+         !! $tl.Array.map({ GIO::SrvTarget.new($_, :!ref) });
   }
 
 }

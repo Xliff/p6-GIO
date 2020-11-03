@@ -2,7 +2,13 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::UnixMount;
 
@@ -158,7 +164,7 @@ sub g_unix_mount_monitor_get_type ()
 # Deprecated -- To be removed!
 sub g_unix_mount_monitor_set_rate_limit (
   GUnixMountMonitor $mount_monitor,
-  gint $limit_msec
+  gint              $limit_msec
 )
   is native(gio)
   is export

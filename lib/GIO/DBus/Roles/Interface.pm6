@@ -4,17 +4,14 @@ use Method::Also;
 
 use GIO::Raw::Types;
 use GIO::DBus::Raw::Types;
-
 use GIO::DBus::Raw::Interface;
+
+use GLib::Roles::Object;
 
 role GIO::DBus::Roles::Interface {
   has GDBusInterface $!di;
 
-  submethod BUILD (:$interface) {
-    $!di = $interface if $interface;
-  }
-
-  method roleInit-DBusInterface is also<roleInit_DBusInterface> {
+  method roleInit-GDBusInterface is also<roleInit_DBusInterface> {
     my \i = findProperImplementor(self.^attributes);
 
     $!di = cast( GDBusInterface, i.get_value(self) );
@@ -24,19 +21,13 @@ role GIO::DBus::Roles::Interface {
     is also<GDBusInterface>
   { $!di }
 
-  method new_interface_obj (GDBusInterface $interface)
-    is also<new-interface-obj>
-  {
-    self.bless( :$interface );
-  }
-
   method object (:$raw = False) is rw {
     Proxy.new(
       FETCH => sub ($) {
         my $o = g_dbus_interface_get_object($!di);
 
         $o ??
-          ( $raw ?? $o !! ::('GIO::DBus::Roles::Object').new-dbusobject-obj($o) )
+          ( $raw ?? $o !! ::('GIO::DBus::Object').new($o, :!ref) )
           !!
           Nil;
       },
@@ -58,6 +49,44 @@ role GIO::DBus::Roles::Interface {
     state ($n, $t);
 
     unstable_get_type( self.^name, &g_dbus_interface_get_type, $n, $t );
+  }
+
+}
+
+our subset GDBusInterfaceAncestry is export of Mu
+  where GDBusInterface | GObject;
+
+class GIO::DBus::Interface does GLib::Roles::Object
+                           does GIO::DBus::Roles::Interface
+{
+
+  submethod BUILD ( :$dbus-interface ) {
+    self.setGDBusInterface($dbus-interface) if $dbus-interface;
+  }
+
+  method setGDBusInterface (GDBusInterfaceAncestry $_) {
+    my $to-parent;
+
+    $!di = do {
+      when GDBusInterface {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GDBusInterface, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GDBusInterfaceAncestry $dbus-interface, :$ref = True) {
+    return Nil unless $dbus-interface;
+
+    my $o = self.bless( :$dbus-interface );
+    $o.ref if $ref;
+    $o;
   }
 
 }

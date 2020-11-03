@@ -95,7 +95,7 @@ class GIO::Application {
   }
 
   # Is originally:
-  # GApplication, gpointer, gint, gchar, gpointer --> void
+  # GApplication, gpointer, gint, Str, gpointer --> void
   # Made multi so as to not conflict with below methods.
   multi method open {
     self.connect-open($!a);
@@ -118,12 +118,12 @@ class GIO::Application {
   }
 
   method add_main_option (
-    Str() $long_name,
-    Str() $short_name,
-    Int() $flags,
+    Str()      $long_name,
+    Str()      $short_name,
+    Int()      $flags,
     GOptionArg $arg,
-    Str() $description,
-    Str() $arg_description
+    Str()      $description,
+    Str()      $arg_description
   )
     is also<add-4-option>
   {
@@ -145,8 +145,9 @@ class GIO::Application {
   { * }
 
   multi method add_main_option_entries (@entries) {
-    # cw: XXX - Must be zero terminated! Do we account for that in TypedfBuffer?
-    samewith( GLib::Roles::TypedBuffer.new(@entries).p );
+    samewith(
+      GLib::Roles::TypedBuffer.new-typedbuffer-obj(@entries, :zero).p
+    );
   }
   multi method add_main_option_entries (Pointer $entries) {
     g_application_add_main_option_entries($!a, $entries);
@@ -218,7 +219,11 @@ class GIO::Application {
   }
 
   multi method open (@files, Str() $hint) {
-    samewith( GLib::Roles::TypedBuffer.new(@files), @files.elems, $hint );
+    samewith(
+      GLib::Roles::TypedBuffer.new(@files).p,
+      @files.elems,
+      $hint
+    );
   }
   multi method open (Pointer $files, Int() $n_files, Str() $hint) {
     my gint $n = $n_files;
@@ -231,8 +236,8 @@ class GIO::Application {
   }
 
   method register (
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     clear_error;
     my $rv = so g_application_register($!a, $cancellable, $error);
@@ -278,8 +283,10 @@ class GIO::Application {
     g_application_set_default($!a);
   }
 
-  method set_flags (GApplicationFlags $flags) is also<set-flags> {
-    g_application_set_flags($!a, $flags);
+  method set_flags (Int() $flags) is also<set-flags> {
+    my GApplicationFlags $f = $flags;
+
+    g_application_set_flags($!a, $f);
   }
 
   method set_inactivity_timeout (Int() $inactivity_timeout)

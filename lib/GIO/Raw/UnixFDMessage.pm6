@@ -2,13 +2,19 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::UnixFDMessage;
 
 sub g_unix_fd_message_append_fd (
-  GUnixFDMessage $message,
-  gint $fd,
+  GUnixFDMessage          $message,
+  gint                    $fd,
   CArray[Pointer[GError]] $error
 )
   returns uint32

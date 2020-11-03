@@ -8,7 +8,7 @@ unit package GIO::Raw::FilenameCompleter;
 
 sub g_filename_completer_get_completion_suffix (
   GFilenameCompleter $completer,
-  Str $initial_text
+  Str                $initial_text
 )
   returns Str
   is native(gio)
@@ -17,7 +17,7 @@ sub g_filename_completer_get_completion_suffix (
 
 sub g_filename_completer_get_completions (
   GFilenameCompleter $completer,
-  Str $initial_text
+  Str                $initial_text
 )
   returns CArray[Str]
   is native(gio)
@@ -38,7 +38,7 @@ sub g_filename_completer_new ()
 
 sub g_filename_completer_set_dirs_only (
   GFilenameCompleter $completer,
-  gboolean $dirs_only
+  gboolean           $dirs_only
 )
   is native(gio)
   is export

@@ -9,26 +9,45 @@ use GIO::Raw::Stream;
 use GIO::InputStream;
 use GIO::OutputStream;
 
-# Due to subclass need.
-use GLib::Roles::Properties;
+use GLib::Roles::Object;
+
+our subset GIOStreamAncestry is export of Mu
+  where GIOStream | GObject;
 
 class GIO::Stream {
-  also does GLib::Roles::Properties;
+  also does GLib::Roles::Object;
 
   has GIOStream $!ios is implementor;
 
   submethod BUILD (:$stream) {
-    self.setStream($stream) if $stream;
+    self.setGIOStream($stream) if $stream;
   }
 
-  method setStream (GIOStream $stream) {
-    $!ios = $stream;
+  method setGIOStream (GIOStreamAncestry $_) {
+    my $param = $_;
+    my $to-parent;
 
-    self.roleInit-Object;
-  }
+    $!ios = do {
+      when GIOStream {
+        $to-parent = cast(GObject, $param);
+        $param;
+      }
 
-  method new (GIOStream $stream) {
-    self.bless( :$stream );
+      default {
+        $to-parent = $param;
+        cast(GIOStream, $param);
+      }
+    }
+
+    self!setObject($to-parent);
+ }
+
+  method new (GIOStreamAncestry $stream, :$ref = True) {
+    return Nil unless $stream;
+
+    my $o = self.bless( :$stream );
+    $o.ref if $ref;
+    $o;
   }
 
   method GIO::Raw::Definitions::GIOStream
@@ -39,39 +58,55 @@ class GIO::Stream {
     g_io_stream_clear_pending($!ios);
   }
 
-  method close (
-    GCancellable $cancellable,
-    CArray[Pointer[GError]] $error = gerror
+  multi method close (
+    CArray[Pointer[GError]] $error         = gerror,
+    GCancellable()          :$cancellable  = GCancellable
+  ) {
+    samewith($cancellable, $error);
+  }
+  multi method close (
+    GCancellable()          $cancellable  = GCancellable,
+    CArray[Pointer[GError]] $error        = gerror
   ) {
     clear_error;
-    my $rc = g_io_stream_close($!ios, $cancellable, $error);
+    my $rv = so g_io_stream_close($!ios, $cancellable, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
-  method close_async (
-    Int() $io_priority,
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
-  )
+  proto method close_async (|)
     is also<close-async>
-  {
+  { * }
+
+  multi method close_async (
+    Int()          $io_priority,
+                   &callback,
+    gpointer       $user_data    = gpointer,
+    GCancellable() :$cancellable = GCancellable
+  ) {
+    samewith($io_priority, $cancellable, &callback, $user_data);
+  }
+  multi method close_async (
+    Int()          $io_priority,
+    GCancellable() $cancellable,
+                   &callback,
+    gpointer       $user_data    = gpointer
+  ) {
     my gint $io = $io_priority;
 
-    g_io_stream_close_async($!ios, $io, $cancellable, $callback, $user_data);
+    g_io_stream_close_async($!ios, $io, $cancellable, &callback, $user_data);
   }
 
   method close_finish (
-    GAsyncResult $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<close-finish>
   {
     clear_error;
-    my $rc = so g_io_stream_close_finish($!ios, $result, $error);
+    my $rv = so g_io_stream_close_finish($!ios, $result, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method get_input_stream (:$raw = False)
@@ -80,7 +115,7 @@ class GIO::Stream {
     my $is = g_io_stream_get_input_stream($!ios);
 
     $is ??
-      ( $raw ?? $is !! GIO::InputStream.new($is) )
+      ( $raw ?? $is !! GIO::InputStream.new($is, :!ref) )
       !!
       Nil
   }
@@ -91,7 +126,7 @@ class GIO::Stream {
     my $os = g_io_stream_get_output_stream($!ios);
 
     $os ??
-      ( $raw ?? $os !! GIO::OutputStream.new($os) )
+      ( $raw ?? $os !! GIO::OutputStream.new($os, :!ref) )
       !!
       Nil;
   }
@@ -118,18 +153,37 @@ class GIO::Stream {
     g_io_stream_set_pending($!ios, $error);
   }
 
-  method splice_async (
-    GIOStream() $stream2,
-    Int() $flags,
-    Int() $io_priority,
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
-  )
+  proto method splice_async (|)
     is also<splice-async>
-  {
-    my gint $io = $io_priority;
-    my GIOStreamSpliceFlags $f = $flags;
+  { * }
+
+  multi method splice_async (
+    GIOStream()    $stream2,
+                   &callback     = Callable,
+    gpointer       $user_data    = gpointer,
+    Int()          :$flags       = 0,
+    Int()          :$io_priority = G_PRIORITY_DEFAULT,
+    GCancellable() :$cancellable = GCancellable
+  ) {
+    samewith(
+      $stream2,
+      $flags,
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method splice_async (
+    GIOStream()    $stream2,
+    Int()          $flags,
+    Int()          $io_priority,
+    GCancellable() $cancellable,
+                   &callback,
+    gpointer       $user_data    = gpointer
+  ) {
+    my gint                 $io = $io_priority;
+    my GIOStreamSpliceFlags $f  = $flags;
 
     g_io_stream_splice_async(
       $!ios,
@@ -137,21 +191,21 @@ class GIO::Stream {
       $f,
       $io,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method splice_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<splice-finish>
   {
     clear_error;
-    my $rc = so g_io_stream_splice_finish($result, $error);
+    my $rv = so g_io_stream_splice_finish($result, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
 }

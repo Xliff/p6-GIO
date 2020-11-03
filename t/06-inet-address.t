@@ -2,7 +2,7 @@ use v6.c;
 
 use Test;
 
-use GTK::Compat::Types;
+use GIO::Raw::Types;
 
 use GIO::InetAddress;
 use GIO::InetAddressMask;
@@ -155,7 +155,7 @@ sub test-socket-address-to-string {
       GIO::InetSocketAddress.new( $ia,  .[1] );
 
     my $ln = ++$;
-    is ~$sa, .[2], "Stringified inetsocketaddr object {$ln} equals '{.[2]}'";
+    is $sa.to_string, .[2], "Stringified inetsocketaddr object {$ln} equals '{.[2]}'";
   }
 }
 

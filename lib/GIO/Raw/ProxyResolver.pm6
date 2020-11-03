@@ -2,7 +2,13 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::ProxyResolver;
 
@@ -25,9 +31,9 @@ sub g_proxy_resolver_is_supported (GProxyResolver $resolver)
 { * }
 
 sub g_proxy_resolver_lookup (
-  GProxyResolver $resolver,
-  Str $uri,
-  GCancellable $cancellable,
+  GProxyResolver          $resolver,
+  Str                     $uri,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns CArray[Str]
@@ -37,18 +43,18 @@ sub g_proxy_resolver_lookup (
 
 sub g_proxy_resolver_lookup_async (
   GProxyResolver $resolver,
-  Str $uri,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  Str            $uri,
+  GCancellable   $cancellable,
+                 &callback (GProxyResolver, GAsyncResult, gpointer),
+  gpointer       $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_proxy_resolver_lookup_finish (
-  GProxyResolver $resolver,
-  GAsyncResult $result,
+  GProxyResolver          $resolver,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns CArray[Str]

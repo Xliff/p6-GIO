@@ -25,10 +25,10 @@ sub g_seekable_get_type ()
 { * }
 
 sub g_seekable_seek (
-  GSeekable $seekable,
-  goffset $offset,
-  GSeekType $type,
-  GCancellable $cancellable,
+  GSeekable               $seekable,
+  goffset                 $offset,
+  GSeekType               $type,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -43,9 +43,9 @@ sub g_seekable_tell (GSeekable $seekable)
 { * }
 
 sub g_seekable_truncate (
-  GSeekable $seekable,
-  goffset $offset,
-  GCancellable $cancellable,
+  GSeekable               $seekable,
+  goffset                 $offset,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32

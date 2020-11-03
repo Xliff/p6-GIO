@@ -2,8 +2,13 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
-
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::TlsPassword;
 
@@ -27,17 +32,17 @@ sub g_tls_password_new (GTlsPasswordFlags $flags, Str $description)
 
 sub g_tls_password_set_value (
   GTlsPassword $password,
-  Str $value,
-  gssize $length
+  Str          $value,
+  gssize       $length
 )
   is native(gio)
   is export
 { * }
 
 sub g_tls_password_set_value_full (
-  GTlsPassword $password,
-  Str $value,
-  gssize $length,
+  GTlsPassword   $password,
+  Str            $value,
+  gssize         $length,
   GDestroyNotify $destroy
 )
   is native(gio)

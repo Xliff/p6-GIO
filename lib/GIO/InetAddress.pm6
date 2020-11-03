@@ -8,23 +8,45 @@ use GIO::Raw::InetAddress;
 
 use GLib::Roles::Object;
 
+our subset GInetAddressAncestry is export of Mu
+  where GInetAddress | GObject;
+
 class GIO::InetAddress {
   also does GLib::Roles::Object;
 
   has GInetAddress $!ia is implementor;
 
   submethod BUILD (:$address) {
-    $!ia = $address;
+    self.setGInetAddress($address) if $address;
+  }
 
-    self.roleInit-Object;
+  method setGInetAddress(GInetAddressAncestry $_) {
+    my $to-parent;
+
+    $!ia = do {
+      when GInetAddress {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GInetAddress, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GInetAddress
     is also<GInetAddress>
   { $!ia }
 
-  multi method new (GInetAddress $address) {
-    self.bless( :$address );
+  multi method new (GInetAddressAncestry $address, :$ref = True) {
+    return Nil unless $address;
+
+    my $o = self.bless( :$address );
+    $o.ref if $ref;
+    $o;
   }
 
   # my $ia = GIO::InetAddress.new(:any, $family)
@@ -80,7 +102,7 @@ class GIO::InetAddress {
   }
   method new_loopback (Int() $family) is also<new-loopback> {
     my GSocketFamily $f = $family;
-    my $a = g_inet_address_new_loopback($f);
+    my               $a = g_inet_address_new_loopback($f);
 
     $a ?? self.bless( address => $a ) !! Nil;
   }
@@ -219,14 +241,12 @@ class GIO::InetAddress {
     unstable_get_type( self.^name, &g_inet_address_get_type, $n, $t );
   }
 
-  # Default set to true for use in .new(..., :bytes)
-  method to_bytes (:$buf = True) is also<to-bytes> {
-    my @bytes;
+  method to_bytes (:$raw = False, :$buf = True) is also<to-bytes> {
     my $bytes = g_inet_address_to_bytes($!ia);
-    @bytes[$_] = $bytes[$_] for ^self.native_size;
-    return unless $buf;
+    return $bytes if $raw;
 
-    Buf.new(@bytes);
+    # Buf.new( CArray, int )?
+    Buf.new( CArrayToArray($bytes, ^self.native_size) );
   }
 
   method to_string

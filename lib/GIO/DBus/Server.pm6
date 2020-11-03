@@ -14,6 +14,9 @@ use GIO::DBus::AuthObserver;
 use GLib::Roles::Properties;
 use GIO::DBus::Roles::Signals::Server;
 
+our subset GDBusServerAncestry is export of Mu
+  where GDBusServer | GObject;
+
 class GIO::DBus::Server {
   also does GLib::Roles::Properties;
   also does GIO::DBus::Roles::Signals::Server;
@@ -21,24 +24,104 @@ class GIO::DBus::Server {
   has GDBusServer $!ds is implementor;
 
   submethod BUILD (:$server) {
-    $!ds = $server;
+    self.setGDBusServer($server) if $server;
+  }
 
-    self.roleInit-Object;
+  method setGDBusObjectSkeleton (GDBusServerAncestry $_) {
+    my $to-parent;
+
+    $!ds = do {
+      when GDBusServer {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GDBusServer, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GDBusServer
     is also<GDBusServer>
   { $!ds }
 
-  method new_sync (
-    Str() $address,
-    Int() $flags,
-    Str() $guid,
-    GDBusAuthObserver() $observer,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
-  )
+  multi method new (GDBusServerAncestry $server, :$ref = True) {
+    return Nil unless $server;
+
+    my $o = self.bless( :$server );
+    $o.ref if $ref;
+    $o;
+  }
+
+  proto method new_sync (|)
     is also<new-sync>
+  { * }
+
+  multi method new (
+    Str()                   $address,
+    Str()                   $guid,
+                            :$sync        is required,
+    Int()                   :$flags       =  0,
+    GDBusAuthObserver()     :$observer    =  GDBusAuthObserver,
+    GCancellable()          :$cancellable =  GCancellable,
+    CArray[Pointer[GError]] :$error       =  gerror
+  ) {
+    self.new_sync(
+      $address,
+      $flags,
+      $guid,
+      $observer,
+      $cancellable,
+      $error
+    );
+  }
+  multi method new (
+    Str()                   $address,
+    Int()                   $flags,
+    Str()                   $guid,
+    GDBusAuthObserver()     $observer    =  GDBusAuthObserver,
+    GCancellable()          $cancellable =  GCancellable,
+    CArray[Pointer[GError]] $error       =  gerror,
+                            :$sync       is required
+  ) {
+    self.new_sync(
+      $address,
+      $flags,
+      $guid,
+      $observer,
+      $cancellable,
+      $error
+    );
+  }
+  multi method new_sync (
+    Str()                   $address,
+    Str()                   $guid,
+    Int()                   :$flags       = 0,
+    GDBusAuthObserver()     :$observer    = GDBusAuthObserver,
+    GCancellable()          :$cancellable = GCancellable,
+    CArray[Pointer[GError]] :$error       = gerror
+  ) {
+    samewith(
+      $address,
+      $flags,
+      $guid,
+      $observer,
+      $cancellable,
+      $error
+    );
+  }
+  multi method new_sync (
+    Str()                   $address,
+    Int()                   $flags,
+    Str()                   $guid,
+    GDBusAuthObserver()     $observer    = GDBusAuthObserver,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
+  )
+
   {
     my GDBusServerFlags $f = $flags;
 
@@ -56,7 +139,7 @@ class GIO::DBus::Server {
     $s ?? self.bless( server => $s ) !! Nil;
   }
 
-  # Type: gchar
+  # Type: Str
   method address is rw  {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
@@ -83,7 +166,9 @@ class GIO::DBus::Server {
         return Nil unless $gv.object;
 
         my $ao = cast(GDBusAuthObserver, $gv.object);
-        $raw ?? $ao !! GIO::DBus::AuthObserver.new($ao);
+        return $ao if $raw;
+
+        GIO::DBus::AuthObserver.new($ao, :!ref);
       },
       STORE => -> $, GDBusAuthObserver() $val is copy {
         warn 'GIO::DBus::Server.authentication-observer is read/only.';

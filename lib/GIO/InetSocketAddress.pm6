@@ -8,18 +8,19 @@ use GIO::Raw::InetSocketAddress;
 use GIO::InetAddress;
 use GIO::SocketAddress;
 
-our subset InetSocketAddressAncestry is export
-  where GInetSocketAddress | SocketAddressAncestry;
+our subset GInetSocketAddressAncestry is export
+  where GInetSocketAddress | GSocketAddressAncestry;
 
 class GIO::InetSocketAddress is GIO::SocketAddress {
   has GInetSocketAddress $!isa is implementor;
 
   submethod BUILD (:$inetsocketaddr) {
-    self.setInetSocketAddr($inetsocketaddr);
+    self.setGInetSocketAddr($inetsocketaddr) if $inetsocketaddr;
   }
 
-  method setInetSocketAddr(InetSocketAddressAncestry $_) {
+  method setGInetSocketAddr(GInetSocketAddressAncestry $_) {
     my $to-parent;
+
     $!isa = do {
       when GInetSocketAddress {
         $to-parent = cast(GSocketAddress, $_);
@@ -31,25 +32,28 @@ class GIO::InetSocketAddress is GIO::SocketAddress {
         cast(GInetSocketAddress, $_);
       }
     };
-    self.setSocketAddress($to-parent);
+    self.setGSocketAddress($to-parent);
   }
 
   method GIO::Raw::Definitions::GInetSocketAddress
     is also<GInetSocketAddress>
   { $!isa }
 
-  multi method new (InetSocketAddressAncestry $inetsocketaddr) {
-    self.bless( :$inetsocketaddr );
+  multi method new (GInetSocketAddressAncestry $inetsocketaddr, :$ref = True) {
+    return Nil unless $inetsocketaddr;
+
+    my $o = self.bless( :$inetsocketaddr );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (
     GInetAddress() $address,
-    Int() $port,
-    Int() $flowinfo = 0,
-    Int() $scope_id = 0
+    Int()          $port     = 0,
+    Int()          $flowinfo = 0,
+    Int()          $scope_id = 0
   ) {
     my guint16 ($p, $f, $s) = ($port, $flowinfo, $scope_id);
-
-    my $a = $flowinfo || $scope_id ??
+    my $inetsocketaddr = ($flowinfo || $scope_id) ??
       g_object_new_inet_socket_address(
         self.get-type,
         'address',  $address,
@@ -61,15 +65,16 @@ class GIO::InetSocketAddress is GIO::SocketAddress {
       !!
       g_inet_socket_address_new($address, $p);
 
-    self.bless( inetsocketaddr =>  $a);
+    $inetsocketaddr ?? self.bless( :$inetsocketaddr ) !! Nil;
   }
 
-  method new_from_string (Str() $addr, Int() $port) is also<new-from-string> {
+  method new_from_string (Str() $addr, Int() $port = 0)
+    is also<new-from-string>
+  {
     my guint $p = $port;
+    my $inetsocketaddr = g_inet_socket_address_new_from_string($addr, $port);
 
-    self.bless(
-      inetaddr => g_inet_socket_address_new_from_string($addr, $port)
-    );
+    $inetsocketaddr ?? self.bless( :$inetsocketaddr ) !! Nil;
   }
 
   method get_address (:$raw = False)
@@ -81,7 +86,7 @@ class GIO::InetSocketAddress is GIO::SocketAddress {
     my $a = g_inet_socket_address_get_address($!isa);
 
     $a ??
-      ( $raw ?? $a !! GIO::InetAddress.new($a) )
+      ( $raw ?? $a !! GIO::InetAddress.new($a, :!ref) )
       !!
       Nil;
   }

@@ -1,7 +1,6 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
@@ -11,9 +10,11 @@ use GLib::GList;
 use GIO::InetAddress;
 
 use GLib::Roles::ListData;
-
 use GLib::Roles::Object;
 use GLib::Roles::Signals::Generic;
+
+our subset GResolverAncestry is export of Mu
+  where GResolver | GObject;
 
 class GIO::Resolver {
   also does GLib::Roles::Object;
@@ -22,17 +23,37 @@ class GIO::Resolver {
   has GResolver $!r is implementor;
 
   submethod BUILD (:$resolver) {
-    $!r = $resolver;
+    self.setGResolver($resolver) if $resolver;
+  }
 
-    self.roleInit-Object;
+  method setGResolver (GResolverAncestry $_) {
+    my $to-parent;
+
+    $!r = do {
+      when GResolver {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GResolver, $_);
+      }
+    }
+
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GResolver
     is also<GResolver>
   { $!r }
 
-  method new (GResolver $resolver) {
-    self.bless( :$resolver );
+  method new (GResolverAncestry $resolver, :$ref = True) {
+    return Nil unless $resolver;
+
+    my $o = self.bless( :$resolver );
+    $o.ref if $ref;
+    $o;
   }
 
   # Is originally:
@@ -45,7 +66,7 @@ class GIO::Resolver {
     my $r = g_resolver_get_default();
 
     $r ??
-      ( $raw ?? $r !! GIO::Resolver.new($r) )
+      ( $raw ?? $r !! GIO::Resolver.new($r, :!ref) )
       !!
       Nil;
   }
@@ -69,27 +90,27 @@ class GIO::Resolver {
   method get_type is also<get-type> {
     state ($n, $t);
 
-    g_resolver_get_type();
+    unstable_get_type( self.^name, &g_resolver_get_type, $n, $t );
   }
 
   method lookup_by_address (
-    GInetAddress() $address,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GInetAddress()          $address,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   )
     is also<lookup-by-address>
   {
     clear_error;
-    my $rv = g_resolver_lookup_by_address($!r, $address, $cancellable, $error);
+    my $a = g_resolver_lookup_by_address($!r, $address, $cancellable, $error);
     set_error($error);
-    $rv;
+    $a;
   }
 
   method lookup_by_address_async (
-    GInetAddress() $address,
-    GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    GInetAddress()      $address,
+    GCancellable()      $cancellable,
+                        &callback,
+    gpointer            $user_data    = gpointer
   )
     is also<lookup-by-address-async>
   {
@@ -97,7 +118,7 @@ class GIO::Resolver {
       $!r,
       $address,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
@@ -109,17 +130,17 @@ class GIO::Resolver {
     is also<lookup-by-address-finish>
   {
     clear_error;
-    my $rv = g_resolver_lookup_by_address_finish($!r, $result, $error);
+    my $a = g_resolver_lookup_by_address_finish($!r, $result, $error);
     set_error($error);
-    $rv;
+    $a;
   }
 
   method lookup_by_name (
-    Str() $hostname,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$glist = False,
-    :$raw = False
+    Str()                   $hostname,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
+                            :$glist      = False,
+                            :$raw        = False
   )
     is also<lookup-by-name>
   {
@@ -127,21 +148,20 @@ class GIO::Resolver {
     my $l = g_resolver_lookup_by_name($!r, $hostname, $cancellable, $error);
     set_error($error);
 
-    return $l if $glist;
+    return Nil unless $l;
+    return $l if $glist && $raw;
 
-    $l = GLib::GList.new($l);
+    $l = GLib::GList.new($l) but GLib::Roles::ListData[GInetAddress];
+    return $l if $raw;
 
-    $l ??
-      ( $raw ?? $l.Array !! $l.Array.map({ GIO::InetAddress.new($_) }) )
-      !!
-      Nil;
+    $raw ?? $l.Array !! $l.Array.map({ GIO::InetAddress.new($_, :!ref) });
   }
 
   method lookup_by_name_async (
-    Str() $hostname,
-    GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Str()               $hostname,
+    GCancellable()      $cancellable,
+                        &callback,
+    gpointer            $user_data   = gpointer
   )
     is also<lookup-by-name-async>
   {
@@ -149,15 +169,16 @@ class GIO::Resolver {
       $!r,
       $hostname,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method lookup_by_name_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error  = gerror,
+                            :$glist = False,
+                            :$raw   = False
   )
     is also<lookup-by-name-finish>
   {
@@ -165,18 +186,22 @@ class GIO::Resolver {
     my $l = g_resolver_lookup_by_name_finish($!r, $result, $error);
     set_error($error);
 
-    $l ??
-      ( $raw ?? $l.Array !! $l.Array.map({ GIO::InetAddress.new($_) }) )
-      !!
-      Nil;
+    return Nil unless $l;
+    return $l if $glist && $raw;
+
+    $l = GLib::GList.new($l) but GLib::Roles::ListData[GInetAddress];
+    return $l if $raw;
+
+    $raw ?? $l.Array !! $l.Array.map({ GIO::InetAddress.new($_, :!ref) });
   }
 
   method lookup_by_name_with_flags (
-    Str() $hostname,
-    Int() $flags,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False;
+    Str()                   $hostname,
+    Int()                   $flags,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
+                            :$glist      = False,
+                            :$raw        = False
   )
     is also<lookup-by-name-with-flags>
   {
@@ -192,18 +217,21 @@ class GIO::Resolver {
     );
     set_error($error);
 
-    $l ??
-      ( $raw ?? $l.Array !! $l.Array.map({ GIO::InetAddress.new($_) }) )
-      !!
-      Nil;
+    return Nil unless $l;
+    return $l if $glist && $raw;
+
+    $l = GLib::GList.new($l) but GLib::Roles::ListData[GInetAddress];
+    return $l if $raw;
+
+    $raw ?? $l.Array !! $l.Array.map({ GIO::InetAddress.new($_, :!ref) });
   }
 
   method lookup_by_name_with_flags_async (
-    Str() $hostname,
-    Int() $flags,
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Str()               $hostname,
+    Int()               $flags,
+    GCancellable()      $cancellable,
+                        &callback,
+    gpointer            $user_data   = gpointer
   )
     is also<lookup-by-name-with-flags-async>
   {
@@ -214,15 +242,16 @@ class GIO::Resolver {
       $hostname,
       $f,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method lookup_by_name_with_flags_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror,
+                            :$glist  = False,
+                            :$raw    = False
   )
     is also<lookup-by-name-with-flags-finish>
   {
@@ -230,18 +259,22 @@ class GIO::Resolver {
     my $l = g_resolver_lookup_by_name_with_flags_finish($!r, $result, $error);
     set_error($error);
 
-    $l ??
-      ( $raw ?? $l.Array !! $l.Array.map({ GIO::InetAddress.new($_) }) )
-      !!
-      Nil;
+    return Nil unless $l;
+    return $l if $glist && $raw;
+
+    $l = GLib::GList.new($l) but GLib::Roles::ListData[GInetAddress];
+    return $l if $raw;
+
+    $raw ?? $l.Array !! $l.Array.map({ GIO::InetAddress.new($_, :!ref) });
   }
 
   method lookup_records (
-    Str() $rrname,
-    Int() $record_type,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    Str()                   $rrname,
+    Int()                   $record_type,
+    GCancellable()          $cancellable  = GCancellable,
+    CArray[Pointer[GError]] $error        = gerror,
+                            :$glist       = False,
+                            :$raw         = False
   )
     is also<lookup-records>
   {
@@ -251,18 +284,21 @@ class GIO::Resolver {
     my $l = g_resolver_lookup_records($!r, $rrname, $rt, $cancellable, $error);
     set_error($error);
 
-    $l ??
-      ( $raw ?? $l.Array !! $l.Array.map({ GIO::InetAddress.new($_) }) )
-      !!
-      Nil;
+    return Nil unless $l;
+    return $l if $glist && $raw;
+
+    $l = GLib::GList.new($l) but GLib::Roles::ListData[GVariant];
+    return $l if $raw;
+
+    $raw ?? $l.Array !! $l.Array.map({ GLib::Variant.new($_, :!ref) });
   }
 
   method lookup_records_async (
-    Str $rrname,
-    Int() $record_type,
+    Str            $rrname,
+    Int()          $record_type,
     GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+                   &callback,
+    gpointer       $user_data    = gpointer
   )
     is also<lookup-records-async>
   {
@@ -273,15 +309,16 @@ class GIO::Resolver {
       $rrname,
       $rt,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method lookup_records_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False;
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror,
+                            :$glist  = False,
+                            :$raw    = False
   )
     is also<lookup-records-finish>
   {
@@ -289,19 +326,23 @@ class GIO::Resolver {
     my $l = g_resolver_lookup_records_finish($!r, $result, $error);
     set_error($error);
 
-    $l ??
-      ( $raw ?? $l.Array !! $l.Array.map({ GIO::InetAddress.new($_) }) )
-      !!
-      Nil;
+    return Nil unless $l;
+    return $l if $glist && $raw;
+
+    $l = GLib::GList.new($l) but GLib::Roles::ListData[GSrvTarget];
+    return $l if $raw;
+
+    $raw ?? $l.Array !! $l.Array.map({ GIO::SrvTarget.new($_, :!ref) });
   }
 
   method lookup_service (
-    Str() $service,
-    Str() $protocol,
-    Str() $domain,
-    GCancellable() $cancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    Str()                   $service,
+    Str()                   $protocol,
+    Str()                   $domain,
+    GCancellable()          $cancellable,
+    CArray[Pointer[GError]] $error        = gerror,
+                            :$glist       = False,
+                            :$raw         = False
   )
     is also<lookup-service>
   {
@@ -316,19 +357,22 @@ class GIO::Resolver {
     );
     set_error($error);
 
-    $l ??
-      ( $raw ?? $l.Array !! $l.Array.map({ GIO::InetAddress.new($_) }) )
-      !!
-      Nil;
+    return Nil unless $l;
+    return $l if $glist && $raw;
+
+    $l = GLib::GList.new($l) but GLib::Roles::ListData[GSrvTarget];
+    return $l if $raw;
+
+    $raw ?? $l.Array !! $l.Array.map({ GIO::SrvTarget.new($_, :!ref) });
   }
 
   method lookup_service_async (
-    Str() $service,
-    Str() $protocol,
-    Str() $domain,
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Str()               $service,
+    Str()               $protocol,
+    Str()               $domain,
+    GCancellable()      $cancellable,
+                        &callback,
+    gpointer            $user_data = gpointer
   )
     is also<lookup-service-async>
   {
@@ -338,15 +382,16 @@ class GIO::Resolver {
       $protocol,
       $domain,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method lookup_service_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error  = gerror,
+                            :$glist = False,
+                            :$raw   = False
   )
     is also<lookup-service-finish>
   {
@@ -354,10 +399,13 @@ class GIO::Resolver {
     my $l = g_resolver_lookup_service_finish($!r, $result, $error);
     set_error($error);
 
-    $l ??
-      ( $raw ?? $l.Array !! $l.Array.map({ GIO::InetAddress.new($_) }) )
-      !!
-      Nil;
+    return Nil unless $l;
+    return $l if $glist && $raw;
+
+    $l = GLib::GList.new($l) but GLib::Roles::ListData[GSrvTarget];
+    return $l if $raw;
+
+    $raw ?? $l.Array !! $l.Array.map({ GIO::SrvTarget.new($_, :!ref) });
   }
 
   method set_default is also<set-default> {

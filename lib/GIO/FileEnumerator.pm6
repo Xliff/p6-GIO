@@ -12,26 +12,50 @@ use GIO::FileInfo;
 use GLib::Roles::Object;
 use GIO::Roles::GFile;
 
+our subset GFileEnumeratorAncestry is export of Mu
+  where GFileEnumerator | GObject;
+
 class GIO::FileEnumerator {
   also does GLib::Roles::Object;
 
   has GFileEnumerator $!fe is implementor;
 
   submethod BUILD (:$enumerator) {
-    $!fe = $enumerator;
+    self.setGFileEnumerator($enumerator) if $enumerator;
+  }
 
-    self.roleInit-Object;
+  method setGEnumerator (GFileEnumeratorAncestry $_) {
+    my $to-parent;
+
+    $!fe = do {
+      when GFileEnumerator {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GObject, $_);
+      }
+    }
+
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GFileEnumerator
+    is also<GFileEnumerator>
   { $!fe }
 
-  method new (GFileEnumerator $enumerator) {
-    self.bless( :$enumerator );
+  method new (GFileEnumerator $enumerator, :$ref = True) {
+    return Nil unless $enumerator;
+
+    my $o = self.bless( :$enumerator );
+    $o.ref if $ref;
+    $o;
   }
 
   method close (
-    GCancellable() $cancellable,
+    GCancellable() $cancellable    = GCancellable,
     CArray[Pointer[GError]] $error = gerror
   ) {
     clear_error;
@@ -40,13 +64,23 @@ class GIO::FileEnumerator {
     $rv;
   }
 
-  method close_async (
-    Int() $io_priority,
-    GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
-  )
+  proto method close_sync (|)
     is also<close-async>
+  { * }
+
+  multi method close_sync (
+    Int()    $io_priority,
+             &callback,
+    gpointer $user_data    = gpointer
+  ) {
+    samewith($io_priority, GCancellable, &callback, $user_data);
+  }
+  method close_async (
+    Int()          $io_priority,
+    GCancellable() $cancellable,
+                   &callback,
+    gpointer       $user_data    = gpointer
+  )
   {
     my gint $i = $io_priority;
 
@@ -54,14 +88,14 @@ class GIO::FileEnumerator {
       $!fe,
       $i,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method close_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<close-finish>
   {
@@ -75,7 +109,7 @@ class GIO::FileEnumerator {
     my $c = g_file_enumerator_get_child($!fe, $info);
 
     $c ??
-      ( $raw ?? $c !! GTK::Compat::Roles::File.new-file-obj($c) )
+      ( $raw ?? $c !! GIO::Roles::File.new-file-obj($c, :!ref) )
       !!
       Nil;
   }
@@ -84,7 +118,7 @@ class GIO::FileEnumerator {
     my $c = g_file_enumerator_get_container($!fe);
 
     $c ??
-      ( $raw ?? $c !! GTK::Compat::Roles::File.new-file-obj($c) )
+      ( $raw ?? $c !! GIO::Roles::File.new-file-obj($c, :!ref) )
       !!
       Nil;
   }
@@ -107,18 +141,20 @@ class GIO::FileEnumerator {
   { * }
 
   multi method iterate (
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
+                            :$raw        = False
   ) {
-    samewith($, $, $cancellable, $error, :$raw);
+    my $rv = samewith($, $, $cancellable, $error, :$raw);
+
+    $rv[0] ?? $rv.skip(1) !! Nil;
   }
   multi method iterate (
-    $out_info  is rw,
-    $out_child is rw,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+                            $out_info    is rw,
+                            $out_child   is rw,
+    GCancellable()          $cancellable =  GCancellable,
+    CArray[Pointer[GError]] $error       =  gerror,
+                            :$raw        =  False
   ) {
     my $oi = CArray[Pointer[GFileInfo]].new;
     $oi[0] = Pointer[GFileInfo].new;
@@ -136,12 +172,12 @@ class GIO::FileEnumerator {
     set_error($error);
 
     $out_info = $oi[0] ??
-      ($raw ?? $oi[0] !! GIO::FileInfo.new( $oi[0] ) )
+      ($raw ?? $oi[0] !! GIO::FileInfo.new( $oi[0], :!ref ) )
       !!
       Nil;
 
     $out_child = $oc[0] ??
-      ($raw ?? $oc[0] !! GTK::Compat::Roles::File.new-file-obj( $oc[0] ) )
+      ($raw ?? $oc[0] !! GIO::Roles::File.new-file-obj( $oc[0], :!ref ) )
       !!
       Nil;
 
@@ -149,9 +185,9 @@ class GIO::FileEnumerator {
   }
 
   method next_file (
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
+                            :$raw        = False
   )
     is also<next-file>
   {
@@ -160,35 +196,46 @@ class GIO::FileEnumerator {
     set_error($error);
 
     $rv ??
-      ( $raw ?? $rv !! GIO::FileInfo.new($rv) )
+      ( $raw ?? $rv !! GIO::FileInfo.new($rv, :!ref) )
       !!
       Nil;
   }
 
-  method next_files_async (
-    Int() $num_files,
-    Int() $io_priority,
-    GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
-  )
+  proto method next_files_async (|)
     is also<next-files-async>
-  {
+  { * }
+
+  multi method next_files_async (
+    Int()    $num_files,
+    Int()    $io_priority,
+             &callback,
+    gpointer $user_data    = gpointer
+  ) {
+    samewith($num_files, $io_priority, GCancellable, &callback, $user_data);
+  }
+  multi method next_files_async (
+    Int()          $num_files,
+    Int()          $io_priority,
+    GCancellable() $cancellable,
+                   &callback,
+    gpointer       $user_data    = gpointer
+  ) {
     my gint ($nf, $i) = ($num_files, $io_priority);
+
     g_file_enumerator_next_files_async(
       $!fe,
       $nf,
       $i,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method next_files_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror,
+                            :$raw    = False
   )
     is also<next-files-finish>
   {
@@ -197,7 +244,7 @@ class GIO::FileEnumerator {
     set_error($error);
 
     $rv ??
-      ( $raw ?? $rv !! GIO::FileInfo.new($rv) )
+      ( $raw ?? $rv !! GIO::FileInfo.new($rv, :!ref) )
       !!
       Nil;
   }

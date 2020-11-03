@@ -1,30 +1,44 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
-
-
-
 use GIO::Raw::Settings;
 
 use GLib::Value;
 
-use GLib::Roles::Properties;
+use GLib::Roles::Object;
 use GIO::Roles::Signals::Settings;
 
+our subset GSettingsAncestry is export of Mu
+  where GSettings | GObject;
+
 class GIO::Settings {
-  also does GLib::Roles::Properties;
+  also does GLib::Roles::Object;
   also does GIO::Roles::Signals::Settings;
 
   has GSettings $!s is implementor;
 
   submethod BUILD (:$settings) {
-    $!s = $settings;
+    self.setGSettings($settings) if $settings;
+  }
 
-    self.roleInit-Object;
+  method setGSettings (GSettingsAncestry $_) {
+    my $to-parent;
+
+    $!s = do {
+      when GSettings {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GSettings, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GSettings
@@ -32,6 +46,8 @@ class GIO::Settings {
   { $!s }
 
   multi method new (GSettings $settings, :$ref = True) {
+    return Nil unless $settings;
+
     my $o = self.bless( :$settings );
     $o.upref if $ref;
     $o;
@@ -44,17 +60,17 @@ class GIO::Settings {
   }
 
   multi method new (
-    Str() $schema_id,
+    Str()              $schema_id,
     GSettingsBackend() $backend,
-    Str() $path,
-    :$full is required
+    Str()              $path,
+                       :$full      is required
   ) {
     self.new_full($schema_id, $backend, $path);
   }
   method new_full (
-    Str() $schema_id,
+    Str()              $schema_id,
     GSettingsBackend() $backend,
-    Str() $path
+    Str()              $path
   )
     is also<new-full>
   {
@@ -64,9 +80,9 @@ class GIO::Settings {
   }
 
   multi method new (
-    Str() $schema_id,
+    Str()              $schema_id,
     GSettingsBackend() $settings_backend,
-    :$backend is required
+                       :$backend          is required
   ) {
     self.new_with_backend($schema_id, $settings_backend);
   }
@@ -79,17 +95,17 @@ class GIO::Settings {
   }
 
   multi method new (
-    Str() $schema_id,
+    Str()              $schema_id,
     GSettingsBackend() $backend,
-    Str() $path,
-    :backend_path(:$backend-path)
+    Str()              $path,
+                       :backend_path( :$backend-path )
   ) {
     self.new_with_backend_and_path($schema_id, $backend, $path);
   }
   method new_with_backend_and_path (
-    Str() $schema_id,
+    Str()              $schema_id,
     GSettingsBackend() $backend,
-    Str() $path
+    Str()              $path
   )
     is also<new-with-backend-and-path>
   {
@@ -116,11 +132,13 @@ class GIO::Settings {
         $gv = GLib::Value.new(
           self.prop_get('backend', $gv)
         );
-        return Nil unless $gv.object;
+        my $o = $gv.object;
+        return Nil unless $o;
 
-        my $rv = cast(GSettingsBackend, $gv.object);
-        $rv = GIO::SettingsBackend.new($rv) unless $raw;
-        $rv;
+        $o = cast(GSettingsBackend, $o);
+        return $o if $raw;
+
+        GIO::SettingsBackend.new($o) unless $raw;
       },
       STORE => -> $,  $val is copy {
         warn "{ &?ROUTINE.name } can not be modified after creation!"
@@ -161,7 +179,7 @@ class GIO::Settings {
     );
   }
 
-  # Type: gchar
+  # Type: Str
   method path is rw  {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
@@ -178,7 +196,7 @@ class GIO::Settings {
     );
   }
 
-  # Type: gchar
+  # Type: Str
   method schema-id is rw  is also<schema_id> {
     my GLib::Value $gv .= new( G_TYPE_STRING );
     Proxy.new(
@@ -203,11 +221,14 @@ class GIO::Settings {
         $gv = GLib::Value.new(
           self.prop_get('settings-schema', $gv)
         );
-        return Nil unless $gv.object;
 
-        my $rv = cast(GSettingsSchema, $gv.object);
-        $rv = GIO::Settings::Schema.new($rv) unless $raw;
-        $rv;
+        my $o = $gv.object;
+        return Nil unless $o;
+
+        $o = cast(GSettingsSchema, $o);
+        return $o if $raw;
+
+        GIO::Settings::Schema.new($o);
       },
       STORE => -> $, GSettingsSchema() $val is copy {
         warn "{ &?ROUTINE.name } can not be modified after creation!"
@@ -223,7 +244,7 @@ class GIO::Settings {
   }
 
   # Is originally:
-  # GSettings, gchar, gpointer --> void
+  # GSettings, Str, gpointer --> void
   method changed {
     self.connect-string($!s, 'changed');
   }
@@ -235,7 +256,7 @@ class GIO::Settings {
   }
 
   # Is originally:
-  # GSettings, gchar, gpointer --> void
+  # GSettings, Str, gpointer --> void
   method writable-changed is also<writable_changed> {
     self.connect-string($!s, 'writable-changed');
   }
@@ -246,10 +267,10 @@ class GIO::Settings {
   }
 
   method bind (
-    Str() $key,
+    Str()     $key,
     GObject() $object,
-    Str() $property,
-    Int() $flags
+    Str()     $property,
+    Int()     $flags
   ) {
     my GSettingsBindFlags $f = $flags;
 
@@ -257,14 +278,14 @@ class GIO::Settings {
   }
 
   method bind_with_mapping (
-    Str() $key,
-    GObject() $object,
-    Str() $property,
-    Int() $flags,
-    GSettingsBindGetMapping $get_mapping,
-    GSettingsBindSetMapping $set_mapping,
-    gpointer $user_data     = gpointer,
-    GDestroyNotify $destroy = gpointer
+    Str()          $key,
+    GObject()      $object,
+    Str()          $property,
+    Int()          $flags,
+                   &get_mapping,
+                   &set_mapping,
+    gpointer       $user_data    = gpointer,
+                   &destroy      = Callable
   )
     is also<bind-with-mapping>
   {
@@ -276,22 +297,22 @@ class GIO::Settings {
       $object,
       $property,
       $flags,
-      $get_mapping,
-      $set_mapping,
+      &get_mapping,
+      &set_mapping,
       $user_data,
-      $destroy
+      &destroy
     );
   }
 
   method bind_writable (
-    Str $key,
+    Str       $key,
     GObject() $object,
-    Str $property,
-    Int() $inverted
+    Str()     $property,
+    Int()     $inverted
   )
     is also<bind-writable>
   {
-    my gboolean $i = $inverted;
+    my gboolean $i = $inverted.so.Int;
 
     g_settings_bind_writable($!s, $key, $object, $property, $inverted);
   }
@@ -312,7 +333,7 @@ class GIO::Settings {
     my $s = g_settings_get_child($!s, $name);
 
     $s ??
-      ( $raw ?? $s !! GIO::Settings.new($s) )
+      ( $raw ?? $s !! GIO::Settings.new($s, :!ref) )
       !!
       Nil;
   }
@@ -346,13 +367,13 @@ class GIO::Settings {
   }
 
   method get_mapped (
-    Str() $key,
-    GSettingsGetMapping $mapping,
+    Str()    $key,
+             &mapping,
     gpointer $user_data = gpointer
   )
     is also<get-mapped>
   {
-    g_settings_get_mapped($!s, $key, $mapping, $user_data);
+    g_settings_get_mapped($!s, $key, &mapping, $user_data);
   }
 
   method get_string (Str() $key) is also<get-string> {
@@ -360,7 +381,7 @@ class GIO::Settings {
   }
 
   method get_strv (Str() $key) is also<get-strv> {
-    g_settings_get_strv($!s, $key);
+    CStringArrayToArray( g_settings_get_strv($!s, $key) );
   }
 
   method get_type is also<get-type> {
@@ -385,7 +406,7 @@ class GIO::Settings {
     my $v = g_settings_get_value($!s, $key);
 
     $v ??
-      ( $raw ?? $v !! GLib::Variant.new($v) )
+      ( $raw ?? $v !! GLib::Variant.new($v, :!ref) )
       !!
       Nil;
   }
@@ -436,7 +457,7 @@ class GIO::Settings {
 
   multi method set_strv(
     Str() $key,
-    @value
+          @value
   ) {
     samewith( $key, resolve-gstrv(@value) );
   }
@@ -485,8 +506,8 @@ class GIO::Settings {
 
   method unbind (
     GIO::Settings:U:
-    GObject() $object,
-    Str() $property
+    GObject()        $object,
+    Str()            $property
   ) {
     g_settings_unbind($object, $property);
   }

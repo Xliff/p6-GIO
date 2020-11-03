@@ -2,7 +2,13 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::NetworkAddress;
 
@@ -43,8 +49,8 @@ sub g_network_address_new_loopback (guint16 $port)
 { * }
 
 sub g_network_address_parse (
-  Str $host_and_port,
-  guint16 $default_port,
+  Str                     $host_and_port,
+  guint16                 $default_port,
   CArray[Pointer[GError]] $error
 )
   returns GSocketConnectable
@@ -53,8 +59,8 @@ sub g_network_address_parse (
 { * }
 
 sub g_network_address_parse_uri (
-  Str $uri,
-  guint16 $default_port,
+  Str                     $uri,
+  guint16                 $default_port,
   CArray[Pointer[GError]] $error
 )
   returns GSocketConnectable

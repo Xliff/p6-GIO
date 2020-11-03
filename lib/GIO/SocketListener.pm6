@@ -8,33 +8,57 @@ use GIO::Raw::Types;
 use GIO::Raw::SocketListener;
 
 use GLib::Value;
-
 use GIO::Socket;
 use GIO::SocketConnection;
 
-use GLib::Roles::Properties;
+use GLib::Roles::Object;
+use GIO::Roles::Signals::SocketListener;
+
+our subset GSocketListenerAncestry is export of Mu
+  where GSocketListener | GObject;
 
 class GIO::SocketListener {
-  also does GLib::Roles::Properties;
+  also does GLib::Roles::Object;
+  also does GIO::Roles::Signals::SocketListener;
 
   has GSocketListener $!sl is implementor;
 
   submethod BUILD (:$listener) {
-    self.setSocketListener($listener);
+    self.setSocketListener($listener) if $listener;
   }
 
   method setSocketListener(GSocketListener $_) {
-    $!sl = $_ ~~ GSocketListener ?? $_ !! cast(GSocketListener, $_);
+    my $to-parent;
 
-    self.roleInit-Properties;
+    $!sl = do {
+      when GSocketListener {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GSocketListener, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GSocketListener
     is also<GSocketListener>
   { $!sl }
 
-  method new {
-    self.bless( listener => g_socket_listener_new() );
+  multi method new (GSocketListenerAncestry $listener, :$ref = True) {
+    return Nil unless $listener;
+
+    my $o = self.bless( :$listener );
+    $o.ref if $ref;
+    $o;
+  }
+  multi method new {
+    my $listener = g_socket_listener_new();
+
+    $listener ?? self.bless( :$listener ) !! Nil;
   }
 
   # Type: gint
@@ -54,100 +78,57 @@ class GIO::SocketListener {
     );
   }
 
+  # Is originally:
+  # GSocketListener, GSocketListenerEvent, GSocket, gpointer --> void
+  method event {
+    self.connect-event($!sl);
+  }
+
   method accept (
-    GObject() $source_object,
-    GCancellable $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    GObject()               $source_object,
+    GCancellable()          $cancellable    = GCancellable,
+    CArray[Pointer[GError]] $error          = gerror,
+                            :$raw           = False
   ) {
     clear_error;
-    my $rv =
+    my $sc =
       g_socket_listener_accept($!sl, $source_object, $cancellable, $error);
     set_error($error);
 
-    $rv ??
-      ( $raw ?? $rv !! GIO::SocketConnection.new($rv) )
+    $sc ??
+      ( $raw ?? $sc !! GIO::SocketConnection.new($sc, :!ref) )
       !!
       Nil;
   }
 
-  method accept_async (
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
-  )
+  proto method accept_async (|)
     is also<accept-async>
-  {
-    g_socket_listener_accept_async($!sl, $cancellable, $callback, $user_data);
+  { * }
+
+  multi method accept_async (
+                   &callback,
+    gpointer       $user_data    = gpointer
+  ) {
+    samewith(GCancellable, &callback, $user_data);
+  }
+  multi method accept_async (
+    GCancellable() $cancellable,
+                   &callback,
+    gpointer       $user_data    = gpointer
+  ) {
+    g_socket_listener_accept_async($!sl, $cancellable, &callback, $user_data);
   }
 
   method accept_finish (
-    GAsyncResult() $result,
-    GObject() $source_object,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    GAsyncResult()          $result,
+    GObject()               $source_object,
+    CArray[Pointer[GError]] $error          = gerror,
+                            :$raw           = False
   )
     is also<accept-finish>
   {
     clear_error;
-    my $rv =
-      g_socket_listener_accept_finish($!sl, $result, $source_object, $error);
-    set_error($error);
-
-    $rv ??
-      ( $raw ?? $rv !! GIO::SocketConnection.new($rv) )
-      !!
-      Nil;
-  }
-
-  method accept_socket (
-    GObject() $source_object,
-    GCancellable $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
-  )
-    is also<accept-socket>
-  {
-    clear_error;
-    my $rv = g_socket_listener_accept_socket(
-      $!sl,
-      $source_object,
-      $cancellable,
-      $error
-    );
-    set_error($error);
-
-    $rv ??
-      ( $raw ?? $rv !! GIO::Socket.new($rv) )
-      !!
-      Nil;
-  }
-
-  method accept_socket_async (
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
-  )
-    is also<accept-socket-async>
-  {
-    g_socket_listener_accept_socket_async(
-      $!sl,
-      $cancellable,
-      $callback,
-      $user_data
-    );
-  }
-
-  method accept_socket_finish (
-    GAsyncResult() $result,
-    GObject() $source_object,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
-  )
-    is also<accept-socket-finish>
-  {
-    clear_error;
-    my $rv = g_socket_listener_accept_socket_finish(
+    my $sc = g_socket_listener_accept_finish(
       $!sl,
       $result,
       $source_object,
@@ -155,23 +136,92 @@ class GIO::SocketListener {
     );
     set_error($error);
 
-    $rv ??
-      ( $raw ?? $rv !! GIO::Socket.new($rv) )
+    $sc ??
+      ( $raw ?? $sc !! GIO::SocketConnection.new($sc, :!ref) )
+      !!
+      Nil;
+  }
+
+  method accept_socket (
+    GObject()               $source_object,
+    GCancellable            $cancellable    = GCancellable,
+    CArray[Pointer[GError]] $error          = gerror,
+                            :$raw           = False
+  )
+    is also<accept-socket>
+  {
+    clear_error;
+    my $s = g_socket_listener_accept_socket(
+      $!sl,
+      $source_object,
+      $cancellable,
+      $error
+    );
+    set_error($error);
+
+    $s ??
+      ( $raw ?? $s !! GIO::Socket.new($s, :!ref) )
+      !!
+      Nil;
+  }
+
+  proto method accept_socket_async (|)
+    is also<accept-socket-async>
+  { * }
+
+  multi method accept_socket_async (
+                   &callback,
+    gpointer       $user_data    = gpointer
+  ) {
+    samewith(GCancellable, &callback, $user_data);
+  }
+  multi method accept_socket_async (
+    GCancellable() $cancellable,
+                   &callback,
+    gpointer       $user_data    = gpointer
+  ) {
+    g_socket_listener_accept_socket_async(
+      $!sl,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+
+  method accept_socket_finish (
+    GAsyncResult()          $result,
+    GObject()               $source_object,
+    CArray[Pointer[GError]] $error          = gerror,
+                            :$raw           = False
+  )
+    is also<accept-socket-finish>
+  {
+    clear_error;
+    my $s = g_socket_listener_accept_socket_finish(
+      $!sl,
+      $result,
+      $source_object,
+      $error
+    );
+    set_error($error);
+
+    $s ??
+      ( $raw ?? $s !! GIO::Socket.new($s, :!ref) )
       !!
       Nil;
   }
 
   method add_address (
-    GSocketAddress() $address,
-    Int() $type,
-    Int() $protocol,
-    GObject() $source_object,
-    GSocketAddress() $effective_address,
-    CArray[Pointer[GError]] $error = gerror
+    GSocketAddress()        $address,
+    Int()                   $type,
+    Int()                   $protocol,
+    GObject()               $source_object      = GObject,
+    GSocketAddress()        $effective_address  = GSocketAddress,
+    CArray[Pointer[GError]] $error              = gerror
   )
     is also<add-address>
   {
-    my GSocketType $t = $type;
+    my GSocketType     $t = $type;
     my GSocketProtocol $p = $protocol;
 
     clear_error;
@@ -189,44 +239,73 @@ class GIO::SocketListener {
   }
 
   method add_any_inet_port (
-    GObject() $source_object,
-    CArray[Pointer[GError]] $error = gerror
+    GObject()               $source_object,
+    CArray[Pointer[GError]] $error          = gerror
   )
     is also<add-any-inet-port>
   {
     clear_error;
-    my $rv =
-      so g_socket_listener_add_any_inet_port($!sl, $source_object, $error);
+    my $rv = so g_socket_listener_add_any_inet_port(
+      $!sl,
+      $source_object,
+      $error
+    );
     set_error($error);
     $rv;
   }
 
-  method add_inet_port (
-    Int() $port,
-    GObject() $source_object,
-    CArray[Pointer[GError]] $error = gerror
-  )
+  proto method add_inet_port (|)
     is also<add-inet-port>
-  {
+  { * }
+
+  multi method add_inet_port (
+    Int()                   $port,
+    CArray[Pointer[GError]] $error          = gerror,
+    GObject()               :$source_object = GObject
+  ) {
+    samewith($port, $source_object, $error);
+  }
+  multi method add_inet_port (
+    Int()                   $port,
+    GObject()               $source_object,
+    CArray[Pointer[GError]] $error          = gerror
+  ) {
     my guint16 $p = $port;
 
     clear_error;
-    my $rv =
-      so g_socket_listener_add_inet_port($!sl, $p, $source_object, $error);
+    my $rv = so g_socket_listener_add_inet_port(
+      $!sl,
+      $p,
+      $source_object,
+      $error
+    );
     set_error($error);
     $rv;
   }
 
-  method add_socket (
-    GSocket() $socket,
-    GObject() $source_object,
-    CArray[Pointer[GError]] $error = gerror
-  )
+  proto method add_socket (|)
     is also<add-socket>
-  {
+  { * }
+
+  multi method add_socket (
+    GSocket()               $socket,
+    CArray[Pointer[GError]] $error          = gerror,
+    GObject()               :$source_object = GObject
+  ) {
+    samewith($socket, $source_object, $error);
+  }
+  multi method add_socket (
+    GSocket()               $socket,
+    GObject()               $source_object,
+    CArray[Pointer[GError]] $error          = gerror
+  ) {
     clear_error;
-    my $rv =
-      so g_socket_listener_add_socket($!sl, $socket, $source_object, $error);
+    my $rv = so g_socket_listener_add_socket(
+      $!sl,
+      $socket,
+      $source_object,
+      $error
+    );
     set_error($error);
     $rv;
   }

@@ -14,8 +14,8 @@ sub g_dbus_address_escape_value (Str $string)
 { * }
 
 sub g_dbus_address_get_for_bus_sync (
-  GBusType $bus_type,
-  GCancellable $cancellable,
+  GBusType                $bus_type,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns Str
@@ -24,18 +24,18 @@ sub g_dbus_address_get_for_bus_sync (
 { * }
 
 sub g_dbus_address_get_stream (
-  Str $address,
-  GCancellable $cancellable,
+  Str                 $address,
+  GCancellable        $cancellable,
   GAsyncReadyCallback $callback,
-  gpointer $user_data
+  gpointer            $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_dbus_address_get_stream_finish (
-  GAsyncResult $res,
-  Str $out_guid,
+  GAsyncResult            $res,
+  Str                     $out_guid,
   CArray[Pointer[GError]] $error
 )
   returns GIOStream
@@ -44,9 +44,9 @@ sub g_dbus_address_get_stream_finish (
 { * }
 
 sub g_dbus_address_get_stream_sync (
-  Str $address,
-  Str $out_guid,
-  GCancellable $cancellable,
+  Str                     $address,
+  Str                     $out_guid,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GIOStream

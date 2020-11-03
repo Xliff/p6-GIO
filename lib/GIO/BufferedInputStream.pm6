@@ -1,8 +1,9 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
+
+use NativeHelpers::Blob;
 
 use GIO::Raw::Types;
 use GIO::Raw::BufferedInputStream;
@@ -11,8 +12,8 @@ use GIO::FilterInputStream;
 
 use GIO::Roles::Seekable;
 
-our subset BufferedInputStreamAncestry is export of Mu
-  where GBufferedInputStream | GSeekable | FilterInputStreamAncestry;
+our subset GBufferedInputStreamAncestry is export of Mu
+  where GBufferedInputStream | GSeekable | GFilterInputStreamAncestry;
 
 class GIO::BufferedInputStream is GIO::FilterInputStream {
   also does GIO::Roles::Seekable;
@@ -20,20 +21,10 @@ class GIO::BufferedInputStream is GIO::FilterInputStream {
   has GBufferedInputStream $!bis is implementor;
 
   submethod BUILD (:$buffered-stream) {
-    given $buffered-stream {
-      when BufferedInputStreamAncestry {
-        self.setBufferedInputStream($_);
-      }
-
-      when GIO::BufferedInputStream {
-      }
-
-      default {
-      }
-    }
+    self.setGBufferedInputStream($buffered-stream) if $buffered-stream;
   }
 
-  method setBufferedInputStream (BufferedInputStreamAncestry $_) {
+  method setGBufferedInputStream (GBufferedInputStreamAncestry $_) {
     my $to-parent;
 
     $!bis = do {
@@ -53,8 +44,8 @@ class GIO::BufferedInputStream is GIO::FilterInputStream {
         cast(GBufferedInputStream, $_);
       }
     }
-    self.roleInit-Seekable unless $!s;
     self.setFilterInputStream($to-parent);
+    self.roleInit-Seekable;
   }
 
   method GIO::Raw::Definitions::GBufferedInputStream
@@ -64,21 +55,30 @@ class GIO::BufferedInputStream is GIO::FilterInputStream {
   proto method new (|)
   { * }
 
-  multi method new (BufferedInputStreamAncestry $buffered-stream) {
-    self.bless( :$buffered-stream );
+  multi method new (
+    GBufferedInputStreamAncestry $buffered-stream,
+                                 :$ref             = True)
+  {
+    return Nil unless $buffered-stream;
+
+    my $o = self.bless( :$buffered-stream );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (GIO::InputStream $base) {
-    self.bless(
-      buffered-stream => g_buffered_input_stream_new($base.GInputStream)
-    );
+    my $buffered-stream = g_buffered_input_stream_new($base.GInputStream);
+
+    $buffered-stream ?? self.bless( :$buffered-stream ) !! Nil;
+  }
+  multi method new (GInputStream() $base, Int() $size, :$sized is required) {
+    self.new_sized($base, $size);
   }
 
   method new_sized (GInputStream() $base, Int() $size) is also<new-sized> {
-    my gsize $s = $size;
+    my gsize $s               = $size;
+    my       $buffered-stream = g_buffered_input_stream_new_sized($base, $s);
 
-    self.bless(
-      buffered-stream => g_buffered_input_stream_new_sized($base, $s)
-    );
+    $buffered-stream ?? self.bless( :$buffered-stream ) !! Nil;
   }
 
   method buffer_size is rw is also<buffer-size> {
@@ -95,9 +95,9 @@ class GIO::BufferedInputStream is GIO::FilterInputStream {
   }
 
   method fill (
-    Int() $count,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Int()                   $count,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     my gsize $c = $count;
 
@@ -112,19 +112,19 @@ class GIO::BufferedInputStream is GIO::FilterInputStream {
   { * }
 
   multi method fill_async (
-    Int() $count,
-    Int() $io_priority,
-    &callback,
-    gpointer $user_data = gpointer
+    Int()    $count,
+    Int()    $io_priority,
+             &callback,
+    gpointer $user_data    = gpointer
   ) {
     samewith($count, $io_priority, GCancellable, &callback, $user_data);
   }
   multi method fill_async (
-    Int() $count,
-    Int() $io_priority,
+    Int()          $count,
+    Int()          $io_priority,
     GCancellable() $cancellable,
-    &callback,
-    gpointer $user_data = gpointer
+                   &callback,
+    gpointer       $user_data    = gpointer
   ) {
     my gsize $c = $count;
     my gint $i = $io_priority;
@@ -140,8 +140,8 @@ class GIO::BufferedInputStream is GIO::FilterInputStream {
   }
 
   method fill_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<fill-finish>
   {
@@ -166,10 +166,34 @@ class GIO::BufferedInputStream is GIO::FilterInputStream {
     unstable_get_type( self.^name, &g_buffered_input_stream_get_type, $n, $t );
   }
 
-  method peek (Blob() $buffer, Int() $offset, Int() $count) {
+  multi method peek (Int() $offset, Int() $count, :$raw = False) {
+    my $a = CArray[uint8].allocate($offset + $count);
+    samewith($a, $offset, $count);
+
+    $raw ?? $a !! Blob.new($a);
+  }
+  multi method peek (Buf $buffer, Int() $offset, Int() $count) {
+    samewith(
+      pointer-to($buffer, typed => uint8),
+      $offset,
+      $count
+    );
+  }
+  multi method peek (CArray[uint8] $buffer, Int() $offset, Int() $count) {
+    samewith(
+      cast(Pointer, $buffer),
+      $offset,
+      $count
+    );
+  }
+  multi method peek (
+    Pointer $buffer,
+    Int()   $offset,
+    Int()   $count,
+  ) {
     my gsize ($o, $c) = ($offset, $count);
 
-    g_buffered_input_stream_peek($!bis, $buffer, $offset, $count);
+    my $b = g_buffered_input_stream_peek($!bis, $buffer, $o, $c);
   }
 
   proto method peek_buffer (|)
@@ -179,29 +203,29 @@ class GIO::BufferedInputStream is GIO::FilterInputStream {
   multi method peek_buffer (:$all = False) {
     samewith($, :$all);
   }
-  multi method peek_buffer ($count is rw, :$all = False) {
+  multi method peek_buffer ($count is rw, :$raw = False, :$all = False) {
     my gsize $c = 0;
 
     # Minimize possibility of corruption by prepping buf in
     # stages
     my $b = g_buffered_input_stream_peek_buffer($!bis, $c);
     $count = $c;
-    my $buf = Buf.allocate($count, 0);
-    $buf[$_] = $b[$_] for ^$count;
+
+    my $buf = $raw ?? $b !! Buf.new( $b[^$count] );
 
     $all.not ?? $buf !! ($buf, $count);
   }
 
   method read_byte (
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   )
     is also<read-byte>
   {
     clear_error;
-    my $rv = g_buffered_input_stream_read_byte($!bis, $cancellable, $error);
+    my $br = g_buffered_input_stream_read_byte($!bis, $cancellable, $error);
     set_error($error);
-    $rv;
+    $br;
   }
 
 }

@@ -3,7 +3,6 @@ use v6.c;
 use Method::Also;
 
 use GIO::Raw::Types;
-
 use GIO::Raw::ListModel;
 
 use GLib::Roles::Object;
@@ -14,26 +13,16 @@ role GIO::Roles::ListModel {
 
   has GListModel $!lm;
 
-  submethod BUILD (:$model) {
-    $!lm = $model;
-  }
-
   method roleInit-ListModel {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!lm;
 
+    my \i = findProperImplementor(self.^attributes);
     $!lm = cast( GListModel, i.get_value(self) );
   }
 
   method GIO::Raw::Definitions::GListModel
     is also<GListModel>
   { $!lm }
-
-  # Consider this approach to initializing a role-based object.
-  method new-listmodel-obj (GListModel $model) is also<new_listmodel_obj> {
-    my $o = self.bless( :$model ) but GLib::Roles::Object;
-    $o.roleInit-Object;
-    $o;
-  }
 
   # Is originally:
   # GListModel, guint, guint, guint, gpointer --> void
@@ -60,10 +49,14 @@ role GIO::Roles::ListModel {
     g_list_model_get_n_items($!lm);
   }
 
-  method get_object (Int() $position) is also<get-object> {
+  method get_object (Int() $position, :$raw = False) is also<get-object> {
     my guint $p = $position;
+    my $o = g_list_model_get_object($!lm, $p);
 
-    g_list_model_get_object($!lm, $p);
+    $o ??
+      ( $raw ?? $o !! GLib::Roles::Object.new-object-obj($o) )
+      !!
+      Nil;
   }
 
   method emit_items_changed (
@@ -76,6 +69,44 @@ role GIO::Roles::ListModel {
     my guint ($p, $r, $a) = ($position, $removed, $added);
 
     g_list_model_items_changed($!lm, $p, $r, $a);
+  }
+
+}
+
+our subset GListModelAncestry is export of Mu
+  where GListModel | GObject;
+
+class GIO::ListModel does GLib::Roles::Object does GIO::Roles::ListModel {
+
+  submethod BUILD (:$model) {
+    self.setGListModel($model) if $model;
+  }
+
+  method setGListModel (GListModelAncestry $_) {
+    my $to-parent;
+
+    $!lm = do {
+      when GListModel {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GListModel, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GListModelAncestry $model, :$ref = True)
+    is also<new_listmodel_obj>
+  {
+    return Nil unless $model;
+
+    my $o = self.bless( :$model );
+    $o.ref if $ref;
+    $o;
   }
 
 }

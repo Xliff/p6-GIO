@@ -7,23 +7,45 @@ use GIO::Raw::VFS;
 
 use GLib::Roles::Object;
 
+our subset GVfsAncestry is export of Mu
+  where GVfs | GObject;
+
 class GIO::VFS {
   also does GLib::Roles::Object;
 
   has GVfs $!fs is implementor;
 
   submethod BUILD (:$vfs) {
-    $!fs = $vfs;
+    self.setGVfs($vfs) if $vfs;
+  }
 
-    self.roleInit-Object;
+  method setGVfs (GVfsAncestry $_) {
+    my $to-parent;
+
+    $!fs = do {
+      when GVfs {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GVfs, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GVfs
     is also<GVfs>
   { $!fs }
 
-  method new (GVfs $vfs) {
-    $vfs ?? self.bless(:$vfs) !! Nil;
+  method new (GVfs $vfs, :$ref = True) {
+    return Nil unless $vfs;
+
+    my $o = self.bless(:$vfs);
+    $o.ref if $ref;
+    $o;
   }
 
   method get_default is also<get-default> {
@@ -44,7 +66,7 @@ class GIO::VFS {
     my $f = g_vfs_get_file_for_path($!fs, $path);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::GFile.new-file-obj($f) )
+      ( $raw ?? $f !! GIO::File.new($f, :!ref) )
       !!
       Nil;
   }
@@ -55,7 +77,7 @@ class GIO::VFS {
     my $f = g_vfs_get_file_for_uri($!fs, $uri);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::GFile.new-file-obj($f) )
+      ( $raw ?? $f !! GIO::File.new($f, :!ref) )
       !!
       Nil;
   }
@@ -84,31 +106,31 @@ class GIO::VFS {
     my $f = g_vfs_parse_name($!fs, $parse_name);
 
     $f ??
-      ( $raw ?? $f !! GIO::Roles::GFile.new-file-obj($f) )
+      ( $raw ?? $f !! GIO::File.new($f, :!ref) )
       !!
       Nil;
   }
 
   method register_uri_scheme (
-    Str() $scheme,
-    GVfsFileLookupFunc $uri_func,
-    gpointer $uri_data,
-    GDestroyNotify $uri_destroy,
-    GVfsFileLookupFunc $parse_name_func,
-    gpointer $parse_name_data,
-    GDestroyNotify $parse_name_destroy
+    Str()              $scheme,
+                       &uri_func,
+    gpointer           $uri_data,
+                       &uri_destroy,
+                       &parse_name_func,
+    gpointer           $parse_name_data,
+                       &parse_name_destroy
   )
     is also<register-uri-scheme>
   {
     so g_vfs_register_uri_scheme(
       $!fs,
       $scheme,
-      $uri_func,
+      &uri_func,
       $uri_data,
-      $uri_destroy,
-      $parse_name_func,
+      &uri_destroy,
+      &parse_name_func,
       $parse_name_data,
-      $parse_name_destroy
+      &parse_name_destroy
     );
   }
 

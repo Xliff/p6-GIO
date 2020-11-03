@@ -3,7 +3,6 @@ use v6.c;
 use Method::Also;
 
 use GIO::Raw::Types;
-
 use GIO::Raw::BufferedOutputStream;
 
 use GIO::FilterOutputStream;
@@ -12,7 +11,7 @@ use GLib::Roles::Object;
 use GIO::Roles::Seekable;
 
 our subset BufferedOutputStreamAncestry is export of Mu
-  where GBufferedOutputStream | GSeekable | FilterOutputStreamAncestry;
+  where GBufferedOutputStream | GSeekable | GFilterOutputStreamAncestry;
 
 class GIO::BufferedOutputStream is GIO::FilterOutputStream {
   also does GIO::Roles::Seekable;
@@ -20,21 +19,13 @@ class GIO::BufferedOutputStream is GIO::FilterOutputStream {
   has GBufferedOutputStream $!bos is implementor;
 
   submethod BUILD (:$buffered-stream) {
-    given $buffered-stream {
-      when BufferedOutputStreamAncestry {
-        self.setBufferedOutputStream($_);
-      }
-
-      when GIO::BufferedOutputStream {
-      }
-
-      default {
-      }
-    }
+    self.setGBufferedOutputStream($buffered-stream) if $buffered-stream;
   }
 
-  method setBufferedOutputStream (BufferedOutputStreamAncestry $_) {
+  method setGBufferedOutputStream (BufferedOutputStreamAncestry $_) {
     my $to-parent;
+
+    say "BOS: $_" if $DEBUG;
 
     $!bos = do {
       when GBufferedOutputStream {
@@ -53,8 +44,8 @@ class GIO::BufferedOutputStream is GIO::FilterOutputStream {
         cast(GBufferedOutputStream, $_);
       }
     }
-    self.roleInit-Seekable unless $!s;
     self.setFilterOutputStream($to-parent);
+    self.roleInit-Seekable;
   }
 
   method GIO::Raw::Definitions::GBufferedOutputStream
@@ -64,21 +55,30 @@ class GIO::BufferedOutputStream is GIO::FilterOutputStream {
   proto method new (|)
   { * }
 
-  multi method new (BufferedOutputStreamAncestry $buffered-stream) {
-    self.bless( :$buffered-stream );
+  multi method new (
+    BufferedOutputStreamAncestry $buffered-stream,
+                                 :$ref             = True
+  ) {
+    return Nil unless $buffered-stream;
+
+    my $o = self.bless( :$buffered-stream );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (GIO::OutputStream $base) {
-    self.bless(
-      buffered-stream => g_buffered_output_stream_new($base.GOutputStream)
-    );
+    my $buffered-stream = g_buffered_output_stream_new($base.GOutputStream);
+
+    $buffered-stream ?? self.bless( :$buffered-stream ) !! Nil;
   }
 
+  multi method new (GOutputStream() $base, Int() $size, :$sized is required) {
+    self.new_sized($base, $size);
+  }
   method new_sized (GOutputStream() $base, Int() $size) is also<new-sized> {
-    my gsize $s = $size;
+    my gsize $s               = $size;
+    my       $buffered-stream = g_buffered_output_stream_new_sized($base, $s);
 
-    self.bless(
-      buffered-stream => g_buffered_output_stream_new_sized($base, $s)
-    );
+    $buffered-stream ?? self.bless( :$buffered-stream ) !! Nil;
   }
 
   method auto_grow is rw is also<auto-grow> {
@@ -87,7 +87,7 @@ class GIO::BufferedOutputStream is GIO::FilterOutputStream {
         so g_buffered_output_stream_get_auto_grow($!bos);
       },
       STORE => sub ($, Int() $auto_grow is copy) {
-        my gboolean $a = $auto_grow;
+        my gboolean $a = $auto_grow.so.Int;
 
         g_buffered_output_stream_set_auto_grow($!bos, $a);
       }

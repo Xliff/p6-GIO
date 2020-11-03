@@ -12,8 +12,8 @@ use GIO::Roles::Converter;
 use GIO::Roles::PollableOutputStream;
 
 our subset ConverterOutputStreamAncestry is export of Mu
-  where GConverterOutputStream     | GPollableOutputStream |
-        FilterOutputStreamAncestry;
+  where GConverterOutputStream       | GPollableOutputStream |
+        GFilterOutputStreamAncestry;
 
 class GIO::ConverterOutputStream is GIO::FilterOutputStream {
   also does GIO::Roles::Converter;
@@ -22,17 +22,7 @@ class GIO::ConverterOutputStream is GIO::FilterOutputStream {
   has GConverterOutputStream $!cos is implementor;
 
   submethod BUILD (:$convert-stream) {
-    given $convert-stream {
-      when ConverterOutputStreamAncestry {
-        self.setConverterOutputStream($convert-stream);
-      }
-
-      when GIO::ConverterOutputStream {
-      }
-
-      default {
-      }
-    }
+    self.setConverterOutputStream($convert-stream) if $convert-stream;
   }
 
   method setConverterOutputStream(ConverterOutputStreamAncestry $_) {
@@ -41,7 +31,7 @@ class GIO::ConverterOutputStream is GIO::FilterOutputStream {
     $!cos = do {
       when GConverterOutputStream {
         $to-parent = cast(GFilterOutputStream, $_);
-        $_
+        $_;
       }
 
       when GPollableOutputStream {
@@ -55,8 +45,8 @@ class GIO::ConverterOutputStream is GIO::FilterOutputStream {
         cast(GConverterOutputStream, $_);
       }
     }
-    self.roleInit-PollableOutputStream unless $!pos;
-    self.setFilterOutputStream($to-parent);
+    self.roleInit-PollableOutputStream;
+    self.setGFilterOutputStream($to-parent);
   }
 
   method GIO::Raw::Definitions::GConverterOutputStream
@@ -66,20 +56,27 @@ class GIO::ConverterOutputStream is GIO::FilterOutputStream {
   proto method new (|)
   { * }
 
-  multi method new (ConverterOutputStreamAncestry $convert-stream) {
-    self.bless( :$convert-stream );
+  multi method new (
+    ConverterOutputStreamAncestry $convert-stream,
+    :$ref = True
+  ) {
+    return Nil unless $convert-stream;
+
+    my $o = self.bless( :$convert-stream );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (GOutputStream() $base, GConverter() $converter) {
-    self.bless(
-      convert-stream => g_converter_output_stream_new($base, $converter)
-    );
+    my $convert-stream = g_converter_output_stream_new($base, $converter);
+
+    $convert-stream ?? self.bless( :$convert-stream ) !! Nil;
   }
 
   method get_converter (:$raw = False) is also<get-converter> {
     my $c = g_converter_output_stream_get_converter($!cos);
 
     $c ??
-      ( $raw ?? $c !! GIO::Roles::Converter.new-converter-obj($c) )
+      ( $raw ?? $c !! GIO::Converter.new($c, :!ref) )
       !!
       Nil;
   }
@@ -111,9 +108,15 @@ sub g_converter_output_stream_get_type ()
 
 sub g_converter_output_stream_new (
   GOutputStream $base_stream,
-  GConverter $converter
+  GConverter    $converter
 )
   returns GConverterOutputStream
   is native(gio)
   is export
 { * }
+
+# our %GIO::ConverterOutputStream::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::ConverterOutputStream::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_converter_output_stream_');
+# }

@@ -3,33 +3,25 @@ use v6.c;
 use Method::Also;
 
 use GIO::Raw::Types;
-
 use GIO::Raw::TlsBackend;
 
 use GIO::TlsDatabase;
 
+use GLib::Roles::Object;
+
 role GIO::Roles::TlsBackend {
   has GTlsBackend $!tb;
 
-  submethod BUILD (:$backend) {
-    $!tb = $backend;
-  }
-
   method roleInit-TlsBackend is also<roleInit_TlsBackend> {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!tb;
 
+    my \i = findProperImplementor(self.^attributes);
     $!tb = cast( GTlsBackend, i.get_value(self) );
   }
 
   method GIO::Raw::Definitions::GTlsBackend
     is also<GTlsBackend>
   { $!tb }
-
-  method new-tlsbackend-obj (GTlsBackend $backend)
-    is also<new_tlsbackend_obj>
-  {
-    self.bless( :$backend );
-  }
 
   method get_default (
     GIO::Roles::TlsBackend:U:
@@ -40,7 +32,7 @@ role GIO::Roles::TlsBackend {
     my $backend = g_tls_backend_get_default();
 
     $backend ??
-      ( $raw ?? $backend !! self.bless( :$backend ) )
+      ( $raw ?? $backend !! self.bless( :$backend , :!ref) )
       !!
       Nil;
   }
@@ -51,7 +43,7 @@ role GIO::Roles::TlsBackend {
         my $d = g_tls_backend_get_default_database($!tb);
 
         $d ??
-          ( $raw ?? $d !! GIO::TlsDatabase.new($d) )
+          ( $raw ?? $d !! GIO::TlsDatabase.new($d, :!ref) )
           !!
           Nil;
       },
@@ -104,5 +96,42 @@ role GIO::Roles::TlsBackend {
   method supports_tls is also<supports-tls> {
     so g_tls_backend_supports_tls($!tb);
   }
+
+}
+
+our subset GTlsBackendAncestry is export of Mu
+  where GTlsBackend | GObject;
+
+class GIO::TlsBackend does GLib::Roles::Object does GIO::Roles::TlsBackend {
+
+  submethod BUILD (:$backend) {
+    self.setGTlsBackend($backend) if $backend;
+  }
+
+  method selfSetGTlsBackend (GTlsBackendAncestry $_) {
+    my $to-parent;
+
+    $!tb = do {
+      when GTlsBackend {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GTlsBackend, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GTlsBackendAncestry $backend, :$ref = True) {
+    return Nil unless $backend;
+
+    my $o = self.bless( :$backend );
+    $o.ref if $ref;
+    $o;
+  }
+
 
 }

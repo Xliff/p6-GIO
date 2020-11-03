@@ -1,54 +1,58 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
 
 use GIO::Permission;
 
-our subset SimplePermissionAncestry is export of Mu
-  where GSimplePermission | GPermission;
+our subset GSimplePermissionAncestry is export of Mu
+  where GSimplePermission | GPermission | GObject;
 
 class GIO::SimplePermission is GIO::Permission {
   has GSimplePermission $!sp is implementor;
 
   submethod BUILD (:$simple-permission) {
-    given $simple-permission {
-      when SimplePermissionAncestry {
-        my $to-parent;
-        $!sp = do {
-          when GSimplePermission {
-            $to-parent = cast(GPermission, $_);
-            $_;
-          }
+    self.setGSimplePermission($simple-permission) if $simple-permission;
+  }
 
-          when GPermission {
-            $to-parent = $_;
-            cast(GSimplePermission, $_);
-          }
-        };
-        self.setPermission($to-parent);
-      }
+  method setGSimplePermission (GSimplePermissionAncestry $_) {
+    my $to-parent;
 
-      when GIO::SimplePermission {
+    $!sp = do {
+      when GSimplePermission {
+        $to-parent = cast(GPermission, $_);
+        $_;
       }
 
       default {
+        $to-parent = $_;
+        cast(GSimplePermission, $_);
       }
-    }
+    };
+    self.setGPermission($to-parent);
   }
 
   method GIO::Raw::Definitions::GSimplePermission
     is also<GSimplePermission>
   { $!sp }
 
-  method new (Int() $allowed) {
-    my gboolean $a = so $allowed;
-    my $sp = g_simple_permission_new($a);
+  proto method new (|)
+  { * }
 
-    $sp ?? self.bless( simple-permission => $sp ) !! Nil;
+  multi method new (GSimplePermissionAncestry $simple-permission, :$ref = True) {
+    return Nil unless $simple-permission,;
+
+    my $o = self.bless( :$simple-permission );
+    $o.upref if $ref;
+    $o;
+  }
+  multi method new (Int() $allowed) {
+    my gboolean $a                 = $allowed.so.Int;
+    my          $simple-permission = g_simple_permission_new($a);
+
+    $simple-permission ?? self.bless( :$simple-permission ) !! Nil;
   }
 
   method get_type is also<get-type> {
@@ -59,6 +63,7 @@ class GIO::SimplePermission is GIO::Permission {
 
 }
 
+### /usr/include/glib-2.0/gio/gsimplepermission.h
 
 sub g_simple_permission_get_type ()
   returns GType
@@ -71,3 +76,9 @@ sub g_simple_permission_new (gboolean $allowed)
   is native(gio)
   is export
 { * }
+
+# our %GIO::SimplePermission::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::SimplePermission::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_simple_permission_');
+# }

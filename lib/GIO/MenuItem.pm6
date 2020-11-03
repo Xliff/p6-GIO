@@ -10,13 +10,34 @@ use GLib::Variant;
 
 use GLib::Roles::Object;
 
+our subset GMenuItemAncestry is export of Mu
+  where GMenuItem | GObject;
+
 class GIO::MenuItem {
+  also does GLib::Roles::Object;
+
   has GMenuItem $!mitem is implementor;
 
   submethod BUILD(:$item) {
-    $!mitem = $item;
+    self.setGMenuItem($item) if $item;
+  }
 
-    self.roleInit-Object;
+  method setGMenuItem (GMenuItemAncestry $_) {
+    my $to-parent;
+
+    $!mitem = do {
+      when GMenuItem {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GMenuItem, $_);
+      }
+    }
+
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GMenuItem
@@ -26,8 +47,12 @@ class GIO::MenuItem {
     >
   { $!mitem }
 
-  multi method new (GMenuItem $item) {
-    self.bless(:$item);
+  multi method new (GMenuItemAncestry $item, :$ref = True) {
+    return Nil unless $item;
+
+    my $o = self.bless(:$item);
+    $o.ref if $ref;
+    $o;
   }
   multi method new (Str() $label, Str() $detailed_action) {
     my $item = g_menu_item_new($label, $detailed_action);
@@ -35,16 +60,25 @@ class GIO::MenuItem {
     $item ?? self.bless(:$item) !! Nil;
   }
 
+  multi method new (
+    GMenuModel() $m,
+    Int()        $item_index,
+                 :$model      is required
+  ) {
+    self.new_from_model($m, $item_index);
+  }
   method new_from_model (GMenuModel() $model, Int() $item_index)
     is also<new-from-model>
   {
     my gint $ii = $item_index;
-
     my $item = g_menu_item_new_from_model($model, $ii);
 
     $item ?? self.bless(:$item) !! Nil;
   }
 
+  multi method new (Str() $label, GMenuModel() $s, :$section is required) {
+    self.new_section($label, $s);
+  }
   method new_section (Str() $label, GMenuModel() $section)
     is also<new-section>
   {
@@ -53,6 +87,15 @@ class GIO::MenuItem {
     $i ?? self.bless( item => $i ) !! Nil;
   }
 
+  multi method new (
+    Str()        $label,
+    GMenuModel() $s,
+                 :sub_menu(
+                   :sub-menu(:$sub)
+                 ) is required
+  ) {
+    self.new_menu($label, $s);
+  }
   method new_submenu (Str() $label, GMenuModel() $submenu)
     is also<new-submenu>
   {
@@ -72,9 +115,9 @@ class GIO::MenuItem {
 
   # ↓↓↓↓ METHODS ↓↓↓↓
   method get_attribute_value (
-    Str() $attribute,
-    GVariantType $expected_type,
-    :$raw = False
+    Str()          $attribute,
+    GVariantType() $expected_type,
+                  :$raw            = False
   )
     is also<get-attribute-value>
   {
@@ -94,7 +137,7 @@ class GIO::MenuItem {
     my $mm = g_menu_item_get_link($!mitem, $link);
 
     $mm ??
-      ( $raw ?? $mm !! GTK::Compat::MenuModel.new($mm) )
+      ( $raw ?? $mm !! GIO::MenuModel.new($mm, :!ref) )
       !!
       Nil;
   }
@@ -106,7 +149,7 @@ class GIO::MenuItem {
   }
 
   method set_action_and_target_value (
-    Str() $action,
+    Str()      $action,
     GVariant() $target_value
   )
     is also<set-action-and-target-value>

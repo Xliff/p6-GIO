@@ -7,16 +7,24 @@ use NativeCall;
 use GIO::Raw::Types;
 use GIO::Raw::NetworkMonitor;
 
+use GLib::Value;
+
+use GLib::Roles::Object;
+use GIO::Roles::Signals::NetworkMonitor;
+
+use GIO::Roles::NetworkMonitorBase;
+
+class GIO::NetworkMonitor { ... }
+
 role GIO::Roles::NetworkMonitor {
+  also does GIO::Roles::Signals::NetworkMonitor;
+
   has GNetworkMonitor $!nm;
 
-  submethod BUILD (:$monitor) {
-    $!nm = $monitor;
-  }
-
   method roleInit-NetworkMonitor is also<roleInit_NetworkMonitor> {
+    return if $!nm;
+
     my \i = findProperImplementor(self.^attributes);
-    
     $!nm = cast( GNetworkMonitor, i.get_value(self) );
   }
 
@@ -24,31 +32,47 @@ role GIO::Roles::NetworkMonitor {
     is also<GNetworkMonitor>
   { $!nm }
 
-  method new-networkmonitor-obj (GNetworkMonitor $monitor)
-    is also<new_networkmonitor_obj>
-  {
-    self.bless( :$monitor );
+  # Is originally:
+  # GNetworkMonitor, gboolean, gpointer --> void
+  method network-changed {
+    self.connect-network-changed($!nm);
   }
 
   method can_reach (
-    GSocketConnectable() $connectable,
-    GCancellable $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GSocketConnectable()    $connectable,
+    GCancellable()          $cancellable  = GCancellable,
+    CArray[Pointer[GError]] $error        = gerror
   )
     is also<can-reach>
   {
     clear_error;
-    my $rv =
-      g_network_monitor_can_reach($!nm, $connectable, $cancellable, $error);
+    my $rv = g_network_monitor_can_reach(
+      $!nm,
+      $connectable,
+      $cancellable,
+      $error
+    );
     set_error($error);
     $rv;
   }
 
-  method can_reach_async (
+  proto method can_reach_async (|)
+    is also<can-reach-async>
+  { * }
+
+  multi method can_reach_async (
     GSocketConnectable() $connectable,
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+                         &callback,
+    gpointer             $user_data    = gpointer,
+    GCancellable()       :$cancellable = GCancellable
+  ) {
+    samewith($connectable, $cancellable, &callback, $user_data);
+  }
+  multi method can_reach_async (
+    GSocketConnectable() $connectable,
+    GCancellable()       $cancellable,
+                         &callback,
+    gpointer             $user_data    = gpointer
   )
     is also<can-reach-async>
   {
@@ -56,14 +80,14 @@ role GIO::Roles::NetworkMonitor {
       $!nm,
       $connectable,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method can_reach_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<can-reach-finish>
   {
@@ -73,7 +97,12 @@ role GIO::Roles::NetworkMonitor {
     $rv;
   }
 
-  method get_connectivity is also<get-connectivity> {
+  method get_connectivity
+    is also<
+      get-connectivity
+      connectivity
+    >
+  {
     GNetworkConnectivityEnum( g_network_monitor_get_connectivity($!nm) );
   }
 
@@ -86,7 +115,7 @@ role GIO::Roles::NetworkMonitor {
     my $nm = g_network_monitor_get_default();
 
     $nm ??
-      ( $raw ?? $nm !! GIO::Roles::NetworkMonitor.new-networkmonitor-obj($nm) )
+      ( $raw ?? $nm !! GIO::NetworkMonitor.new($nm, :!ref) )
       !!
       Nil;
   }
@@ -115,6 +144,44 @@ role GIO::Roles::NetworkMonitor {
     state ($n, $t);
 
     unstable_get_type( self.^name, &g_network_monitor_get_type, $n, $t );
+  }
+
+}
+
+our subset GNetworkMonitorAncestry is export of Mu
+  where GNetworkMonitor | GNetworkMonitorBaseAncestry;
+
+class GIO::NetworkMonitor is GIO::NetworkMonitorBase {
+  also does GLib::Roles::Object;
+  also does GIO::Roles::NetworkMonitor;
+
+  submethod BUILD (:$monitor, :$init, :$cancellable) {
+    self.setGNetworkMonitor($monitor, :$init, :$cancellable) if $monitor;
+  }
+
+  method setGNetworkMonitor (GNetworkMonitorAncestry $_, :$init, :$cancellable) {
+    my $to-parent;
+
+    $!nm = do {
+      when GNetworkMonitor {
+        $to-parent = cast(GNetworkMonitorBase, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GNetworkMonitorBase, $_);
+      }
+    }
+    self.setGNetworkMonitorBase($to-parent, :$init, :$cancellable);
+  }
+
+  multi method new (GNetworkMonitorAncestry $monitor, :$ref = True) {
+    return Nil unless $monitor;
+
+    my $o = self.bless( :$monitor );
+    $o.ref if $ref;
+    $o;
   }
 
 }

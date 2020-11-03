@@ -2,7 +2,13 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::AsyncResult;
 
@@ -31,7 +37,7 @@ sub g_async_result_is_tagged (GAsyncResult $res, gpointer $source_tag)
 { * }
 
 sub g_async_result_legacy_propagate_error (
-  GAsyncResult $res,
+  GAsyncResult            $res,
   CArray[Pointer[GError]] $error
 )
   returns uint32

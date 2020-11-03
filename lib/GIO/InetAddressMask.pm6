@@ -10,14 +10,32 @@ use GIO::InetAddress;
 
 use GLib::Roles::Object;
 
+our subset GInetAddressMaskAncestry is export of Mu
+  where GInetAddressMask | GObject;
+
 class GIO::InetAddressMask {
   also does GLib::Roles::Object;
 
   has GInetAddressMask $!iam is implementor;
 
   submethod BUILD (:$mask) {
-    $!iam = $mask;
+    self.setGInetAddressMask($mask) if $mask;
+  }
 
+  method setGInetAddressMask (GInetAddressMaskAncestry $_) {
+    my $to-parent;
+
+    $!iam = do {
+      when GInetAddressMask {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GInetAddress, $_);
+      }
+    }
     self.roleInit-Object;
   }
 
@@ -25,24 +43,31 @@ class GIO::InetAddressMask {
     is also<GInetAddressMask>
   { $!iam }
 
-  multi method new (GInetAddressMask $mask) {
-    self.bless( :$mask );
+  multi method new (GInetAddressMaskAncestry $mask, :$ref = True) {
+    return Nil unless $mask;
+
+    my $o = self.bless( :$mask );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (
-    GInetAddress() $addr,
-    guint $length,
-    CArray[Pointer[GError]] $error = gerror
+    GInetAddress()          $addr,
+    Int()                   $length,
+    CArray[Pointer[GError]] $error   = gerror
   ) {
+    my guint $l = $length;
+
     clear_error;
-    my $rv = g_inet_address_mask_new($addr, $length, $error);
+    my $mask = g_inet_address_mask_new($addr, $l, $error);
     set_error($error);
-    self.bless( mask => $rv ) if $rv;
+
+    $mask ?? self.bless( :$mask ) !! Nil;
   }
 
   multi method new(
-    Str() $mask_string,
-    CArray[Pointer[GError]] $error = gerror,
-    :$string is required
+    Str()                   $mask_string,
+    CArray[Pointer[GError]] $error        =  gerror,
+                            :$string      is required
   ) {
     GIO::InetAddressMask.new_from_string($mask_string, $error);
   }
@@ -53,9 +78,10 @@ class GIO::InetAddressMask {
     is also<new-from-string>
   {
     clear_error;
-    my $rv = g_inet_address_mask_new_from_string($mask_string, $error);
+    my $mask = g_inet_address_mask_new_from_string($mask_string, $error);
     set_error($error);
-    self.bless( mask => $rv ) if $rv;
+
+    $mask ?? self.bless( :$mask ) !! Nil;
   }
 
   method equal (GInetAddressMask() $mask2) {
@@ -69,7 +95,11 @@ class GIO::InetAddressMask {
     >
   {
     my $a = g_inet_address_mask_get_address($!iam);
-    $raw ?? $a !! GIO::InetAddress.new($a);
+
+    $a ??
+      ( $raw ?? $a !! GIO::InetAddress.new($a, :!ref) )
+      !!
+      Nil;
   }
 
   method get_family

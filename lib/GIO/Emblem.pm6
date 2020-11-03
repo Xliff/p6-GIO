@@ -3,11 +3,13 @@ use v6.c;
 use Method::Also;
 
 use GIO::Raw::Types;
-
 use GIO::Raw::Emblem;
 
 use GLib::Roles::Object;
 use GIO::Roles::Icon;
+
+our subset GEmblemAncestry is export of Mu
+  when GEmblem | GObject;
 
 class GIO::Emblem {
   also does GLib::Roles::Object;
@@ -15,28 +17,52 @@ class GIO::Emblem {
   has GEmblem $!e is implementor;
 
   submethod BUILD (:$emblem) {
-    $!e = $emblem;
+    self.setGEmblem($emblem) if $emblem;
+  }
 
-    self.roleInit-Object;
+  method setGEmblem (GEmblemAncestry $_) {
+    my $to-parent;
+
+    $!e = do {
+      when GEmblem {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GEmblem, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   multi method GIO::Raw::Definitions::GEmblem
     is also<GEmblem>
   { $!e }
 
-  multi method new (GEmblem $emblem) {
-    self.bless( :$emblem );
+  multi method new (GEmblem $emblem, :$ref = True) {
+    return Nil unless $emblem;
+
+    my $o = $emblem ?? self.bless( :$emblem ) !! Nil;
+    $o.ref if $ref;
+    $o;
   }
   multi method new (GIcon() $icon) {
-    self.bless( emblem => g_emblem_new($icon) );
+    my $emblem = g_emblem_new($icon);
+
+    $emblem ?? self.bless( :$emblem ) !! Nil;
   }
 
   multi method new_with_origin (GIcon() $icon, Int() $origin)
     is also<new-with-origin>
   {
-    my GEmblemOrigin $o = $origin;
+    my GEmblemOrigin $o      = $origin;
+    my               $emblem = g_emblem_new_with_origin($icon, $o);
 
-    self.bless( emblem => g_emblem_new_with_origin($icon, $o) );
+    #say "E: $emblem";
+
+    $emblem ?? self.bless( :$emblem ) !! Nil;
   }
 
   method get_icon (:$raw = False)
@@ -49,7 +75,7 @@ class GIO::Emblem {
     my $i = g_emblem_get_icon($!e);
 
     $i ??
-      ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i) )
+      ( $raw ?? $i !! GIO::Icon.new($i, :!ref) )
       !!
       Nil
   }

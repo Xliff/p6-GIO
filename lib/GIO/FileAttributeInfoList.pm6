@@ -3,8 +3,6 @@ use v6.c;
 use Method::Also;
 
 use GIO::Raw::Types;
-
-
 use GIO::Raw::FileAttributeInfoList;
 
 use GIO::FileInfo;
@@ -21,8 +19,17 @@ class GIO::FileAttributeInfoList {
     is also<GFileAttributeInfoList>
   { $!fail }
 
-  method new {
-    self.bless( list => g_file_attribute_info_list_new() );
+  multi method new (GFileAttributeInfoList $list, :$ref = True) {
+    return Nil unless $list;
+    
+    my $o = $list ?? self.bless( :$list ) !! Nil;
+    $o.ref if $ref;
+    $o;
+  }
+  multi method new {
+    my $list = g_file_attribute_info_list_new();
+
+    $list ?? self.bless( :$list ) !! Nil;
   }
 
   method add (Str() $name, Int() $type, Int() $flags) {

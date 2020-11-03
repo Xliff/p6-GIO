@@ -2,7 +2,7 @@ use v6.c;
 
 use Test;
 
-use GTK::Compat::Types;
+use GIO::Raw::Types;
 
 use GIO::FileAttributeMatcher;
 
@@ -120,13 +120,16 @@ sub test-subtract {
   );
 
   for @subtractions {
-    my ($m, $s) = .[0,1]».&{ GIO::FileAttributeMatcher.new($_) };
+    my ($m, $s) = .[0, 1]».&{ GIO::FileAttributeMatcher.new($_) };
     my $r = $m.subtract($s);
-
+    my $m-any = sub { ~($m // 'Any') };
+    my $s-any = sub { ~($s // 'Any') };
+    my $r-any = sub { ~($r // 'Any') };
     if .[2] {
-      is  ~$r, .[2],  " FAM('{~$m}') - FAM('{~$s}') = FAM('{~$r}')";
+      is  ~($r // ''), .[2],  " FAM('{ $m-any() }') - FAM('{ $s-any() }') = FAM('{
+                        $r-any() }')";
     } else {
-      nok  ~$r,       " FAM('{~$m}') - FAM('{~$s}') = Nil";
+      nok  ~($r // '')\,       " FAM('{ $m-any() }') - FAM('{ $s-any() }') = Nil";
     }
   }
 }

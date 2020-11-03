@@ -26,7 +26,7 @@ sub g_filter_input_stream_get_close_base_stream (GFilterInputStream $stream)
 
 sub g_filter_input_stream_set_close_base_stream (
   GFilterInputStream $stream,
-  gboolean $close_base
+  gboolean           $close_base
 )
   is native(gio)
   is export

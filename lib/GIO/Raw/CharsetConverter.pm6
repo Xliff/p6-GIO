@@ -19,8 +19,8 @@ sub g_charset_converter_get_type ()
 { * }
 
 sub g_charset_converter_new (
-  Str $to_charset,
-  Str $from_charset,
+  Str                     $to_charset,
+  Str                     $from_charset,
   CArray[Pointer[GError]] $error
 )
   returns GCharsetConverter
@@ -36,7 +36,7 @@ sub g_charset_converter_get_use_fallback (GCharsetConverter $converter)
 
 sub g_charset_converter_set_use_fallback (
   GCharsetConverter $converter,
-  gboolean $use_fallback
+  gboolean          $use_fallback
 )
   is native(gio)
   is export

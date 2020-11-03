@@ -7,7 +7,7 @@ use GIO::Raw::SocketControlMessage;
 
 use GLib::Roles::Object;
 
-our subset SocketControlMessageAncestry is export of Mu
+our subset GSocketControlMessageAncestry is export of Mu
   where GSocketControlMessage | GObject;
 
 class GIO::SocketControlMessage {
@@ -16,48 +16,56 @@ class GIO::SocketControlMessage {
   has GSocketControlMessage $!scm is implementor;
 
   submethod BUILD (:$message) {
-    given $message {
-      when SocketControlMessageAncestry {
-        self.setSocketControlMessage($message);
-      }
+    self.setSocketControlMessage($message) if $message;
+  }
 
-      when GIO::SocketControlMessage {
+  method setSocketControlMessage (GSocketControlMessageAncestry $_) {
+    my $to-parent;
+
+    $!scm = do {
+      when GSocketControlMessage {
+        $to-parent = cast(GObject, $_);
+        $_;
       }
 
       default {
+        $to-parent = $_;
+        cast(GSocketControlMessage, $_);
       }
     }
-  }
-
-  method setSocketControlMessage (SocketControlMessageAncestry $_) {
-    $!scm =
-      $_ ~~ GSocketControlMessage ?? $_ !! cast(GSocketControlMessage, $_);
-
-    # cw: xxx -NOTE- xxx
-    # There is a wasted cast here. Must figure out a better mechanism to handle
-    # descendant objects. The best solution would probably be to make GObject
-    # a class!
-    self.roleInit-Object;
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GSocketControlMessage
     is also<GSocketControlMessage>
   { * }
 
-  multi method new (SocketControlMessageAncestry $message) {
-    self.bless( :$message )
+  proto method new (|)
+  { * }
+
+  multi method new (GSocketControlMessageAncestry $message, :$ref = True) {
+    return Nil unless $message;
+
+    my $o = self.bless( :$message );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (Int() $level, Int() $type, Int() $size, gpointer $data) {
-    self.deserialize($level, $type, $size, $data);
+    GIO::SocketControlMessage.deserialize($level, $type, $size, $data);
   }
 
-  method deserialize (Int() $level, Int() $type, Int() $size, gpointer $data) {
+  method deserialize (
+    GIO::SocketControlMessage:U:
+    Int()    $level,
+    Int()    $type,
+    Int()    $size,
+    gpointer $data
+  ) {
     my gint ($l, $t) = ($level, $type);
     my gsize $s = $size;
+    my       $message = g_socket_control_message_deserialize($l, $t, $s, $data);
 
-    self.bless(
-      message => g_socket_control_message_deserialize($l, $t, $s, $data)
-    );
+    $message ?? self.bless( :$message ) !! Nil;
   }
 
   method get_level

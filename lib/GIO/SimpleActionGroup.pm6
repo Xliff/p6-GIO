@@ -9,7 +9,7 @@ use GLib::Roles::Object;
 use GIO::Roles::ActionGroup;
 use GIO::Roles::ActionMap;
 
-our subset ActionGroupAncestry is export of Mu
+our subset GSimpleActionGroupAncestry is export of Mu
   where GSimpleActionGroup | GActionGroup | GActionMap;
 
 class GIO::SimpleActionGroup {
@@ -20,25 +20,46 @@ class GIO::SimpleActionGroup {
   has GSimpleActionGroup $!sag is implementor;
 
   submethod BUILD (:$group) {
-    with $group {
-      $!sag = do {
-        when GSimpleActionGroup { $_ }
-        when GActionGroup       { $!ag = cast(GActionGroup, $_);   proceed; }
-        when GActionMap         { $!actmap = cast(GActionMap, $_); proceed; }
-
-        when GActionGroup |
-             GActionMap         { cast(GSimpleActionGroup, $_) }
-      }
-      self.roleInit-Object;
-      self.roleInit-ActionMap   unless $!actmap;
-      self.roleInit-ActionGroup unless $!ag;
-    } else {
-      die 'Undefined value passed to GIO::SimpleActionGroup.new';
-    }
+    self.setGSimpleActionGroup($group) if $group;
   }
 
-  multi method new (ActionGroupAncestry $group) {
-    self.bless( :$group );
+  method setGSimpleActionGroup (GSimpleActionGroupAncestry $_) {
+    my $to-parent;
+
+    $!sag = do {
+      when GSimpleActionGroup {
+          $to-parent = cast(GObject, $_);
+          $_
+      }
+
+      when GActionGroup {
+        $to-parent = cast(GObject, $_);
+        $!ag = $_;
+        cast(GSimpleActionGroup, $_)
+      }
+
+      when GActionMap {
+        $to-parent = cast(GObject, $_);
+        $!actmap = $_;
+        cast(GSimpleActionGroup, $_);
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GSimpleActionGroup, $_)
+      }
+    }
+    self!setObject($to-parent);
+    self.roleInit-ActionMap;
+    self.roleInit-ActionGroup;
+  }
+
+  multi method new (GSimpleActionGroupAncestry $group, :$ref = True) {
+    return Nil unless $group;
+
+    my $o = self.bless( :$group );
+    $o.ref if $ref;
+    $o;
   }
   multi method new {
     my $group = g_simple_action_group_new();
@@ -66,3 +87,9 @@ sub g_simple_action_group_new ()
   is native(gio)
   is export
   { * }
+
+# our %GIO::SimpleActionGroup::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::SimpleActionGroup::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_simple_action_group_');
+# }

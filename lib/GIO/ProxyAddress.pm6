@@ -8,23 +8,13 @@ use GIO::Raw::ProxyAddress;
 use GIO::InetSocketAddress;
 
 our subset ProxyAddressAncestry is export of Mu
-  where GProxyAddress | InetSocketAddressAncestry;
+  where GProxyAddress | GInetSocketAddressAncestry;
 
 class GIO::ProxyAddress is GIO::InetSocketAddress {
   has GProxyAddress $!pa is implementor;
 
   submethod BUILD (:$proxy-address) {
-    given $proxy-address {
-      when ProxyAddressAncestry {
-        self.setProxyAddress($proxy-address);
-      }
-
-      when GIO::ProxyAddress {
-      }
-
-      default {
-      }
-    }
+    self.setProxyAddress($proxy-address) if $proxy-address;
   }
 
   method setProxyAddress(ProxyAddressAncestry $_) {
@@ -45,33 +35,37 @@ class GIO::ProxyAddress is GIO::InetSocketAddress {
   }
 
   method GIO::Raw::Definitions::GProxyAddress
+    is also<GProxyAddress>
   { $!pa }
 
-  multi method new (ProxyAddressAncestry $proxy-address) {
-    self.bless( :$proxy-address );
+  multi method new (ProxyAddressAncestry $proxy-address, :$ref = True) {
+    return Nil unless $proxy-address;
+
+    my $o = self.bless( :$proxy-address );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (
     GInetAddress() $inetaddr,
-    Int() $port,
-    Str() $protocol,
-    Str() $dest_hostname,
-    Int() $dest_port,
-    Str() $username,
-    Str() $password
+    Int()          $port,
+    Str()          $protocol,
+    Str()          $dest_hostname,
+    Int()          $dest_port,
+    Str()          $username,
+    Str()          $password
   ) {
     my guint16 ($p, $dp) = ($port, $dest_port);
-
-    self.bless(
-      proxy-address => g_proxy_address_new(
-        $inetaddr,
-        $p,
-        $protocol,
-        $dest_hostname,
-        $dp,
-        $username,
-        $password
-      )
+    my $proxy-address    = g_proxy_address_new(
+      $inetaddr,
+      $p,
+      $protocol,
+      $dest_hostname,
+      $dp,
+      $username,
+      $password
     );
+
+    $proxy-address ?? self.bless( :$proxy-address ) !! Nil;
   }
 
   method get_destination_hostname

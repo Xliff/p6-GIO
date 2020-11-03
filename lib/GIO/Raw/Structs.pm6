@@ -8,24 +8,76 @@ use GIO::Raw::Definitions;
 
 unit package GIO::Raw::Structs;
 
+multi sub resolve-carray ($_, $cn = '', :$type = uint8) is raw {
+  say "resolve-carray given: { .^name }" if $DEBUG;
+
+  my \CA := CArray.^parameterize[$type];
+
+  return CA if $_ =:= Any || .^shortname eq 'Any';
+
+  when $_ =:= Pointer  { CA                                       }
+  when Array           { CA.new( $_ )                             }
+  when Blob | CArray   { CA = CArray.^parameterize[.of]; proceed  }
+  when Blob            { CA.new( .Array )                         }
+  when CArray          { CA.new( $_ )                             }
+  when Pointer         { cast(CA, $_)                             }
+  when Str             { CA.new( .comb )                          }
+
+  default      { die "Unknown type '{ .^name }' used for { $cn }.buffer!" }
+}
+
+sub resolve-pointer ($_, $cn = '') is raw {
+  say "resolve-buffer given: { .^name }" if $DEBUG;
+
+  return Pointer if $_ =:= Any || .^shortname eq 'Any';
+
+  when $_ =:= Pointer   { Pointer                                      }
+  when Array            { cast( Pointer, CArray[uint8].new( $_ ) )     }
+  when Blob             { cast( Pointer, CArray[uint8].new( .Array ) ) }
+  when CArray           { cast( Pointer, $_ )                          }
+  when Pointer          { Pointer.new(+$_)                             }
+  when Str              { cast( Pointer, explicitly-manage($_) )       }
+
+  default      { die "Unknown type '{ .^name }' used for { $cn }.buffer!" }
+}
+
 class GInputVector  is repr('CStruct') does GLib::Roles::Pointers is export {
-  has Pointer $.buffer;
-  has gssize  $.size;
+  has Pointer       $.buffer;
+  has gssize        $.size;
+
+  submethod BUILD (:$buffer, :$!size) {
+    $!buffer := resolve-pointer($buffer, ::?CLASS.^shortname);
+  }
+
+  multi method new ($buffer, $size) { self.bless(:$buffer, :$size) }
+  multi method new                  { self.bless( size => 0 )      }
 }
 
 class GOutputVector is repr('CStruct') does GLib::Roles::Pointers is export {
-  has Pointer $.buffer;
-  has gssize  $.size;
+  has Pointer       $.buffer;
+  has gssize        $.size;
+
+  submethod BUILD (:$buffer, Int() :$!size) {
+    $!buffer := resolve-pointer($buffer, ::?CLASS.^shortname);
+  }
+
+  multi method new ($buffer, $size) { self.bless(:$buffer, :$size) }
+  multi method new                  { self.bless(size => 0)        }
+}
+
+class GSocketControlMessage is repr('CStruct') does GLib::Roles::Pointers is export {
+  HAS GObject       $.parent;
+  has Pointer       $!priv;                   #= GSocketControlMessagePrivate (not included)
 }
 
 class GInputMessage is repr('CStruct') does GLib::Roles::Pointers is export {
-  has Pointer       $.address;                # GSocketAddress **
-  has GInputVector  $.vectors;                # GInputVector *
+  has Pointer       $.address;                #= GSocketAddress **
+  has GInputVector  $.vectors;                #= GInputVector *
   has guint         $.num_vectors;
   has gsize         $.bytes_received;
   has gint          $.flags;
-  has Pointer       $.control_messages;       # GSocketControlMessage ***
-  has CArray[guint] $.num_control_messages;   # Pointer with 1 element == *guint
+  has Pointer       $.control_messages;       #= GSocketControlMessage ***
+  has CArray[guint] $.num_control_messages;   #= Pointer with 1 element == *guint
 }
 
 class GOutputMessage is repr('CStruct') does GLib::Roles::Pointers is export {
@@ -38,10 +90,10 @@ class GOutputMessage is repr('CStruct') does GLib::Roles::Pointers is export {
 };
 
 class GPermission is repr('CStruct') does GLib::Roles::Pointers is export {
-  has uint64 $.dummy1;
-  has uint64 $.dummy2;
-  has uint64 $.dummy3;
-  has uint64 $.dummy4;
+  has uint64        $.dummy1;
+  has uint64        $.dummy2;
+  has uint64        $.dummy3;
+  has uint64        $.dummy4;
 }
 
 class GFileAttributeInfoList is repr('CStruct') does GLib::Roles::Pointers is export {

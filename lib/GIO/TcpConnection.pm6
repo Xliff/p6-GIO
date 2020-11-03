@@ -1,34 +1,23 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
 
 use GIO::SocketConnection;
 
-our subset TcpConnectionAncestry is export of Mu
-  where GTcpConnection | SocketConnectionAncestry;
+our subset GTcpConnectionAncestry is export of Mu
+  where GTcpConnection | GSocketConnectionAncestry;
 
 class GIO::TcpConnection is GIO::SocketConnection {
   has GTcpConnection $!tc is implementor;
 
   submethod BUILD (:$tcp-connection) {
-    given $tcp-connection {
-      when TcpConnectionAncestry {
-        self.setTcpConnection($tcp-connection);
-      }
-
-      when GIO::TcpConnection {
-      }
-
-      default {
-      }
-    }
+    self.setGTcpConnection($tcp-connection) if $tcp-connection;
   }
 
-  method setTcpConnection (TcpConnectionAncestry $_) {
+  method setTcpConnection (GTcpConnectionAncestry $_) {
     my $to-parent;
 
     $!tc = do {
@@ -42,26 +31,35 @@ class GIO::TcpConnection is GIO::SocketConnection {
         cast(GTcpConnection, $_);
       }
     }
-    self.setSocketConnection($to-parent);
+    self.setGSocketConnection($to-parent);
   }
 
   method GIO::Raw::Definitions::GTcpConnection
     is also<GTcpConnection>
   { $!tc }
 
-  method new (TcpConnectionAncestry $tcp-connection) {
-    self.bless( :$tcp-connection );
+  method new (GTcpConnectionAncestry $tcp-connection, :$ref = True) {
+    return Nil unless $tcp-connection;
+
+    my $o = self.bless( :$tcp-connection );
+    $o.ref if $ref;
+    $o;
   }
 
   method graceful_disconnect is rw is also<graceful-disconnect> {
-    Proxy.new(
-      FETCH => sub ($) {
-        g_tcp_connection_get_graceful_disconnect($!tc);
-      },
-      STORE => sub ($, $graceful_disconnect is copy) {
-        g_tcp_connection_set_graceful_disconnect($!tc, $graceful_disconnect);
-      }
-    );
+    Proxy.new:
+      FETCH => -> $           { self.get_graceful_disconnect    },
+      STORE => -> $, Int() \g { self.set_graceful_disconnect(g) };
+  }
+
+  method get_graceful_disconnect {
+    so g_tcp_connection_get_graceful_disconnect($!tc);
+  }
+
+  method set_graceful_disconnect (Int() $graceful_disconnect) {
+    my gboolean $g = $graceful_disconnect.so.Int;
+
+    g_tcp_connection_set_graceful_disconnect($!tc, $g);
   }
 
   method get_type is also<get-type> {
@@ -86,8 +84,14 @@ sub g_tcp_connection_get_graceful_disconnect (GTcpConnection $connection)
 
 sub g_tcp_connection_set_graceful_disconnect (
   GTcpConnection $connection,
-  gboolean $graceful_disconnect
+  gboolean       $graceful_disconnect
 )
   is native(gio)
   is export
 { * }
+
+# our %GIO::TcpConnection::RAW-DEFS;
+# for MY::.pairs {
+#   %GIO::TcpConnection::RAW-DEFS{.key} := .value
+#     if .key.starts-with('&g_tcp_connection_');
+# }

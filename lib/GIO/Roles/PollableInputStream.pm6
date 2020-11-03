@@ -1,18 +1,20 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
 use GIO::Raw::PollableInputStream;
 
+use GLib::Roles::Object;
+
 role GIO::Roles::PollableInputStream {
   has GPollableInputStream $!pis;
 
   method roleInit-PollableInputStream is also<roleInit_PollableInputStream> {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!pis;
 
+    my \i = findProperImplementor(self.^attributes);
     $!pis = cast(GPollableInputStream, i.get_value(self) );
   }
 
@@ -30,7 +32,7 @@ role GIO::Roles::PollableInputStream {
     g_pollable_input_stream_create_source($!pis, $cancellable);
   }
 
-  method pollableinputstream_get_type is also<pollableinputstream-get-type> {
+  method get_type is also<pollableinputstream-get-type> {
     state ($n, $t);
 
     unstable_get_type(
@@ -46,10 +48,10 @@ role GIO::Roles::PollableInputStream {
   }
 
   method read_nonblocking (
-    Pointer $buffer,
-    Int() $count,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Pointer                 $buffer,
+    Int()                   $count,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   )
     is also<read-nonblocking>
   {
@@ -65,6 +67,43 @@ role GIO::Roles::PollableInputStream {
     );
     clear_error($error);
     $rv;
+  }
+
+}
+
+our subset GPollableInputStreamAncestry is export of Mu
+  where GPollableInputStream | GObject;
+
+class GIO::PollableInputStream does GLib::Roles::Object
+                               does GIO::Roles::PollableInputStream
+{
+  submethod BUILD (:$pollable-input) {
+    self.setGPollableInputStream($pollable-input) if $pollable-input;
+  }
+
+  method setGPollableInputStream (GPollableInputStreamAncestry $_) {
+    my $to-parent;
+
+    $!pis = do {
+      when GPollableInputStream {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GPollableInputStream, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method new (GPollableInputStreamAncestry $pollable-input, :$ref = True) {
+    return Nil unless $pollable-input;
+
+    my $o = self.bless( :$pollable-input );
+    $o.ref if $ref;
+    $o;
   }
 
 }

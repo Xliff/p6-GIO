@@ -1,7 +1,7 @@
 use v6.c;
 
 use Method::Also;
-
+use NativeHelpers::Blob;
 use NativeCall;
 
 use GIO::Raw::Types;
@@ -18,16 +18,24 @@ class GIO::OutputStream {
   has GOutputStream $!os is implementor;
 
   submethod BUILD (:$output-stream) {
-    self.setOutputStream($output-stream) if $output-stream;
+    self.setGOutputStream($output-stream) if $output-stream;
   }
 
-  method setOutputStream (GOutputStreamAncestry $_) is also<setGOutputStream> {
-    $!os = do {
-      when GOutputStream { $_  }
-      when GObject       { cast(GOutputStream, $_) }
-    }
+  method setGOutputStream (GOutputStreamAncestry $_) {
+    my $to-parent;
 
-    self.roleInit-Object;
+    $!os = do {
+      when GOutputStream {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GOutputStream, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GOutputStream
@@ -47,8 +55,8 @@ class GIO::OutputStream {
   }
 
   method close (
-    GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     clear_error;
     my $rv = so g_output_stream_close($!os, $cancellable, $error);
@@ -56,64 +64,90 @@ class GIO::OutputStream {
     $rv;
   }
 
-  method close_async (
-    Int() $io_priority,
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
-  )
+  proto method close_async (|)
     is also<close-async>
-  {
+  { * }
+
+  multi method close_async (
+                   &callback,
+    gpointer       $user_data    = gpointer,
+    Int()          :$io_priority = 0,
+    GCancellable() :$cancellable = GCancellable,
+  ) {
+    samewith($io_priority, $cancellable, &callback, $user_data);
+  }
+  multi method close_async (
+    Int()          $io_priority,
+    GCancellable() $cancellable,
+                   &callback,
+    gpointer       $user_data    = gpointer
+  ) {
     my gint $io = $io_priority;
 
-    g_output_stream_close_async($!os, $io, $cancellable, $callback, $user_data);
+    g_output_stream_close_async(
+      $!os,
+      $io,
+      $cancellable,
+      &callback,
+      $user_data
+    );
   }
 
   method close_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<close-finish>
   {
     clear_error;
-    my $rc = g_output_stream_close_finish($!os, $result, $error);
+    my $rv = so g_output_stream_close_finish($!os, $result, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method flush (
-    GCancellable $cancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GCancellable()          $cancellable  = GCancellable,
+    CArray[Pointer[GError]] $error        = gerror
   ) {
     clear_error;
-    my $rc = g_output_stream_flush($!os, $cancellable, $error);
+    my $rv = so g_output_stream_flush($!os, $cancellable, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
-  method flush_async (
-    Int() $io_priority,
-    GCancellable $cancellable,
-    &callback,
-    gpointer $user_data = gpointer
-  )
+  proto method flush_async (|)
     is also<flush-async>
-  {
+  { * }
+
+  multi method flush_async (
+                   &callback,
+    gpointer       $user_data    = gpointer,
+    Int()          :$io_priority = 0,
+    GCancellable() :$cancellable = GCancellable,
+  ) {
+    samewith($io_priority, $cancellable, &callback, $user_data);
+  }
+  multi method flush_async (
+    Int()          $io_priority,
+    GCancellable() $cancellable,
+                   &callback,
+    gpointer       $user_data    = gpointer
+  ) {
     my gint $io = $io_priority;
 
     g_output_stream_flush_async($!os, $io, $cancellable, &callback, $user_data);
   }
 
   method flush_finish (
-    GAsyncResult $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<flush-finish>
   {
     clear_error;
-    my $rc = g_output_stream_flush_finish($!os, $result, $error);
+    my $rv = so g_output_stream_flush_finish($!os, $result, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method get_type is also<get-type> {
@@ -140,34 +174,54 @@ class GIO::OutputStream {
     is also<set-pending>
   {
     clear_error;
-    my $rc = g_output_stream_set_pending($!os, $error);
+    my $rv = so g_output_stream_set_pending($!os, $error);
     set_error($error);
-    $rc;
+    $rv;
   }
 
   method splice (
-    GInputStream() $source,
-    Int() $flags,
-    GCancellable $cancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GInputStream()          $source,
+    Int()                   $flags        = 0,
+    GCancellable()          $cancellable  = GCancellable,
+    CArray[Pointer[GError]] $error        = gerror
   ) {
     my GOutputStreamSpliceFlags $f = $flags;
 
     g_output_stream_splice($!os, $source, $f, $cancellable, $error);
   }
 
-  method splice_async (
-    GInputStream() $source,
-    Int() $flags,
-    Int() $io_priority,
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data
-  )
+  proto method splice_async (|)
     is also<splice-async>
+  { * }
+
+  multi method splice_async (
+    GInputStream()  $source,
+                    &callback,
+    gpointer        $user_data,
+    Int()           :$flags       = 0,
+    Int()           :$io_priority = 0,
+    GCancellable()  :$cancellable = GCancellable
+  ) {
+    samewith(
+      $source,
+      $flags,
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method splice_async (
+    GInputStream()  $source,
+    Int()           $flags,
+    Int()           $io_priority,
+    GCancellable()  $cancellable,
+                    &callback,
+    gpointer        $user_data
+  )
   {
-    my gint $io = $io_priority;
-    my GOutputStreamSpliceFlags $f = $flags;
+    my gint                     $io = $io_priority;
+    my GOutputStreamSpliceFlags $f  = $flags;
 
     g_output_stream_splice_async(
       $!os,
@@ -175,48 +229,80 @@ class GIO::OutputStream {
       $f,
       $io,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method splice_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<splice-finish>
   {
-    g_output_stream_splice_finish($!os, $result, $error);
+    clear_error;
+    my $n = g_output_stream_splice_finish($!os, $result, $error);
+    set_error($error);
+    $n;
   }
 
-  method write (
-    Pointer $buffer,
-    Int() $count,
-    GCancellable $cancellable,
-    CArray[Pointer[GError]] $error = gerror
+  multi method write (
+    Pointer                 $buffer,
+    Int()                   $count,
+    GCancellable()          $cancellable,
+    CArray[Pointer[GError]] $error        = gerror
   ) {
     my gsize $c = $count;
 
     clear_error;
-    my $rv = g_output_stream_write($!os, $buffer, $c, $cancellable, $error);
+    my $n = g_output_stream_write($!os, $buffer, $c, $cancellable, $error);
     set_error($error);
-    $rv;
+    $n;
   }
 
-  method write_all (
-    Pointer $buffer,
-    Int() $count,
-    $bytes_written is rw,
-    GCancellable $cancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False
-  )
+  proto method write_all (|)
     is also<write-all>
-  {
+  { * }
+
+  multi method write_all (
+    Str                     $buffer,
+    Int()                   $count       = $buffer.chars,
+    GCancellable            $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
+  ) {
+    return-with-all(
+      samewith(
+        cast(Pointer, $buffer),
+        $count,
+        $,
+        $cancellable,
+        $error,
+        :all
+      )
+    );
+  }
+  multi method write_all (
+    Pointer                 $buffer,
+    Int()                   $count,
+    GCancellable            $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
+  ) {
+    return-with-all(
+      samewith($buffer, $count, $, $cancellable, $error, :all)
+    );
+  }
+  multi method write_all (
+    Pointer                 $buffer,
+    Int()                   $count,
+                            $bytes_written is rw,
+    GCancellable            $cancellable   =  GCancellable,
+    CArray[Pointer[GError]] $error         =  gerror,
+    :$all = False
+  ) {
     my gsize ($c, $bw) = ($count, 0);
 
     clear_error;
-    my $rc = g_output_stream_write_all(
+    my $rv = g_output_stream_write_all(
       $!os,
       $buffer,
       $c,
@@ -225,22 +311,41 @@ class GIO::OutputStream {
       $error
     );
     set_error($error);
-    $bytes_written = $rc ?? $bw !! Nil;
-    $all ?? $bytes_written !! ($bytes_written, $rc);
+    $bytes_written = $bw;
+    $all.not ?? $rv !! ($rv, $bytes_written);
   }
 
-  method write_all_async (
-    Pointer $buffer,
-    Int() $count,
-    Int() $io_priority,
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
-  )
+  proto method write_all_async (|)
     is also<write-all-async>
-  {
-    my gint $io = $io_priority;
-    my gsize $c = $count;
+  { * }
+
+  multi method write_all_async (
+    Pointer        $buffer,
+    Int()          $count,
+                   &callback,
+    gpointer       $user_data    = gpointer,
+    Int()          :$io_priority = 0,
+    GCancellable() :$cancellable = GCancellable
+  ) {
+    samewith(
+      $buffer,
+      $count,
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method write_all_async (
+    Pointer        $buffer,
+    Int()          $count,
+    Int()          $io_priority,
+    GCancellable() $cancellable,
+                   &callback,
+    gpointer       $user_data    = gpointer
+  ) {
+    my gint  $io = $io_priority;
+    my gsize $c  = $count;
 
     g_output_stream_write_all_async(
       $!os,
@@ -248,40 +353,175 @@ class GIO::OutputStream {
       $c,
       $io,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
-  method write_all_finish (
-    GAsyncResult() $result,
-    $bytes_written is rw,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False
-  )
+  proto method write_all_finish (|)
     is also<write-all-finish>
-  {
+  { * }
+
+  multi method write_all_finish (
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror,
+  ) {
+    return-with-all( samewith($result, $error, :all) );
+  }
+  multi method write_all_finish (
+    GAsyncResult()          $result,
+                            $bytes_written is rw,
+    CArray[Pointer[GError]] $error         =  gerror,
+                            :$all          =  False
+  ) {
     my gsize $bw = 0;
 
     clear_error;
-    my $rc = g_output_stream_write_all_finish($!os, $result, $bw, $error);
+    my $rv = g_output_stream_write_all_finish($!os, $result, $bw, $error);
     set_error($error);
-    $bytes_written = $rc ?? $bw !! Nil;
-    $all ?? $bytes_written !! ($bytes_written, $rc);
+    $bytes_written = $bw;
+    $all.not ?? $rv !! ($rv, $bytes_written);
   }
 
-  method write_async (
-    Pointer $buffer,
-    Int() $count,
-    Int() $io_priority,
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
-  )
+  proto method write_async (|)
     is also<write-async>
-  {
-    my gint $io = $io_priority;
-    my gsize $c = $count;
+  { * }
+
+  multi method write (
+    Str()          $buffer,
+                   &callback,
+    gpointer       $user_data    =  gpointer,
+                   :$async       is required,
+    Int()          :$count       =  $buffer.chars,
+    GCancellable() :$cancellable =  GCancellable,
+    Int()          :$io_priority =  0,
+                   :$encoding    =  'utf8'
+  ) {
+    self.write_async(
+      $buffer,
+      $count,
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method write_async (
+    Str()          $buffer,
+                   &callback,
+    gpointer       $user_data    =  gpointer,
+    Int()          :$count       =  $buffer.chars,
+    GCancellable() :$cancellable =  GCancellable,
+    Int()          :$io_priority =  0,
+                   :$encoding    =  'utf8'
+  ) {
+    self.write_async(
+      $buffer,
+      $count,
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method write_async (
+    Str()          $buffer,
+    Int()          $count,
+    Int()          $io_priority,
+    GCancellable() $cancellable,
+                   &callback,
+    gpointer       $user_data    = gpointer,
+    Str()          :$encoding    = 'utf8'
+  ) {
+    samewith(
+      CArray[uint8].new( $buffer.encode($encoding) ),
+      $count,
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method write (
+    CArray[uint8]  $buffer,
+                   &callback,
+    gpointer       $user_data     =  gpointer,
+    Int()          :$count        =  $buffer.elems,
+                   :$async        is required,
+    Int()          :$io_priority  =  0,
+    GCancellable() :$cancellable  =  GCancellable,
+  ) {
+    self.write_async(
+      $buffer,
+      $count,
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method write_async (
+    CArray[uint8]  $buffer,
+                   &callback,
+    gpointer       $user_data     =  gpointer,
+    Int()          :$count        =  $buffer.elems,
+    Int()          :$io_priority  =  0,
+    GCancellable() :$cancellable  =  GCancellable,
+  ) {
+    samewith(
+      $buffer,
+      $count,
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method write_async (
+    CArray[uint8]  $buffer,
+    Int()          $count,
+    Int()          $io_priority,
+    GCancellable() $cancellable,
+                   &callback,
+    gpointer       $user_data    = gpointer
+  ) {
+    samewith(
+      pointer-to($buffer),
+      $count,
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method write (
+    Pointer        $buffer,
+    Int()          $count,
+                   &callback,
+    gpointer       $user_data    =  gpointer,
+                   :$async       is required,
+    GCancellable() :$cancellable =  GCancellable,
+    Int()          :$io_priority =  0,
+  ) {
+    self.write_async(
+      $buffer,
+      $count,
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method write_async (
+    Pointer        $buffer,
+    Int()          $count,
+    Int()          $io_priority,
+    GCancellable() $cancellable,
+                   &callback,
+    gpointer       $user_data    = gpointer
+  ) {
+    my gint  $io = $io_priority;
+    my gsize $c  = $count;
 
     g_output_stream_write_async(
       $!os,
@@ -289,32 +529,44 @@ class GIO::OutputStream {
       $c,
       $io,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method write_bytes (
-    GBytes() $bytes,
-    GCancellable $cancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GBytes()                $bytes,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   )
     is also<write-bytes>
   {
     clear_error;
-    my $rv = g_output_stream_write_bytes($!os, $bytes, $cancellable, $error);
+    my $gs = g_output_stream_write_bytes($!os, $bytes, $cancellable, $error);
     set_error($error);
-    $rv;
+    $gs;
   }
 
-  method write_bytes_async (
-    GBytes() $bytes,
-    Int() $io_priority,
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
-  )
+  proto method write_bytes_async (|)
     is also<write-bytes-async>
+  { * }
+
+  multi method write_bytes_async (
+    GBytes()            $bytes,
+                        &callback,
+    gpointer            $user_data    = gpointer,
+    Int()               :$io_priority = 0,
+    GCancellable        :$cancellable = GCancellable
+  ) {
+    samewith($bytes, $io_priority, GCancellable, &callback, $user_data);
+  }
+  multi method write_bytes_async (
+    GBytes()            $bytes,
+    Int()               $io_priority,
+    GCancellable()      $cancellable,
+                        &callback,
+    gpointer            $user_data    = gpointer
+  )
   {
     my gint $io = $io_priority;
 
@@ -323,14 +575,14 @@ class GIO::OutputStream {
       $bytes,
       $io,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method write_bytes_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<write-bytes-finish>
   {
@@ -341,8 +593,8 @@ class GIO::OutputStream {
   }
 
   method write_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<write-finish>
   {
@@ -352,16 +604,34 @@ class GIO::OutputStream {
     $rv;
   }
 
-  method writev (
-    GOutputVector() $vectors,
-    Int() $n_vectors,
-    $bytes_written is rw,
-    GCancellable $cancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False;
+  multi method writev (
+                            @vectors,
+    GCancellable            :$cancellable  =  GCancellable,
+    CArray[Pointer[GError]] :$error        =  gerror,
+  ) {
+
+    return-with-all(
+      samewith(
+        GLib::Roles::TypedBuffer[GOutputVector].new(@vectors).p,
+        @vectors.elems,
+        $,
+        $cancellable,
+        $error,
+        :all
+      )
+    )
+  }
+  multi method writev (
+    Pointer                 $vectors,
+    Int()                   $n_vectors,
+                            $bytes_written is rw,
+    GCancellable()          $cancellable,
+    CArray[Pointer[GError]] $error         =  gerror,
+                            :$all          =  False;
   ) {
     my gsize ($nv, $bw) = ($n_vectors, 0);
 
+    clear_error;
     my $rv = g_output_stream_writev(
       $!os,
       $vectors,
@@ -370,24 +640,44 @@ class GIO::OutputStream {
       $cancellable,
       $error
     );
-    $bytes_written = $rv ?? $bw !! Nil;
-    $all ?? $bytes_written !! ($bytes_written, $rv);
+    set_error($error);
+    $bytes_written = $bw;
+    $all.not ?? $rv !! ($rv, $bytes_written);
   }
 
-  method writev_all (
-    GOutputVector() $vectors,
-    Int() $n_vectors,
-    $bytes_written is rw,
-    GCancellable $cancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False
-  )
+  proto method writev_all (|)
     is also<writev-all>
-  {
+  { * }
+
+  multi method writev_all (
+                            @vectors,
+    GCancellable()          :$cancellable  = GCancellable,
+    CArray[Pointer[GError]] :$error        = gerror
+  ) {
+    return-with-all(
+      samewith(
+        +@vectors ?? GLib::Roles::TypedBuffer[GOutputVector].new(@vectors).p
+                  !! Pointer,
+        @vectors.elems,
+        $,
+        $cancellable,
+        $error,
+        :all
+      )
+    );
+  }
+  multi method writev_all (
+    Pointer                 $vectors,
+    Int()                   $n_vectors,
+                            $bytes_written is rw,
+    GCancellable()          $cancellable   =  GCancellable,
+    CArray[Pointer[GError]] $error         =  gerror,
+                            :$all          =  False
+  ) {
     my gsize ($nv, $bw) = ($n_vectors, 0);
 
     clear_error;
-    my $rv = g_output_stream_writev_all(
+    my $rv = so g_output_stream_writev_all(
       $!os,
       $vectors,
       $nv,
@@ -396,21 +686,40 @@ class GIO::OutputStream {
       $error
     );
     set_error($error);
-    $bytes_written = $rv ?? $bw !! Nil;
-    $all ?? $bytes_written !! ($bytes_written, $rv);
+    $bytes_written = $bw;
+    $all.not ?? $bytes_written !! ($rv, $bytes_written);
   }
 
-  method writev_all_async (
-    GOutputVector() $vectors,
-    Int() $n_vectors,
-    Int() $io_priority,
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
-  )
+  proto method writev_all_async (|)
     is also<writev-all-async>
-  {
-    my gint $io = $io_priority;
+  { * }
+
+  multi method writev_all_async (
+                        @vectors,
+                        &callback,
+    gpointer            $user_data    = gpointer,
+    Int()               :$io_priority = 0,
+    GCancellable()      :$cancellable = GCancellable
+
+  ) {
+    samewith(
+      GLib::Roles::TypedBuffer[GOutputVector].new(@vectors).p,
+      @vectors.elems,
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method writev_all_async (
+    Pointer             $vectors,
+    Int()               $n_vectors,
+    Int()               $io_priority,
+    GCancellable()      $cancellable,
+                        &callback,
+    gpointer            $user_data    = gpointer
+  ) {
+    my gint  $io = $io_priority;
     my gsize $nv = $n_vectors;
 
     g_output_stream_writev_all_async(
@@ -419,39 +728,65 @@ class GIO::OutputStream {
       $nv,
       $io,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
-  method writev_all_finish (
-    GAsyncResult() $result,
-    $bytes_written is rw,
-    CArray[Pointer[GError]] $error = gerror,
-    :$all = False
-  )
+  proto method writev_all_finish (|)
     is also<writev-all-finish>
-  {
+  { * }
+
+  multi method writev_all_finish (
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
+  ) {
+    return-with-all( samewith($result, $, $error, :all) );
+  }
+  multi method writev_all_finish (
+    GAsyncResult()          $result,
+                            $bytes_written is rw,
+    CArray[Pointer[GError]] $error                = gerror,
+                            :$all                 = False
+  ) {
     my gsize $bw = 0;
 
     clear_error;
-    my $rv = g_output_stream_writev_all_finish($!os, $result, $bw, $error);
+    my $rv = so g_output_stream_writev_all_finish($!os, $result, $bw, $error);
     set_error($error);
-    $bytes_written = $rv ?? $bw !! Nil;
-    $all ?? $bytes_written !! ($bytes_written, $rv);
+    $bytes_written = $bw;
+    $all.not ?? $rv !! ($rv, $bytes_written);
   }
 
-  method writev_async (
-    GOutputVector() $vectors,
-    Int() $n_vectors,
-    Int() $io_priority,
-    GCancellable $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
-  )
+  proto method writev_async (|)
     is also<writev-async>
-  {
-    my gint $io = $io_priority;
+  { * }
+
+  multi method writev_async (
+                    @vectors,
+                    &callback,
+    gpointer        $user_data    = gpointer,
+    Int()           :$io_priority = 0,
+    GCancellable()  :$cancellable = GCancellable
+  ) {
+    samewith(
+      GLib::Roles::TypedBuffer[GOutputVector].new(@vectors).p,
+      @vectors.elems,
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data
+    );
+  }
+  multi method writev_async (
+    GOutputVector() $vectors,
+    Int()           $n_vectors,
+    Int()           $io_priority,
+    GCancellable()  $cancellable,
+                    &callback,
+    gpointer        $user_data    = gpointer
+  ) {
+    my gint  $io = $io_priority;
     my gsize $nv = $n_vectors;
 
     g_output_stream_writev_async(
@@ -460,24 +795,35 @@ class GIO::OutputStream {
       $nv,
       $io,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
-  method writev_finish (
-    GAsyncResult() $result,
-    Int() $bytes_written,
-    CArray[Pointer[GError]] $error = gerror
-  )
+  proto method writev_finish (|)
     is also<writev-finish>
-  {
-    my gsize $bw = $bytes_written;
+  { * }
+
+  multi method writev_finish (
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
+  ) {
+    return-with-all( samewith($result, $, $error, :all) );
+  }
+  multi method writev_finish (
+    GAsyncResult()          $result,
+                            $bytes_written is rw,
+    CArray[Pointer[GError]] $error         =  gerror,
+                            :$all = False
+  ) {
+    my gsize $bw = 0;
 
     clear_error;
-    my $rv = g_output_stream_writev_finish($!os, $result, $bw, $error);
+    my $rv = so g_output_stream_writev_finish($!os, $result, $bw, $error);
     set_error($error);
-    $rv;
+    $bytes_written = $bw;
+
+    $all.not ?? $rv !! ($rv, $bytes_written)
   }
 
 }

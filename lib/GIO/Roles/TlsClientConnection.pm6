@@ -4,15 +4,13 @@ use Method::Also;
 use NativeCall;
 
 use GIO::Raw::Types;
-
-
 use GIO::Raw::TlsClientConnection;
 
 use GLib::GList;
-
 use GLib::ByteArray;
 
 use GLib::Roles::ListData;
+use GLib::Roles::Object;
 use GIO::Roles::SocketConnectable;
 
 role GIO::Roles::TlsClientConnection {
@@ -20,41 +18,18 @@ role GIO::Roles::TlsClientConnection {
 
   has GTlsClientConnection $!tcc;
 
-  submethod BUILD (:$client-connection) {
-    $!tcc = $client-connection;
-  }
-
   method roleInit-TlsClientConnection
     is also<roleInit_TlsClientConnection>
   {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!tcc;
 
+    my \i = findProperImplementor(self.^attributes);
     $!tcc = cast( GTlsClientConnection, i.get_value(self) );
   }
 
   method GIO::Raw::Definitions::GTlsClientConnection
     is also<GTlsClientConnection>
   { $!tcc }
-
-  proto method new-tlsclientconnection-obj (|)
-    is also<new_tlsclientconnection_obj>
-  { * }
-
-  multi method new-tlsclientconnection-obj (
-    GTlsClientConnection $client-connection
-  ) {
-    self.bless( :$client-connection );
-  }
-  multi method new-tlsclientconnection-obj (
-    GIOStream() $base,
-    GSocketConnectable() $server_identity,
-    CArray[Pointer[GError]] $error = gerror
-  ) {
-    clear_error;
-    my $cc = g_tls_client_connection_new($base, $server_identity, $error);
-    set_error($error);
-    self.bless( client-connection => $cc );
-  }
 
   method server_identity (:$raw = False) is rw is also<server-identity> {
     Proxy.new(
@@ -63,7 +38,7 @@ role GIO::Roles::TlsClientConnection {
 
         $sc ??
           ( $raw ?? $sc !!
-                    GIO::SocketConnectable.new-socketconnectable-obj($sc) )
+                    GIO::SocketConnectable.new($sc, :!ref) )
           !!
           Nil;
       },
@@ -119,16 +94,70 @@ role GIO::Roles::TlsClientConnection {
     return Nil  unless $cal;
     return $cal if     $glist;
 
-    $cal = GLib::GList.new($cal)
-      but GLib::Roles::ListData[GByteArray];
+    $cal = GLib::GList.new($cal) but GLib::Roles::ListData[GByteArray];
 
-    $raw ?? $cal.Array !! $cal.Array.map({ GLib::ByteArray.new($_) });
+    $raw ?? $cal.Array !! $cal.Array.map({ GLib::ByteArray.new($_, :!ref) });
   }
 
   method tlsclientconnection_get_type  is also<tlsclientconnection-get-type> {
     state ($n, $t);
 
     unstable_get_type( self.^name, &g_tls_client_connection_get_type, $n, $t );
+  }
+
+}
+
+our subset GTlsClientConnectionAncestry is export of Mu
+  where GTlsClientConnection | GObject;
+
+class GIO::TlsClientConnection does GLib::Roles::Object
+                               does GIO::Roles::TlsClientConnection
+{
+  
+  submethod BUILD (:$client-connection) {
+    self.setGTlsClientConnection($client-connection) if $client-connection;
+  }
+
+  method setGTlsClientConnection (GTlsClientConnectionAncestry $_) {
+    my $to-parent;
+
+    $!tcc = do {
+      when GTlsClientConnection {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GTlsClientConnection, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  proto method new (|)
+    is also<new_tlsclientconnection_obj>
+  { * }
+
+  multi method new (
+    GTlsClientConnectionAncestry $client-connection,
+                                              :$ref  = True
+  ) {
+    return Nil unless $client-connection;
+
+    my $o = self.bless( :$client-connection );
+    $o.ref if $ref;
+    $o;
+  }
+  multi method new (
+    GIOStream()             $base,
+    GSocketConnectable()    $server_identity,
+    CArray[Pointer[GError]] $error            = gerror
+  ) {
+    clear_error;
+    my $cc = g_tls_client_connection_new($base, $server_identity, $error);
+    set_error($error);
+    $cc ?? self.bless( client-connection => $cc ) !! Nil;
   }
 
 }

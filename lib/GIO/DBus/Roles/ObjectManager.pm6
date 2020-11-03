@@ -7,6 +7,10 @@ use GIO::DBus::Raw::Types;
 
 use GIO::DBus::Raw::ObjectManager;
 
+use GLib::Roles::Object;
+use GIO::DBus::Roles::Interface;
+use GIO::DBus::Roles::Object;
+
 role GIO::DBus::Roles::ObjectManager {
   has GDBusObjectManager $!dom;
 
@@ -58,7 +62,7 @@ role GIO::DBus::Roles::ObjectManager {
     );
 
     $i ??
-      ( $raw ?? $i !! GIO::DBus::Roles::Interface.new-interface-obj($i) )
+      ( $raw ?? $i !! GIO::DBus::Interface.new($i, :!ref) )
       !!
       Nil;
   }
@@ -67,7 +71,7 @@ role GIO::DBus::Roles::ObjectManager {
     my $o = g_dbus_object_manager_get_object($!dom, $object_path);
 
     $o ??
-      ( $raw ?? $o !! GIO::DBus::Roles::Object.new-dbusobject-obj($o) )
+      ( $raw ?? $o !! GIO::DBus::Object.new($o, :!ref) )
       !!
       Nil;
   }
@@ -99,13 +103,52 @@ role GIO::DBus::Roles::ObjectManager {
     $raw ??
       $ol.Array
       !!
-      $ol.Array.map({ GIO::DBus::Roles::Object.new-dbusobject-obj($_) });
+      $ol.Array.map({ GIO::DBus::Object.new($_, :!ref) });
   }
 
   method get_type is also<get-type> {
     state ($n, $t);
 
     unstable_get_type( self.^name, &g_dbus_object_manager_get_type, $n, $t );
+  }
+
+}
+
+our subset GDBusObjectManagerAncestry is export of Mu
+  where GDBusObjectManager | GObject;
+
+class GIO::DBus::ObjectManager does GLib::Roles::Object
+                               does GIO::DBus::Roles::ObjectManager
+{
+  submethod BUILD (:$manager) {
+    self.setGDBusObjectManager($manager) if $manager;
+  }
+
+  method setGDBusObjectManager (GDBusObjectAncestry $_) {
+    my $to-parent;
+
+    $!dom = do {
+      when GDBusObjectManager {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GDBusObjectManager, $_);
+      }
+    }
+
+    self!setObject($to-parent);
+    self.roleInit-GDBusObjectManager;
+  }
+
+  method new (GDBusObjectManagerAncestry $manager, :$ref = True) {
+    return Nil unless $manager;
+
+    my $o = self.bless( :$manager );
+    $o.ref if $ref;
+    $o;
   }
 
 }

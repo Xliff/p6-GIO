@@ -2,12 +2,19 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
+unit package GIO::Raw::TlsConnection;
 
 sub g_tls_connection_emit_accept_certificate (
-  GTlsConnection $conn,
-  GTlsCertificate $peer_cert,
+  GTlsConnection       $conn,
+  GTlsCertificate      $peer_cert,
   GTlsCertificateFlags $errors
 )
   returns uint32
@@ -46,8 +53,8 @@ sub g_tls_connection_get_type ()
 { * }
 
 sub g_tls_connection_handshake (
-  GTlsConnection $conn,
-  GCancellable $cancellable,
+  GTlsConnection          $conn,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -57,18 +64,18 @@ sub g_tls_connection_handshake (
 
 sub g_tls_connection_handshake_async (
   GTlsConnection $conn,
-  gint $io_priority,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  gint           $io_priority,
+  GCancellable   $cancellable,
+                 &callback (GTlsConnection, GAsyncResult, gpointer),
+  gpointer       $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_tls_connection_handshake_finish (
-  GTlsConnection $conn,
-  GAsyncResult $result,
+  GTlsConnection          $conn,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -113,7 +120,7 @@ sub g_tls_connection_get_use_system_certdb (GTlsConnection $conn)
 { * }
 
 sub g_tls_connection_set_certificate (
-  GTlsConnection $conn,
+  GTlsConnection  $conn,
   GTlsCertificate $certificate
 )
   is native(gio)
@@ -122,14 +129,14 @@ sub g_tls_connection_set_certificate (
 
 sub g_tls_connection_set_database (
   GTlsConnection $conn,
-  GTlsDatabase $database
+  GTlsDatabase   $database
 )
   is native(gio)
   is export
 { * }
 
 sub g_tls_connection_set_interaction (
-  GTlsConnection $conn,
+  GTlsConnection  $conn,
   GTlsInteraction $interaction
 )
   is native(gio)
@@ -146,7 +153,7 @@ sub g_tls_connection_set_interaction (
 
 sub g_tls_connection_set_require_close_notify (
   GTlsConnection $conn,
-  gboolean $require_close_notify
+  gboolean       $require_close_notify
 )
   is native(gio)
   is export
@@ -154,7 +161,7 @@ sub g_tls_connection_set_require_close_notify (
 
 sub g_tls_connection_set_use_system_certdb (
   GTlsConnection $conn,
-  gboolean $use_system_certdb
+  gboolean       $use_system_certdb
 )
   is native(gio)
   is export

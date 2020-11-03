@@ -12,46 +12,71 @@ use GLib::Roles::Signals::Generic;
 
 class GIO::UnixMountMonitor { ... }
 
+our subset GUnixMountEntryAncestry is export of Mu
+  where GUnixMountEntry | GObject;
+
 class GIO::UnixMount {
   also does GLib::Roles::Object;
 
   has GUnixMountEntry $!um is implementor;
 
   submethod BUILD (:$mount-entry) {
-    $!um = $mount-entry;
+    self.setGUnixMountEntry($mount-entry) if $mount-entry;
+  }
 
-    self.roleInit-Object;
+  method setGUnixMountEntry (GUnixMountEntryAncestry $_) {
+    my $to-parent;
+
+    $!um = do {
+      when GUnixMountEntry {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GUnixMountEntry, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GUnixMountEntry
     is also<GUnixMountEntry>
   { $!um }
 
-  method new (GUnixMountEntry $mount-entry) {
-    self.bless( :$mount-entry );
+  method new (GUnixMountEntry $mount-entry, :$ref = True) {
+    return Nil unless $mount-entry;
+
+    my $o = self.bless( :$mount-entry );
+    $o.ref if $ref;
+    $o;
   }
 
   multi method at (
     GIO::UnixMount:U:
     Str() $path,
-    :$all = False;
-    :$raw = False
+          :$raw = False
   ) {
-    GIO::UnixMount.at($path, $, :$all, :$raw);
+    GIO::UnixMount.at($path, $, :all, :$raw);
   }
   multi method at (
     GIO::UnixMount:U:
     Str() $path,
-    $time-read is rw,
-    :$all = False;
-    :$raw = False
+          $time-read is rw,
+          :$all      =  False;
+          :$raw      =  False
   ) {
     my guint64 $tr = 0;
     my $m = g_unix_mount_at($path, $tr);
     $time-read = $tr;
 
-    $m = GIO::UnixMount.new($m) unless $raw;
-    $all ?? $m !! ($m, $time-read);
+    $m = $m ??
+      ( $raw ?? $m !! GIO::UnixMount.new($m, :!ref) )
+      !!
+      Nil;
+
+    $all.not ?? $m !! ($m, $time-read);
   }
 
   method compare (GUnixMountEntry() $mount2) {
@@ -71,23 +96,26 @@ class GIO::UnixMount {
   multi method for (
     GIO::UnixMount:U:
     Str() $path,
-    :$all = False,
-    :$raw = False
+          :$raw = False
   ) {
-    GIO::UnixMount.for($path, $, :$all, :$raw);
+    GIO::UnixMount.for($path, $, :all, :$raw);
   }
   multi method for (
     Str() $path,
-    $time-read is rw,
-    :$all = False,
-    :$raw = False
+          $time-read is rw,
+          :$all      =  False,
+          :$raw      =  False
   ) {
     my guint64 $tr = 0;
-    my $e = g_unix_mount_for($path, $tr);
-    $time-read = $tr;
+    my         $e  = g_unix_mount_for($path, $tr);
+    $time-read     = $tr;
 
-    $e = GIO::UnixMount.new($e) unless $raw;
-    $all ?? $e !! ($e, $tr)
+    $e = $e ??
+      ($raw ?? $e !! GIO::UnixMount.new($e, :!ref) )
+      !!
+      Nil;
+
+    $all.not ?? $e !! ($e, $tr)
   }
 
   method free {
@@ -96,7 +124,7 @@ class GIO::UnixMount {
 
   method is_mount_path_system_internal (
     GIO::UnixMount:U:
-    Str() $path
+    Str()             $path
   )
     is also<is-mount-path-system-internal>
   {
@@ -105,7 +133,7 @@ class GIO::UnixMount {
 
   method is_system_device_path (
     GIO::UnixMount:U:
-    Str() $path
+    Str()             $path
   )
     is also<is-system-device-path>
   {
@@ -114,7 +142,7 @@ class GIO::UnixMount {
 
   method is_system_fs_type (
     GIO::UnixMount:U:
-    Str() $path
+    Str()             $path
   )
     is also<is-system-fs-type>
   {
@@ -144,23 +172,25 @@ class GIO::UnixMount {
   }
   multi method mounts_get (
     GIO::UnixMount:U:
-    $time-read is rw,
-    :$glist = False,
-    :$all   = False,
-    :$raw   = False
+    $time-read        is rw,
+    :$glist           =  False,
+    :$all             =  False,
+    :$raw             =  False
   ) {
     my guint64 $tr = 0;
+    my $ml         = g_unix_mounts_get($tr);
 
-    my $ml = g_unix_mounts_get($tr);
     $time-read = $tr;
     return Nil unless $ml;
-    return $ml if     $glist;
+    return $ml if     $glist && $raw;
 
-    $ml = GLib::GList.new($ml)
-      but GLib::Roles::ListData[GUnixMountEntry];
+    $ml = GLib::GList.new($ml) but GLib::Roles::ListData[GUnixMountEntry];
+    return $ml if $raw;
 
-    my $rv = $raw ?? $ml.Array !! $ml.Array.map({ GIO::UnixMounts.new($_) });
-    $all ?? $rv !! ($rv, $time-read);
+    my $retVal = $raw ?? $ml.Array
+                      !! $ml.Array.map({ GIO::UnixMounts.new($_) });
+
+    $all.not ?? $retVal !! ($retVal, $time-read);
   }
 
   method get_device_path
@@ -219,7 +249,10 @@ class GIO::UnixMount {
   method guess_icon (:$raw = False) is also<guess-icon> {
     my $i = g_unix_mount_guess_icon($!um);
 
-    $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i);
+    $i ??
+      ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i, :!ref) )
+      !!
+      Nil;
   }
 
   method guess_name is also<guess-name> {
@@ -233,7 +266,10 @@ class GIO::UnixMount {
   method guess_symbolic_icon (:$raw = False) is also<guess-symbolic-icon> {
     my $si = g_unix_mount_guess_symbolic_icon($!um);
 
-    $raw ?? $si !! GIO::Roles::Icon.new-icon-obj($si);
+    $si ??
+      ( $raw ?? $si !! GIO::Roles::Icon.new-icon-obj($si, :!ref) )
+      !!
+      Nil;
   }
 
   method is_readonly is also<is-readonly> {
@@ -255,7 +291,7 @@ class GIO::UnixMount {
     my $mm = g_unix_mount_monitor_get();
 
     $mm ??
-      ( $raw ?? $mm !! GIO::MountMonitor.new($mm) )
+      ( $raw ?? $mm !! GIO::MountMonitor.new($mm, :!ref) )
       !!
       Nil;
   }
@@ -275,7 +311,7 @@ class GIO::UnixMountPoint {
   { $!mp }
 
   method new (GUnixMountPoint $mount-point) {
-    self.bless( :$mount-point );
+    $mount-point ?? self.bless( :$mount-point ) !! Nil;
   }
 
   multi method compare (GUnixMountPoint() $point2) {
@@ -291,7 +327,10 @@ class GIO::UnixMountPoint {
   method copy (:$raw) {
     my $pc = g_unix_mount_point_copy($!mp);
 
-    $raw ?? $pc !! GIO::UnixMountPoint.new($pc);
+    $pc ??
+      ( $raw ?? $pc !! GIO::UnixMountPoint.new($pc, :!ref) )
+      !!
+      Nil;
   }
 
   method free {
@@ -350,7 +389,10 @@ class GIO::UnixMountPoint {
   method guess_icon (:$raw = False) is also<guess-icon> {
     my $i = g_unix_mount_point_guess_icon($!mp);
 
-    $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i);
+    $i ??
+      ( $raw ?? $i !! GIO::Roles::Icon.new-icon-obj($i, :!ref) )
+      !!
+      Nil;
   }
 
   method guess_name is also<guess-name> {
@@ -360,7 +402,10 @@ class GIO::UnixMountPoint {
   method guess_symbolic_icon (:$raw = False) is also<guess-symbolic-icon> {
     my $si = g_unix_mount_point_guess_symbolic_icon($!mp);
 
-    $raw ?? $si !! GIO::Roles::Icon.new-icon-obj($si);
+    $si ??
+      ( $raw ?? $si !! GIO::Roles::Icon.new-icon-obj($si, :!ref) )
+      !!
+      Nil;
   }
 
   method is_loopback is also<is-loopback> {
@@ -379,55 +424,88 @@ class GIO::UnixMountPoint {
     g_unix_mount_points_changed_since($!mp);
   }
 
-  method points_get (
-    GIO::UnixMount:U:
-    $time-read is rw,
-    :$glist = False,
-    :$all   = False,
-    :$raw   = False
-  )
+  proto method points_get(|)
     is also<
       points-get
       get_points
       get-points
     >
-  {
-    my guint64 $tr = 0;
+  { * }
 
-    my $pl = g_unix_mount_points_get($tr);
+  multi method points_get (
+    GIO::UnixMount:U:
+    :$glist           = False,
+    :$raw             = False
+  ) {
+    samewith($, :$glist, :all, :$raw);
+  }
+  multi method points_get (
+    GIO::UnixMount:U:
+    $time-read        is rw,
+    :$glist           =  False,
+    :$all             =  False,
+    :$raw             =  False
+  ) {
+    my guint64 $tr = 0;
+    my $pl         = g_unix_mount_points_get($tr);
+
     $time-read = $tr;
     return Nil unless $pl;
-    return $pl if     $glist;
+    return $pl if     $glist && $raw;
 
-    $pl = GLib::GList.new($pl)
-      but GLib::Roles::ListData[GUnixMountPoint];
+    $pl = GLib::GList.new($pl) but GLib::Roles::ListData[GUnixMountPoint];
+    return $pl if $glist;
 
-    my $rv = $raw ??
+    my $retVal = $raw ??
       $pl.Array
       !!
-      $pl.Array.map({ GIO::UnixMountPoint.new($_) });
+      $pl.Array.map({ GIO::UnixMountPoint.new($_, :!ref) });
 
-    $all ?? $rv !! ($rv, $time-read);
+    $all.not ?? $retVal !! ($retVal, $time-read);
   }
 
 }
 
-# BOXED
+our subset GUnixMountMonitorAncestry is export of Mu
+  where GUnixMountMonitor | GObject;
+
 class GIO::UnixMountMonitor {
+  also does GLib::Roles::Object;
   also does GLib::Roles::Signals::Generic;
 
   has GUnixMountMonitor $!mm;
 
   submethod BUILD (:$monitor) {
-    $!mm = $monitor;
+    self.setGUnixMountMonitor($monitor) if $monitor;
+  }
+
+  method setGUnixMountMonitor (GUnixMountMonitorAncestry $_) {
+    my $to-parent;
+
+    $!mm = do {
+      when GUnixMountMonitor {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GUnixMountMonitor, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GUnixMountMonitor
     is also<GUnixMountMonitor>
   { $!mm }
 
-  method new (GUnixMountMonitor $monitor) {
-    self.bless( :$monitor );
+  method new (GUnixMountMonitorAncestry $monitor, :$ref = True) {
+    return Nil unless $monitor;
+
+    my $o = self.bless( :$monitor );
+    $o.ref if $ref;
+    $o;
   }
 
   # Is originally:

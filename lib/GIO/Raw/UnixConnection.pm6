@@ -2,7 +2,13 @@ use v6.c;
 
 use NativeCall;
 
-use GIO::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::UnixConnection;
 
@@ -13,8 +19,8 @@ sub g_unix_connection_get_type ()
 { * }
 
 sub g_unix_connection_receive_credentials (
-  GUnixConnection $connection,
-  GCancellable $cancellable,
+  GUnixConnection         $connection,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns GCredentials
@@ -24,17 +30,17 @@ sub g_unix_connection_receive_credentials (
 
 sub g_unix_connection_receive_credentials_async (
   GUnixConnection $connection,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GCancellable    $cancellable,
+                  &callback (GUnixConnection, GAsyncResult, gpointer),
+  gpointer        $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_unix_connection_receive_credentials_finish (
-  GUnixConnection $connection,
-  GAsyncResult $result,
+  GUnixConnection         $connection,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns GCredentials
@@ -43,8 +49,8 @@ sub g_unix_connection_receive_credentials_finish (
 { * }
 
 sub g_unix_connection_receive_fd (
-  GUnixConnection $connection,
-  GCancellable $cancellable,
+  GUnixConnection         $connection,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns gint
@@ -53,8 +59,8 @@ sub g_unix_connection_receive_fd (
 { * }
 
 sub g_unix_connection_send_credentials (
-  GUnixConnection $connection,
-  GCancellable $cancellable,
+  GUnixConnection         $connection,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -64,17 +70,17 @@ sub g_unix_connection_send_credentials (
 
 sub g_unix_connection_send_credentials_async (
   GUnixConnection $connection,
-  GCancellable $cancellable,
-  GAsyncReadyCallback $callback,
-  gpointer $user_data
+  GCancellable    $cancellable,
+                  &callback (GUnixConnection, GAsyncResult, gpointer),
+  gpointer        $user_data
 )
   is native(gio)
   is export
 { * }
 
 sub g_unix_connection_send_credentials_finish (
-  GUnixConnection $connection,
-  GAsyncResult $result,
+  GUnixConnection         $connection,
+  GAsyncResult            $result,
   CArray[Pointer[GError]] $error
 )
   returns uint32
@@ -83,9 +89,9 @@ sub g_unix_connection_send_credentials_finish (
 { * }
 
 sub g_unix_connection_send_fd (
-  GUnixConnection $connection,
-  gint $fd,
-  GCancellable $cancellable,
+  GUnixConnection         $connection,
+  gint                    $fd,
+  GCancellable            $cancellable,
   CArray[Pointer[GError]] $error
 )
   returns uint32

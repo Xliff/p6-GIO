@@ -8,41 +8,43 @@ use GLib::Variant;
 use GIO::Raw::Types;
 use GIO::Raw::Icon;
 
+use GLib::Roles::Object;
+
+role  GIO::Roles::Icon { ... }
+class GIO::Icon        { ... }
+
 role GIO::Roles::Icon {
   has GIcon $!icon;
 
-  submethod BUILD (:$icon) {
-    $!icon = $icon;
+  method new_for_string (
+    Str()                   $name,
+    CArray[Pointer[GError]] $error = gerror,
+                            :$raw  = False
+  )
+    is also<new-for-string>
+  {
+    clear_error;
+    my $icon = g_icon_new_for_string($name, $error);
+    set_error($error);
+    return $icon if $raw;
+
+    $icon ?? self.bless( :$icon ) !! Nil;
   }
 
   method roleInit-Icon {
-    my \i = findProperImplementor(self.^attributes);
+    return if $!icon;
 
+    my \i = findProperImplementor(self.^attributes);
     $!icon = cast( GIcon, i.get_value(self) );
   }
 
+  method GIcon { $!icon }
   method GIO::Raw::Definitions::GIcon
     is also<
       GIcon
       Icon
     >
   { $!icon }
-
-  method new-icon-obj ($icon) {
-    self.bless( :$icon );
-  }
-
-  method new_for_string (
-    Str() $name,
-    CArray[Pointer[GError]] $error = gerror
-  )
-    is also<new-for-string>
-  {
-    clear_error;
-    my $rc = g_icon_new_for_string($name, $error);
-    set_error($error);
-    self.bless( icon => $rc );
-  }
 
 
   # ↓↓↓↓ SIGNALS ↓↓↓↓
@@ -53,14 +55,14 @@ role GIO::Roles::Icon {
 
   # ↓↓↓↓ METHODS ↓↓↓↓
   method deserialize(
-    GIO::Roles::Icon:U:
+    ::?CLASS:U:
     GVariant() $v,
     :$raw = False
   ) {
     my $i = g_icon_deserialize($v);
 
     $i ??
-      ( $raw ?? $i !! self.bless( icon => $i ) )
+      ( $raw ?? $i !! GIO::Icon.new($i, :!ref) )
       !!
       Nil;
   }
@@ -75,10 +77,10 @@ role GIO::Roles::Icon {
     unstable_get_type( self.^name, &g_icon_get_type, $n, $t );
   }
 
-  multi method hash(GIO::Roles::Icon:D:) {
+  multi method hash(::?CLASS:D:) {
     GIO::Roles::Icon.hash($!icon);
   }
-  multi method hash (GIO::Roles::Icon:U: GIcon() $i) {
+  multi method hash (::?CLASS:U: GIcon() $i) {
     g_icon_hash($i);
   }
 
@@ -100,5 +102,42 @@ role GIO::Roles::Icon {
     g_icon_to_string($!icon);
   }
   # ↑↑↑↑ METHODS ↑↑↑↑
+
+}
+
+our subset GIconAncestry is export of Mu
+  where GIcon | GObject;
+
+class GIO::Icon does GLib::Roles::Object does GIO::Roles::Icon {
+
+  method BUILD (:$icon) {
+    self.setGIcon($icon) if $icon;
+  }
+
+  method setGIcon (GIconAncestry $_) {
+    my $to-parent;
+
+    $!icon = do {
+      when GIcon {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GIcon, $_);
+      }
+    }
+    self!setObject($to-parent);
+    self.roleInit-Icon;
+  }
+
+  method new (GIconAncestry $icon, :$ref = True) {
+    return Nil unless $icon;
+
+    my $o = self.bless( :$icon );
+    $o.ref if $ref;
+    $o;
+  }
 
 }

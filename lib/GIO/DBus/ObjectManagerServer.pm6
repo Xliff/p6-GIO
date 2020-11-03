@@ -1,12 +1,16 @@
 use v6.c;
 
-use GIO::Raw::Types;
+use Method::Also;
 
+use GIO::Raw::Types;
 use GIO::DBus::Raw::ObjectManagerServer;
 
 use GIO::DBus::Connection;
 
 use GLib::Roles::Object;
+
+our subset GDBusObjectManagerServerAncestry is export of Mu
+  where GDBusObjectManagerServer | GObject;
 
 class GIO::DBus::ObjectManagerServer {
   also does GLib::Roles::Object;
@@ -14,21 +18,41 @@ class GIO::DBus::ObjectManagerServer {
   has GDBusObjectManagerServer $!doms is implementor;
 
   submethod BUILD (:$server) {
-    $!doms = $server;
+    self.setGDBusObjectManagerServer($server) if $server;
+  }
 
-    self.roleInit-Object;
+  method setGDBusObjectManagerServer (GDBusObjectManagerServerAncestry $_) {
+    my $to-parent;
+
+    $!doms = do {
+      when GDBusObjectManagerServer {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GDBusObjectManagerServer, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GDBusObjectManagerServer
+    is also<GDBusObjectManagerServer>
   { $!doms }
 
-  multi method new (GDBusObjectManagerServer $server) {
-    self.bless( :$server );
+  multi method new (GDBusObjectManagerServerAncestry $server, :$ref = True) {
+    return Nil unless $server;
+
+    my $o = self.bless( :$server );
+    $o.ref if $ref;
+    $o;
   }
   multi method new (Str() $object_path) {
-    my $s = g_dbus_object_manager_server_new($object_path);
+    my $server = g_dbus_object_manager_server_new($object_path);
 
-    $s ?? self.bless( server => $s ) !! Nil;
+    $server ?? self.bless( :$server ) !! Nil;
   }
 
   method connection (:$raw = False) is rw {
@@ -37,7 +61,7 @@ class GIO::DBus::ObjectManagerServer {
         my $c = g_dbus_object_manager_server_get_connection($!doms);
 
         $c ??
-          ( $raw ?? $c !! GIO::DBus::Connection.new($c) )
+          ( $raw ?? $c !! GIO::DBus::Connection.new($c, :!ref) )
           !!
           Nil;
       },
@@ -51,11 +75,11 @@ class GIO::DBus::ObjectManagerServer {
     g_dbus_object_manager_server_export($!doms, $object);
   }
 
-  method export_uniquely (GDBusObjectSkeleton() $object) {
+  method export_uniquely (GDBusObjectSkeleton() $object) is also<export-uniquely> {
     g_dbus_object_manager_server_export_uniquely($!doms, $object);
   }
 
-  method get_type {
+  method get_type is also<get-type> {
     state ($n, $t);
 
     unstable_get_type(
@@ -66,7 +90,7 @@ class GIO::DBus::ObjectManagerServer {
     );
   }
 
-  method is_exported (GDBusObjectSkeleton() $object) {
+  method is_exported (GDBusObjectSkeleton() $object) is also<is-exported> {
     so g_dbus_object_manager_server_is_exported($!doms, $object);
   }
 

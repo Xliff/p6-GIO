@@ -8,28 +8,50 @@ use GIO::Raw::Notification;
 
 use GLib::Roles::Object;
 
+our subset GNotificationAncestry is export of Mu
+  where GNotification | GObject;
+
 class GIO::Notification {
   also does GLib::Roles::Object;
 
   has GNotification $!n is implementor;
 
   submethod BUILD (:$notification) {
-    $!n = $notification;
+    self.setGNotification($notification) if $notification;
+  }
 
-    self.roleInit-Object;
+  method setGNotification (GNotificationAncestry $_) {
+    my $to-parent;
+
+    $!n = do {
+      when GNotification {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GNotification, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GNotification
     is also<GNotification>
   { $!n }
 
-  multi method new (GNotification $notification) {
-    self.bless( :$notification );
+  multi method new (GNotification $notification, :$ref = True) {
+    return Nil unless $notification;
+
+    my $o = self.bless( :$notification );
+    $o.ref if $ref;
+    $o;
   }
   multi method new(Str() $title) {
-    my $n = g_notification_new($title);
+    my $notification = g_notification_new($title);
 
-    self.bless( notification => $n );
+    $notification ?? self.bless( :$notification ) !! Nil;
   }
 
   method add_button (Str() $label, Str() $detailed_action)
@@ -39,8 +61,8 @@ class GIO::Notification {
   }
 
   method add_button_with_target_value (
-    Str() $label,
-    Str() $action,
+    Str()      $label,
+    Str()      $action,
     GVariant() $target
   )
     is also<add-button-with-target-value>
@@ -70,7 +92,7 @@ class GIO::Notification {
   }
 
   method set_default_action_and_target_value (
-    Str() $action,
+    Str()      $action,
     GVariant() $target
   )
     is also<set-default-action-and-target-value>

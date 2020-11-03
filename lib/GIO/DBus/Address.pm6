@@ -6,17 +6,13 @@ use NativeCall;
 use GIO::Raw::Types;
 use GIO::DBus::Raw::Types;
 
+use GIO::Stream;
 use GIO::DBus::Raw::Address;
 
-use GIO::Stream;
+use GLib::Roles::StaticClass;
 
 class GIO::DBus::Address {
-
-  method new (|) {
-    warn 'GIO::DBus::Address is a static class and does not need instantiation.';
-
-    GIO::DBus::Address;
-  }
+  also does GLib::Roles::StaticClass;
 
   method escape_value (Str() $string) is also<escape-value> {
     g_dbus_address_escape_value($string);
@@ -27,8 +23,8 @@ class GIO::DBus::Address {
   }
 
   method is_supported_address (
-    Str() $string,
-    CArray[Pointer[GError]] $error = gerror
+    Str()                   $string,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<is-supported-address>
   {
@@ -39,9 +35,9 @@ class GIO::DBus::Address {
   }
 
   method get_for_bus_sync (
-    Int() $bus_type,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Int()                   $bus_type,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   )
     is also<get-for-bus-sync>
   {
@@ -54,26 +50,27 @@ class GIO::DBus::Address {
   { * }
 
   multi method get_stream (
-    Str() $address,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Str()               $address,
+                        &callback,
+    gpointer            $user_data    = gpointer,
+    GCancellable()      :$cancellable = GCancellable
   ) {
-    samewith($address, GCancellable, $callback, $user_data);
+    samewith($address, $cancellable, &callback, $user_data);
   }
   multi method get_stream (
-    Str() $address,
-    GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Str()               $address,
+    GCancellable()      $cancellable,
+                        &callback,
+    gpointer            $user_data    = gpointer
   ) {
-    g_dbus_address_get_stream($address, $cancellable, $callback, $user_data);
+    g_dbus_address_get_stream($address, $cancellable, &callback, $user_data);
   }
 
   method get_stream_finish (
-    GAsyncResult() $res,
-    Str() $out_guid,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    GAsyncResult()          $res,
+    Str()                   $out_guid,
+    CArray[Pointer[GError]] $error     = gerror,
+                            :$raw      = False
   )
     is also<get-stream-finish>
   {
@@ -82,16 +79,16 @@ class GIO::DBus::Address {
     set_error($error);
 
     $ios ??
-      ( $raw ?? $ios !! GIO::Stream.new($ios) )
+      ( $raw ?? $ios !! GIO::Stream.new($ios, :!ref) )
       !!
       Nil;
   }
 
   method get_stream_sync (
-    Str() $address,
-    Str() $out_guid,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
+    Str()                   $address,
+    Str()                   $out_guid,
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror,
     :$raw = False
   )
     is also<get-stream-sync>
@@ -106,7 +103,7 @@ class GIO::DBus::Address {
     set_error($error);
 
     $ios ??
-      ( $raw ?? $ios !! GIO::Stream.new($ios) )
+      ( $raw ?? $ios !! GIO::Stream.new($ios, :!ref) )
       !!
       Nil;
   }

@@ -2,12 +2,9 @@ use v6.c;
 
 use Test;
 
-use GTK::Compat::Types;
-use GTK::Compat::FileTypes;
+use GIO::Raw::Types;
 
-use GIO::Roles::GFile;
 use GLib::MainLoop;
-
 use GIO::Emblem;
 use GIO::EmblemedIcon;
 use GIO::FileIcon;
@@ -15,18 +12,20 @@ use GIO::ThemedIcon;
 use GIO::InputStream;
 
 use GIO::Roles::Icon;
+use GIO::Roles::GFile;
 
 plan 92;
 
 sub compare-path-nodes ($uri, @a?) {
-  my $l = GIO::Roles::GFile.new-for-uri($uri);
+  my $l = GIO::File.new_for_uri($uri);
   my $i = GIO::FileIcon.new($l);
 
   is  +$i.file(:raw).p,
       +$l.GFile.p,
       'FileIcon and Location are the same';
 
-  my $d = ~$i;
+  #my $d = ~$i;
+  my $d = $i.to_string;
   if @a {
     ok  $*SPEC.splitdir($d) cmp @a,
         "Path nodes of a stringified GFileIcon match '{$uri}'";
@@ -36,7 +35,7 @@ sub compare-path-nodes ($uri, @a?) {
         "Non-native path comparison matches '{$uri}'";
   }
 
-  my $i2 = GIO::Roles::Icon.new-for-string($d);
+  my $i2 = GIO::Icon.new_for_string($d);
   nok $ERROR,
       "No error occured when creating another GIcon for '{$d}'";
 
@@ -47,16 +46,16 @@ sub compare-path-nodes ($uri, @a?) {
 }
 
 sub compareEmblem (&f) {
-  my $i = GIO::ThemedIcon.new('face-smirk');
+  my $i  = GIO::ThemedIcon.new('face-smirk');
   my $i2 = GIO::ThemedIcon.new('emblem-important');
   $i2.append-name('emblem-shared');
 
   my $uri = 'file::///some/path/somewhere.png';
-  my $l = GIO::Roles::GFile.new-for-uri($uri);
-  my $i3 = GIO::FileIcon.new($l);
-  my $e1 = GIO::Emblem.new-with-origin($i2, G_EMBLEM_ORIGIN_DEVICE);
-  my $e2 = GIO::Emblem.new-with-origin($i3, G_EMBLEM_ORIGIN_LIVEMETADATA);
-  my $i4 = GIO::EmblemedIcon.new($i, $e1);
+  my $l   = GIO::File.new_for_uri($uri);
+  my $i3  = GIO::FileIcon.new($l);
+  my $e1  = GIO::Emblem.new-with-origin($i2, G_EMBLEM_ORIGIN_DEVICE);
+  my $e2  = GIO::Emblem.new-with-origin($i3, G_EMBLEM_ORIGIN_LIVEMETADATA);
+  my $i4  = GIO::EmblemedIcon.new($i, $e1);
   $i4.add-emblem($e2);
 
   my $i5 = &f($i4);
@@ -89,7 +88,7 @@ sub icon-to-string {
     my $i = GIO::ThemedIcon.new_with_default_fallbacks('some-icon-symbolic');
     $i.append-name('some-other-icon');
 
-    is  ~$i, qq:to/MATCH/.chomp, 'Themed icon has appropriate fallbacks';
+    is  $i.to_string, qq:to/MATCH/.chomp, 'Themed icon has appropriate fallbacks';
       . GThemedIcon some-icon-symbolic some-symbolic some-other-icon {''
       }some-other some some-icon some-other-icon-symbolic some-other-symbolic
       MATCH
@@ -97,11 +96,11 @@ sub icon-to-string {
 
   {
     my $i = GIO::ThemedIcon.new('network-server');
-    my $d = ~$i;
+    my $d = $i.to_string;
 
     is $d, 'network-server', 'Themed icon location stringifies properly';
 
-    my $i2 = GIO::Roles::Icon.new-for-string($d);
+    my $i2 = GIO::Icon.new_for_string($d);
     nok $ERROR, 'No error when creating GIO::Roles::Icon from string';
 
     ok  $i2.equal($i), 'ThemedIcon and duplicate are equivalent';
@@ -109,13 +108,13 @@ sub icon-to-string {
 
   {
     my $i = GIO::ThemedIcon.new-with-default-fallbacks('network-server');
-    my $d = ~$i;
+    my $d = $i.to_string;
 
     is $d,
        '. GThemedIcon network-server network network-server-symbolic network-symbolic',
        'ThemedIcon has approriate fallbacks for "network-server"';
 
-    my $i2 = GIO::Roles::Icon.new-for-string($d);
+    my $i2 = GIO::Icon.new_for_string($d);
 
     nok $ERROR, 'No error when creating GIO::Roles::Icon from string';
 
@@ -123,7 +122,7 @@ sub icon-to-string {
   }
 
   {
-    my $i = GIO::Roles::Icon.new-for-string('network-server%');
+    my $i = GIO::Icon.new_for_string('network-server%');
     nok $ERROR, "No error when constructing Icon with URI 'network-server%'";
 
     my $i2 = GIO::ThemedIcon.new('network-server%');
@@ -132,43 +131,43 @@ sub icon-to-string {
 
   {
     my $uri = '/path/to/somewhere.png';
-    my $i = GIO::Roles::Icon.new-for-string($uri);
+    my $i = GIO::Icon.new_for_string($uri);
     nok $ERROR, "No error when constructing Icon with URI '{$uri}'";
 
-    my $l = GIO::Roles::GFile.new-for-commandline-arg($uri);
+    my $l = GIO::File.new_for_commandline_arg($uri);
     my $i2 = GIO::FileIcon.new($l);
     ok $i2.equal($i), 'Icon and FileIcon initialized from GFile, are equivalent';
   }
 
   {
     my $uri = '/path/to/somewhere with whitespace.png';
-    my $i = GIO::Roles::Icon.new-for-string($uri);
-    nok $ERROR, "No error when consturcting Icon with URI '{$uri}'";
+    my $i = GIO::Icon.new_for_string($uri);
+    nok $ERROR, "No error when constructing Icon with URI '{$uri}'";
 
-    my $d = ~$i;
+    my $d = $i.to_string;
     ok  $*SPEC.splitdir($d) cmp «path to "somewhere with whitespace.png"»,
         'Path nodes for icon match properly.';
 
-    my $l = GIO::Roles::GFile.new-for-commandline-arg($uri);
+    my $l = GIO::File.new_for_commandline_arg($uri);
     my $i2 = GIO::FileIcon.new($l);
     ok $i2.equal($i), 'Icon and FileIcon from same URI, are equivalent';
 
     my $uri2 = $uri.subst(' ', '%20', :g);
-    $l = GIO::Roles::GFile.new-for-commandline-arg($uri2);
+    $l = GIO::File.new_for_commandline_arg($uri2);
     $i2 = GIO::FileIcon.new($l);
     nok $i.equal($i2), "Icon and FileIcon from URI {$uri2}, are equivalent";
   }
 
   {
     my $uri = "sftp:///path/to/somewhere.png";
-    my $i = GIO::Roles::Icon.new-for-string($uri);
-    nok $ERROR, "No error when consturcting Icon with URI '{$uri}'";
+    my $i   = GIO::Icon.new_for_string($uri);
+    nok $ERROR, "No error when constructing Icon with URI '{$uri}'";
 
-    my $d = ~$i;
+    my $d = $i.to_string;
     is  $uri, $d,
         "Stringified Icon matches URI '{$uri}'";
 
-    my $l = GIO::Roles::GFile.new-for-commandline-arg($uri);
+    my $l  = GIO::File.new_for_commandline_arg($uri);
     my $i2 = GIO::FileIcon.new($l);
     ok $i2.equal($i), 'Icon and FileIcon from same URI, are equivalent';
   }
@@ -178,27 +177,27 @@ sub icon-to-string {
     my $i = GIO::ThemedIcon.new($_);
     $i.append-name('computer');
 
-    my $d = ~$i;
-    my $i2 = GIO::Roles::Icon.new-for-string($d);
-    nok $ERROR, "No error when consturcting Icon with URI '{$_}'";
-    ok $i.equal($i2), 'ThemeIcon and Icon from same URI, are equivalen';
+    my $d = $i.to_string;
+    my $i2 = GIO::Icon.new_for_string($d);
+    nok $ERROR, "No error when constructing Icon with URI '{$_}'";
+    ok $i.equal($i2), 'ThemeIcon and Icon from same URI, are equivalent';
   }
 
   compareEmblem(-> $a {
-    my $d = ~$a;
-    my $i5 = GIO::Roles::Icon.new-for-string($d);
-    nok $ERROR, "No error when consturcting Icon with URI '{$d}'";
+    my $d  = $a.to_string;
+    my $i5 = GIO::Icon.new_for_string($d);
+    nok $ERROR, "No error when constructing Icon with URI '{$d}'";
 
     $i5;
   });
 }
 
 sub icon-serialize {
-  use GTK::Compat::Variant;
+  use GLib::Variant;
 
   {
     my $u = 'network-server%';
-    my $d = GTK::Compat::Variant.new-string($u);
+    my $d = GLib::Variant.new-string($u);
     my $i = GIO::Roles::Icon.deserialize($d.ref-sink);
     my $i2 = GIO::ThemedIcon.new($u);
 
@@ -208,9 +207,9 @@ sub icon-serialize {
 
   {
     my $u  = '/path/to/somewhere.png';
-    my $d  = GTK::Compat::Variant.new-string($u);
+    my $d  = GLib::Variant.new-string($u);
     my $i  = GIO::Roles::Icon.deserialize($d.ref-sink);
-    my $l  = GIO::Roles::GFile.new-for-commandline-arg($u);
+    my $l  = GIO::File.new_for_commandline_arg($u);
     my $i2 = GIO::FileIcon.new($l);
 
     ok  $i.equal($i2),
@@ -219,9 +218,9 @@ sub icon-serialize {
 
   {
     my $u  = '/path/to/somewhere with whitespace.png';
-    my $d  = GTK::Compat::Variant.new-string($u);
+    my $d  = GLib::Variant.new-string($u);
     my $i  = GIO::Roles::Icon.deserialize($d.ref-sink);
-    my $l  = GIO::Roles::GFile.new-for-commandline-arg($u);
+    my $l  = GIO::File.new_for_commandline_arg($u);
     my $i2 = GIO::FileIcon.new($l);
 
     ok  $i.equal($i2),
@@ -229,7 +228,7 @@ sub icon-serialize {
     $i2.unref;
 
     my $u2 = $u.subst(' ', '%20', :g);
-    my $l2 = GIO::Roles::GFile.new-for-commandline-arg($u2);
+    my $l2 = GIO::File.new_for_commandline_arg($u2);
     $i2 = GIO::FileIcon.new($l2);
 
     nok $i.equal($i2),
@@ -238,9 +237,9 @@ sub icon-serialize {
 
   {
     my $u  = 'sftp:///path/to/somewhere.png';
-    my $d  = GTK::Compat::Variant.new-string($u);
+    my $d  = GLib::Variant.new-string($u);
     my $i  = GIO::Roles::Icon.deserialize($d.ref-sink);
-    my $l  = GIO::Roles::GFile.new-for-commandline-arg($u);
+    my $l  = GIO::File.new_for_commandline_arg($u);
     my $i2 = GIO::FileIcon.new($l);
 
     ok  $i.equal($i2),
@@ -294,7 +293,7 @@ sub test-themed-icon {
   my $i2 = GIO::ThemedIcon.new-from-names(@n);
   ok $i.equal($i2), 'First Icon matches new Icon created from array';
 
-  my $i3 = GIO::Roles::Icon.new-for-string(~$i2);
+  my $i3 = GIO::Icon.new_for_string($i2.to_string);
   ok  $i2.equal($i3),
       "Second Icon matches third icon created from Second's string representation";
 
@@ -350,7 +349,7 @@ sub test-emblemed-icon {
       "Emblem2's origin is G_EMBLEM_ORIGIN_TAG";
 
   $i4.clear-emblems;
-  is  $i4.emblems.elems, 0,
+  is  $i4.emblems.grep( *.defined ).elems, 0,
       'Icon4 has no emblems after they have been cleared';
   nok $i4.hash == $i2.hash,
       "Icon4's hash does not match that of Icon2";
@@ -359,7 +358,7 @@ sub test-emblemed-icon {
 }
 
 sub loadable-icon-tests ($i) {
-  my $s = $i.load(20);
+  my ($s, $) = $i.load(20);
 
   nok     $ERROR,
           'No error detected when loading icon';
@@ -394,16 +393,16 @@ sub loadable-icon-tests ($i) {
 }
 
 sub test-file-icon {
-  my $f1 = GIO::Roles::GFile.new-for-path('t/g-icon.c');
+  my $f1 = GIO::File.new_for_path('t/g-icon.c');
   my $i1 = GIO::FileIcon.new($f1);
 
   loadable-icon-tests($i1);
 
-  my $i2 = GIO::Roles::Icon.new-for-string(~$i1);
+  my $i2 = GIO::Icon.new_for_string($i1.to_string);
   ok  $i1.equal($i2),
       'Icon1 equals Icon2';
 
-  my $f2 = GIO::Roles::GFile.new-for-path("/\o1\o2\o3/\o244");
+  my $f2 = GIO::File.new_for_path("/\o1\o2\o3/\o244");
   my $i4 = GIO::FileIcon.new($f2);
 
   my $v  = $i4.serialize;

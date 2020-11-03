@@ -1,17 +1,17 @@
 use v6.c;
 
 use Method::Also;
-
 use NativeCall;
 
 use GIO::Raw::Types;
-
-
 use GIO::Raw::TlsDatabase;
+
+use GIO::TlsCertificate;
 
 use GLib::Roles::Object;
 
-use GIO::TlsCertificate;
+our subset GTlsDatabaseAncestry is export of Mu
+  where GTlsDatabase | GObject;
 
 class GIO::TlsDatabase {
   also does GLib::Roles::Object;
@@ -19,17 +19,36 @@ class GIO::TlsDatabase {
   has GTlsDatabase $!td is implementor;
 
   submethod BUILD (:$tls-database) {
-    $!td = $tls-database;
+    self.setGTlsDatabase($tls-database) if $tls-database;
+  }
 
-    self.roleInit-Object;
+  method setGtlsDatabase (GTlsDatabaseAncestry $_) {
+    my $to-parent;
+
+    $!td = do {
+      when GTlsDatabase {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GTlsDatabase, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GTlsDatabase
     is also<GTlsDatabase>
   { $!td }
 
-  method new (GTlsDatabase $tls-database) {
-    self.bless( :$tls-database );
+  method new (GTlsDatabaseAncestry $tls-database, :$ref = True) {
+    return Nil unless $tls-database;
+
+    my $o = self.bless( :$tls-database );
+    $o.ref if $ref;
+    $o;
   }
 
   method create_certificate_handle (GTlsCertificate $certificate)
@@ -45,18 +64,19 @@ class GIO::TlsDatabase {
   }
 
   method lookup_certificate_for_handle (
-    Str() $handle,
-    GTlsInteraction() $interaction,
-    Int() $flags,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    Str()                   $handle,
+    GTlsInteraction()       $interaction,
+    Int()                   $flags,
+    GCancellable()          $cancellable  = GCancellable,
+    CArray[Pointer[GError]] $error        = gerror,
+                            :$raw         = False
   )
     is also<lookup-certificate-for-handle>
   {
     my GTlsDatabaseLookupFlags $f = $flags;
 
     clear_error;
-    my $rv = g_tls_database_lookup_certificate_for_handle(
+    my $c = g_tls_database_lookup_certificate_for_handle(
       $!td,
       $handle,
       $interaction,
@@ -65,7 +85,11 @@ class GIO::TlsDatabase {
       $error
     );
     set_error($error);
-    $rv;
+
+    $c ??
+      ( $raw ?? $c !! GIO::TlsCertificate.new($c, :!ref) )
+      !!
+      Nil;
   }
 
   proto method lookup_certificate_for_handle_async (|)
@@ -73,28 +97,28 @@ class GIO::TlsDatabase {
   { * }
 
   multi method lookup_certificate_for_handle_async (
-    Str() $handle,
+    Str()             $handle,
     GTlsInteraction() $interaction,
-    Int() $flags,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Int()             $flags,
+                      &callback,
+    gpointer          $user_data    = gpointer
   ) {
     samewith(
       $handle,
       $interaction,
       $flags,
       GCancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
   multi method lookup_certificate_for_handle_async (
-    Str() $handle,
+    Str()             $handle,
     GTlsInteraction() $interaction,
-    Int() $flags,
-    GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Int()             $flags,
+    GCancellable()    $cancellable,
+                      &callback,
+    gpointer          $user_data    = gpointer
   ) {
     my GTlsDatabaseLookupFlags $f = $flags;
 
@@ -104,41 +128,46 @@ class GIO::TlsDatabase {
       $interaction,
       $flags,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method lookup_certificate_for_handle_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror,
+                            :$raw    = False
   )
     is also<lookup-certificate-for-handle-finish>
   {
     clear_error;
-    my $rv = g_tls_database_lookup_certificate_for_handle_finish(
+    my $c = g_tls_database_lookup_certificate_for_handle_finish(
       $!td,
       $result,
       $error
     );
     set_error($error);
-    $rv;
+
+    $c ??
+      ( $raw ?? $c !! GIO::TlsCertificate.new($c, :!ref) )
+      !!
+      Nil;
   }
 
   method lookup_certificate_issuer (
-    GTlsCertificate() $certificate,
-    GTlsInteraction() $interaction,
-    Int() $flags,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    GTlsCertificate()       $certificate,
+    GTlsInteraction()       $interaction,
+    Int()                   $flags,
+    GCancellable()          $cancellable  = GCancellable,
+    CArray[Pointer[GError]] $error        = gerror,
+                            :$raw         = False
   )
     is also<lookup-certificate-issuer>
   {
     my GTlsDatabaseLookupFlags $f = $flags;
 
     clear_error;
-    my $rv = g_tls_database_lookup_certificate_issuer(
+    my $c = g_tls_database_lookup_certificate_issuer(
       $!td,
       $certificate,
       $interaction,
@@ -148,8 +177,8 @@ class GIO::TlsDatabase {
     );
     set_error($error);
 
-    $rv ??
-      ( $raw ?? $rv !! GIO::TlsCertificate.new($rv) )
+    $c ??
+      ( $raw ?? $c !! GIO::TlsCertificate.new($c, :!ref) )
       !!
       Nil;
   }
@@ -161,26 +190,26 @@ class GIO::TlsDatabase {
   multi method lookup_certificate_issuer_async (
     GTlsCertificate() $certificate,
     GTlsInteraction() $interaction,
-    Int() $flags,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    Int()             $flags,
+                      &callback,
+    gpointer          $user_data    = gpointer
   ) {
     samewith(
       $certificate,
       $interaction,
       $flags,
       GCancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
   multi method lookup_certificate_issuer_async (
-    GTlsCertificate() $certificate,
-    GTlsInteraction() $interaction,
-    Int() $flags,
-    GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    GTlsCertificate()   $certificate,
+    GTlsInteraction()   $interaction,
+    Int()               $flags,
+    GCancellable()      $cancellable,
+                        &callback,
+    gpointer            $user_data    = gpointer
   ) {
     my GTlsDatabaseLookupFlags $f = $flags;
 
@@ -190,47 +219,47 @@ class GIO::TlsDatabase {
       $interaction,
       $f,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method lookup_certificate_issuer_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror,
-    :$raw = False
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror,
+                            :$raw    = False
   )
     is also<lookup-certificate-issuer-finish>
   {
     clear_error;
-    my $rv = g_tls_database_lookup_certificate_issuer_finish(
+    my $c = g_tls_database_lookup_certificate_issuer_finish(
       $!td,
       $result,
       $error
     );
     set_error($error);
 
-    $rv ??
-      ( $raw ?? $rv !! GIO::TlsCertificate.new($rv) )
+    $c ??
+      ( $raw ?? $c !! GIO::TlsCertificate.new($c, :!ref) )
       !!
       Nil;
   }
 
   method lookup_certificates_issued_by (
-    GByteArray() $issuer_raw_dn,
-    GTlsInteraction() $interaction,
-    Int() $flags,
-    GCancellable() $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror,
-    :$glist = False,
-    :$raw = False
+    GByteArray()            $issuer_raw_dn,
+    GTlsInteraction()       $interaction,
+    Int()                   $flags,
+    GCancellable()          $cancellable    = GCancellable,
+    CArray[Pointer[GError]] $error          = gerror,
+                            :$glist         = False,
+                            :$raw           = False
   )
     is also<lookup-certificates-issued-by>
   {
     my GTlsDatabaseLookupFlags $f = $flags;
 
     clear_error;
-    my $rv = g_tls_database_lookup_certificates_issued_by(
+    my $cl = g_tls_database_lookup_certificates_issued_by(
       $!td,
       $issuer_raw_dn,
       $interaction,
@@ -240,13 +269,14 @@ class GIO::TlsDatabase {
     );
     set_error($error);
 
-    return Nil unless $rv;
-    return $rv if     $glist;
+    return Nil unless $cl;
+    return $cl if     $glist && $raw;
 
-    $rv = GLib::GList.new($rv)
-      but GLib::Roles::ListData[GTlsCertificate];
+    $cl = GLib::GList.new($cl) but GLib::Roles::ListData[GTlsCertificate];
+    return $cl if $glist;
 
-    $raw ?? $rv.Array !! $rv.Array.map({ GIO::TlsCertificate.new($_) })
+    $raw ?? $cl.Array
+         !! $cl.Array.map({ GIO::TlsCertificate.new($_, :!ref) })
   }
 
   proto method lookup_certificates_issued_by_async (|)
@@ -254,28 +284,28 @@ class GIO::TlsDatabase {
   { * }
 
   multi method lookup_certificates_issued_by_async (
-    GByteArray() $issuer_raw_dn,
-    GTlsInteraction() $interaction,
-    Int() $flags,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    GByteArray()        $issuer_raw_dn,
+    GTlsInteraction()   $interaction,
+    Int()               $flags,
+                        &callback,
+    gpointer            $user_data      = gpointer
   ) {
     samewith(
       $issuer_raw_dn,
       $interaction,
       $flags,
       GCancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
   multi method lookup_certificates_issued_by_async (
-    GByteArray() $issuer_raw_dn,
-    GTlsInteraction() $interaction,
-    Int() $flags,
-    GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    GByteArray()        $issuer_raw_dn,
+    GTlsInteraction()   $interaction,
+    Int()               $flags,
+    GCancellable()      $cancellable,
+                        &callback,
+    gpointer            $user_data      = gpointer
   ) {
     my GTlsDatabaseLookupFlags $f = $flags;
 
@@ -285,44 +315,45 @@ class GIO::TlsDatabase {
       $interaction,
       $f,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method lookup_certificates_issued_by_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror,
-    :$glist = False,
-    :$raw = False
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror,
+                            :$glist  = False,
+                            :$raw    = False
   )
     is also<lookup-certificates-issued-by-finish>
   {
     clear_error;
-    my $rv = g_tls_database_lookup_certificates_issued_by_finish(
+    my $cl = g_tls_database_lookup_certificates_issued_by_finish(
       $!td,
       $result,
       $error
     );
     set_error($error);
 
-    return Nil unless $rv;
-    return $rv if     $glist;
+    return Nil unless $cl;
+    return $cl if     $glist && $raw;
 
-    $rv = GLib::GList.new($rv)
-      but GLib::Roles::ListData[GTlsCertificate];
+    $cl = GLib::GList.new($cl) but GLib::Roles::ListData[GTlsCertificate];
+    return $cl if $raw;
 
-    $raw ?? $rv.Array !! $rv.Array.map({ GIO::TlsCertificate.new($_) })
+    $raw ?? $cl.Array
+         !! $cl.Array.map({ GIO::TlsCertificate.new($_, :!ref) })
   }
 
   method verify_chain (
-    GTlsCertificate() $chain,
-    Str() $purpose,
-    GSocketConnectable() $identity,
-    GTlsInteraction() $interaction,
-    Int() $flags,
-    GCancellable $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GTlsCertificate()       $chain,
+    Str()                   $purpose,
+    GSocketConnectable()    $identity,
+    GTlsInteraction()       $interaction,
+    Int()                   $flags,
+    GCancellable            $cancellable  = GCancellable,
+    CArray[Pointer[GError]] $error        = gerror
   )
     is also<verify-chain>
   {
@@ -347,13 +378,13 @@ class GIO::TlsDatabase {
   { * }
 
   multi method verify_chain_async (
-    GTlsCertificate() $chain,
-    Str() $purpose,
+    GTlsCertificate()    $chain,
+    Str()                $purpose,
     GSocketConnectable() $identity,
-    GTlsInteraction() $interaction,
-    Int() $flags,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    GTlsInteraction()    $interaction,
+    Int()                $flags,
+                         &callback,
+    gpointer             $user_data    = gpointer
   ) {
     samewith(
       $chain,
@@ -362,19 +393,19 @@ class GIO::TlsDatabase {
       $interaction,
       $flags,
       GCancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
   multi method verify_chain_async (
-    GTlsCertificate() $chain,
-    Str() $purpose,
+    GTlsCertificate()    $chain,
+    Str()                $purpose,
     GSocketConnectable() $identity,
-    GTlsInteraction() $interaction,
-    Int() $flags,
-    GCancellable() $cancellable,
-    GAsyncReadyCallback $callback,
-    gpointer $user_data = gpointer
+    GTlsInteraction()    $interaction,
+    Int()                $flags,
+    GCancellable()       $cancellable,
+                         &callback,
+    gpointer             $user_data    = gpointer
   ) {
     my GTlsDatabaseVerifyFlags $f = $flags;
 
@@ -386,22 +417,22 @@ class GIO::TlsDatabase {
       $interaction,
       $flags,
       $cancellable,
-      $callback,
+      &callback,
       $user_data
     );
   }
 
   method verify_chain_finish (
-    GAsyncResult() $result,
-    CArray[Pointer[GError]] $error = gerror
+    GAsyncResult()          $result,
+    CArray[Pointer[GError]] $error   = gerror
   )
     is also<verify-chain-finish>
   {
     clear_error;
-    my $rv = g_tls_database_verify_chain_finish($!td, $result, $error);
+    my $cf = g_tls_database_verify_chain_finish($!td, $result, $error);
     set_error($error);
 
-    GTlsCertificateFlagsEnum($rv);
+    GTlsCertificateFlagsEnum($cf);
   }
 
 }

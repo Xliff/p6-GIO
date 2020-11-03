@@ -41,10 +41,10 @@ role GIO::DBus::Roles::Signals::Server {
 # GDBusServer, GDBusConnection, gpointer --> gboolean
 sub g-connect-new-connection(
   Pointer $app,
-  Str $name,
-  &handler (Pointer, GDBusConnection, Pointer --> gboolean),
+  Str     $name,
+          &handler (Pointer, GDBusConnection, Pointer --> gboolean),
   Pointer $data,
-  uint32 $flags
+  uint32  $flags
 )
 returns uint64
 is native(gobject)

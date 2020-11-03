@@ -9,22 +9,50 @@ use GIO::Raw::Credentials;
 
 use GLib::Roles::Object;
 
+our subset GCredentialsAncestry is export of Mu
+  where GCredentials | GObject;
+
 class GIO::Credentials {
+  also does GLib::Roles::Object;
+
   has GCredentials $!c is implementor;
 
   submethod BUILD (:$credentials) {
-    $!c = $credentials;
+    self.setGCredentials($credentials) if $credentials;
+  }
+
+  method setGCredentials (GCredentialsAncestry $_) {
+    my $to-parent;
+
+    $!c = do {
+      when GCredentials {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GCredentials, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GCredentials
     is also<GCredentials>
   { $!c }
 
-  multi method new (GCredentials $credentials) {
-    self.bless( :$credentials );
+  multi method new (GCredentials $credentials, :$ref = True) {
+    return Nil unless $credentials;
+
+    my $o = self.bless( :$credentials );
+    $o.ref if $ref;
+    $o;
   }
   multi method new {
-    self.bless( credentials => g_credentials_new() );
+    my $credentials = g_credentials_new();
+
+    $credentials ?? self.bless( :$credentials ) !! Nil;
   }
 
   method get_native (Int() $native_type) is also<get-native> {
@@ -46,9 +74,9 @@ class GIO::Credentials {
     is also<get-unix-pid>
   {
     clear_error;
-    my $rv = g_credentials_get_unix_pid($!c, $error);
+    my $p = g_credentials_get_unix_pid($!c, $error);
     set_error($error);
-    $rv;
+    $p;
   }
 
   method get_unix_user (
@@ -57,21 +85,21 @@ class GIO::Credentials {
     is also<get-unix-user>
   {
     clear_error;
-    my $rv = g_credentials_get_unix_user($!c, $error);
+    my $u = g_credentials_get_unix_user($!c, $error);
     set_error($error);
-    $rv;
+    $u;
   }
 
   method is_same_user (
-    GCredentials() $other_credentials,
-    CArray[Pointer[GError]] $error = gerror
+    GCredentials()          $other_credentials,
+    CArray[Pointer[GError]] $error              = gerror
   )
     is also<is-same-user>
   {
     clear_error;
-    my $rv = so g_credentials_is_same_user($!c, $other_credentials, $error);
+    my $su = so g_credentials_is_same_user($!c, $other_credentials, $error);
     set_error($error);
-    $rv;
+    $su;
   }
 
   method set_native (Int() $native_type, gpointer $native)
@@ -83,7 +111,7 @@ class GIO::Credentials {
   }
 
   method set_unix_user (
-    uid_t $uid,
+    uid_t                   $uid,
     CArray[Pointer[GError]] $error = gerror
   )
     is also<set-unix-user>
