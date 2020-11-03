@@ -42,14 +42,15 @@ role GIO::Roles::Proxy {
       :$raw
     );
   }
-  multi method proxy_connect (
+  method proxy_connect (
     GIOStream()             $connection,
     GProxyAddress()         $proxy_address,
-    GCancellable()          $cancellable    =  GCancellable,
-    CArray[Pointer[GError]] $error          =  gerror,
-                            :$raw           =  False,
-                            :$proxy         is required
-  ) {
+    GCancellable()          $cancellable    = GCancellable,
+    CArray[Pointer[GError]] $error          = gerror,
+                            :$raw           = False
+  ) 
+  #  is also<proxy-connect>
+  {
     clear_error;
     my $ios =
       g_proxy_connect($!p, $connection, $proxy_address, $cancellable, $error);
