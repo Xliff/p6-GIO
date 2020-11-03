@@ -73,9 +73,7 @@ role GIO::Roles::NetworkMonitor {
     GCancellable()       $cancellable,
                          &callback,
     gpointer             $user_data    = gpointer
-  )
-    is also<can-reach-async>
-  {
+  ) {
     g_network_monitor_can_reach_async(
       $!nm,
       $connectable,
@@ -120,23 +118,11 @@ role GIO::Roles::NetworkMonitor {
       Nil;
   }
 
-  method get_network_available
-    is also<
-      get-network-available
-      network_available
-      network-available
-    >
-  {
+  method get_network_available is also<get-network-available> {
     so g_network_monitor_get_network_available($!nm);
   }
 
-  method get_network_metered
-    is also<
-      get-network-metered
-      network_metered
-      network-metered
-    >
-  {
+  method get_network_metered is also<get-network-metered> {
     so g_network_monitor_get_network_metered($!nm);
   }
 
