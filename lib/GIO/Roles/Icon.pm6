@@ -40,10 +40,10 @@ role GIO::Roles::Icon {
 
   method GIcon { $!icon }
   method GIO::Raw::Definitions::GIcon
-    is also<
-      GIcon
-      Icon
-    >
+    # is also<
+    #   GIcon
+    #   Icon
+    # >
   { $!icon }
 
 
