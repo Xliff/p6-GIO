@@ -1561,11 +1561,11 @@ role GIO::Roles::File {
 
   multi method move (
     GFile()                 $destination,
-    Int()                   $flags,
-                            &progress_callback,
-    gpointer                $progress_callback_data = Pointer,
-    GCancellable()          $cancellable            = GCancellable,
-    CArray[Pointer[GError]] $error                  = gerror
+    CArray[Pointer[GError]] $error                   = gerror,
+    Int()                   :$flags                  = G_FILE_COPY_NONE,
+    GCancellable()          :$cancellable            = GCancellable,
+                            :&progress_callback      = Callable,
+    gpointer                :$progress_callback_data = Pointer
   ) {
     samewith(
       $destination,
@@ -1578,11 +1578,11 @@ role GIO::Roles::File {
   }
   multi method move (
     GFile()                 $destination,
-    Int()                   $flags                  = G_FILE_COPY_NONE,
-    GCancellable()          $cancellable            = GCancellable,
-                            &progress_callback      = Callable,
-    gpointer                $progress_callback_data = Pointer,
-    CArray[Pointer[GError]] $error                  = gerror
+    Int()                   $flags,
+    GCancellable()          $cancellable,
+                            &progress_callback,
+    gpointer                $progress_callback_data,
+    CArray[Pointer[GError]] $error                   = gerror
   ) {
     my GFileCopyFlags $f = $flags;
 
