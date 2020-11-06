@@ -3,7 +3,7 @@ use v6.c;
 use GLib::Raw::Enums;
 use GIO::Raw::Icon;
 
-unit package GIO::FileAttribute::Types;
+unit package GIO::Raw::FileAttributeTypes;
 
 our enum GFileAttributes is export (
   G_FILE_ATTRIBUTE_STANDARD_TYPE                      => [ 'standard::type',                        G_TYPE_UINT       ], # GFileType
@@ -91,6 +91,14 @@ our enum GFileAttributes is export (
   G_FILE_ATTRIBUTE_TRASH_DELETION_DATE                => [ 'trash::deletion-date',                  G_TYPE_STRING     ]
 );
 
-sub GFileAttributeName        ($a) is export { GFileAttributes.enums{$a}[0]                                   }
-sub GFileAttributeType        ($a) is export { GFileAttributes.enums{$a}[1]                                   }
-sub getFileAtributeTypeByName ($n) is export { GFileAttributes.enums.map({ .value[0] => .value[1] }).Hash{$n} }
+my %FileAttributeTypes;
+
+BEGIN { %FileAttributeTypes = GFileAttributes.enums.map({ .value[0] => .value[1] }).Hash }
+
+sub GFileAttributeName        ($a) is export { $a.value[0] }
+sub GFileAttributeType        ($a) is export { $a.value[1] }
+
+sub fAttrVal ($a)  is export { $a.value[0] }
+sub fAttrType ($a) is export { $a.value[1] }
+
+sub getFileAtributeTypeByName ($n) is export { %FileAttributeTypes{$n} }
