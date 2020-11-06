@@ -3,32 +3,34 @@ use v6.c;
 use Test;
 
 use GIO::Raw::Types;
+use GIO::Raw::FileAttributeTypes;
 
-use GLib::Timeout;
 use GLib::FileUtils;
+use GLib::MainLoop;
 use GLib::Test;
+use GLib::Timeout;
 use GLib::Utils;
 
 use GIO::Roles::GFile;
 
-my ($tmp-dir, $HARD-LINKS);
+my ($tmp-dir, $HAVE-LINKS);
 
 sub setup {
   my $path = GLib::FileUtils.dir-make-tmp('gio-test-testfilemonitor_XXXXXX');
   nok $ERROR, 'No error detected when creating temp directory';
-  $tmp-dir = GIO::File.new-for-path($path);
+  $tmp-dir = GIO::File.new_for_path($path);
   GLib::Test.message("Using temporary directory: { $path }");
 }
 
 sub teardown {
   $tmp-dir.delete;
   nok $ERROR, 'No error detected when deleting temp file';
-  .unref && $_ = $ with $tmp-dir;
+  .unref with $tmp-dir
 }
 
 enum Environment (
   NONE    => 0,
-  INOTIFY => 1
+  INOTIFY => 1,
   KQUEUE  => 4
 );
 
@@ -40,7 +42,7 @@ sub output-event ($r) {
   }
 }
 
-sub get-enfironment ($m) {
+sub get-environment ($m) {
   do given $m.objectType.name {
     when    'GInotifyFileMonitor' { INOTIFY }
     when    'GKqueueFileMonitor'  { KQUEUE  }
@@ -48,27 +50,27 @@ sub get-enfironment ($m) {
   }
 }
 
-sub check-expected-events (@e, @r, $e) {
+sub check-expected-events (@e, @r, $env) {
+  my $num-results = @r.elems;
   my ($i, $li) = 0 xx 2;
 
-  for $r.Array -> $e1 {
+  for @e -> $e1 {
     my ($e2, $mismatch) = (@r.shift, True);
     repeat {
       my $ignore-other-file = False;
 
       last if $e1<step> != $e2<step>;
-
       if $e1<event-type> != $e2<event-type> && $env +& KQUEUE {
-        if $e<event-type> == G_FILE_MONITOR_EVENT_RENAMED {
+        if $e1<event-type> == G_FILE_MONITOR_EVENT_RENAMED {
           last unless @r.elems;
           my $e2-next = @r.shift;
 
-          last if $e2<event-type != G_FILE_MONITOR_EVENT_DELETED;
+          last if $e2<event-type>      != G_FILE_MONITOR_EVENT_DELETED;
           last if $e2-next<event-type> != G_FILE_MONITOR_EVENT_CREATED;
           last unless $e2<step> == $e2-next<step>;
           last if ( $e1<file>.defined && $e1<file>.chars ) &&
                   ( $e1<file> ne $e2<file> || $e2-next<other-file>.defined );
-          last if ( $e1<other-file>.defined && $e1<other-file>.chars> ) &&
+          last if ( $e1<other-file>.defined && $e1<other-file>.chars ) &&
                   ( $e1<other-file> ne $e2-next<file> ||
                     $e2-next<other-file>.defined );
           @r.unshift($e2-next);
@@ -89,7 +91,7 @@ sub check-expected-events (@e, @r, $e) {
               $e1<file> ne $e2<file>;
       last if $e1<other-file>.defined             &&
               $e1<other-file>.chars               &&
-              $ignore-$ignore-other-file.not      &&
+              $ignore-other-file.not              &&
               $e1<other-file> ne $e2<other-file>;
 
       $mismatch = False;
@@ -104,7 +106,7 @@ sub check-expected-events (@e, @r, $e) {
         $li++;
         @r.shift;
         redo;
-      } elsif $e +& $e1<optional> {
+      } elsif ($env // 0) +& ($e1<optional> // 0) {
         GLib::Test.message("Event { $e1<event-type> } at expected index {
                             $i } skipped because it is marked as optional");
         $i++;
@@ -131,43 +133,40 @@ sub check-expected-events (@e, @r, $e) {
   }
 
   is      $i,              @e.elems,        'Iteration count matches expected value';
-  is      $li,             @r.elems,        'Recorded events matches expected value';
+  is      $li,             $num-results,    'Recorded events matches expected value';
 }
 
 sub create-event ($et, $f, $of, $s, $env = $) {
   (
-    event-type => $et,
+    event-type => GFileMonitorEventEnum($et) // -1,
     file       => $f,
     other-file => $of,
     step       => $s,
     env        => $env
-  );
+  ).Hash;
 }
 
-multi sub record-event ($et, $f, $of) {
-  %d<events>.push: create-event($et, $f, $of, -1);
-}
-multi sub record-event (%d) {
-  %d<events>.push: create-event(-1, $, $, %d<step>);
+multi sub record-event (%d, $et = -1, $f = $, $of = $, $s = -1) {
+  %d<events>.push: create-event($et, $f, $of, $s);
 }
 
-sub monitor-changed ($monitor, $f, $of, $et, $d) {
+sub monitor-changed ( *@a ($monitor, $f, $of, $et, $d) ) {
   my ($fo, $ofo) = ( GIO::File.new($f), GIO::File.new($of) );
-  my $other-base = $of ?? $ofo.basename !! $;
+  my $other-base = $of ?? $ofo.get_basename !! $;
 
-  record-event($et, $file.basename, $other-base);
+  record-event($d, $et, $fo.get_basename, $other-base);
 }
 
 sub atomic-replace-step (%d) {
   record-event(%d);
   given %d<step> {
     when 0 {
-      %d<file>.replace-contents('step 0');
+      %d<file>.replace_contents('step 0');
       nok $ERROR, 'No error occurred when replacing contents at step 0';
     }
 
     when 1 {
-      %d<file>.replace-contents('step 1');
+      %d<file>.replace_contents('step 1');
       nok $ERROR, 'No error occurred when replacing contents at step 1';
     }
 
@@ -179,7 +178,7 @@ sub atomic-replace-step (%d) {
       %d<loop>.quit;
     }
   }
-  %d<step>++
+  %d<step>++;
 
   G_SOURCE_CONTINUE.Int;
 }
@@ -216,7 +215,7 @@ sub change-step (%d) {
      }
 
      when 2 {
-       %d<file>.set_attribute(G_FILE_ATTRIBUTE_UNIX_MODE, 0o660);
+       %d<file>.set_attribute(G_FILE_ATTRIBUTE_UNIX_MODE.&fAttrVal, 0o660);
        nok $ERROR, 'No errors detected setting attribute at step 2';
      }
 
@@ -227,7 +226,7 @@ sub change-step (%d) {
      when 4 {
        %d<loop>.quit;
        return G_SOURCE_REMOVE.Int;
-     } f
+     }
    }
    %d<step>++;
 
@@ -262,7 +261,7 @@ sub dir-step(%d) {
 
     when 2 {
       my $parent = %d<file>.parent;
-      my $file   = %parent.get_child('dir_test_file');
+      my $file   = $parent.get_child('dir_test_file');
       my $file2  = %d<file>.get_child('dir_test_file');
       $file.move($file2);
       nok $ERROR, 'No error detected when moving file at step 2';
@@ -325,7 +324,7 @@ sub nodir-step (%d) {
     }
 
     when 1 {
-      %d<file>.replace_contents('step 1')
+      %d<file>.replace_contents('step 1');
       nok $ERROR, 'No error detected when replacing contents at step 1';
     }
 
@@ -346,12 +345,12 @@ sub nodir-step (%d) {
       return G_SOURCE_REMOVE.Int;
     }
   }
-  %d<step>++
+  %d<step>++;
 
-  G_SOURCE_GONTINUE.Int;
+  G_SOURCE_CONTINUE.Int;
 }
 
-my @nodir_output = (
+my @nodir-output = (
   [ -1,                                         $,            $,  0, NONE   ],
   [ G_FILE_MONITOR_EVENT_CREATED,               'nosuchfile', $, -1, KQUEUE ],
   [ G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT,     'nosuchfile', $, -1, KQUEUE ],
@@ -372,23 +371,28 @@ sub set-up-data (%d, &p, $m = 'Using GFileMonitor') {
 
   ok  %d<monitor>, 'File monitor object created';
   nok $ERROR,      'No error detected when starting monitor';
-  GLib::Test.mesage("{ $m } { %d<monitor>.objectType.name }");
+  GLib::Test.message("{ $m } { %d<monitor>.objectType.name }");
   %d<monitor>.rate-limit = 200;
   %d<monitor>.changed.tap(-> *@a {
-    CATCH { default { .message.say; .message.backtrace.say } }
-    monitor-changed ( |@a.head(* - 1), %d )
+    CATCH { default { .message.say; .message.concise } }
+    my @a-args = @a.head(* - 1);
+    @a-args.push: %d;
+
+    #diag "A-ARGS: { @a-args.gist } / { @a-args.elems }";
+
+    monitor-changed ( |@a-args )
   });
 }
 
 sub actual-run-tests (&s, $d) {
   my $loop := $d ~~ Positional ?? $d[0]<loop> !! $d<loop>;
 
-  $loop = GIO::MainLoop.new(True);
+  $loop = GLib::MainLoop.new(True);
   GLib::Timeout.add(500, -> *@a --> gboolean {
-    CATCH { default { .message.say; .message.backtrace.say } }
+    CATCH { default { .message.say; .message.concise } }
     &s($d)
   });
-  %loop.run;
+  $loop.run;
 }
 
 sub run-tests ($n, @r, &s, &p) {
@@ -407,16 +411,16 @@ sub run-tests ($n, @r, &s, &p) {
 sub atomic-replace-pre (%d) {
   %d<file> = $tmp-dir.get_child('atomic_replace_file');
   %d<file>.delete;
-  %d<monitor> = %d<file>.monitor-file;
+  %d<monitor> = %d<file>.monitor_file;
 }
 
 sub change-pre (%d) {
   %d<file> = $tmp-dir.get_child('change_file');
   %d<file>.delete;
-  %d<monitor> = %d<file>.monitor-file;
+  %d<monitor> = %d<file>.monitor_file;
 }
 
-sub dir-pre ($d) {
+sub dir-pre (%d) {
   %d<file> = $tmp-dir.get-child('dir_monitor_test');
   %d<file>.delete;
   %d<file>.make_directory;
@@ -425,7 +429,7 @@ sub dir-pre ($d) {
 
 sub nodir-pre (%d) {
   %d<file>    = $tmp-dir.get_child('nosuchdir/nosuchfile');
-  %d<monitor> = %d<file>.monitor-file;
+  %d<monitor> = %d<file>.monitor_file;
 }
 
 sub hard-link-pre (%d) {
@@ -433,7 +437,7 @@ sub hard-link-pre (%d) {
   %d<file>          = $tmp-dir.get_child('testfilemonitor.db');
   %d<output-stream> = %d<file>.replace;
   nok $ERROR, 'No error detected obtaining output stream from file object';
-  %d<monitor> = %d<file>.monitor-file(G_FILE_MONITOR_WATCH_MOUNTS     +|
+  %d<monitor> = %d<file>.monitor_file(G_FILE_MONITOR_WATCH_MOUNTS     +|
                                       G_FILE_MONITOR_WATCH_MOVES      +|
                                       G_FILE_MONITOR_WATCH_HARD_LINKS   );
 }
@@ -473,7 +477,7 @@ sub cross-dir-step (@d) {
   G_SOURCE_CONTINUE.Int;
 }
 
-my @cross_dir_a_output = (
+my @cross-dir-a-output = (
   [ -1,                                     $,             $,  0, NONE   ],
   [ -1,                                     $,             $,  1, NONE   ],
   [ G_FILE_MONITOR_EVENT_CREATED,           'a',           $, -1, NONE   ],
@@ -484,7 +488,7 @@ my @cross_dir_a_output = (
   [ -1,                                     $,             $,  3, NONE   ]
 ).map({ create-event( |$_ ) });
 
-my @cross_dir_b_output = (
+my @cross-dir-b-output = (
   [ -1,                                     $,             $,    0, NONE   ],
   [ G_FILE_MONITOR_EVENT_CREATED,           'a',           $,   -1, NONE   ],
   [ G_FILE_MONITOR_EVENT_CHANGED,           'a',           $,   -1, KQUEUE ],
@@ -494,7 +498,7 @@ my @cross_dir_b_output = (
   [ -1,                                     $,             $,    2, NONE   ],
   [ G_FILE_MONITOR_EVENT_DELETED,           'cross_dir_b', $,   -1, NONE   ],
   [ -1,                                     $,             $,    3, NONE   ]
-).map({ create-event($_) });
+).map({ create-event( |$_ ) });
 
 sub test-cross-dir-moves {
   my @data;
@@ -509,7 +513,7 @@ sub test-cross-dir-moves {
   set-up-data(
     @data[$_],
     sub { pre-op(@data[$_], $_) },
-    "Using GFileMonitor { $_ eq a ?? '0' !! '1' }"
+    "Using GFileMonitor { $_ eq 'a' ?? '0' !! '1' }"
   ) for <a b>;
 
   actual-run-tests(&cross-dir-step, @data);
@@ -521,7 +525,7 @@ sub test-cross-dir-moves {
   );
 
   check-expected-events(
-    @cross-dir-n-output,
+    @cross-dir-b-output,
     @data[1]<events>,
     get-environment( @data[1]<monitor> )
   );
@@ -553,8 +557,8 @@ sub file-hard-links-step (%d) {
     }
 
     when 2 {
-      if $HAVE-LINK {
-        if link($filename, $hard-link-name < 0 {
+      if $HAVE-LINKS {
+        if link($filename, $hard-link-name) < 0 {
           die "link({ $filename }, { $hard-link-name}) failed: {
                GLib::Utils.error_name($ERRNO) }";
         }
@@ -562,7 +566,7 @@ sub file-hard-links-step (%d) {
     }
 
     when 3 {
-      if $HAVE-LINK {
+      if $HAVE-LINKS {
         my $hard-link-stream = $hard-link-file.append-to;
         nok $ERROR, 'No error detected when obtaining output stream from link at step 3';
         $hard-link-stream.write-all('step 3');
@@ -579,7 +583,7 @@ sub file-hard-links-step (%d) {
     }
 
     when 5 {
-      if $HAVE-LINK {
+      if $HAVE-LINKS {
         $hard-link-file.delete;
         nok $ERROR, 'No error detected when deleting link at step 5';
       }
@@ -595,7 +599,7 @@ sub file-hard-links-step (%d) {
   G_SOURCE_CONTINUE.Int
 }
 
-my @file_hard_links_output = (
+my @file-hard-links-output = (
   [ -1,                                     $,                    $,                     0, NONE    ],
   [ G_FILE_MONITOR_EVENT_CHANGED,           'testfilemonitor.db', $,                    -1, NONE    ],
   [ G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT, 'testfilemonitor.db', $,                    -1, NONE    ],
@@ -609,19 +613,19 @@ my @file_hard_links_output = (
   [ -1,                                     $,                    $,                     5, NONE    ],
   [ G_FILE_MONITOR_EVENT_DELETED,           'testfilemonitor.db', $,                    -1, INOTIFY ],
   [ -1,                                     $,                    $,                     6, NONE    ]
-).map({ create-event( $_) });
+).map({ create-event( |$_ ) });
 
 my @tests = (
-  'Atomic Replace File', @atomic-replace-output,  &atomic-replace-step , &atomic-replace-pre ],
-  'Change File',         @change-output,          &change-step         , &change-pre         ],
-  'Dir Monitor',         @dir-output,             &dir-step            , &dir-pre            ],
-  'No Dir/No File',      @nodir-output,           &nodir-step          , &nodir-pre          ],
+  [ 'Atomic Replace File', @atomic-replace-output,  &atomic-replace-step , &atomic-replace-pre ],
+  [ 'Change File',         @change-output,          &change-step         , &change-pre         ],
+  [ 'Dir Monitor',         @dir-output,             &dir-step            , &dir-pre            ],
+  [ 'No Dir/No File',      @nodir-output,           &nodir-step          , &nodir-pre          ],
   &test-cross-dir-moves,
-  'Hard Link',           @file-hard-links-output, &file-hard-links-step, &hard-link-pre      ]
+  [ 'Hard Link',           @file-hard-links-output, &file-hard-links-step, &hard-link-pre      ]
 );
 
 sub MAIN ( :$links is copy ) {
-  $HAVE-LINK = $links // $*DISTRO.is-win.not;
+  $HAVE-LINKS = $links // $*DISTRO.is-win.not;
 
   for @tests {
     setup;
