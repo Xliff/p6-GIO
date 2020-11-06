@@ -400,6 +400,7 @@ sub run-tests ($n, @r, &s, &p) {
     check-expected-events( @r, %data<events>, get-environment(%data<monitor>) );
 
     .unref for %data<loop monitor file>;
+    .unref with %data<output-stream>;
   }
 }
 
