@@ -2063,7 +2063,7 @@ role GIO::Roles::File {
     my gsize            $l = $length;
 
     clear_error;
-    my $fos = g_file_replace_contents(
+    my $rv = so g_file_replace_contents(
       $!file,
       $contents,
       $l,
@@ -2076,10 +2076,7 @@ role GIO::Roles::File {
     );
     set_error($error);
 
-    $fos ??
-      ( $raw ?? $fos !! GIO::FileOutputStream.new($fos, :!ref) )
-      !!
-      Nil;
+    $rv;
   }
 
   proto method replace_contents_async (|)
