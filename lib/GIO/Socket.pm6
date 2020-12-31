@@ -74,11 +74,14 @@ class GIO::Socket {
     $o;
   }
   multi method new (
-    Int()                   $family,
-    Int()                   $type,
-    Int()                   $protocol = G_SOCKET_PROTOCOL_DEFAULT,
-    CArray[Pointer[GError]] $error    = gerror
+    Int()                   $family   is copy = G_SOCKET_FAMILY_IPV4,
+    Int()                   $type             = G_SOCKET_TYPE_DATAGRAM,
+    Int()                   $protocol         = G_SOCKET_PROTOCOL_DEFAULT,
+    CArray[Pointer[GError]] $error            = gerror,
+                            :ipv6(:$v6)
   ) {
+    $family = G_SOCKET_FAMILY_IPV6 if $v6;
+    
     my GSocketFamily   $f = $family;
     my GSocketType     $t = $type;
     my GSocketProtocol $p = $protocol;
@@ -297,7 +300,7 @@ class GIO::Socket {
     GSocketAddress()        $address,
     GCancellable()          $cancellable = GCancellable,
     CArray[Pointer[GError]] $error       = gerror
-  ) 
+  )
     is also<socket-connect>
   {
     clear_error;
