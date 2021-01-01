@@ -81,7 +81,7 @@ class GIO::Socket {
                             :ipv6(:$v6)
   ) {
     $family = G_SOCKET_FAMILY_IPV6 if $v6;
-    
+
     my GSocketFamily   $f = $family;
     my GSocketType     $t = $type;
     my GSocketProtocol $p = $protocol;
@@ -1263,7 +1263,7 @@ class GIO::Socket {
 
   multi method send_to (
     GSocketAddress()        $address,
-    Str()                   $buffer,
+    Str                     $buffer,
     GCancellable()          $cancellable = GCancellable,
     CArray[Pointer[GError]] $error       = gerror,
                             :$encoding   = 'utf-8'
@@ -1271,23 +1271,23 @@ class GIO::Socket {
     my $b = $buffer.encode($encoding);
 
     samewith(
-      $!s,
       $address,
       $b,
       $b.bytes,
       $cancellable,
-      $error
+      $error,
+      :buf
     );
   }
   multi method send_to (
     GSocketAddress()        $address,
-    Buf()                   $buffer,
-    Int()                   $size,
-    GCancellable()          $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error       = gerror
+    Blob                    $buffer,
+    Int()                   $size             = $buffer.bytes,
+    GCancellable()          $cancellable      = GCancellable,
+    CArray[Pointer[GError]] $error            = gerror,
+                            :$buf is required
   ) {
     samewith(
-      $!s,
       $address,
       CArray[uint8].new($buffer),
       $size,
@@ -1303,7 +1303,6 @@ class GIO::Socket {
     CArray[Pointer[GError]] $error       = gerror
   ) {
     samewith(
-      $!s,
       $address,
       cast(Pointer, $buffer),
       $size,
