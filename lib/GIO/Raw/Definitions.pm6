@@ -2,7 +2,9 @@ use v6.c;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GLib::Raw::Pointers;
+
+use GLib::Roles::Pointers;
 
 unit package GIO::Raw::Definitions;
 
