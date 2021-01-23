@@ -5,16 +5,18 @@ use CompUnit::Util :re-export;
 use GLib::Raw::Exports;
 use GIO::Raw::Exports;
 
-my constant forced = 61;
+my constant forced = 92;
 
 unit package GIO::Raw::Types;
 
 need GLib::Raw::Definitions;
 need GLib::Raw::Enums;
+need GLib::Raw::Exceptions;
 need GLib::Raw::Object;
 need GLib::Raw::Structs;
 need GLib::Raw::Struct_Subs;
 need GLib::Raw::Subs;
+need GLib::Roles::Pointers;
 need GIO::Raw::Definitions;
 need GIO::Raw::Enums;
 need GIO::Raw::Exports;
@@ -24,5 +26,5 @@ need GIO::Raw::Quarks;
 need GIO::DBus::Raw::Types;
 
 BEGIN {
-  re-export($_) for |@glib-exports, |@gio-exports;
+  glib-re-export($_) for |@glib-exports, |@gio-exports;
 }
