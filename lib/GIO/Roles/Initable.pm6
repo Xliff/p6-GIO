@@ -12,10 +12,9 @@ role GIO::Roles::Initable {
   has GInitable $!i;
 
   method roleInit-Initable (:$init = True, :$cancellable = GCancellable) {
-    # cw: No early return since self.init call must be conditionally made.
+    # cw: No early return since self.init call must be conditionally made
     unless $!i {
-      my \i = findProperImplementor(self.^attributes);
-
+      my \i = findProperImplementor(self.^attributes, :rev);
       $!i = cast(GInitable, i.get_value(self) );
     }
     self.init($cancellable) if $init;
@@ -36,14 +35,14 @@ role GIO::Roles::Initable {
   ) {
     self.new_initable(:$init, :$cancellable, |%options);
   }
-  multi method new_initable (
+  method new_initable (
     :$init        = True,
     :$cancellable = GCancellable,
     *%options
   )
     is also<new-initable>
   {
-    my $initable-object = self.new_object_with_properties( |%options, :raw );
+    my $initable-object = self.new_object_with_properties( |%options, :RAW );
 
     $initable-object ?? self.bless( :$initable-object, :$init, :$cancellable)
                      !! Nil;
@@ -59,7 +58,31 @@ role GIO::Roles::Initable {
     GCancellable()          $cancellable = GCancellable,
     CArray[Pointer[GError]] $error       = gerror
   ) {
-    so g_initable_init($!i, $cancellable, $error);
+    clear_error;
+    my $rv = so g_initable_init($!i, $cancellable, $error);
+    set_error($error);
+
+    $rv;
+  }
+
+  # Ala g_initable_new
+  multi method construct (
+    Str()                   $build-name,
+    GCancellable()          $cancellable =  GCancellable,
+    CArray[Pointer[GError]] $error       =  gerror
+  ) {
+    clear_error;
+    my $o = g_initable_new(self.get_type, $cancellable, $error, Str);
+    set_error($error);
+
+    return Nil unless $o;
+
+    my \i = findProperImplementor(self.^attributes);
+
+    # Descendant classes will need to take this further.
+    cast(i.type, $o);
+
+    self.bless( |Pair.new($build-name, $o) );
   }
 
 }
@@ -104,7 +127,7 @@ class GIO::Initable does GLib::Roles::Object does GIO::Roles::Initable {
   ) {
     return Nil unless $initable;
 
-    my $o = self.bless(:$initable, $cancellable, :$init);
+    my $o = self.bless(:$initable, :$cancellable, :$init);
     $o.ref if $ref;
     $o;
   }
@@ -113,6 +136,17 @@ class GIO::Initable does GLib::Roles::Object does GIO::Roles::Initable {
 
 sub g_initable_get_type ()
   returns GType
+  is native(gio)
+  is export
+{ * }
+
+sub g_initable_new (
+  GType                   $type,
+  GCancellable            $cancellable,
+  CArray[Pointer[GError]] $error,
+  Str
+)
+  returns GObject
   is native(gio)
   is export
 { * }
