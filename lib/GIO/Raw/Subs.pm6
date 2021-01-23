@@ -2,7 +2,12 @@ use v6.c;
 
 use NativeCall;
 
-use GLib::Raw::Types;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GLib::Raw::Subs;
+use GLib::Raw::Struct_Subs;
 use GIO::Raw::Definitions;
 
 unit package GIO::Raw::Subs;
