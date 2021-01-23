@@ -10,7 +10,6 @@ use GLib::MainContext;
 use GIO::Cancellable;
 
 use GLib::Roles::Object;
-use GLib::Roles::Pointers;
 use GIO::Roles::AsyncResult;
 
 our subset GTaskAncestry is export of Mu
