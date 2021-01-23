@@ -3,9 +3,15 @@ use v6.c;
 use NativeCall;
 use Method::Also;
 
-use GLib::Raw::Types;
-use GLib::Memory;
+use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GLib::Raw::Subs;
+use GLib::Raw::Struct_Subs;
 use GIO::Raw::Definitions;
+
+use GLib::Memory;
 
 unit package GIO::DBus::Raw::Types;
 
