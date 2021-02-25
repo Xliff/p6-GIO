@@ -58,7 +58,7 @@ class GIO::Application {
     my GApplicationFlags $f = $flags;
     my $application = g_application_new($app_id, $f);
 
-    $application ?? self.bless(:$application) !! Nil;
+    $application ?? self.bless( :$application ) !! Nil;
   }
 
   method get_default (GIO::Application:U: :$raw = False) is also<get-default> {
@@ -231,8 +231,15 @@ class GIO::Application {
     g_application_open($!a, $files, $n_files, $hint);
   }
 
-  method quit is also<exit> {
-    g_application_quit($!a);
+  proto method quit (|)
+    is also<exit>
+  { * }
+
+  multi method quit (GIO::Application:D: ) {
+    self.quit( :gio );
+  }
+  multi method quit (GIO::Application:D: :$gio is required) {
+    g_application_quit( $!a );
   }
 
   method register (
