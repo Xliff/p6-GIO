@@ -759,6 +759,10 @@ class GIO::DBus::Proxy {
     g_dbus_proxy_call_finish($!dp, $res, $error);
   }
 
+  proto method call_sync (|)
+    is also<call-sync>
+  { * }
+
   multi method call (
     Int()                   $method_name,
     CArray[Pointer[GError]] $error         =  gerror,
