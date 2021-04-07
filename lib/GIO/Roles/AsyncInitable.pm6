@@ -16,7 +16,7 @@ role GIO::Roles::AsyncInitable {
     return if $!ai;
 
     my \i = findProperImplementor(self.^attributes);
-    $!ai = cast(GAsyncInitable, i.getP4_value(self) );
+    $!ai = cast(GAsyncInitable, i.get_value(self) );
   }
 
   method GIO::Raw::Definitions::GAsyncInitable
@@ -33,50 +33,51 @@ role GIO::Roles::AsyncInitable {
       is also<init-async>
   { * }
 
-  multi method init (Int() $io_priority, :$async is required) {
-    self.init_async($io_priority);
+  multi method init (
+    :$async       is required,
+    :$io_priority =  G_PRIORITY_DEFAULT,
+    :$cancellable =  GCancellable
+  ) {
+    self.init_async(
+      :$io_priority
+      :$cancellable
+    );
   }
-  multi method init_async (Int() $io_priority) {
+  multi method init_async (
+    :$io_priority = G_PRIORITY_DEFAULT,
+    :$cancellable = GCancellable
+  ) {
     my $s = Supplier::Preserving.new;
 
     self.init_async(
-      $io_priority,
-      -> *@a { $s.emit( @a[1] ) }
+      -> *@a { $s.emit( @a[1] ) },
+      :$io_priority,
+      :$cancellable
     );
     $s.Supply;
   }
+  # method init == Alias
   multi method init (
-    Int()    $io_priority,
              &callback,
     gpointer $user_data    =  gpointer,
-             :$async       is required
+             :$async       is required,
+             :$io_priority =  G_PRIORITY_DEFAULT,
+             :$cancellable =  GCancellable
   ) {
     self.init_async(
       $io_priority,
+      $cancellable,
       &callback,
       $user_data
     );
   }
   multi method init_async (
-    Int()    $io_priority,
-             &callback,
-    gpointer $user_data     = gpointer
-  ) {
-    self.init_async(
-      $io_priority,
-      GCancellable,
-      &callback,
-      $user_data
-    );
-  }
-  multi method init (
-    Int()          $io_priority,
-    GCancellable() $cancellable,
                    &callback,
     gpointer       $user_data    = gpointer,
-                   :$async       is required
+    Int()          :$io_priority  = G_PRIORITY_DEFAULT,
+    GCancellable() :$cancellable  = GCancellable
   ) {
-    self.init_async(
+    samewith(
       $io_priority,
       $cancellable,
       &callback,

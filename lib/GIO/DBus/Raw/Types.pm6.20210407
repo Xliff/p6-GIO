@@ -643,9 +643,9 @@ class GDBusInterfaceInfo is export is repr<CStruct> does GLib::Roles::Pointers d
 class GDBusNodeInfo  is export is repr<CStruct> does GLib::Roles::Pointers does Annotations {
   has gint                                 $!ref_count;
   has Str                                  $!path;
-  has CArray[Pointer[GDBusInterfaceInfo]]  $!interfaces;   # GDBusInterfaceInfo **
-  has CArray[Pointer[GDBusNodeInfo]]       $!nodes;        # GDBusNodeInfo **
-  has CArray[Pointer[GDBusAnnotationInfo]] $!annotations;  # GDBusAnnotationInfo **
+  has CArray[Pointer[GDBusInterfaceInfo]]  $!interfaces;
+  has Pointer                              $!nodes;  # GDBusNodeInfo **
+  has CArray[Pointer[GDBusAnnotationInfo]] $!annotations;
 
   method path is rw {
     Proxy.new:

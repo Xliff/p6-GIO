@@ -72,7 +72,7 @@ class GIO::DBus::Connection {
 
     self!setObject($to-parent);
     self.roleInit-AsyncInitable;
-    self.roleInit-Initable($init, $cancellable);
+    self.roleInit-Initable(:$init, :$cancellable);
   }
 
   method GIO::Raw::Definitions::GDBusConnection
@@ -1227,7 +1227,7 @@ class GIO::DBus::Connection {
   method get_sync (
     GIO::DBus::Connection:U:
     Int()                    $bus_type,
-    GCancellable()           $cancellable,
+    GCancellable()           $cancellable  = GCancellable,
     CArray[Pointer[GError]]  $error        = gerror
   )
     is also<get-sync>
@@ -1236,6 +1236,27 @@ class GIO::DBus::Connection {
     my           $connection = g_bus_get_sync($b, $cancellable, $error);
 
     $connection ?? self.bless( :$connection ) !! Nil;
+  }
+
+  # Helper methods
+  method get_sync_system (GIO::DBus::Connection:U: ) is also<get-sync-system> {
+    GIO::DBus::Connection.get_sync(G_BUS_TYPE_SYSTEM);
+  }
+
+  method get_sync_session (GIO::DBus::Connection:U: )
+    is also<get-sync-session>
+  {
+    GIO::DBus::Connection.get_sync(G_BUS_TYPE_SESSION);
+  }
+
+  method get_sync_starter (GIO::DBus::Connection:U: )
+    is also<get-sync-starter>
+  {
+    GIO::DBus::Connection.get_sync(G_BUS_TYPE_STARTER);
+  }
+
+  method get_sync_none (GIO::DBus::Connection:U: ) is also<get-sync-none> {
+    GIO::DBus::Connection.get_sync(G_BUS_TYPE_NONE);
   }
 
   proto method get_async (|)
