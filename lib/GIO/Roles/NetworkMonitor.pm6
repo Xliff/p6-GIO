@@ -19,7 +19,7 @@ class GIO::NetworkMonitor { ... }
 role GIO::Roles::NetworkMonitor {
   also does GIO::Roles::Signals::NetworkMonitor;
 
-  has GNetworkMonitor $!nm;
+  has GNetworkMonitor $!nm is implementor;
 
   method roleInit-NetworkMonitor is also<roleInit_NetworkMonitor> {
     return if $!nm;
@@ -46,7 +46,7 @@ role GIO::Roles::NetworkMonitor {
     is also<can-reach>
   {
     clear_error;
-    my $rv = g_network_monitor_can_reach(
+    my $rv = so g_network_monitor_can_reach(
       $!nm,
       $connectable,
       $cancellable,
@@ -90,7 +90,7 @@ role GIO::Roles::NetworkMonitor {
     is also<can-reach-finish>
   {
     clear_error;
-    my $rv = g_network_monitor_can_reach_finish($!nm, $result, $error);
+    my $rv = so g_network_monitor_can_reach_finish($!nm, $result, $error);
     set_error($error);
     $rv;
   }
@@ -138,10 +138,11 @@ our subset GNetworkMonitorAncestry is export of Mu
   where GNetworkMonitor | GNetworkMonitorBaseAncestry;
 
 class GIO::NetworkMonitor is GIO::NetworkMonitorBase {
-  also does GLib::Roles::Object;
   also does GIO::Roles::NetworkMonitor;
 
-  submethod BUILD (:$monitor, :$init, :$cancellable) {
+  submethod BUILD ( :initable-object(:$monitor), :$init, :$cancellable ) {
+    say "Network Monitor Build! ($monitor/{ $init // '!INIT' }/{ $cancellable // '!CANCEL' })";
+
     self.setGNetworkMonitor($monitor, :$init, :$cancellable) if $monitor;
   }
 
@@ -156,9 +157,12 @@ class GIO::NetworkMonitor is GIO::NetworkMonitorBase {
 
       default {
         $to-parent = $_;
-        cast(GNetworkMonitorBase, $_);
+        cast(GNetworkMonitor, $_);
       }
     }
+
+    say "NM-TP ({ self }): { $to-parent }";
+
     self.setGNetworkMonitorBase($to-parent, :$init, :$cancellable);
   }
 

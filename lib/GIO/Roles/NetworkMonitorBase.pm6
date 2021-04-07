@@ -10,7 +10,7 @@ use GLib::Roles::Object;
 use GIO::Roles::Initable;
 
 role GIO::Roles::NetworkMonitorBase {
-  has GNetworkMonitorBase $!nmb;
+  has GNetworkMonitorBase $!nmb is implementor;
 
   method roleInit-NetworkMonitorBase is also<roleInit_NetworkMonitorBase> {
     return if $!nmb;
@@ -24,7 +24,9 @@ role GIO::Roles::NetworkMonitorBase {
   }
 
   method remove_network (GInetAddressMask() $network) is also<remove-network> {
+    say 'remove_network start';
     g_network_monitor_base_remove_network($!nmb, $network);
+    say 'remove_network end';
   }
 
   proto method set_networks (|)
@@ -73,6 +75,8 @@ class GIO::NetworkMonitorBase {
   ) {
     my $to-parent;
 
+    say "————— NMB! ({ self })";
+
     $!nmb = do {
       when GNetworkMonitorBase {
         $to-parent = cast(GObject, $_);
@@ -91,7 +95,7 @@ class GIO::NetworkMonitorBase {
       }
     }
     self!setObject($to-parent);
-    self.roleInit-Initable($init, $cancellable);
+    self.roleInit-Initable(:$init, :$cancellable);
   }
 
   multi method new (GNetworkMonitorBaseAncestry $monitor-base, :$ref = True) {

@@ -7,10 +7,11 @@ use GIO::Raw::Types;
 use GLib::Env;
 use GLib::MainContext;
 use GLib::MainLoop;
-use GLib::Timeout;
+use GLib::Signal;
+use GLib::Source;
 use GIO::InetAddress;
 use GIO::InetAddressMask;
-use GIO::SocketAddress;
+use GIO::InetSocketAddress;
 
 use GIO::Roles::NetworkMonitor;
 use GIO::Roles::NetworkMonitorBase;
@@ -100,10 +101,11 @@ my @unmatched = <
 >;
 @unmatched .= map({ TestAddress.new($_) });
 
-my @all-nets = (
+my @all-net-addrs = (
   @net127addrs, @net10addrs, @net192addrs, @netlocal6addrs, @netfe80addrs,
   @unmatched
 );
+my @all-nets = ($net127, $net10, $net192, $netlocal6, $netfe80);
 
 my ($ip4-default, $ip6-default);
 
@@ -114,16 +116,26 @@ sub assert-signals (
 ) {
   my ($emit-notify, $emit-changed) = False xx 2;
 
-  $*monitor.notify('network-available').tap(-> *@a { $emit-notify = True });
+  #$*monitor.notify('network-available').tap(-> *@a { $emit-notify  = True });
+  my $nna = GLib::Signal.connect(
+    $*monitor,
+    'notify::network-available',
+    -> *@ { $emit-notify = True }
+  );
   $*monitor.network-changed            .tap(-> *@a { $emit-changed = True });
 
+  diag $*monitor.^attributes.map( *.name );
+
+  diag '--- preiteration';
   GLib::MainContext.iteration;
-  $*monitor.disconnect-object-signal('notify::network-available');
+  diag '--- postiteration';
+  GLib::Signal.handler_disconnect($*monitor, $nna);
+  #$*monitor.disconnect-object-signal('notify::network-available');
   $*monitor.disconnect-network-monitor-signal('network-changed');
 
-  is $emit-notify,                $should-emit-notify,         'Notify signal operated correctly';
-  is $emit-changed,               $should-emit-changed,        'Network Change signal operated correctly';
-  is $*monitor.network-availalbe, $expected-network-available, 'Expected network detected';
+  is $emit-notify,                    $should-emit-notify,         'Notify signal operated correctly';
+  is $emit-changed,                   $should-emit-changed,        'Network Change signal operated correctly';
+  is $*monitor.get_network_available, $expected-network-available, 'Expected network detected';
 }
 
 class CanReachData {
@@ -134,7 +146,7 @@ class CanReachData {
 }
 
 sub reach-cb ($d, $r) {
-  my $reachable = $d.monitor.can-reach-finish($r);
+  my $reachable = $d.monitor.can_reach_finish($r);
 
   $d.should-be-reachable ?? ok no-error, 'No error during reach callback'
                          !! ok $ERROR,   'Error detected during reach callback';
@@ -144,26 +156,32 @@ sub reach-cb ($d, $r) {
 }
 
 sub test-reach-async ($d) {
-  $d.monitor.can-reach-async($d.sockaddr, -> *@a { reach-cb($d, @a[1]) });
+  CATCH { default { .message.say; .backtrace.summary.say } }
+  $d.monitor.can_reach_async($d.sockaddr, -> *@a { reach-cb($d, @a[1]) });
   G_SOURCE_REMOVE
 }
 
 sub run-tests (@addresses, $should-be-reachable) {
-  my $data   = CanReachData.new;
-  $data.loop = GLib::MainLoop.new;
+  my $data      = CanReachData.new;
+  $data.monitor = $*monitor;
+  $data.loop    = GLib::MainLoop.new;
 
   for @addresses {
-    $data.sockaddr = GIO::SocketAddress.new( .address );
+    last unless .address;
+    diag .address.to-string;
+    $data.sockaddr = GIO::InetSocketAddress.new( .address );
 
-    my $reachable = $*monitor.can-reach($data.sockaddr);
+    my $reachable = $*monitor.can_reach($data.sockaddr);
     $data.should-be-reachable = $should-be-reachable;
-    GLib::Timeout.idle-add(-> $ { test-reach-async($data) });
+    GLib::Source.idle-add(-> $ --> gboolean {
+      test-reach-async($data)
+    });
     $data.loop.run;
 
     $data.sockaddr.unref;
     is $reachable, $should-be-reachable, 'Returned reachable matches expected value';
     if $should-be-reachable {
-      ok  no-error,                      'No error detected with mandatort reachable'
+      ok  no-error,                      'No error detected with mandatory reachable'
     } else {
       ok  $ERROR,                        'Error detection as expected with no mandatory reachable';
     }
@@ -178,34 +196,47 @@ sub test-default {
   my $*monitor = GIO::NetworkMonitorBase.new_initable;
   nok $ERROR,                          'Initializing Monitor as an initable works with no errors';
 
-  run-tests(.addresses, True) for @all-nets;
+  # Tested initable, now we switch back to the created GIO::NetworkMonitor because
+  # that's what these tests WANT.
+  $*monitor = $m;
+
+  for @all-net-addrs -> $a {
+    run-tests($a, True) for $a;
+  }
+
   assert-signals;
   $*monitor.unref;
 }
 
 sub remove-defaults {
-  $*monitor.remove-network($ip4-default);
-  assert-signals($*monitor, False, True, True);
+  $*monitor.remove_network($ip4-default);
+  assert-signals(False, True, True);
 
-  $*monitor.remove-network($ip6-default);
-  assert-signals($*monitor, True, True, False);
+  $*monitor.remove_network($ip6-default);
+  assert-signals(True, True, False);
 }
 
 sub test-remove-default {
-  my $*monitor = GIO::NetworkMonitorBase.new_initable;
+  my $*monitor = GIO::NetworkMonitor.new_initable;
   nok $ERROR,                          'Initializing Monitor as an initable works with no errors';
 
+  diag "MN: { $*monitor.^name }";
+
+  #$*monitor = GIO::NetworkMonitor.get_default;
+
   assert-signals(False, False, True);
-  remove-defaults;
-
-  run-tests(.addresses, True) for @all-nets;
-
+  # remove-defaults;
+  #
+  # run-tests($_, True) for @all-net-addrs;
+  #
   $*monitor.unref;
 }
 
 sub test-add-networks {
   my $*monitor = GIO::NetworkMonitorBase.new_initable;
   nok $ERROR,                          'Initializing Monitor as an initable works with no errors';
+
+  $*monitor = GIO::NetworkMonitor.get_default;
 
   assert-signals(False, False, True);
   remove-defaults;
@@ -214,8 +245,8 @@ sub test-add-networks {
     $*monitor.add_network($v.mask);
     assert-signals(False, True, False);
 
-    for @all-nets.kv -> $nk, $n {
-      run-tests($n.addresses, $nk <= $k);
+    for @all-net-addrs.kv -> $nk, $n {
+      run-tests($n, ($nk <= $k).so);
     }
   }
 
@@ -226,6 +257,8 @@ sub test-remove-networks {
   my $*monitor = GIO::NetworkMonitorBase.new_initable;
   nok $ERROR,                          'Initializing Monitor as an initable works with no errors';
 
+  $*monitor = GIO::NetworkMonitor.get_default;
+
   assert-signals(False, False, True);
   remove-defaults;
 
@@ -234,17 +267,17 @@ sub test-remove-networks {
     $*monitor.add_network($v.mask);
   }
 
-  for @all-nets.kv -> $nk, $n {
-    run-tests($n.addresses, $n !=:= @unmatched);
+  for @all-net-addrs.kv -> $nk, $na {
+    run-tests($na, $na !=:= @unmatched) for $na;
   }
 
   for @all-nets.head(* - 1).kv -> $k, $v {
     $*monitor.remove-network($v.mask);
-    for @all-nets.kv -> $nk, $n {
+    for @all-net-addrs.kv -> $nk, $na {
       run-tests(
-        $n.addresses,
-        $n !=:= @unmatched ?? ($nk <= $k).not !! False
-      )
+        $na,
+        $na !=:= @unmatched ?? ($nk <= $k).so.not !! False
+      ) for $na
     }
   }
 
@@ -252,7 +285,7 @@ sub test-remove-networks {
 }
 
 sub init-test ($tm) {
-  $tm.mask = GIO::InetAddressMask.new-from-string($tm.mask);
+  $tm.mask = GIO::InetAddressMask.new-from-string($tm.mask-string);
   nok $ERROR,                        "Address mask created successfully from '{ $tm.mask }'";
 
   for $tm.addresses {
@@ -284,9 +317,18 @@ sub do-watch-network {
   }
 
   diag "Monitoring via { $monitor.objectType.name }";
-  $monitor.network-changed.tap(&on-network-changed);
-  $monitor.notify('connectivity').tap(&on-connectivity-changed);
-  $monitor.notify('network-metered').tap(&on-metered-changed);
+  $monitor.network-changed.tap(-> *@a {
+    CATCH { default { .message.say; .backtrace.summary.say } }
+    &on-network-changed(|@a);
+  });
+  $monitor.notify('connectivity').tap(-> *@a {
+    CATCH { default { .message.say; .backtrace.summary.say } }
+    &on-connectivity-changed(|@a);
+  });
+  $monitor.notify('network-metered').tap(-> *@a {
+    CATCH { default { .message.say; .backtrace.summary.say } }
+    &on-metered-changed(|@a);
+  });
   on-network-changed($, $monitor.network-available);
   on-connectivity-changed();
   on-metered-changed();
@@ -301,16 +343,18 @@ sub MAIN (Bool :$watch) {
     exit 0;
   }
 
-  GLib::Environment.setenv('GIO_USE_PROXY_RESOLVER', 'dummy', True);
-  init-test($_) for @all-nets.head(* - 1);
+  GLib::Env.setenv('GIO_USE_PROXY_RESOLVER', 'dummy', True);
+
+  subtest 'Initialization',  { init-test($_) for @all-nets }
+
   $ip4-default = GIO::InetAddressMask.new-from-string('0.0.0.0/0');
   $ip6-default = GIO::InetAddressMask.new-from-string('::/0');
 
   subtest 'Default',         { test-default         }
   subtest 'Remove Default',  { test-remove-default  }
-  subtest 'Add Networks',    { test-add-networks    }
-  subtest 'Remove Networks', { test-remove-networks }
+  # subtest 'Add Networks',    { test-add-networks    }
+  # subtest 'Remove Networks', { test-remove-networks }
 
-  cleanup-test($_) for @all-nets.head(* - 1);
-  .unref for $ip4-default, $ip6-default;
+  # cleanup-test($_) for @all-nets.head(* - 1);
+  #.unref for $ip4-default, $ip6-default;
 }
