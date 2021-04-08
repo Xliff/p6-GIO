@@ -70,7 +70,7 @@ class GIO::DBus::Proxy {
 
     self!setObject($to-parent);
     self.roleInit-AsyncInitable;
-    self.roleInit-Initable($init, $cancellable);
+    self.roleInit-Initable(:$init, :$cancellable);
   }
 
   method GIO::Raw::Definitions::GDBusProxy
@@ -277,7 +277,7 @@ class GIO::DBus::Proxy {
   ) {
     my GDBusProxyFlags $f = $flags;
 
-    prep-supply($supply, &callback, &*ROUTINE.^name);
+    prep-supply($supply, &callback, &?ROUTINE.^name);
 
     my $proxy = g_dbus_proxy_new(
       $connection,
@@ -428,7 +428,7 @@ class GIO::DBus::Proxy {
   ) {
     my GDBusProxyFlags $f = $flags;
 
-    prep-supply($supply, &callback, &*ROUTINE.^name);
+    prep-supply($supply, &callback, &?ROUTINE.^name);
 
     my $proxy = g_dbus_proxy_new_for_bus(
       $connection,
@@ -728,7 +728,7 @@ class GIO::DBus::Proxy {
     my GDBusCallFlags $f = $flags;
     my gint           $t = $timeout_msec;
 
-    prep-supply($supply, &callback);
+    prep-supply($supply, &callback, &?ROUTINE.^name);
 
     g_dbus_proxy_call(
       $!dp,
@@ -764,7 +764,7 @@ class GIO::DBus::Proxy {
   { * }
 
   multi method call (
-    Int()                   $method_name,
+    Str()                   $method_name,
     CArray[Pointer[GError]] $error         =  gerror,
                             :$sync         is required,
     GVariant()              :$parameters   =  GVariant,
@@ -782,7 +782,7 @@ class GIO::DBus::Proxy {
     );
   }
   multi method call_sync (
-    Int()                   $method_name,
+    Str()                   $method_name,
     CArray[Pointer[GError]] $error         = gerror,
     GVariant()              :$parameters   = GVariant,
     Int()                   :$flags        = 0,
@@ -799,7 +799,7 @@ class GIO::DBus::Proxy {
     );
   }
   multi method call (
-    Int()                   $method_name,
+    Str()                   $method_name,
     GVariant()              $parameters   =  GVariant,
     Int()                   $flags        =  0,
     Int()                   $timeout_msec =  -1,
@@ -817,7 +817,7 @@ class GIO::DBus::Proxy {
     );
   }
   multi method call_sync (
-    Int()                   $method_name,
+    Str()                   $method_name,
     GVariant()              $parameters   = GVariant,
     Int()                   $flags        = 0,
     Int()                   $timeout_msec = -1,
@@ -939,7 +939,7 @@ class GIO::DBus::Proxy {
     my GDBusCallFlags $f = $flags;
     my gint $t           = $timeout_msec;
 
-    prep-supply($supply, &callback);
+    prep-supply($supply, &callback, &?ROUTINE.^name);
 
     g_dbus_proxy_call_with_unix_fd_list(
       $!dp,
