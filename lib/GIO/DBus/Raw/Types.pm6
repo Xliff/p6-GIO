@@ -640,12 +640,15 @@ class GDBusInterfaceInfo is export is repr<CStruct> does GLib::Roles::Pointers d
   }
 }
 
-class GDBusNodeInfo  is export is repr<CStruct> does GLib::Roles::Pointers does Annotations {
+class GDBusNodeInfo is export is repr<CStruct> does GLib::Roles::Pointers {
   has gint                                 $!ref_count;
   has Str                                  $!path;
-  has CArray[Pointer[GDBusInterfaceInfo]]  $!interfaces;   # GDBusInterfaceInfo **
-  has CArray[Pointer[GDBusNodeInfo]]       $!nodes;        # GDBusNodeInfo **
-  has CArray[Pointer[GDBusAnnotationInfo]] $!annotations;  # GDBusAnnotationInfo **
+  has CArray[Pointer[GDBusInterfaceInfo]]  $!interfaces;
+  # GDBusNodeInfo ** -- I see this as a bug in rakudo.
+  # I can't use CArray[Pointer[GDBusNodeInfo]] here because
+  # it's currently being defined!
+  has Pointer                              $!nodes;
+  has CArray[Pointer[GDBusAnnotationInfo]] $!annotations;
 
   method path is rw {
     Proxy.new:
@@ -657,18 +660,21 @@ class GDBusNodeInfo  is export is repr<CStruct> does GLib::Roles::Pointers does 
   }
 
   method interfaces (:$raw = False) is rw {
+    my $outer-interfaces = $!interfaces;
+    my $outer-attribute  = self.^attributes(:local)[2];
+
     Proxy.new:
       FETCH => -> $ {
-        return $!interfaces if $raw;
+        return $outer-interfaces if $raw;
 
         (class :: does Positional {
 
           method AT-POS (Int() $k) {
-            $!interfaces[$k].deref;
+            $outer-interfaces[$k].deref;
           }
 
           method EXISTS-POS (Int() $k) {
-            $!interfaces[$k].defined;
+            $outer-interfaces[$k].defined;
           }
 
           method STORE {
@@ -681,52 +687,36 @@ class GDBusNodeInfo  is export is repr<CStruct> does GLib::Roles::Pointers does 
       # Since Raku-ish array is offered for FETCH, should be supported for
       # STORE. Currently NYI!
       STORE => -> $, CArray[Pointer[GDBusInterfaceInfo]] $val {
-        self.^attributes(:local)[2].set_value(self, $val)
+        $outer-attribute.set_value(self, $val)
       };
   }
 
+  # Due to above implementation, this must wait for an augment.
   method nodes is rw {
     Proxy.new:
-      FETCH => -> $ {
-        return $!nodes if $raw;
+      FETCH => -> $ { $!nodes }
 
-        (class :: does Positional {
-
-          method AT-POS (Int() $k) {
-            $!nodes[$k].deref;
-          }
-
-          method EXISTS-POS (Int() $k) {
-            $!nodes[$k].defined;
-          }
-
-          method STORE {
-            warn 'Cannot set GDBusNodeInfo.nodes!';
-          }
-        }).new
-      },
-
-      # cw: -XXX- -TODO-
-      # Since Raku-ish array is offered for FETCH, should be supported for
-      # STORE. Currently NYI!
       STORE => -> $, Pointer $val {
         self.^attributes(:local)[3].set_value(self, $val)
       };
   }
 
-  method annotations is rw {
+  method annotations (:$raw = False) is rw {
+    my $outer-annotations = $!annotations;
+    my $outer-attribute   = self.^attributes(:local)[4];
+
     Proxy.new:
       FETCH => -> $ {
-        return $!annotations if $raw;
+        return $outer-annotations if $raw;
 
         (class :: does Positional {
 
           method AT-POS (Int() $k) {
-            $!annotation[$k].deref;
+            $outer-annotations[$k].deref;
           }
 
           method EXISTS-POS (Int() $k) {
-            $!annotation[$k].defined;
+            $outer-annotations[$k].defined;
           }
 
           method STORE {
@@ -739,7 +729,7 @@ class GDBusNodeInfo  is export is repr<CStruct> does GLib::Roles::Pointers does 
       # Since Raku-ish array is offered for FETCH, should be supported for
       # STORE. Currently NYI!
       STORE => -> $, CArray[Pointer[GDBusAnnotationInfo]] $val {
-        self.^attributes(:local)[4].set_value(self, $val)
+        $outer-attribute.set_value(self, $val)
       };
   }
 
