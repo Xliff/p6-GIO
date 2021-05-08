@@ -659,6 +659,8 @@ class GDBusNodeInfo is export is repr<CStruct> does GLib::Roles::Pointers {
       };
   }
 
+  multi method nodes { $!nodes }
+
   method interfaces (:$raw = False) is rw {
     my $outer-interfaces = $!interfaces;
     my $outer-attribute  = self.^attributes(:local)[2];
@@ -692,14 +694,14 @@ class GDBusNodeInfo is export is repr<CStruct> does GLib::Roles::Pointers {
   }
 
   # Due to above implementation, this must wait for an augment.
-  method nodes is rw {
-    Proxy.new:
-      FETCH => -> $ { $!nodes }
-
-      STORE => -> $, Pointer $val {
-        self.^attributes(:local)[3].set_value(self, $val)
-      };
-  }
+  # method nodes is rw {
+  #   Proxy.new:
+  #     FETCH => -> $ { $!nodes }
+  #
+  #     STORE => -> $, Pointer $val {
+  #       self.^attributes(:local)[3].set_value(self, $val)
+  #     };
+  # }
 
   method annotations (:$raw = False) is rw {
     my $outer-annotations = $!annotations;
