@@ -2,12 +2,15 @@ use v6.c;
 
 use MONKEY-TYPING;
 
+use NativeCall;
+
+use GLib::Raw::Subs;
 use GIO::Raw::Definitions;
-use GIO::Raw::Structs;
+use GIO::DBus::Raw::Types;
 
 augment class GDBusNodeInfo {
 
-  method nodes (:$raw = False) is rw {
+  multi method nodes (:$method is required, :$raw = False) {
     my $outer-nodes     = $!nodes;
     my $outer-attribute = self.^attributes(:local)[3];
 
