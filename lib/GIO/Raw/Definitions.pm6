@@ -122,6 +122,7 @@ class GSettingsSchemaKey       is repr<CPointer> is export does GLib::Roles::Poi
 class GSettingsSchemaSource    is repr<CPointer> is export does GLib::Roles::Pointers { }
 class GSimpleAction            is repr<CPointer> is export does GLib::Roles::Pointers { }
 class GSimpleActionGroup       is repr<CPointer> is export does GLib::Roles::Pointers { }
+class GSimpleAsyncResult       is repr<CPointer> is export does GLib::Roles::Pointers { }
 class GSimplePermission        is repr<CPointer> is export does GLib::Roles::Pointers { }
 class GSimpleProxyResolver     is repr<CPointer> is export does GLib::Roles::Pointers { }
 class GResolver                is repr<CPointer> is export does GLib::Roles::Pointers { }
