@@ -1,8 +1,12 @@
-use v6;c
+use v6.c;
+
+use NativeCall;
 
 use GLib::Raw::Definitions;
+use GLib::Raw::Structs;
 use GLib::Raw::Object;
 use GIO::Raw::Definitions;
+use GIO::Raw::Structs;
 
 unit package GIO::Raw::SimpleAsyncResult;
 
@@ -123,9 +127,9 @@ sub g_simple_async_result_propagate_error (
 
 sub g_simple_async_result_run_in_thread (
   GSimpleAsyncResult $simple,
-  GSimpleAsyncThreadFunc $func,
-  gint $io_priority,
-  GCancellable $cancellable
+                     &func (GSimpleAsyncResult, GObject, gpointer),
+  gint               $io_priority,
+  GCancellable       $cancellable
 )
   is native(gio)
   is export
@@ -230,7 +234,7 @@ sub g_simple_async_report_take_gerror_in_idle (
                             GSimpleAsyncResult,
                             GAsyncResult,
                             gpointer
-                          ), 
+                          ),
   gpointer                $user_data,
   CArray[Pointer[GError]] $error
 )
