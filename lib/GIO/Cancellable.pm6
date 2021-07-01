@@ -88,7 +88,7 @@ class GIO::Cancellable {
              &callback,
     gpointer $data              = gpointer,
              &data_destroy_func = Callable
-  ) 
+  )
     is also<cancellable-connect>
   {
     g_cancellable_connect($!c, &callback, $data, &data_destroy_func);
@@ -152,4 +152,65 @@ class GIO::Cancellable {
       Nil;
   }
 
+  method signal-data {
+    state ( %signal-data, %signal-object );
+    my $self = self;
+    unless %signal-data{ self.WHERE } {
+      %signal-data{ self.WHERE } = (
+        cancelled => sub {
+          say 'Setting "cancelled" handler...';
+          $self.connect($!c, 'cancelled')
+        }
+      ).Hash;
+    }
+
+    # This might be too expensive. Consider returning a Map-like
+    # where AT-KEY does the bubbling up if the given key is not found
+    # the local %signal-data;
+    unless %signal-object{ self.WHERE } {
+      state @keys;
+
+      unless @keys {
+        @keys = self.GLib::Roles::Object::signal-data.keys;
+        @keys.append: %signal-data{ self.WHERE }.keys;
+      }
+
+      %signal-object{ self.WHERE } = (class :: does Associative {
+
+        method !getData (\k) {
+          say "Searching for '{ k }'...";
+          say "Signal data (self): {
+              (%signal-data{ $self.WHERE }{k} // '»NOT DEFINED«').gist }";
+          say "Signal data (parent): {
+              ($self.GLib::Roles::Object::signal-data{k} //
+              '»NOT DEFINED«').gist }";
+
+          %signal-data{ $self.WHERE }{k}
+            ?? %signal-data{ $self.WHERE }{k}
+            !! $self.GLib::Roles::Object::signal-data{k};
+        }
+
+        method AT-KEY (\k) {
+          self!getData(k);
+        }
+
+        method EXISTS-KEY (\k) {
+          self!getData(k).defined;
+        }
+
+        method keys {
+          @keys;
+        }
+
+      }).new;
+    }
+
+    %signal-object{ self.WHERE };
+  }
+
+  method signal-names {
+    state @signal-names = self.signal-data.keys;
+
+    @signal-names;
+  }
 }
