@@ -49,14 +49,22 @@ role GIO::Roles::ListModel {
     g_list_model_get_n_items($!lm);
   }
 
-  method get_object (Int() $position, :$raw = False) is also<get-object> {
+  method get_object (
+    Int() $position,
+          :$raw                               = False,
+          :object(
+            :obj-type(
+              :obj_type(:$type)
+            )
+          )                                   = GLib::Object
+  ) is also<get-object> {
     my guint $p = $position;
-    my $o = g_list_model_get_object($!lm, $p);
 
-    $o ??
-      ( $raw ?? $o !! GLib::Roles::Object.new-object-obj($o) )
-      !!
-      Nil;
+    propReturnObject(
+      g_list_model_get_object($!lm, $p),
+      $raw,
+      |$type.getTypePair
+    )
   }
 
   method emit_items_changed (
