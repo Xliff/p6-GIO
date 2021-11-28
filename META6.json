@@ -9,6 +9,7 @@
     "source-url": "https://github.com/Xliff/p6-GIO.git",
     "provides": {
       "GIO::Raw::Definitions"                          :  "lib/GIO/Raw/Definitions.pm6"                        ,
+      "GIO::TypeClass"                                 :  "lib/GIO/TypeClass.pm6"                              ,
       "GIO::DBus::Raw::Subs"                           :  "lib/GIO/DBus/Raw/Subs.pm6"                          ,
       "GIO::DBus::Raw::Types"                          :  "lib/GIO/DBus/Raw/Types.pm6"                         ,
       "GIO::Raw::Enums"                                :  "lib/GIO/Raw/Enums.pm6"                              ,
