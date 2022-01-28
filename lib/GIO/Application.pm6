@@ -265,6 +265,8 @@ class GIO::Application {
   multi method run (Int() $argc, CArray[Str] $argv) {
     my gint $a = $argc;
 
+    say "\$!a: {$!a.&p} / a: { $a } / \$argv: { $argv ?? $argv.&p !! '»UNDEF«' }";
+
     g_application_run($!a, $a, $argv);
   }
 
