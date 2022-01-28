@@ -5,7 +5,7 @@ use CompUnit::Util :re-export;
 use GLib::Raw::Exports;
 use GIO::Raw::Exports;
 
-my constant forced = 115;
+my constant forced = 171;
 
 unit package GIO::Raw::Types;
 
@@ -19,7 +19,6 @@ need GLib::Raw::Subs;
 need GLib::Roles::Pointers;
 need GIO::Raw::Definitions;
 need GIO::Raw::Enums;
-need GIO::Raw::Exports;
 need GIO::Raw::Structs;
 need GIO::Raw::Subs;
 need GIO::Raw::Quarks;

@@ -8,7 +8,6 @@ BEGIN {
   @gio-exports = <
     GIO::Raw::Definitions
     GIO::Raw::Enums
-    GIO::Raw::Exports
     GIO::Raw::Structs
     GIO::Raw::Subs
     GIO::DBus::Raw::Types
