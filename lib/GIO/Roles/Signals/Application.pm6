@@ -97,10 +97,10 @@ role GIO::Roles::Signals::Application {
 # GApplication, GApplicationCommandLine, gpointer --> gint
 sub g-connect-command-line(
   Pointer $app,
-  Str $name,
-  &handler (Pointer, GApplicationCommandLine, Pointer --> gint),
+  Str     $name,
+          &handler (Pointer, GApplicationCommandLine, Pointer --> gint),
   Pointer $data,
-  uint32 $flags
+  uint32  $flags
 )
   returns uint64
   is native(gobject)
@@ -110,10 +110,10 @@ sub g-connect-command-line(
 # GApplication, GVariantDict, gpointer --> gint
 sub g-connect-handle-local-options(
   Pointer $app,
-  Str $name,
-  &handler (Pointer, GVariantDict, Pointer --> gint),
+  Str     $name,
+          &handler (Pointer, GVariantDict, Pointer --> gint),
   Pointer $data,
-  uint32 $flags
+  uint32  $flags
 )
   returns uint64
   is native(gobject)
@@ -123,10 +123,10 @@ sub g-connect-handle-local-options(
 # GApplication, gpointer, gint, Str, gpointer
 sub g-connect-open(
   Pointer $app,
-  Str $name,
-  &handler (Pointer, CArray[Pointer[GFile]], gint, Str, Pointer),
+  Str     $name,
+          &handler (Pointer, CArray[Pointer[GFile]], gint, Str, Pointer),
   Pointer $data,
-  uint32 $flags
+   uint32 $flags
 )
   returns uint64
   is native(gobject)
