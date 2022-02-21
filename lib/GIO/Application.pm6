@@ -257,17 +257,22 @@ class GIO::Application {
   }
 
   multi method run {
-    samewith(0, CArray[Str]);
+    samewith( ().Array );
   }
   multi method run (@args) {
     samewith( @args.elems, ArrayToCArray(Str, @args) );
   }
-  multi method run (Int() $argc, CArray[Str] $argv) {
-    my gint $a = $argc;
+  multi method run (Int() $argc = 0, CArray[Str] $argv = CArray[Str]) {
+    my gint $ac = $argc;
 
-    say "\$!a: {$!a.&p} / a: { $a } / \$argv: { $argv ?? $argv.&p !! '»UNDEF«' }";
+    if $argc {
+      die "Count given with no defined list of arguments!"
+        if !$argv || $argv.elems == 0;
+    }
 
-    g_application_run($!a, $a, $argv);
+    say "Run -- \$!a: {$!a.&p} / a: { $ac } / \$argv: { $argv ?? $argv.&p !! '»UNDEF«' }";
+
+    g_application_run($!a, $ac, $argv);
   }
 
   method send_notification (Str() $id, GNotification() $notification)
