@@ -9,7 +9,7 @@ use GIO::Raw::ProxyResolver;
 use GLib::Roles::Object;
 
 role GIO::Roles::ProxyResolver {
-  has GProxyResolver $!pr;
+  has GProxyResolver $!pr is implementor;
 
   method roleInit-ProxyResolver {
     return if $!pr;

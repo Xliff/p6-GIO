@@ -72,7 +72,7 @@ class GIO::DBus::Connection {
 
     self!setObject($to-parent);
     self.roleInit-AsyncInitable;
-    self.roleInit-Initable($init, $cancellable);
+    self.roleInit-Initable(:$init, :$cancellable);
   }
 
   method GIO::Raw::Definitions::GDBusConnection
@@ -213,7 +213,7 @@ class GIO::DBus::Connection {
   ) {
     my GDBusConnectionFlags $f = $flags;
 
-    prep-supply($supply, &callback, $*ROUTINE.name);
+    prep-supply($supply, &callback, &?ROUTINE.name);
 
     my $connection = g_dbus_connection_new(
       $io,
@@ -334,7 +334,7 @@ class GIO::DBus::Connection {
   ) {
     my GDBusConnectionFlags $f = $flags;
 
-    prep-supply($supply, &callback, $*ROUTINE.name);
+    prep-supply($supply, &callback, &?ROUTINE.name);
 
     my $connection = g_dbus_connection_new_for_address(
       $address,
@@ -588,7 +588,7 @@ class GIO::DBus::Connection {
     Int()          $flags                   = 0,
     Int()          $timeout_msec            = -1,
     GCancellable() $cancellable             = GCancellable,
-                   &callback                = Callable,
+                   &callback        is copy = Callable,
     gpointer       $user_data               = gpointer,
                    :$supply         is copy = False,
   ) {
@@ -596,7 +596,7 @@ class GIO::DBus::Connection {
     my GDBusCallFlags $f = $flags;
     my gint           $t = $timeout_msec;
 
-    prep-supply($supply, &callback, $*ROUTINE.name);
+    &callback = prep-supply($supply, &callback, &?ROUTINE.name) if $supply;
 
     g_dbus_connection_call(
       $!dc,
@@ -896,7 +896,7 @@ class GIO::DBus::Connection {
     my GDBusCallFlags $f = $flags;
     my gint           $t = $timeout_msec;
 
-    prep-supply($supply, &callback, $*ROUTINE.name);
+    prep-supply($supply, &callback, &?ROUTINE.name);
 
     g_dbus_connection_call_with_unix_fd_list(
       $!dc,
@@ -1094,7 +1094,7 @@ class GIO::DBus::Connection {
     gpointer       $user_data   = gpointer,
                    :$supply     = False
   ) {
-    prep-supply($supply, &callback, $*ROUTINE.name);
+    prep-supply($supply, &callback, &?ROUTINE.name);
 
     g_dbus_connection_close($!dc, $cancellable, &callback, $user_data);
 
@@ -1227,7 +1227,7 @@ class GIO::DBus::Connection {
   method get_sync (
     GIO::DBus::Connection:U:
     Int()                    $bus_type,
-    GCancellable()           $cancellable,
+    GCancellable()           $cancellable  = GCancellable,
     CArray[Pointer[GError]]  $error        = gerror
   )
     is also<get-sync>
@@ -1236,6 +1236,27 @@ class GIO::DBus::Connection {
     my           $connection = g_bus_get_sync($b, $cancellable, $error);
 
     $connection ?? self.bless( :$connection ) !! Nil;
+  }
+
+  # Helper methods
+  method get_sync_system (GIO::DBus::Connection:U: ) is also<get-sync-system> {
+    GIO::DBus::Connection.get_sync(G_BUS_TYPE_SYSTEM);
+  }
+
+  method get_sync_session (GIO::DBus::Connection:U: )
+    is also<get-sync-session>
+  {
+    GIO::DBus::Connection.get_sync(G_BUS_TYPE_SESSION);
+  }
+
+  method get_sync_starter (GIO::DBus::Connection:U: )
+    is also<get-sync-starter>
+  {
+    GIO::DBus::Connection.get_sync(G_BUS_TYPE_STARTER);
+  }
+
+  method get_sync_none (GIO::DBus::Connection:U: ) is also<get-sync-none> {
+    GIO::DBus::Connection.get_sync(G_BUS_TYPE_NONE);
   }
 
   proto method get_async (|)

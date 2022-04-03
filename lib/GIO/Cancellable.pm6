@@ -152,4 +152,52 @@ class GIO::Cancellable {
       Nil;
   }
 
+  method signal-data {
+    state ( %signal-data, %signal-object );
+    my $self = self;
+    unless %signal-data{ self.WHERE } {
+      %signal-data{ self.WHERE } = (
+        cancelled => sub { $self.connect($!c, 'cancelled') }
+      ).Hash;
+    }
+
+    unless %signal-object{ self.WHERE } {
+      state @keys;
+
+      unless @keys {
+        @keys = self.GLib::Roles::Object::signal-data.keys;
+        @keys.append: %signal-data{ self.WHERE }.keys;
+      }
+
+      %signal-object{ self.WHERE } = (class :: does Associative {
+
+        method !getData (\k) {
+          %signal-data{ $self.WHERE }{k}
+            ?? %signal-data{ $self.WHERE }{k}
+            !! $self.GLib::Roles::Object::signal-data{k};
+        }
+
+        method AT-KEY (\k) {
+          self!getData(k);
+        }
+
+        method EXISTS-KEY (\k) {
+          self!getData(k).defined;
+        }
+
+        method keys {
+          @keys;
+        }
+
+      }).new;
+    }
+
+    %signal-object{ self.WHERE };
+  }
+
+  method signal-names {
+    state @signal-names = self.signal-data.keys;
+
+    @signal-names;
+  }
 }

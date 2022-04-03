@@ -22,6 +22,10 @@ role GIO::Roles::AsyncResult {
     is also<GAsyncResult>
   { $!ar }
 
+  method GIO::Raw::Definition::SimpleAsyncResult
+    is also<GSimpleAsyncResult>
+  { cast(GSimpleAsyncResult, $!ar) }
+
   method get_source_object (:$raw = False) is also<get-source-object> {
     my $o = g_async_result_get_source_object($!ar);
 

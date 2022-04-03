@@ -53,7 +53,7 @@ sub g_socket_connection_factory_create_connection (GSocket $socket)
 sub g_socket_connection_factory_lookup_type (
   GSocketFamily $family,
   GSocketType   $type,
-  gint          $protocol_id
+  guint          $protocol_id
 )
   returns GType
   is native(gio)
