@@ -1,0 +1,6096 @@
+
+Parallel build started for Raku 2022.03.125.g.94.f.2.ba.5.d.4 on MoarVM 2022.03.8.g.35453.e.9.e.1
+ === GIO::Raw::Definitions (1/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Raw/Definitions.pm6
+    Stage start      :   0.001
+    Stage parse      :   5.476
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.033
+    Stage mast       :   0.051
+    Stage mbc        :   0.012
+Stage parse      :   9.808
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.009
+Stage mast       :   0.003
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Raw::Definitions compile time: 11.6835238
+ === GIO::DBus::Raw::Subs (2/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/Subs.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Definitions.pm6
+    Stage parse      :   5.442
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.002
+    Stage mast       :   0.009
+    Stage mbc        :   0.002
+Stage parse      :   9.551
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.002
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::DBus::Raw::Subs compile time: 11.79616333
+ === GIO::Raw::Enums (3/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Enums.pm6
+    Stage start      :   0.001
+    Stage parse      :   5.811
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.026
+    Stage mast       :   0.043
+    Stage mbc        :   0.019
+Stage parse      :  10.235
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.003
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Raw::Enums compile time: 12.16300211
+ === GIO::DBus::Raw::Types (4/284) === 
+
+Stage start      :   0.002
+
+    precomp lib/GIO/DBus/Raw/Types.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.532
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.095
+    Stage mast       :   0.190
+    Stage mbc        :   0.054
+Stage parse      :  11.919
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::DBus::Raw::Types compile time: 13.994935
+ === GIO::Raw::Types (5/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Types.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/Raw/Definitions.pm6
+    
+        load    lib/GIO/Raw/Enums.pm6
+    
+        precomp lib/GIO/Raw/Structs.pm6
+        Stage start      :   0.000
+        Stage parse      :   1.616
+        Stage syntaxcheck:   0.000
+        Stage ast        :   0.000
+        Stage optimize   :   0.032
+        Stage mast       :   0.053
+        Stage mbc        :   0.005
+    
+        precomp lib/GIO/Raw/Subs.pm6
+        Stage start      :   0.000
+        Stage parse      :   1.426
+        Stage syntaxcheck:   0.000
+        Stage ast        :   0.000
+        Stage optimize   :   0.010
+        Stage mast       :   0.015
+        Stage mbc        :   0.028
+    
+        precomp lib/GIO/Raw/Quarks.pm6
+        Stage start      :   0.000
+        Stage parse      :   0.984
+        Stage syntaxcheck:   0.000
+        Stage ast        :   0.000
+        Stage optimize   :   0.004
+        Stage mast       :   0.008
+        Stage mbc        :   0.002
+    Stage parse      :  14.538
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.002
+    Stage mast       :   0.014
+    Stage mbc        :   0.002
+Stage parse      :  16.298
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.008
+Stage mast       :   0.010
+Stage mbc        :   0.006
+Stage moar       :   0.000
+
+GIO::Raw::Types compile time: 17.9109261
+ === GIO::DBus::Roles::SupplyCallback (6/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/DBus/Roles/SupplyCallback.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  11.190
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.010
+    Stage mast       :   0.015
+    Stage mbc        :   0.007
+Stage parse      :  15.960
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.002
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::DBus::Roles::SupplyCallback compile time: 18.56668211
+ === GIO::DBus::Raw::ObjectManagerServer (7/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/DBus/Raw/ObjectManagerServer.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  12.747
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.014
+    Stage mast       :   0.017
+    Stage mbc        :   0.012
+Stage parse      :  17.369
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.002
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::DBus::Raw::ObjectManagerServer compile time: 19.04140902
+ === GIO::DBus::Roles::Signals::ObjectManager (8/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Signals/ObjectManager.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  12.395
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.018
+    Stage mast       :   0.024
+    Stage mbc        :   0.009
+Stage parse      :  16.927
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.002
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::DBus::Roles::Signals::ObjectManager compile time: 19.08217165
+ === GIO::DBus::Roles::Signals::AuthObserver (9/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Signals/AuthObserver.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  12.674
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.018
+    Stage mast       :   0.031
+    Stage mbc        :   0.008
+Stage parse      :  17.259
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.002
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::DBus::Roles::Signals::AuthObserver compile time: 19.24292941
+ === GIO::DBus::Roles::Signals::ObjectManagerClient (10/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Signals/ObjectManagerClient.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  13.205
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.019
+    Stage mast       :   0.035
+    Stage mbc        :   0.008
+Stage parse      :  17.478
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.002
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::DBus::Roles::Signals::ObjectManagerClient compile time: 19.37141427
+ === GIO::Raw::ContentType (11/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Raw/ContentType.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  13.111
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.018
+    Stage mast       :   0.030
+    Stage mbc        :   0.027
+Stage parse      :  17.476
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.002
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Raw::ContentType compile time: 19.63459251
+ === GIO::DBus::Roles::Signals::Connection (12/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/DBus/Roles/Signals/Connection.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  12.986
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.019
+    Stage mast       :   0.027
+    Stage mbc        :   0.031
+Stage parse      :  17.671
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::DBus::Roles::Signals::Connection compile time: 20.1456599
+ === GIO::DBus::Roles::Signals::InterfaceSkeleton (13/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Signals/InterfaceSkeleton.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  13.465
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.020
+    Stage mast       :   0.032
+    Stage mbc        :   0.017
+Stage parse      :  18.291
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::DBus::Roles::Signals::InterfaceSkeleton compile time: 20.6236631
+ === GIO::DBus::Raw::Utils (14/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/Utils.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  13.978
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.022
+    Stage mast       :   0.040
+    Stage mbc        :   0.035
+Stage parse      :  18.723
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.004
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::DBus::Raw::Utils compile time: 20.85926426
+ === GIO::DBus::Roles::Signals::Object (15/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Signals/Object.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  13.747
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.020
+    Stage mast       :   0.026
+    Stage mbc        :   0.042
+Stage parse      :  18.718
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::DBus::Roles::Signals::Object compile time: 20.91840691
+ === GIO::DBus::Utils (16/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Utils.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    
+        load    lib/GIO/DBus/Raw/Utils.pm6
+    Stage parse      :  13.567
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.045
+    Stage mast       :   0.097
+    Stage mbc        :   0.008
+Stage parse      :  18.413
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.005
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::DBus::Utils compile time: 21.07599693
+ === GIO::DBus::Roles::Signals::Proxy (17/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Signals/Proxy.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  13.892
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.035
+    Stage mast       :   0.060
+    Stage mbc        :   0.012
+Stage parse      :  18.606
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.004
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::DBus::Roles::Signals::Proxy compile time: 21.23342182
+ === GIO::DBus::Roles::Signals::ObjectSkeleton (18/284) === 
+
+Stage start      :   0.003
+
+    precomp lib/GIO/DBus/Roles/Signals/ObjectSkeleton.pm6
+    Stage start      :   0.005
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  14.367
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.022
+    Stage mast       :   0.051
+    Stage mbc        :   0.010
+Stage parse      :  19.348
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::DBus::Roles::Signals::ObjectSkeleton compile time: 21.51858253
+ === GIO::Raw::CharsetConverter (19/284) === 
+
+Stage start      :   0.007
+
+    precomp lib/GIO/Raw/CharsetConverter.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  13.919
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.051
+    Stage mast       :   0.044
+    Stage mbc        :   0.021
+Stage parse      :  19.257
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.006
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::Raw::CharsetConverter compile time: 21.61527219
+ === GIO::Raw::AppInfo (20/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Raw/AppInfo.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  14.386
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.071
+    Stage mast       :   0.090
+    Stage mbc        :   0.797
+Stage parse      :  20.040
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Raw::AppInfo compile time: 22.61055283
+ === GIO::Raw::ApplicationCommandLine (21/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Raw/ApplicationCommandLine.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  14.591
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.030
+    Stage mast       :   0.081
+    Stage mbc        :   0.027
+Stage parse      :  19.614
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.005
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Raw::ApplicationCommandLine compile time: 22.60864794
+ === GIO::Raw::DatagramBased (22/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/DatagramBased.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  14.871
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.035
+    Stage mast       :   0.044
+    Stage mbc        :   0.020
+Stage parse      :  19.692
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.006
+Stage mbc        :   0.004
+Stage moar       :   0.005
+
+GIO::Raw::DatagramBased compile time: 22.89283507
+ === GIO::Raw::Credentials (23/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Credentials.pm6
+    Stage start      :   0.002
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  15.304
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.060
+    Stage mast       :   0.041
+    Stage mbc        :   0.024
+Stage parse      :  20.355
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.004
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Raw::Credentials compile time: 23.57338445
+ === GIO::Raw::FileIOStream (24/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/FileIOStream.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  15.817
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.020
+    Stage mast       :   0.052
+    Stage mbc        :   0.016
+Stage parse      :  20.889
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.004
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Raw::FileIOStream compile time: 23.67745459
+ === GIO::Raw::InetAddress (25/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/InetAddress.pm6
+    Stage start      :   0.000
+    Stage parse      :   3.999
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.079
+    Stage mast       :   0.063
+    Stage mbc        :   0.057
+Stage parse      :   5.995
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.007
+Stage mbc        :   0.008
+Stage moar       :   0.000
+
+GIO::Raw::InetAddress compile time: 6.52591642
+ === GIO::Raw::FilenameCompleter (26/284) === 
+
+Stage start      :   0.005
+
+    precomp lib/GIO/Raw/FilenameCompleter.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  16.979
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.039
+    Stage mast       :   0.040
+    Stage mbc        :   0.016
+Stage parse      :  21.887
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.005
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Raw::FilenameCompleter compile time: 24.931494
+ === GIO::Raw::Cancellable (27/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Cancellable.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  17.280
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.079
+    Stage mast       :   0.043
+    Stage mbc        :   0.040
+Stage parse      :  22.492
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.009
+Stage mbc        :   0.013
+Stage moar       :   0.000
+
+GIO::Raw::Cancellable compile time: 25.50716851
+ === GIO::Raw::DataInputStream (28/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Raw/DataInputStream.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  17.219
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.074
+    Stage mast       :   0.079
+    Stage mbc        :   0.049
+Stage parse      :  22.398
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.004
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Raw::DataInputStream compile time: 25.6676774
+ === GIO::Raw::Application (29/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Raw/Application.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  17.257
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.065
+    Stage mast       :   0.300
+    Stage mbc        :   0.098
+Stage parse      :  23.198
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.008
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::Raw::Application compile time: 25.93975654
+ === GIO::Raw::BufferedOutputStream (30/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/BufferedOutputStream.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  17.678
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.039
+    Stage mast       :   0.247
+    Stage mbc        :   0.028
+Stage parse      :  23.119
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.006
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Raw::BufferedOutputStream compile time: 26.01237146
+ === GIO::Raw::FileMonitor (31/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/FileMonitor.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  17.469
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.063
+    Stage mast       :   0.047
+    Stage mbc        :   0.016
+Stage parse      :  22.750
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.006
+Stage mbc        :   0.021
+Stage moar       :   0.000
+
+GIO::Raw::FileMonitor compile time: 26.00051533
+ === GIO::Raw::InetAddressMask (32/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/InetAddressMask.pm6
+    Stage start      :   0.000
+    Stage parse      :   4.436
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.027
+    Stage mast       :   0.069
+    Stage mbc        :   0.053
+Stage parse      :   7.388
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.005
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Raw::InetAddressMask compile time: 8.06784691
+ === GIO::Raw::Structs (33/284) === 
+
+Stage start      :   0.000
+Stage parse      :   2.998
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.008
+Stage mast       :   0.014
+Stage mbc        :   0.008
+Stage moar       :   0.000
+
+GIO::Raw::Structs compile time: 4.95345306
+ === GIO::Raw::InetSocketAddress (34/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/InetSocketAddress.pm6
+    Stage start      :   0.000
+    Stage parse      :   4.519
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.031
+    Stage mast       :   0.079
+    Stage mbc        :   0.025
+Stage parse      :   7.369
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.004
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::Raw::InetSocketAddress compile time: 8.1563981
+ === GIO::DBus::Roles::Signals::Server (35/284) === 
+
+Stage start      :   0.010
+
+    precomp lib/GIO/DBus/Roles/Signals/Server.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  18.985
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.041
+    Stage mast       :   0.046
+    Stage mbc        :   0.080
+Stage parse      :  24.545
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.006
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::DBus::Roles::Signals::Server compile time: 27.32679398
+ === GIO::Raw::BufferedInputStream (36/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/BufferedInputStream.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  19.086
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.061
+    Stage mast       :   0.046
+    Stage mbc        :   0.028
+Stage parse      :  24.411
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.004
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Raw::BufferedInputStream compile time: 27.4140826
+ === GIO::Raw::Subs (37/284) === 
+
+Stage start      :   0.001
+Stage parse      :   3.475
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.005
+Stage mast       :   0.025
+Stage mbc        :   0.011
+Stage moar       :   0.000
+
+GIO::Raw::Subs compile time: 5.30817946
+ === GIO::Raw::FilterInputStream (38/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/FilterInputStream.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  14.089
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.040
+    Stage mast       :   0.066
+    Stage mbc        :   0.032
+Stage parse      :  15.948
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.019
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::Raw::FilterInputStream compile time: 16.58620211
+ === GIO::Raw::ListModel (39/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/ListModel.pm6
+    Stage start      :   0.000
+    Stage parse      :   4.763
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.055
+    Stage mast       :   0.094
+    Stage mbc        :   0.020
+Stage parse      :   8.232
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.007
+Stage moar       :   0.000
+
+GIO::Raw::ListModel compile time: 9.14421222
+ === GIO::Raw::FilterOutputStream (40/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/FilterOutputStream.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  14.220
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.032
+    Stage mast       :   0.062
+    Stage mbc        :   0.016
+Stage parse      :  16.175
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.018
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::Raw::FilterOutputStream compile time: 16.80693402
+ === GIO::Raw::ListStore (41/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/ListStore.pm6
+    Stage start      :   0.003
+    Stage parse      :   4.890
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.090
+    Stage mast       :   0.049
+    Stage mbc        :   0.022
+Stage parse      :   8.579
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::Raw::ListStore compile time: 9.50050714
+ === GIO::Raw::MemoryInputStream (42/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/MemoryInputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   4.569
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.026
+    Stage mast       :   0.077
+    Stage mbc        :   0.024
+Stage parse      :   8.400
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::Raw::MemoryInputStream compile time: 9.32010291
+ === GIO::Raw::InputStream (43/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/InputStream.pm6
+    Stage start      :   0.001
+    Stage parse      :   5.939
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.084
+    Stage mast       :   0.067
+    Stage mbc        :   0.042
+Stage parse      :   9.358
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Raw::InputStream compile time: 10.2143194
+ === GIO::Raw::Icon (44/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Icon.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  13.873
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.053
+    Stage mast       :   0.228
+    Stage mbc        :   0.043
+Stage parse      :  15.868
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.026
+Stage mbc        :   0.019
+Stage moar       :   0.000
+
+GIO::Raw::Icon compile time: 16.54426138
+ === GIO::Raw::MemoryOutputStream (45/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/MemoryOutputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   5.671
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.060
+    Stage mast       :   0.136
+    Stage mbc        :   0.054
+Stage parse      :   9.652
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.007
+Stage mast       :   0.006
+Stage mbc        :   0.034
+Stage moar       :   0.000
+
+GIO::Raw::MemoryOutputStream compile time: 10.9013056
+ === GIO::Raw::PollableOutputStream (46/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/PollableOutputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   5.036
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.064
+    Stage mast       :   0.071
+    Stage mbc        :   0.018
+Stage parse      :   9.684
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.006
+Stage mbc        :   0.020
+Stage moar       :   0.000
+
+GIO::Raw::PollableOutputStream compile time: 11.3552422
+ === GIO::Raw::Seekable (47/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Seekable.pm6
+    Stage start      :   0.003
+    Stage parse      :   5.701
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.033
+    Stage mast       :   0.066
+    Stage mbc        :   0.019
+Stage parse      :  10.243
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.006
+Stage mbc        :   0.015
+Stage moar       :   0.000
+
+GIO::Raw::Seekable compile time: 11.84166246
+ === GIO::Raw::MountOperation (48/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/MountOperation.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.903
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.042
+    Stage mast       :   0.091
+    Stage mbc        :   0.051
+Stage parse      :  11.289
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::Raw::MountOperation compile time: 12.8381837
+ === GIO::Raw::Stream (49/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Stream.pm6
+    Stage start      :   0.000
+    Stage parse      :   5.540
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.052
+    Stage mast       :   0.085
+    Stage mbc        :   0.030
+Stage parse      :  10.381
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.010
+Stage mbc        :   0.008
+Stage moar       :   0.000
+
+GIO::Raw::Stream compile time: 12.173353
+ === GIO::Raw::MenuModel (50/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/MenuModel.pm6
+    Stage start      :   0.006
+    Stage parse      :   6.761
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.076
+    Stage mast       :   0.078
+    Stage mbc        :   0.059
+Stage parse      :  11.380
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.008
+Stage mbc        :   0.020
+Stage moar       :   0.000
+
+GIO::Raw::MenuModel compile time: 12.94441933
+ === GIO::Raw::Menu (51/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Menu.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.640
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.116
+    Stage mast       :   0.172
+    Stage mbc        :   0.147
+Stage parse      :  13.300
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.010
+Stage mbc        :   0.019
+Stage moar       :   0.000
+
+GIO::Raw::Menu compile time: 14.5438057
+ === GIO::Raw::TlsCertificate (52/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/TlsCertificate.pm6
+    Stage start      :   0.001
+    Stage parse      :   6.609
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.060
+    Stage mast       :   0.045
+    Stage mbc        :   0.036
+Stage parse      :  11.456
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.012
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::Raw::TlsCertificate compile time: 13.48613043
+ === GIO::Raw::ThemedIcon (53/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/ThemedIcon.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.965
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.064
+    Stage mast       :   0.082
+    Stage mbc        :   0.043
+Stage parse      :  12.789
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.004
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Raw::ThemedIcon compile time: 14.5756851
+ === GIO::Raw::TlsBackend (54/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/TlsBackend.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.854
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.036
+    Stage mast       :   0.051
+    Stage mbc        :   0.031
+Stage parse      :  12.828
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.006
+Stage mbc        :   0.019
+Stage moar       :   0.000
+
+GIO::Raw::TlsBackend compile time: 14.8883085
+ === GIO::Raw::TlsClientConnection (55/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Raw/TlsClientConnection.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.598
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.071
+    Stage mast       :   0.041
+    Stage mbc        :   0.031
+Stage parse      :  12.882
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.007
+Stage mbc        :   0.016
+Stage moar       :   0.000
+
+GIO::Raw::TlsClientConnection compile time: 14.65161882
+ === GIO::Raw::Task (56/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Raw/Task.pm6
+    Stage start      :   0.000
+    Stage parse      :  10.217
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.123
+    Stage mast       :   0.185
+    Stage mbc        :   0.155
+Stage parse      :  15.332
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.008
+Stage mbc        :   0.016
+Stage moar       :   0.000
+
+GIO::Raw::Task compile time: 17.06860109
+ === GIO::Raw::UnixCredentialsMessage (57/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/UnixCredentialsMessage.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.059
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.069
+    Stage mast       :   0.073
+    Stage mbc        :   0.036
+Stage parse      :  11.903
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.004
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Raw::UnixCredentialsMessage compile time: 14.4041779
+ === GIO::Raw::UnixFDMessage (58/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/UnixFDMessage.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.102
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.025
+    Stage mast       :   0.102
+    Stage mbc        :   0.020
+Stage parse      :  11.969
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.006
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Raw::UnixFDMessage compile time: 14.39593395
+ === GIO::Raw::TlsInteraction (59/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/TlsInteraction.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.859
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.073
+    Stage mast       :   0.116
+    Stage mbc        :   0.038
+Stage parse      :  13.099
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.006
+Stage mbc        :   0.024
+Stage moar       :   0.000
+
+GIO::Raw::TlsInteraction compile time: 15.28358349
+ === GIO::Raw::TlsDatabase (60/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/TlsDatabase.pm6
+    Stage start      :   0.008
+    Stage parse      :   8.127
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.105
+    Stage mast       :   0.093
+    Stage mbc        :   0.073
+Stage parse      :  13.329
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.010
+Stage mast       :   0.026
+Stage mbc        :   0.026
+Stage moar       :   0.000
+
+GIO::Raw::TlsDatabase compile time: 15.72963149
+ === GIO::Raw::TlsPassword (61/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Raw/TlsPassword.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.044
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.047
+    Stage mast       :   0.139
+    Stage mbc        :   0.120
+Stage parse      :  13.642
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.006
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Raw::TlsPassword compile time: 15.94862746
+ === GIO::Raw::UnixFDList (62/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Raw/UnixFDList.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.215
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.045
+    Stage mast       :   0.038
+    Stage mbc        :   0.022
+Stage parse      :  12.967
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.007
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Raw::UnixFDList compile time: 15.5832563
+ === GIO::Raw::UnixInputStream (63/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Raw/UnixInputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.393
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.053
+    Stage mast       :   0.041
+    Stage mbc        :   0.020
+Stage parse      :  12.779
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.005
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::Raw::UnixInputStream compile time: 15.2819149
+ === GIO::Raw::TlsConnection (64/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/TlsConnection.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.246
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.070
+    Stage mast       :   0.097
+    Stage mbc        :   0.047
+Stage parse      :  14.570
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.010
+Stage mbc        :   0.017
+Stage moar       :   0.000
+
+GIO::Raw::TlsConnection compile time: 17.2069773
+ === GIO::Raw::UnixSocketAddress (65/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Raw/UnixSocketAddress.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.236
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.023
+    Stage mast       :   0.067
+    Stage mbc        :   0.023
+Stage parse      :  11.972
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.008
+Stage mbc        :   0.006
+Stage moar       :   0.000
+
+GIO::Raw::UnixSocketAddress compile time: 14.73569638
+ === GIO::Raw::UnixConnection (66/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/UnixConnection.pm6
+    Stage start      :   0.001
+    Stage parse      :   8.464
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.029
+    Stage mast       :   0.082
+    Stage mbc        :   0.031
+Stage parse      :  13.801
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.005
+Stage mbc        :   0.020
+Stage moar       :   0.000
+
+GIO::Raw::UnixConnection compile time: 16.8561485
+ === GIO::Raw::VFS (67/284) === 
+
+Stage start      :   0.002
+
+    precomp lib/GIO/Raw/VFS.pm6
+    Stage start      :   0.001
+    Stage parse      :   7.933
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.028
+    Stage mast       :   0.057
+    Stage mbc        :   0.033
+Stage parse      :  12.785
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.008
+Stage mbc        :   0.009
+Stage moar       :   0.000
+
+GIO::Raw::VFS compile time: 15.0374349
+ === GIO::Raw::VolumeMonitor (68/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/VolumeMonitor.pm6
+    Stage start      :   0.001
+    Stage parse      :   8.177
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.027
+    Stage mast       :   0.082
+    Stage mbc        :   0.068
+Stage parse      :  12.807
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Raw::VolumeMonitor compile time: 15.23277261
+ === GIO::Raw::UnixOutputStream (69/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/UnixOutputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.216
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.063
+    Stage mast       :   0.118
+    Stage mbc        :   0.020
+Stage parse      :  13.852
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.004
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Raw::UnixOutputStream compile time: 16.46464717
+ === GIO::Raw::UnixMount (70/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/UnixMount.pm6
+    Stage start      :   0.000
+    Stage parse      :  10.290
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.049
+    Stage mast       :   0.114
+    Stage mbc        :   0.102
+Stage parse      :  15.168
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::Raw::UnixMount compile time: 17.4787863
+ === GIO::Raw::GFile (71/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/GFile.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Types.pm6
+    Stage parse      :  28.615
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.308
+    Stage mast       :   0.438
+    Stage mbc        :   0.336
+Stage parse      :  32.058
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.006
+Stage mbc        :   0.014
+Stage moar       :   0.000
+
+GIO::Raw::GFile compile time: 32.66043341
+ === GIO::Raw::Volume (72/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Volume.pm6
+    Stage start      :   0.000
+    Stage parse      :  10.078
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.063
+    Stage mast       :   0.053
+    Stage mbc        :   0.085
+Stage parse      :  15.166
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.007
+Stage mbc        :   0.017
+Stage moar       :   0.000
+
+GIO::Raw::Volume compile time: 17.47508378
+ === GIO::Roles::ActionMap (73/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Roles/ActionMap.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.872
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.081
+    Stage mast       :   0.173
+    Stage mbc        :   0.035
+Stage parse      :  15.752
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.006
+Stage mbc        :   0.020
+Stage moar       :   0.000
+
+GIO::Roles::ActionMap compile time: 18.1250903
+ === GIO::Roles::Converter (74/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Converter.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.643
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.403
+    Stage mast       :   0.084
+    Stage mbc        :   0.758
+Stage parse      :  16.692
+Stage syntaxcheck:   0.001
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.012
+Stage mbc        :   0.024
+Stage moar       :   0.000
+
+GIO::Roles::Converter compile time: 19.3288102
+ === GIO::Roles::DTlsServerConnection (75/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Roles/DTlsServerConnection.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.845
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.077
+    Stage mast       :   0.183
+    Stage mbc        :   0.063
+Stage parse      :  15.806
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.008
+Stage mbc        :   0.006
+Stage moar       :   0.000
+
+GIO::Roles::DTlsServerConnection compile time: 18.38207283
+ === GIO::Roles::DatagramBased (76/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/DatagramBased.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.239
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.960
+    Stage mast       :   0.182
+    Stage mbc        :   0.016
+Stage parse      :  16.376
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.009
+Stage mbc        :   0.025
+Stage moar       :   0.000
+
+GIO::Roles::DatagramBased compile time: 19.11927398
+ === GIO::Roles::Icon (77/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Icon.pm6
+    Stage start      :   0.004
+    Stage parse      :   8.457
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.049
+    Stage mast       :   0.291
+    Stage mbc        :   0.021
+Stage parse      :  15.163
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.016
+Stage mast       :   0.009
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Roles::Icon compile time: 17.51360435
+ === GIO::Roles::FileDescriptorBased (78/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Roles/FileDescriptorBased.pm6
+    Stage start      :   0.000
+    Stage parse      :  10.632
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.073
+    Stage mast       :   0.086
+    Stage mbc        :   0.026
+Stage parse      :  16.287
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.010
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::Roles::FileDescriptorBased compile time: 18.53995162
+ === GIO::Roles::AppInfo (79/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Roles/AppInfo.pm6
+    Stage start      :   0.001
+    Stage parse      :  13.286
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.186
+    Stage mast       :   0.186
+    Stage mbc        :   0.069
+Stage parse      :  19.379
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.006
+Stage mbc        :   0.009
+Stage moar       :   0.000
+
+GIO::Roles::AppInfo compile time: 22.11844019
+ === GIO::Roles::Signals::FileMonitor (80/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/FileMonitor.pm6
+    Stage start      :   0.000
+    Stage parse      :   4.987
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.062
+    Stage mast       :   0.060
+    Stage mbc        :   0.013
+Stage parse      :  10.052
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.005
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Roles::Signals::FileMonitor compile time: 12.45081062
+ === GIO::Roles::PollableOutputStream (81/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Roles/PollableOutputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.184
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.659
+    Stage mast       :   0.155
+    Stage mbc        :   0.063
+Stage parse      :  15.083
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.007
+Stage mbc        :   0.019
+Stage moar       :   0.000
+
+GIO::Roles::PollableOutputStream compile time: 18.0316567
+ === GIO::Roles::Initable (82/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Initable.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.372
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.169
+    Stage mast       :   0.611
+    Stage mbc        :   0.035
+Stage parse      :  16.283
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.013
+Stage mbc        :   0.016
+Stage moar       :   0.000
+
+GIO::Roles::Initable compile time: 18.97134106
+ === GIO::Roles::Signals::DtlsConnection (83/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/DtlsConnection.pm6
+    Stage start      :   0.000
+    Stage parse      :   5.802
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.076
+    Stage mast       :   0.080
+    Stage mbc        :   0.043
+Stage parse      :  11.517
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.010
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::Roles::Signals::DtlsConnection compile time: 14.07233254
+ === GIO::Roles::Seekable (84/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Roles/Seekable.pm6
+    Stage start      :   0.001
+    Stage parse      :   8.514
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.120
+    Stage mast       :   0.122
+    Stage mbc        :   0.018
+Stage parse      :  14.793
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.006
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::Roles::Seekable compile time: 17.8468503
+ === GIO::Roles::Signals::ListModel (85/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/ListModel.pm6
+    Stage start      :   0.000
+    Stage parse      :   5.442
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.089
+    Stage mast       :   0.062
+    Stage mbc        :   0.013
+Stage parse      :  10.724
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Roles::Signals::ListModel compile time: 13.5598515
+ === GIO::Roles::Signals::ActionGroup (86/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/ActionGroup.pm6
+    Stage start      :   0.001
+    Stage parse      :   7.641
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.064
+    Stage mast       :   0.120
+    Stage mbc        :   0.051
+Stage parse      :  13.309
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.009
+Stage mbc        :   0.020
+Stage moar       :   0.000
+
+GIO::Roles::Signals::ActionGroup compile time: 16.0255475
+ === GIO::Roles::Signals::MenuModel (87/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/MenuModel.pm6
+    Stage start      :   0.000
+    Stage parse      :   5.358
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.082
+    Stage mast       :   0.096
+    Stage mbc        :   0.015
+Stage parse      :  10.851
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.007
+Stage mbc        :   0.008
+Stage moar       :   0.000
+
+GIO::Roles::Signals::MenuModel compile time: 13.40583091
+ === GIO::Roles::Signals::Application (88/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/Application.pm6
+    Stage start      :   0.003
+    Stage parse      :   7.816
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.111
+    Stage mast       :   0.158
+    Stage mbc        :   0.040
+Stage parse      :  13.779
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.007
+Stage mbc        :   0.022
+Stage moar       :   0.000
+
+GIO::Roles::Signals::Application compile time: 16.3715098
+ === GIO::Roles::Signals::NetworkMonitor (89/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/NetworkMonitor.pm6
+    Stage start      :   0.000
+    Stage parse      :   5.377
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.046
+    Stage mast       :   0.071
+    Stage mbc        :   0.016
+Stage parse      :  10.807
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.006
+Stage mbc        :   0.020
+Stage moar       :   0.000
+
+GIO::Roles::Signals::NetworkMonitor compile time: 13.29758157
+ === GIO::Roles::Signals::SocketService (90/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/SocketService.pm6
+    Stage start      :   0.001
+    Stage parse      :   5.337
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.059
+    Stage mast       :   0.041
+    Stage mbc        :   0.012
+Stage parse      :  10.195
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.004
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Roles::Signals::SocketService compile time: 12.7140557
+ === GIO::Roles::Signals::ThreadedSocketService (91/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/ThreadedSocketService.pm6
+    Stage start      :   0.001
+    Stage parse      :   5.350
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.119
+    Stage mast       :   0.108
+    Stage mbc        :   0.021
+Stage parse      :  10.712
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.006
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::Roles::Signals::ThreadedSocketService compile time: 13.21907021
+ === GIO::Roles::NetworkMonitorBase (92/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/NetworkMonitorBase.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/Roles/Initable.pm6
+    Stage parse      :  12.165
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.084
+    Stage mast       :   0.971
+    Stage mbc        :   0.021
+Stage parse      :  19.255
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.005
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Roles::NetworkMonitorBase compile time: 21.83193395
+ === GIO::Roles::Signals::MountOperation (93/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/MountOperation.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.348
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.170
+    Stage mast       :   0.303
+    Stage mbc        :   0.032
+Stage parse      :  12.056
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Roles::Signals::MountOperation compile time: 14.99517798
+ === GIO::Roles::Signals::TlsConnection (94/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/TlsConnection.pm6
+    Stage start      :   0.000
+    Stage parse      :   5.764
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.064
+    Stage mast       :   0.118
+    Stage mbc        :   0.015
+Stage parse      :  10.949
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.004
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Roles::Signals::TlsConnection compile time: 13.9336307
+ === GIO::Roles::Signals::Settings (95/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Roles/Signals/Settings.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.454
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.080
+    Stage mast       :   0.041
+    Stage mbc        :   0.365
+Stage parse      :  12.786
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.007
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::Roles::Signals::Settings compile time: 15.21726771
+ === GIO::Roles::Signals::VolumeMonitor (96/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/VolumeMonitor.pm6
+    Stage start      :   0.001
+    Stage parse      :   6.204
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.042
+    Stage mast       :   0.193
+    Stage mbc        :   0.030
+Stage parse      :  11.485
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.005
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Roles::Signals::VolumeMonitor compile time: 13.9421737
+ === GIO::Roles::Signals::SocketListener (97/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Signals/SocketListener.pm6
+    Stage start      :   0.001
+    Stage parse      :   6.127
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.057
+    Stage mast       :   0.069
+    Stage mbc        :   0.015
+Stage parse      :  11.930
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.005
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::Roles::Signals::SocketListener compile time: 14.70240026
+ === GIO::Roles::Volume (98/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Volume.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.641
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.127
+    Stage mast       :   0.425
+    Stage mbc        :   0.012
+Stage parse      :  12.780
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.006
+Stage mbc        :   0.020
+Stage moar       :   0.000
+
+GIO::Roles::Volume compile time: 15.29071437
+ === GIO::Roles::TlsFileDatabase (99/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/TlsFileDatabase.pm6
+    Stage start      :   0.002
+    Stage parse      :   9.260
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.087
+    Stage mast       :   0.116
+    Stage mbc        :   0.031
+Stage parse      :  14.839
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.005
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Roles::TlsFileDatabase compile time: 17.2528358
+ === GIO::SocketAddressEnumerator (100/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/SocketAddressEnumerator.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.443
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.060
+    Stage mast       :   0.152
+    Stage mbc        :   0.046
+Stage parse      :  13.900
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.018
+Stage mbc        :   0.013
+Stage moar       :   0.000
+
+GIO::SocketAddressEnumerator compile time: 16.62287027
+ === GIO::Roles::TlsServerConnection (101/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Roles/TlsServerConnection.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.490
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.098
+    Stage mast       :   0.174
+    Stage mbc        :   0.039
+Stage parse      :  16.044
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.009
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Roles::TlsServerConnection compile time: 19.19769882
+ === GIO::ThemedIcon (102/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/ThemedIcon.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.719
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.347
+    Stage mast       :   0.210
+    Stage mbc        :   0.017
+Stage parse      :  16.091
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.009
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::ThemedIcon compile time: 18.48643405
+ === GIO::TlsCertificate (103/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/TlsCertificate.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.698
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.165
+    Stage mast       :   0.291
+    Stage mbc        :   0.044
+Stage parse      :  16.081
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.009
+Stage mbc        :   0.023
+Stage moar       :   0.000
+
+GIO::TlsCertificate compile time: 18.7743219
+ === GIO::TlsInteraction (104/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/TlsInteraction.pm6
+    Stage start      :   0.002
+    Stage parse      :   8.630
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.094
+    Stage mast       :   0.852
+    Stage mbc        :   0.049
+Stage parse      :  15.634
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.008
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::TlsInteraction compile time: 18.31797018
+ === GIO::TlsPassword (105/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/TlsPassword.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.056
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.088
+    Stage mast       :   0.186
+    Stage mbc        :   0.015
+Stage parse      :  14.861
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.010
+Stage mbc        :   0.016
+Stage moar       :   0.000
+
+GIO::TlsPassword compile time: 17.3824105
+ === GIO::TlsDatabase (106/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/TlsDatabase.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/TlsCertificate.pm6
+    Stage parse      :  11.999
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.171
+    Stage mast       :   0.177
+    Stage mbc        :   0.017
+Stage parse      :  18.091
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.005
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::TlsDatabase compile time: 20.53159014
+ === GIO::UnixFDList (107/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/UnixFDList.pm6
+    Stage start      :   0.001
+    Stage parse      :   9.323
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.082
+    Stage mast       :   0.129
+    Stage mbc        :   0.016
+Stage parse      :  15.975
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.019
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::UnixFDList compile time: 18.79255782
+ === GIO::AppInfoMonitor (108/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/AppInfoMonitor.pm6
+    Stage start      :   0.003
+    Stage parse      :   8.754
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.042
+    Stage mast       :   0.252
+    Stage mbc        :   0.016
+Stage parse      :  14.391
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.006
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::AppInfoMonitor compile time: 17.1711319
+ === GIO::DBus::Raw::Address (109/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/Address.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.479
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.027
+    Stage mast       :   0.054
+    Stage mbc        :   0.022
+Stage parse      :  12.321
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.006
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::DBus::Raw::Address compile time: 15.08033638
+ === GIO::DBus::Raw::Error (110/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/Error.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.440
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.031
+    Stage mast       :   0.061
+    Stage mbc        :   0.041
+Stage parse      :  12.295
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.009
+Stage mbc        :   0.023
+Stage moar       :   0.000
+
+GIO::DBus::Raw::Error compile time: 14.65326874
+ === GIO::DBus::Raw::Interface (111/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/Interface.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.540
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.025
+    Stage mast       :   0.059
+    Stage mbc        :   0.017
+Stage parse      :  11.731
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::DBus::Raw::Interface compile time: 14.41556813
+ === GIO::DBus::Raw::DBusNodeInfo (112/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/DBus/Raw/DBusNodeInfo.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.649
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.020
+    Stage mast       :   0.073
+    Stage mbc        :   0.007
+Stage parse      :  12.237
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.009
+Stage moar       :   0.000
+
+GIO::DBus::Raw::DBusNodeInfo compile time: 14.69850982
+ === GIO::ZlibCompressor (113/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/ZlibCompressor.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.247
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.096
+    Stage mast       :   0.151
+    Stage mbc        :   0.020
+Stage parse      :  15.243
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.007
+Stage mbc        :   0.018
+Stage moar       :   0.000
+
+GIO::ZlibCompressor compile time: 18.20227635
+ === GIO::VFS (114/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/VFS.pm6
+    Stage start      :   0.001
+    Stage parse      :   9.528
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.093
+    Stage mast       :   0.141
+    Stage mbc        :   0.819
+Stage parse      :  16.124
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.004
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::VFS compile time: 18.83188198
+ === GIO::Cancellable (115/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Cancellable.pm6
+    Stage start      :   0.001
+    Stage parse      :   9.525
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.061
+    Stage mast       :   0.300
+    Stage mbc        :   0.060
+Stage parse      :  15.745
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.006
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Cancellable compile time: 18.41957146
+ === GIO::DBus::Raw::InterfaceSkeleton (116/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/InterfaceSkeleton.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.927
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.091
+    Stage mast       :   0.107
+    Stage mbc        :   0.091
+Stage parse      :  12.684
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.016
+Stage mbc        :   0.022
+Stage moar       :   0.000
+
+GIO::DBus::Raw::InterfaceSkeleton compile time: 14.93724646
+ === GIO::Credentials (117/284) === 
+
+Stage start      :   0.017
+
+    precomp lib/GIO/Credentials.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.664
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.089
+    Stage mast       :   0.166
+    Stage mbc        :   0.015
+Stage parse      :  14.683
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.009
+Stage mast       :   0.020
+Stage mbc        :   0.010
+Stage moar       :   0.000
+
+GIO::Credentials compile time: 17.38326477
+ === GIO::CharsetConverter (118/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/CharsetConverter.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.825
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.046
+    Stage mast       :   0.320
+    Stage mbc        :   0.014
+Stage parse      :  16.056
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.006
+Stage mbc        :   0.020
+Stage moar       :   0.000
+
+GIO::CharsetConverter compile time: 18.76976947
+ === GIO::DBus::AuthObserver (119/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/AuthObserver.pm6
+    Stage start      :   0.001
+    Stage parse      :   9.373
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.061
+    Stage mast       :   0.090
+    Stage mbc        :   0.058
+Stage parse      :  15.360
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.004
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::DBus::AuthObserver compile time: 18.0858509
+ === GIO::ContentType (120/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/ContentType.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.309
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.086
+    Stage mast       :   0.283
+    Stage mbc        :   0.017
+Stage parse      :  15.741
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.010
+Stage mbc        :   0.006
+Stage moar       :   0.000
+
+GIO::ContentType compile time: 18.4475059
+ === GIO::DBus::Raw::ObjectManagerClient (121/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/ObjectManagerClient.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.820
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.063
+    Stage mast       :   0.117
+    Stage mbc        :   0.039
+Stage parse      :  12.026
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.006
+Stage mbc        :   0.022
+Stage moar       :   0.000
+
+GIO::DBus::Raw::ObjectManagerClient compile time: 14.74396723
+ === GIO::DBus::Raw::Server (122/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/DBus/Raw/Server.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.132
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.051
+    Stage mast       :   0.117
+    Stage mbc        :   0.021
+Stage parse      :  11.792
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.008
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::DBus::Raw::Server compile time: 14.3821517
+ === GIO::DBus::Raw::MethodInvocation (123/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/DBus/Raw/MethodInvocation.pm6
+    Stage start      :   0.009
+    Stage parse      :   7.530
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.046
+    Stage mast       :   0.135
+    Stage mbc        :   0.055
+Stage parse      :  13.145
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.009
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::DBus::Raw::MethodInvocation compile time: 15.97272141
+ === GIO::UnixMount (124/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/UnixMount.pm6
+    Stage start      :   0.000
+    Stage parse      :  11.640
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.241
+    Stage mast       :   0.183
+    Stage mbc        :   0.090
+Stage parse      :  18.744
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.005
+Stage mast       :   0.011
+Stage mbc        :   0.022
+Stage moar       :   0.000
+
+GIO::UnixMount compile time: 21.65330483
+ === GIO::DBus::Raw::ObjectManager (125/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/ObjectManager.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.922
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.025
+    Stage mast       :   0.204
+    Stage mbc        :   0.061
+Stage parse      :  12.690
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.019
+Stage mbc        :   0.006
+Stage moar       :   0.000
+
+GIO::DBus::Raw::ObjectManager compile time: 15.8664
+ === GIO::DBus::Raw::ObjectSkeleton (126/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/ObjectSkeleton.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.038
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.121
+    Stage mast       :   0.067
+    Stage mbc        :   0.026
+Stage parse      :  12.025
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.006
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::DBus::Raw::ObjectSkeleton compile time: 15.34013133
+ === GIO::DBus::Raw::Connection (127/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/Connection.pm6
+    Stage start      :   0.000
+    Stage parse      :  11.062
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.131
+    Stage mast       :   0.315
+    Stage mbc        :   0.136
+Stage parse      :  16.965
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.017
+Stage mbc        :   0.006
+Stage moar       :   0.000
+
+GIO::DBus::Raw::Connection compile time: 19.64154547
+ === GIO::DBus::Raw::Proxy (128/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/DBus/Raw/Proxy.pm6
+    Stage start      :   0.001
+    Stage parse      :   8.300
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.157
+    Stage mast       :   0.132
+    Stage mbc        :   0.132
+Stage parse      :  14.610
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.007
+Stage mast       :   0.005
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::DBus::Raw::Proxy compile time: 17.41327027
+ === GIO::DBus::Raw::Message (129/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Raw/Message.pm6
+    Stage start      :   0.001
+    Stage parse      :  10.554
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.099
+    Stage mast       :   0.079
+    Stage mbc        :   0.157
+Stage parse      :  16.428
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.013
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::DBus::Raw::Message compile time: 19.12112998
+ === GIO::DBus::Roles::Interface (130/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Interface.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.047
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.032
+    Stage mast       :   0.254
+    Stage mbc        :   0.017
+Stage parse      :  15.391
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.010
+Stage mbc        :   0.007
+Stage moar       :   0.000
+
+GIO::DBus::Roles::Interface compile time: 17.91881574
+ === GIO::DBus::Roles::Object (131/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/Object.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/DBus/Roles/Interface.pm6
+    Stage parse      :  10.051
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.070
+    Stage mast       :   0.114
+    Stage mbc        :   0.024
+Stage parse      :  16.748
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.007
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::DBus::Roles::Object compile time: 19.08021325
+ === GIO::DBus::Server (132/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Server.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.434
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.097
+    Stage mast       :   0.174
+    Stage mbc        :   0.022
+Stage parse      :  14.593
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.005
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::DBus::Server compile time: 17.3009728
+ === GIO::DBus::Roles::ObjectManager (133/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Roles/ObjectManager.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/DBus/Roles/Interface.pm6
+    
+        load    lib/GIO/DBus/Roles/Object.pm6
+    Stage parse      :  12.073
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.045
+    Stage mast       :   0.323
+    Stage mbc        :   0.036
+Stage parse      :  18.869
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.004
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::DBus::Roles::ObjectManager compile time: 21.10085146
+ === GIO::FileMonitor (134/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/FileMonitor.pm6
+    Stage start      :   0.001
+    Stage parse      :   9.117
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.086
+    Stage mast       :   0.197
+    Stage mbc        :   0.017
+Stage parse      :  15.581
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::FileMonitor compile time: 18.47070643
+ === GIO::FilenameCompleter (135/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/FilenameCompleter.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.467
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.082
+    Stage mast       :   0.088
+    Stage mbc        :   0.020
+Stage parse      :  15.563
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.007
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::FilenameCompleter compile time: 18.33949082
+ === GIO::LaunchContext (136/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/LaunchContext.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.397
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.082
+    Stage mast       :   0.158
+    Stage mbc        :   0.030
+Stage parse      :  14.143
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.008
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::LaunchContext compile time: 16.41701069
+ === GIO::InputStream (137/284) === 
+
+Stage start      :   0.004
+
+    precomp lib/GIO/InputStream.pm6
+    Stage start      :   0.001
+    Stage parse      :   9.376
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.181
+    Stage mast       :   1.436
+    Stage mbc        :   0.022
+Stage parse      :  16.022
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.006
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::InputStream compile time: 18.69578906
+ === GIO::ListStore (138/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/ListStore.pm6
+    Stage start      :   0.001
+    Stage parse      :   8.216
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.068
+    Stage mast       :   0.208
+    Stage mbc        :   0.042
+Stage parse      :  14.539
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.010
+Stage mbc        :   0.029
+Stage moar       :   0.000
+
+GIO::ListStore compile time: 17.281549
+ === GIO::MenuLinkIter (139/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/MenuLinkIter.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.820
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.039
+    Stage mast       :   0.101
+    Stage mbc        :   0.024
+Stage parse      :  14.249
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.006
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::MenuLinkIter compile time: 16.7788454
+ === GIO::InetAddress (140/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/InetAddress.pm6
+    Stage start      :   0.000
+    Stage parse      :  11.591
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.154
+    Stage mast       :   0.223
+    Stage mbc        :   0.068
+Stage parse      :  17.437
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.004
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::InetAddress compile time: 20.6952346
+ === GIO::MenuAttributeIter (141/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/MenuAttributeIter.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.019
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.040
+    Stage mast       :   0.113
+    Stage mbc        :   0.018
+Stage parse      :  14.655
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.004
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::MenuAttributeIter compile time: 17.41527782
+ === GIO::Raw::Action (142/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Action.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.295
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.072
+    Stage mast       :   0.264
+    Stage mbc        :   0.059
+Stage parse      :  13.594
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.007
+Stage mast       :   0.009
+Stage mbc        :   0.008
+Stage moar       :   0.000
+
+GIO::Raw::Action compile time: 16.69148109
+ === GIO::Raw::AsyncResult (143/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/AsyncResult.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.577
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.074
+    Stage mast       :   0.056
+    Stage mbc        :   0.028
+Stage parse      :  13.572
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.019
+Stage mbc        :   0.010
+Stage moar       :   0.000
+
+GIO::Raw::AsyncResult compile time: 16.2615014
+ === GIO::Raw::ActionGroup (144/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/ActionGroup.pm6
+    Stage start      :   0.001
+    Stage parse      :   8.639
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.040
+    Stage mast       :   0.109
+    Stage mbc        :   0.045
+Stage parse      :  13.797
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.006
+Stage mbc        :   0.008
+Stage moar       :   0.000
+
+GIO::Raw::ActionGroup compile time: 16.6205158
+ === GIO::Raw::DataOutputStream (145/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/DataOutputStream.pm6
+    Stage start      :   0.001
+    Stage parse      :   8.800
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.042
+    Stage mast       :   0.058
+    Stage mbc        :   0.065
+Stage parse      :  13.838
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.012
+Stage mbc        :   0.023
+Stage moar       :   0.000
+
+GIO::Raw::DataOutputStream compile time: 16.43094861
+ === GIO::Raw::AsyncInitable (146/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/AsyncInitable.pm6
+    Stage start      :   0.001
+    Stage parse      :   8.702
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.019
+    Stage mast       :   0.102
+    Stage mbc        :   0.027
+Stage parse      :  14.504
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.005
+Stage mast       :   0.008
+Stage mbc        :   0.035
+Stage moar       :   0.000
+
+GIO::Raw::AsyncInitable compile time: 17.16581786
+ === GIO::Raw::EmblemedIcon (147/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/EmblemedIcon.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.676
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.093
+    Stage mast       :   0.075
+    Stage mbc        :   0.053
+Stage parse      :  12.975
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.008
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::Raw::EmblemedIcon compile time: 15.56308685
+ === GIO::Raw::DtlsClientConnection (148/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/DtlsClientConnection.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.946
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.023
+    Stage mast       :   0.089
+    Stage mbc        :   0.043
+Stage parse      :  13.043
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.012
+Stage mbc        :   0.036
+Stage moar       :   0.000
+
+GIO::Raw::DtlsClientConnection compile time: 15.95746995
+ === GIO::Raw::FileAttributeTypes (149/284) === 
+
+Stage start      :   0.013
+
+    precomp lib/GIO/Raw/FileAttributeTypes.pm6
+    Stage start      :   0.001
+    Stage parse      :   6.927
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.190
+    Stage mast       :   0.114
+    Stage mbc        :   0.015
+Stage parse      :  13.130
+Stage syntaxcheck:   0.001
+Stage ast        :   0.000
+Stage optimize   :   0.006
+Stage mast       :   0.013
+Stage mbc        :   0.013
+Stage moar       :   0.000
+
+GIO::Raw::FileAttributeTypes compile time: 15.84241869
+ === GIO::MountOperation (150/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/MountOperation.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.888
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.205
+    Stage mast       :   0.150
+    Stage mbc        :   0.016
+Stage parse      :  16.234
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.015
+Stage mbc        :   0.020
+Stage moar       :   0.000
+
+GIO::MountOperation compile time: 19.01020621
+ === GIO::InetAddressMask (151/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/InetAddressMask.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/InetAddress.pm6
+    Stage parse      :  13.197
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.106
+    Stage mast       :   0.179
+    Stage mbc        :   0.039
+Stage parse      :  19.606
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.006
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::InetAddressMask compile time: 22.42751283
+ === GIO::Raw::FileAttributeInfoList (152/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Raw/FileAttributeInfoList.pm6
+    Stage start      :   0.001
+    Stage parse      :   7.927
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.041
+    Stage mast       :   0.120
+    Stage mbc        :   0.022
+Stage parse      :  13.780
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.007
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::Raw::FileAttributeInfoList compile time: 16.20823526
+ === GIO::MenuItem (153/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/MenuItem.pm6
+    Stage start      :   0.000
+    Stage parse      :  10.258
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.123
+    Stage mast       :   0.179
+    Stage mbc        :   0.795
+Stage parse      :  16.870
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.007
+Stage mbc        :   0.006
+Stage moar       :   0.000
+
+GIO::MenuItem compile time: 19.39915571
+ === GIO::Raw::Emblem (154/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Emblem.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.340
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.027
+    Stage mast       :   0.081
+    Stage mbc        :   0.038
+Stage parse      :  13.649
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.009
+Stage mbc        :   0.006
+Stage moar       :   0.000
+
+GIO::Raw::Emblem compile time: 16.6679127
+ === GIO::MenuModel (155/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/MenuModel.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/MenuAttributeIter.pm6
+    Stage parse      :  11.070
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.193
+    Stage mast       :   0.120
+    Stage mbc        :   0.047
+Stage parse      :  16.873
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.010
+Stage mbc        :   0.006
+Stage moar       :   0.000
+
+GIO::MenuModel compile time: 19.6126889
+ === GIO::Raw::DtlsConnection (156/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/DtlsConnection.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.317
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.069
+    Stage mast       :   0.104
+    Stage mbc        :   0.396
+Stage parse      :  15.055
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.009
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::Raw::DtlsConnection compile time: 17.7631209
+ === GIO::Raw::FileEnumerator (157/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Raw/FileEnumerator.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.745
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.034
+    Stage mast       :   0.107
+    Stage mbc        :   0.033
+Stage parse      :  14.152
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.006
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::Raw::FileEnumerator compile time: 16.46232806
+ === GIO::Raw::DesktopAppInfo (158/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/DesktopAppInfo.pm6
+    Stage start      :   0.000
+    Stage parse      :  10.915
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.090
+    Stage mast       :   0.271
+    Stage mbc        :   0.074
+Stage parse      :  16.185
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.004
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::Raw::DesktopAppInfo compile time: 18.6946202
+ === GIO::Raw::Drive (159/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Drive.pm6
+    Stage start      :   0.000
+    Stage parse      :  10.940
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.168
+    Stage mast       :   0.170
+    Stage mbc        :   0.102
+Stage parse      :  16.342
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.006
+Stage mast       :   0.005
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Raw::Drive compile time: 18.72821478
+ === GIO::Raw::Mount (160/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Mount.pm6
+    Stage start      :   0.000
+    Stage parse      :  10.038
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.074
+    Stage mast       :   0.062
+    Stage mbc        :   0.106
+Stage parse      :  15.820
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.007
+Stage mbc        :   0.025
+Stage moar       :   0.000
+
+GIO::Raw::Mount compile time: 18.12272563
+ === GIO::Raw::Quarks (161/284) === 
+
+Stage start      :   0.000
+Stage parse      :   4.344
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.026
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Raw::Quarks compile time: 7.03420006
+ === GIO::Raw::NetworkAddress (162/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/NetworkAddress.pm6
+    Stage start      :   0.001
+    Stage parse      :   8.008
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.038
+    Stage mast       :   0.046
+    Stage mbc        :   0.030
+Stage parse      :  14.366
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.008
+Stage mbc        :   0.007
+Stage moar       :   0.000
+
+GIO::Raw::NetworkAddress compile time: 17.19811482
+ === GIO::Raw::NetworkMonitor (163/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/NetworkMonitor.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.707
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.054
+    Stage mast       :   0.124
+    Stage mbc        :   0.034
+Stage parse      :  13.375
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.018
+Stage mbc        :   0.017
+Stage moar       :   0.000
+
+GIO::Raw::NetworkMonitor compile time: 16.31302451
+ === GIO::Raw::NetworkService (164/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/NetworkService.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.427
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.109
+    Stage mast       :   0.111
+    Stage mbc        :   0.023
+Stage parse      :  13.403
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.008
+Stage mbc        :   0.016
+Stage moar       :   0.000
+
+GIO::Raw::NetworkService compile time: 16.50425702
+ === GIO::Raw::FileInfo (165/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/FileInfo.pm6
+    Stage start      :   0.000
+    Stage parse      :  14.289
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.127
+    Stage mast       :   0.170
+    Stage mbc        :   0.202
+Stage parse      :  20.683
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.005
+Stage mast       :   0.019
+Stage mbc        :   0.024
+Stage moar       :   0.000
+
+GIO::Raw::FileInfo compile time: 23.19977062
+ === GIO::Raw::Notification (166/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Notification.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.515
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.092
+    Stage mast       :   0.046
+    Stage mbc        :   0.035
+Stage parse      :  14.161
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.007
+Stage moar       :   0.000
+
+GIO::Raw::Notification compile time: 17.10552038
+ === GIO::Raw::Permission (167/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Permission.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.183
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.048
+    Stage mast       :   0.135
+    Stage mbc        :   0.043
+Stage parse      :  13.981
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.004
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::Raw::Permission compile time: 17.05698918
+ === GIO::Raw::PollableInputStream (168/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Raw/PollableInputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.907
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.069
+    Stage mast       :   0.089
+    Stage mbc        :   0.026
+Stage parse      :  13.187
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Raw::PollableInputStream compile time: 16.02271821
+ === GIO::Raw::Proxy (169/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Proxy.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.761
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.023
+    Stage mast       :   0.078
+    Stage mbc        :   0.021
+Stage parse      :  12.895
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.009
+Stage mast       :   0.023
+Stage mbc        :   0.013
+Stage moar       :   0.000
+
+GIO::Raw::Proxy compile time: 15.43679386
+ === GIO::Raw::OutputStream (170/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/OutputStream.pm6
+    Stage start      :   0.001
+    Stage parse      :  10.347
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.085
+    Stage mast       :   0.132
+    Stage mbc        :   0.086
+Stage parse      :  15.974
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.013
+Stage mbc        :   0.007
+Stage moar       :   0.000
+
+GIO::Raw::OutputStream compile time: 18.69523226
+ === GIO::Raw::ProxyResolver (171/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/ProxyResolver.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.420
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.022
+    Stage mast       :   0.085
+    Stage mbc        :   0.028
+Stage parse      :  12.495
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.010
+Stage mbc        :   0.024
+Stage moar       :   0.000
+
+GIO::Raw::ProxyResolver compile time: 15.49391462
+ === GIO::Raw::ProxyAddress (172/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/ProxyAddress.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.281
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.044
+    Stage mast       :   0.101
+    Stage mbc        :   0.037
+Stage parse      :  13.232
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.006
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::Raw::ProxyAddress compile time: 15.851488
+ === GIO::Raw::Resource (173/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Resource.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.687
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.069
+    Stage mast       :   0.051
+    Stage mbc        :   0.072
+Stage parse      :  13.711
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.006
+Stage mast       :   0.017
+Stage mbc        :   0.025
+Stage moar       :   0.000
+
+GIO::Raw::Resource compile time: 16.21869619
+ === GIO::Raw::SimpleProxyResolver (174/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SimpleProxyResolver.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.542
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.075
+    Stage mast       :   0.087
+    Stage mbc        :   0.030
+Stage parse      :  12.876
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.009
+Stage mbc        :   0.019
+Stage moar       :   0.000
+
+GIO::Raw::SimpleProxyResolver compile time: 15.6216141
+ === GIO::Raw::SimpleAsyncResult (175/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SimpleAsyncResult.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.979
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.027
+    Stage mast       :   0.116
+    Stage mbc        :   0.356
+Stage parse      :  13.416
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.004
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Raw::SimpleAsyncResult compile time: 16.0394089
+ === GIO::Raw::SettingsBackend (176/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Raw/SettingsBackend.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.700
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.080
+    Stage mast       :   0.054
+    Stage mbc        :   0.035
+Stage parse      :  14.831
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.006
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::Raw::SettingsBackend compile time: 16.94213146
+ === GIO::Raw::SimpleAction (177/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SimpleAction.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.688
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.025
+    Stage mast       :   0.105
+    Stage mbc        :   0.029
+Stage parse      :  13.801
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.009
+Stage mast       :   0.035
+Stage mbc        :   0.023
+Stage moar       :   0.000
+
+GIO::Raw::SimpleAction compile time: 16.74450714
+ === GIO::Raw::Resolver (178/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Resolver.pm6
+    Stage start      :   0.000
+    Stage parse      :  10.312
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.067
+    Stage mast       :   0.185
+    Stage mbc        :   0.080
+Stage parse      :  15.469
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.006
+Stage mast       :   0.006
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Raw::Resolver compile time: 17.831456
+ === GIO::Raw::SocketControlMessage (179/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Raw/SocketControlMessage.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.598
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.028
+    Stage mast       :   0.070
+    Stage mbc        :   0.035
+Stage parse      :  12.786
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.006
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::Raw::SocketControlMessage compile time: 15.56844518
+ === GIO::Raw::SrvTarget (180/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SrvTarget.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.107
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.029
+    Stage mast       :   0.084
+    Stage mbc        :   0.026
+Stage parse      :  12.915
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.005
+Stage mbc        :   0.016
+Stage moar       :   0.000
+
+GIO::Raw::SrvTarget compile time: 15.3721257
+ === GIO::Raw::SocketService (181/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SocketService.pm6
+    Stage start      :   0.003
+    Stage parse      :   7.770
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.044
+    Stage mast       :   0.120
+    Stage mbc        :   0.015
+Stage parse      :  13.543
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.010
+Stage mast       :   0.016
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Raw::SocketService compile time: 16.57148493
+ === GIO::Raw::SocketAddress (182/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SocketAddress.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.406
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.242
+    Stage mast       :   0.083
+    Stage mbc        :   0.051
+Stage parse      :  14.646
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.007
+Stage mbc        :   0.016
+Stage moar       :   0.000
+
+GIO::Raw::SocketAddress compile time: 17.24997094
+ === GIO::Raw::SocketListener (183/284) === 
+
+Stage start      :   0.002
+
+    precomp lib/GIO/Raw/SocketListener.pm6
+    Stage start      :   0.010
+    Stage parse      :   9.188
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.087
+    Stage mast       :   0.063
+    Stage mbc        :   0.048
+Stage parse      :  14.394
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.009
+Stage mbc        :   0.017
+Stage moar       :   0.000
+
+GIO::Raw::SocketListener compile time: 16.86127258
+ === GIO::Raw::SocketConnection (184/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Raw/SocketConnection.pm6
+    Stage start      :   0.006
+    Stage parse      :   8.700
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.064
+    Stage mast       :   0.063
+    Stage mbc        :   0.029
+Stage parse      :  14.347
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.014
+Stage mbc        :   0.016
+Stage moar       :   0.000
+
+GIO::Raw::SocketConnection compile time: 17.33307034
+ === GIO::Raw::SettingsSchema (185/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SettingsSchema.pm6
+    Stage start      :   0.000
+    Stage parse      :  10.445
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.120
+    Stage mast       :   0.062
+    Stage mbc        :   0.207
+Stage parse      :  16.334
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.010
+Stage mbc        :   0.007
+Stage moar       :   0.000
+
+GIO::Raw::SettingsSchema compile time: 19.40096
+ === GIO::Resource (186/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Resource.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.267
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.127
+    Stage mast       :   0.143
+    Stage mbc        :   0.275
+Stage parse      :  14.693
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.006
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::Resource compile time: 17.12619802
+ === GIO::Raw::Settings (187/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Settings.pm6
+    Stage start      :   0.000
+    Stage parse      :  12.560
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.055
+    Stage mast       :   0.252
+    Stage mbc        :   0.118
+Stage parse      :  18.136
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.020
+Stage moar       :   0.000
+
+GIO::Raw::Settings compile time: 20.8047936
+ === GIO::Raw::SocketClient (188/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/SocketClient.pm6
+    Stage start      :   0.002
+    Stage parse      :  10.969
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.160
+    Stage mast       :   0.211
+    Stage mbc        :   0.083
+Stage parse      :  16.592
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.005
+Stage mbc        :   0.016
+Stage moar       :   0.000
+
+GIO::Raw::SocketClient compile time: 19.1635415
+ === GIO::Resolver (189/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Resolver.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Raw/Resolver.pm6
+    Stage parse      :  10.539
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.486
+    Stage mast       :   0.520
+    Stage mbc        :   0.024
+Stage parse      :  17.467
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.006
+Stage mbc        :   0.006
+Stage moar       :   0.000
+
+GIO::Resolver compile time: 19.91257933
+ === GIO::Raw::Socket (190/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Raw/Socket.pm6
+    Stage start      :   0.000
+    Stage parse      :  12.542
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.162
+    Stage mast       :   0.203
+    Stage mbc        :   0.159
+Stage parse      :  18.611
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.005
+Stage mast       :   0.023
+Stage mbc        :   0.021
+Stage moar       :   0.000
+
+GIO::Raw::Socket compile time: 21.83363277
+ === GIO::Roles::Action (191/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Action.pm6
+    Stage start      :   0.002
+    Stage parse      :  11.434
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.734
+    Stage mast       :   0.284
+    Stage mbc        :   0.073
+Stage parse      :  18.717
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.005
+Stage mbc        :   0.018
+Stage moar       :   0.000
+
+GIO::Roles::Action compile time: 21.1871014
+ === GIO::Roles::AsyncResult (192/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/AsyncResult.pm6
+    Stage start      :   0.008
+    Stage parse      :   8.762
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.110
+    Stage mast       :   0.113
+    Stage mbc        :   0.168
+Stage parse      :  15.839
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.007
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Roles::AsyncResult compile time: 18.45290547
+ === GIO::Roles::AsyncInitable (193/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/AsyncInitable.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.642
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.798
+    Stage mast       :   0.253
+    Stage mbc        :   0.050
+Stage parse      :  16.696
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.009
+Stage mbc        :   0.007
+Stage moar       :   0.000
+
+GIO::Roles::AsyncInitable compile time: 19.50399462
+ === GIO::Roles::ActionGroup (194/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Roles/ActionGroup.pm6
+    Stage start      :   0.001
+    Stage parse      :  10.893
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.154
+    Stage mast       :   0.155
+    Stage mbc        :   0.049
+Stage parse      :  17.259
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Roles::ActionGroup compile time: 20.13147571
+ === GIO::Roles::ListModel (195/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Roles/ListModel.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.669
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.156
+    Stage mast       :   0.220
+    Stage mbc        :   0.028
+Stage parse      :  14.622
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.005
+Stage mast       :   0.009
+Stage mbc        :   0.007
+Stage moar       :   0.000
+
+GIO::Roles::ListModel compile time: 17.866217
+ === GIO::Roles::LoadableIcon (196/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/LoadableIcon.pm6
+    Stage start      :   0.001
+    Stage parse      :   7.741
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.192
+    Stage mast       :   0.308
+    Stage mbc        :   0.039
+Stage parse      :  14.094
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.010
+Stage mbc        :   0.007
+Stage moar       :   0.000
+
+GIO::Roles::LoadableIcon compile time: 16.95071027
+ === GIO::Roles::DtlsConnection (197/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/DtlsConnection.pm6
+    Stage start      :   0.012
+    Stage parse      :  10.601
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.138
+    Stage mast       :   0.153
+    Stage mbc        :   0.038
+Stage parse      :  17.066
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.006
+Stage mbc        :   0.014
+Stage moar       :   0.000
+
+GIO::Roles::DtlsConnection compile time: 19.9328333
+ === GIO::Roles::Drive (198/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Roles/Drive.pm6
+    Stage start      :   0.000
+    Stage parse      :  11.710
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.109
+    Stage mast       :   0.257
+    Stage mbc        :   0.054
+Stage parse      :  18.047
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Roles::Drive compile time: 21.0252736
+ === GIO::Roles::RemoteActionGroup (199/284) === 
+
+Stage start      :   0.011
+
+    precomp lib/GIO/Roles/RemoteActionGroup.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.622
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.054
+    Stage mast       :   0.248
+    Stage mbc        :   0.032
+Stage parse      :  12.628
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.007
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Roles::RemoteActionGroup compile time: 15.14960973
+ === GIO::Roles::SocketConnectable (200/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/SocketConnectable.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.184
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.096
+    Stage mast       :   0.097
+    Stage mbc        :   0.022
+Stage parse      :  12.702
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.006
+Stage mast       :   0.010
+Stage mbc        :   0.030
+Stage moar       :   0.000
+
+GIO::Roles::SocketConnectable compile time: 15.2511322
+ === GIO::Roles::TlsBackend (201/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/TlsBackend.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.705
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.050
+    Stage mast       :   0.301
+    Stage mbc        :   0.023
+Stage parse      :  12.880
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.012
+Stage mbc        :   0.008
+Stage moar       :   0.000
+
+GIO::Roles::TlsBackend compile time: 15.44011366
+ === GIO::Roles::PollableInputStream (202/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/PollableInputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.011
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.035
+    Stage mast       :   0.286
+    Stage mbc        :   0.016
+Stage parse      :  14.935
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.007
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Roles::PollableInputStream compile time: 17.79469542
+ === GIO::Roles::ProxyResolver (203/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/ProxyResolver.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.686
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.273
+    Stage mast       :   0.148
+    Stage mbc        :   0.763
+Stage parse      :  15.882
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.004
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Roles::ProxyResolver compile time: 18.74710938
+ === GIO::SettingsSchema (204/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/SettingsSchema.pm6
+    Stage start      :   0.005
+    Stage parse      :   7.955
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.219
+    Stage mast       :   0.266
+    Stage mbc        :   0.036
+Stage parse      :  13.285
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.009
+Stage mbc        :   0.006
+Stage moar       :   0.000
+
+GIO::SettingsSchema compile time: 16.1278633
+ === GIO::Roles::NetworkMonitor (205/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/NetworkMonitor.pm6
+    Stage start      :   0.001
+    Stage parse      :  10.609
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.598
+    Stage mast       :   0.084
+    Stage mbc        :   0.048
+Stage parse      :  17.111
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.007
+Stage mast       :   0.022
+Stage mbc        :   0.006
+Stage moar       :   0.000
+
+GIO::Roles::NetworkMonitor compile time: 20.05255629
+ === GIO::SettingsBackend (206/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/SettingsBackend.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.226
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.112
+    Stage mast       :   0.149
+    Stage mbc        :   0.016
+Stage parse      :  15.087
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.006
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::SettingsBackend compile time: 17.5378253
+ === GIO::Roles::Mount (207/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Mount.pm6
+    Stage start      :   0.001
+    Stage parse      :  13.041
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.323
+    Stage mast       :   0.145
+    Stage mbc        :   0.191
+Stage parse      :  19.927
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.053
+Stage mast       :   0.010
+Stage mbc        :   0.007
+Stage moar       :   0.000
+
+GIO::Roles::Mount compile time: 23.1114214
+ === GIO::SrvTarget (208/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/SrvTarget.pm6
+    Stage start      :   0.001
+    Stage parse      :   8.574
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.075
+    Stage mast       :   0.063
+    Stage mbc        :   0.171
+Stage parse      :  14.099
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::SrvTarget compile time: 16.78061338
+ === GIO::UnixInputStream (209/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/UnixInputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.435
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.096
+    Stage mast       :   0.076
+    Stage mbc        :   0.016
+Stage parse      :  13.369
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.006
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::UnixInputStream compile time: 16.0788915
+ === GIO::SimpleActionGroup (210/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/SimpleActionGroup.pm6
+    Stage start      :   0.000
+    Stage parse      :  10.373
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.028
+    Stage mast       :   0.155
+    Stage mbc        :   0.031
+Stage parse      :  16.540
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.017
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::SimpleActionGroup compile time: 19.19926835
+ === GIO::Roles::TlsClientConnection (211/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/TlsClientConnection.pm6
+    Stage start      :   0.000
+    Stage parse      :  11.608
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.225
+    Stage mast       :   0.087
+    Stage mbc        :   0.026
+Stage parse      :  17.465
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.005
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Roles::TlsClientConnection compile time: 20.40682573
+ === GIO::SimpleAction (212/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/SimpleAction.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.504
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.088
+    Stage mast       :   0.385
+    Stage mbc        :   0.887
+Stage parse      :  16.822
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::SimpleAction compile time: 19.58340941
+ === GIO::SimpleProxyResolver (213/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/SimpleProxyResolver.pm6
+    Stage start      :   0.001
+    Stage parse      :  10.527
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.251
+    Stage mast       :   0.176
+    Stage mbc        :   0.026
+Stage parse      :  16.334
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.006
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::SimpleProxyResolver compile time: 19.05885158
+ === GIO::SocketControlMessage (214/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/SocketControlMessage.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.315
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.106
+    Stage mast       :   0.127
+    Stage mbc        :   0.877
+Stage parse      :  16.409
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.010
+Stage mbc        :   0.020
+Stage moar       :   0.000
+
+GIO::SocketControlMessage compile time: 19.10541133
+ === GIO::Settings (215/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Settings.pm6
+    Stage start      :   0.000
+    Stage parse      :  10.553
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.394
+    Stage mast       :   0.563
+    Stage mbc        :   0.682
+Stage parse      :  18.660
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.010
+Stage mbc        :   0.006
+Stage moar       :   0.000
+
+GIO::Settings compile time: 21.62774374
+ === GIO::SocketAddress (216/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/SocketAddress.pm6
+    Stage start      :   0.001
+    Stage parse      :   9.970
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.304
+    Stage mast       :   0.119
+    Stage mbc        :   0.024
+Stage parse      :  16.635
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.008
+Stage mbc        :   0.020
+Stage moar       :   0.000
+
+GIO::SocketAddress compile time: 19.71397939
+ === GIO::Task (217/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Task.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.725
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.298
+    Stage mast       :   0.147
+    Stage mbc        :   0.692
+Stage parse      :  16.653
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.006
+Stage mbc        :   0.024
+Stage moar       :   0.000
+
+GIO::Task compile time: 19.25061862
+ === GIO::UnixCredentialsMessage (218/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/UnixCredentialsMessage.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/SocketControlMessage.pm6
+    Stage parse      :  11.181
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.298
+    Stage mast       :   0.093
+    Stage mbc        :   0.014
+Stage parse      :  17.288
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.009
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::UnixCredentialsMessage compile time: 19.83769139
+ === GIO::UnixFDMessage (219/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/UnixFDMessage.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/SocketControlMessage.pm6
+    Stage parse      :  11.312
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.067
+    Stage mast       :   0.098
+    Stage mbc        :   0.010
+Stage parse      :  17.456
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.011
+Stage mbc        :   0.012
+Stage moar       :   0.000
+
+GIO::UnixFDMessage compile time: 20.04001587
+ === GIO::UnixSocketAddress (220/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/UnixSocketAddress.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/SocketAddress.pm6
+    Stage parse      :  10.700
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.092
+    Stage mast       :   0.193
+    Stage mbc        :   0.016
+Stage parse      :  16.955
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::UnixSocketAddress compile time: 19.59237171
+ === GIO::DBus::Error (221/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Error.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.442
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.067
+    Stage mast       :   0.055
+    Stage mbc        :   0.013
+Stage parse      :  12.906
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.007
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::DBus::Error compile time: 15.9498842
+ === GIO::DBus::ActionGroup (222/284) === 
+
+Stage start      :   0.008
+
+    precomp lib/GIO/DBus/ActionGroup.pm6
+    Stage start      :   0.001
+    Stage parse      :   8.748
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.051
+    Stage mast       :   0.129
+    Stage mbc        :   0.022
+Stage parse      :  14.560
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.004
+Stage mbc        :   0.016
+Stage moar       :   0.000
+
+GIO::DBus::ActionGroup compile time: 17.55907405
+ === GIO::BytesIcon (223/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/BytesIcon.pm6
+    Stage start      :   0.001
+    Stage parse      :   9.745
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.041
+    Stage mast       :   0.124
+    Stage mbc        :   0.026
+Stage parse      :  16.418
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.031
+Stage mbc        :   0.007
+Stage moar       :   0.000
+
+GIO::BytesIcon compile time: 19.77338803
+ === GIO::VolumeMonitor (224/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/VolumeMonitor.pm6
+    Stage start      :   0.000
+    Stage parse      :  11.716
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.089
+    Stage mast       :   0.292
+    Stage mbc        :   0.025
+Stage parse      :  18.126
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.006
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::VolumeMonitor compile time: 20.52970214
+ === GIO::FileAttributeMatcher (225/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/FileAttributeMatcher.pm6
+    Stage start      :   0.000
+    Stage parse      :   5.041
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.092
+    Stage mast       :   0.079
+    Stage mbc        :   0.018
+Stage parse      :  10.755
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.010
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::FileAttributeMatcher compile time: 14.46344371
+ === GIO::DesktopAppInfo (226/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DesktopAppInfo.pm6
+    Stage start      :   0.001
+    Stage parse      :   6.924
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.143
+    Stage mast       :   0.312
+    Stage mbc        :   0.015
+Stage parse      :  12.856
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.008
+Stage mbc        :   0.029
+Stage moar       :   0.000
+
+GIO::DesktopAppInfo compile time: 15.9592279
+ === GIO::DBus::InterfaceSkeleton (227/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/InterfaceSkeleton.pm6
+    Stage start      :   0.001
+    Stage parse      :  10.172
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.047
+    Stage mast       :   0.270
+    Stage mbc        :   0.037
+Stage parse      :  16.602
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::DBus::InterfaceSkeleton compile time: 19.18719155
+ === GIO::FilterInputStream (228/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/FilterInputStream.pm6
+    Stage start      :   0.001
+    Stage parse      :   5.562
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.081
+    Stage mast       :   0.100
+    Stage mbc        :   0.020
+Stage parse      :  11.440
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.004
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::FilterInputStream compile time: 13.79660979
+ === GIO::DBus::Message (229/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Message.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.932
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.324
+    Stage mast       :   0.582
+    Stage mbc        :   0.029
+Stage parse      :  16.225
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.006
+Stage mast       :   0.011
+Stage mbc        :   0.019
+Stage moar       :   0.000
+
+GIO::DBus::Message compile time: 19.16061875
+ === GIO::DBus::ObjectSkeleton (230/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/DBus/ObjectSkeleton.pm6
+    Stage start      :   0.009
+    Stage parse      :   8.626
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.037
+    Stage mast       :   0.301
+    Stage mbc        :   0.017
+Stage parse      :  14.716
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.004
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::DBus::ObjectSkeleton compile time: 17.66636006
+ === GIO::FileInputStream (231/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/FileInputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.707
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.081
+    Stage mast       :   0.165
+    Stage mbc        :   0.017
+Stage parse      :  12.712
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.006
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::FileInputStream compile time: 15.46570061
+ === GIO::Emblem (232/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Emblem.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.697
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.059
+    Stage mast       :   0.156
+    Stage mbc        :   0.057
+Stage parse      :  14.574
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.005
+Stage mast       :   0.010
+Stage mbc        :   0.029
+Stage moar       :   0.000
+
+GIO::Emblem compile time: 17.5974423
+ === GIO::InetSocketAddress (233/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/InetSocketAddress.pm6
+    Stage start      :   0.007
+    Stage parse      :   6.211
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.073
+    Stage mast       :   0.102
+    Stage mbc        :   0.043
+Stage parse      :  12.024
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.008
+Stage mast       :   0.007
+Stage mbc        :   0.023
+Stage moar       :   0.000
+
+GIO::InetSocketAddress compile time: 14.7438771
+ === GIO::MemoryInputStream (234/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/MemoryInputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.271
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.099
+    Stage mast       :   0.241
+    Stage mbc        :   0.010
+Stage parse      :  12.604
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.007
+Stage mast       :   0.014
+Stage mbc        :   0.007
+Stage moar       :   0.000
+
+GIO::MemoryInputStream compile time: 15.29248717
+ === GIO::Menu (235/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Menu.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.730
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.101
+    Stage mast       :   0.135
+    Stage mbc        :   0.022
+Stage parse      :  12.764
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.007
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::Menu compile time: 15.45130214
+ === GIO::EmblemedIcon (236/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/EmblemedIcon.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Emblem.pm6
+    Stage parse      :  10.044
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.047
+    Stage mast       :   0.265
+    Stage mbc        :   0.028
+Stage parse      :  16.282
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.009
+Stage mbc        :   0.025
+Stage moar       :   0.000
+
+GIO::EmblemedIcon compile time: 19.21380198
+ === GIO::FileInfo (237/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/FileInfo.pm6
+    Stage start      :   0.000
+    Stage parse      :  10.907
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.554
+    Stage mast       :   0.232
+    Stage mbc        :   0.080
+Stage parse      :  16.918
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.007
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::FileInfo compile time: 19.96456243
+ === GIO::NetworkService (238/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/NetworkService.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.849
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.219
+    Stage mast       :   0.103
+    Stage mbc        :   0.028
+Stage parse      :  15.161
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.010
+Stage mbc        :   0.008
+Stage moar       :   0.000
+
+GIO::NetworkService compile time: 17.58804429
+ === GIO::ProxyAddress (239/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/ProxyAddress.pm6
+    Stage start      :   0.005
+    Stage parse      :   6.685
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.174
+    Stage mast       :   0.078
+    Stage mbc        :   0.023
+Stage parse      :  13.500
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::ProxyAddress compile time: 16.46243994
+ === GIO::NetworkAddress (240/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/NetworkAddress.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.648
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.089
+    Stage mast       :   0.248
+    Stage mbc        :   0.038
+Stage parse      :  16.863
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.007
+Stage mbc        :   0.006
+Stage moar       :   0.000
+
+GIO::NetworkAddress compile time: 19.25329638
+ === GIO::Notification (241/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Notification.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.412
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.096
+    Stage mast       :   0.940
+    Stage mbc        :   0.035
+Stage parse      :  15.383
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.009
+Stage mbc        :   0.017
+Stage moar       :   0.000
+
+GIO::Notification compile time: 17.9690931
+ === GIO::Permission (242/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Permission.pm6
+    Stage start      :   0.000
+    Stage parse      :   9.828
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.046
+    Stage mast       :   0.184
+    Stage mbc        :   0.023
+Stage parse      :  15.974
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.007
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::Permission compile time: 18.45888973
+ === GIO::ProxyAddressEnumerator (243/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/ProxyAddressEnumerator.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.993
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.045
+    Stage mast       :   0.240
+    Stage mbc        :   0.020
+Stage parse      :  15.601
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.004
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::ProxyAddressEnumerator compile time: 18.21336013
+ === GIO::PropertyAction (244/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/PropertyAction.pm6
+    Stage start      :   0.000
+    Stage parse      :  10.295
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.089
+    Stage mast       :   0.188
+    Stage mbc        :   0.021
+Stage parse      :  16.303
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.007
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::PropertyAction compile time: 19.09519642
+ === GIO::SimplePermission (245/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/SimplePermission.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Permission.pm6
+    Stage parse      :   9.368
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.102
+    Stage mast       :   0.070
+    Stage mbc        :   0.012
+Stage parse      :  15.630
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.017
+Stage moar       :   0.000
+
+GIO::SimplePermission compile time: 18.49290803
+ === GIO::ConverterInputStream (246/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/ConverterInputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.811
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.046
+    Stage mast       :   0.226
+    Stage mbc        :   0.052
+Stage parse      :  12.927
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.004
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::ConverterInputStream compile time: 15.53061171
+ === GIO::ZlibDecompressor (247/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/ZlibDecompressor.pm6
+    Stage start      :   0.000
+    Stage parse      :   8.514
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.120
+    Stage mast       :   0.262
+    Stage mbc        :   0.023
+Stage parse      :  15.051
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.006
+Stage mbc        :   0.006
+Stage moar       :   0.000
+
+GIO::ZlibDecompressor compile time: 17.51669683
+ === GIO::BufferedInputStream (248/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/BufferedInputStream.pm6
+    Stage start      :   0.001
+    Stage parse      :   7.673
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.087
+    Stage mast       :   0.189
+    Stage mbc        :   0.015
+Stage parse      :  13.535
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.010
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::BufferedInputStream compile time: 16.43502182
+ === GIO::OutputStream (249/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/OutputStream.pm6
+    Stage start      :   0.001
+    Stage parse      :  11.014
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.643
+    Stage mast       :   0.707
+    Stage mbc        :   0.023
+Stage parse      :  18.715
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.006
+Stage mbc        :   0.009
+Stage moar       :   0.000
+
+GIO::OutputStream compile time: 21.91962086
+ === GIO::Roles::DTlsClientConnection (250/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/DTlsClientConnection.pm6
+    Stage start      :   0.001
+    Stage parse      :  11.377
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.209
+    Stage mast       :   0.067
+    Stage mbc        :   0.040
+Stage parse      :  17.984
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.006
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::Roles::DTlsClientConnection compile time: 20.98902221
+ === GIO::Socket (251/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Socket.pm6
+    Stage start      :   0.000
+    Stage parse      :  10.686
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.889
+    Stage mast       :   1.085
+    Stage mbc        :   0.040
+Stage parse      :  18.592
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.003
+Stage mast       :   0.007
+Stage mbc        :   0.017
+Stage moar       :   0.000
+
+GIO::Socket compile time: 21.01850701
+ === GIO::Stream (252/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Stream.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/OutputStream.pm6
+    Stage parse      :  12.164
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.077
+    Stage mast       :   0.154
+    Stage mbc        :   0.014
+Stage parse      :  18.816
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.010
+Stage mbc        :   0.004
+Stage moar       :   0.000
+
+GIO::Stream compile time: 21.82436147
+ === GIO::FileAttributeInfoList (253/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/FileAttributeInfoList.pm6
+    Stage start      :   0.000
+    Stage parse      :   4.959
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.032
+    Stage mast       :   0.115
+    Stage mbc        :   0.017
+Stage parse      :  11.309
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.004
+Stage mast       :   0.007
+Stage mbc        :   0.027
+Stage moar       :   0.000
+
+GIO::FileAttributeInfoList compile time: 13.8574784
+ === GIO::UnixOutputStream (254/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/UnixOutputStream.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/OutputStream.pm6
+    Stage parse      :  11.924
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.059
+    Stage mast       :   0.104
+    Stage mbc        :   0.013
+Stage parse      :  17.928
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.004
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::UnixOutputStream compile time: 20.7395648
+ === GIO::FilterOutputStream (255/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/FilterOutputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   5.386
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.080
+    Stage mast       :   0.064
+    Stage mbc        :   0.015
+Stage parse      :  11.008
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.005
+Stage moar       :   0.000
+
+GIO::FilterOutputStream compile time: 13.56288691
+ === GIO::DataInputStream (256/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/DataInputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   7.087
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.148
+    Stage mast       :   0.254
+    Stage mbc        :   0.017
+Stage parse      :  13.482
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::DataInputStream compile time: 16.0911347
+ === GIO::DBus::Address (257/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/DBus/Address.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Stream.pm6
+    Stage parse      :  10.557
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.046
+    Stage mast       :   0.124
+    Stage mbc        :   0.014
+Stage parse      :  16.592
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.004
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::DBus::Address compile time: 19.51965517
+ === GIO::TlsConnection (258/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/TlsConnection.pm6
+    Stage start      :   0.005
+    
+        load    lib/GIO/Stream.pm6
+    Stage parse      :  14.640
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.098
+    Stage mast       :   0.140
+    Stage mbc        :   0.021
+Stage parse      :  20.704
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.005
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::TlsConnection compile time: 23.34185
+ === GIO::FileOutputStream (259/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/FileOutputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.392
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.052
+    Stage mast       :   0.102
+    Stage mbc        :   0.019
+Stage parse      :  12.691
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.004
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::FileOutputStream compile time: 15.47961958
+ === GIO::FileIOStream (260/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/FileIOStream.pm6
+    Stage start      :   0.001
+    Stage parse      :   6.821
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.088
+    Stage mast       :   0.105
+    Stage mbc        :   0.010
+Stage parse      :  13.515
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::FileIOStream compile time: 15.9705229
+ === GIO::Roles::Proxy (261/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/Proxy.pm6
+    Stage start      :   0.000
+    Stage parse      :   5.392
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.068
+    Stage mast       :   0.066
+    Stage mbc        :   0.016
+Stage parse      :  10.748
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.004
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Roles::Proxy compile time: 13.19486106
+ === GIO::MemoryOutputStream (262/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/MemoryOutputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   6.912
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.071
+    Stage mast       :   0.114
+    Stage mbc        :   0.013
+Stage parse      :  12.641
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::MemoryOutputStream compile time: 15.4108723
+ === GIO::DBus::Connection (263/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Connection.pm6
+    Stage start      :   0.000
+    Stage parse      :  13.193
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.590
+    Stage mast       :   0.768
+    Stage mbc        :   0.038
+Stage parse      :  19.762
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.004
+Stage mbc        :   0.027
+Stage moar       :   0.000
+
+GIO::DBus::Connection compile time: 22.25760307
+ === GIO::SocketConnection (264/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/SocketConnection.pm6
+    Stage start      :   0.001
+    Stage parse      :   4.662
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.047
+    Stage mast       :   0.069
+    Stage mbc        :   0.014
+Stage parse      :  10.069
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.005
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::SocketConnection compile time: 12.5164695
+ === GIO::TcpConnection (265/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/TcpConnection.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/SocketConnection.pm6
+    Stage parse      :   4.634
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.038
+    Stage mast       :   0.061
+    Stage mbc        :   0.012
+Stage parse      :   9.933
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::TcpConnection compile time: 12.32593613
+ === GIO::SocketListener (266/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/SocketListener.pm6
+    Stage start      :   0.001
+    Stage parse      :   5.110
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.115
+    Stage mast       :   0.100
+    Stage mbc        :   0.011
+Stage parse      :  10.690
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.004
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::SocketListener compile time: 13.09834086
+ === GIO::DBus::ObjectManagerServer (267/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/ObjectManagerServer.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/DBus/Connection.pm6
+    Stage parse      :  13.182
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.053
+    Stage mast       :   0.070
+    Stage mbc        :   0.010
+Stage parse      :  19.085
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.002
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::DBus::ObjectManagerServer compile time: 21.68319821
+ === GIO::DBus::MethodInvocation (268/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/MethodInvocation.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/DBus/Connection.pm6
+    Stage parse      :  14.783
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.061
+    Stage mast       :   0.093
+    Stage mbc        :   0.021
+Stage parse      :  19.832
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::DBus::MethodInvocation compile time: 22.31729946
+ === GIO::UnixConnection (269/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/UnixConnection.pm6
+    Stage start      :   0.000
+    Stage parse      :   3.674
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.077
+    Stage mast       :   0.104
+    Stage mbc        :   0.012
+Stage parse      :   8.645
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.004
+Stage mbc        :   0.003
+Stage moar       :   0.000
+
+GIO::UnixConnection compile time: 11.03210138
+ === GIO::TcpWrapperConnection (270/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/TcpWrapperConnection.pm6
+    Stage start      :   0.009
+    
+        load    lib/GIO/TcpConnection.pm6
+    Stage parse      :   4.536
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.041
+    Stage mast       :   0.056
+    Stage mbc        :   0.015
+Stage parse      :   9.544
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::TcpWrapperConnection compile time: 11.98640102
+ === GIO::SocketService (271/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/SocketService.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/SocketListener.pm6
+    Stage parse      :   6.440
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.029
+    Stage mast       :   0.073
+    Stage mbc        :   0.006
+Stage parse      :  11.695
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::SocketService compile time: 13.72503885
+ === GIO::BufferedOutputStream (272/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/BufferedOutputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   3.367
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.051
+    Stage mast       :   0.075
+    Stage mbc        :   0.006
+Stage parse      :   7.145
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::BufferedOutputStream compile time: 9.49368115
+ === GIO::DBus::ObjectProxy (273/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/ObjectProxy.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/DBus/Connection.pm6
+    Stage parse      :  13.986
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.032
+    Stage mast       :   0.237
+    Stage mbc        :   0.018
+Stage parse      :  19.489
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::DBus::ObjectProxy compile time: 22.35328282
+ === GIO::DataOutputStream (274/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DataOutputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   3.297
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.070
+    Stage mast       :   0.081
+    Stage mbc        :   0.008
+Stage parse      :   6.927
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.003
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::DataOutputStream compile time: 9.00600218
+ === GIO::ConverterOutputStream (275/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/ConverterOutputStream.pm6
+    Stage start      :   0.000
+    Stage parse      :   3.469
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.031
+    Stage mast       :   0.051
+    Stage mbc        :   0.007
+Stage parse      :   6.790
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.002
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::ConverterOutputStream compile time: 9.53138842
+ === GIO::ThreadedSocketService (276/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/ThreadedSocketService.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/SocketService.pm6
+    Stage parse      :   5.403
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.023
+    Stage mast       :   0.045
+    Stage mbc        :   0.008
+Stage parse      :  10.143
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.002
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::ThreadedSocketService compile time: 12.69722291
+ === GIO::DBus::ObjectManagerClient (277/284) === 
+
+Stage start      :   0.005
+
+    precomp lib/GIO/DBus/ObjectManagerClient.pm6
+    Stage start      :   0.001
+    
+        load    lib/GIO/DBus/Connection.pm6
+    Stage parse      :  14.683
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.052
+    Stage mast       :   0.082
+    Stage mbc        :   0.038
+Stage parse      :  20.221
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.002
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::DBus::ObjectManagerClient compile time: 23.30326093
+ === GIO::Application (278/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/Application.pm6
+    Stage start      :   0.000
+    Stage parse      :   5.279
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.042
+    Stage mast       :   0.073
+    Stage mbc        :   0.007
+Stage parse      :   9.447
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.002
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::Application compile time: 11.58952038
+ === GIO::DBus::Proxy (279/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/DBus/Proxy.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/DBus/Connection.pm6
+    Stage parse      :  15.083
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.117
+    Stage mast       :   0.161
+    Stage mbc        :   0.016
+Stage parse      :  20.669
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.000
+Stage mast       :   0.001
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::DBus::Proxy compile time: 23.1420621
+ === GIO::SocketClient (280/284) === 
+
+Stage start      :   0.001
+
+    precomp lib/GIO/SocketClient.pm6
+    Stage start      :   0.000
+    Stage parse      :   3.686
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.034
+    Stage mast       :   0.066
+    Stage mbc        :   0.037
+Stage parse      :   6.963
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.002
+Stage mbc        :   0.002
+Stage moar       :   0.000
+
+GIO::SocketClient compile time: 8.80698266
+ === GIO::Roles::GFile (281/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/Roles/GFile.pm6
+    Stage start      :   0.000
+    Stage parse      :  11.954
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.189
+    Stage mast       :   0.221
+    Stage mbc        :   0.027
+Stage parse      :  17.353
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.002
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::Roles::GFile compile time: 20.36866714
+ === GIO::FileEnumerator (282/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/FileEnumerator.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Roles/GFile.pm6
+    Stage parse      :   5.597
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.027
+    Stage mast       :   0.060
+    Stage mbc        :   0.005
+Stage parse      :   8.809
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.001
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::FileEnumerator compile time: 11.14531046
+ === GIO::ApplicationCommandLine (283/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/ApplicationCommandLine.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Roles/GFile.pm6
+    Stage parse      :   6.338
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.017
+    Stage mast       :   0.026
+    Stage mbc        :   0.006
+Stage parse      :  10.135
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.001
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::ApplicationCommandLine compile time: 12.47927398
+ === GIO::FileIcon (284/284) === 
+
+Stage start      :   0.000
+
+    precomp lib/GIO/FileIcon.pm6
+    Stage start      :   0.000
+    
+        load    lib/GIO/Roles/GFile.pm6
+    Stage parse      :   5.811
+    Stage syntaxcheck:   0.000
+    Stage ast        :   0.000
+    Stage optimize   :   0.014
+    Stage mast       :   0.027
+    Stage mbc        :   0.009
+Stage parse      :   8.918
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.002
+Stage mbc        :   0.001
+Stage moar       :   0.000
+
+GIO::FileIcon compile time: 10.96025677
+
+Total compile time: 158.40423859s
