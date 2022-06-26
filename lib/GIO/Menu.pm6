@@ -12,7 +12,7 @@ my subset GMenuAncestry is export of Mu
   where GMenu | GMenuModel;
 
 class GIO::Menu is GIO::MenuModel {
-  has GMenu $!menu;
+  has GMenu $!menu is implementor;
 
   method GIO::Raw::Definitions::GMenu
     is also<GMenu>

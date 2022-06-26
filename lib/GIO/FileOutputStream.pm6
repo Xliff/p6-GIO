@@ -11,7 +11,7 @@ our subset GFileOutputStreamAncestry is export of Mu
   where GFileOutputStream | GOutputStreamAncestry;
 
 class GIO::FileOutputStream is GIO::OutputStream {
-  has GFileOutputStream $!fos;
+  has GFileOutputStream $!fos is implementor;
 
   submethod BUILD (:$file-output) {
     self.setGFileOutputStream($file-output) if $file-output;

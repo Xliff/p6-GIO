@@ -15,7 +15,7 @@ class GIO::AppInfoMonitor {
   also does GLib::Roles::Object;
   also does GLib::Roles::Signals::Generic;
 
-  has GAppInfoMonitor $!aim;
+  has GAppInfoMonitor $!aim is implementor;
 
   submethod BUILD (:$monitor) {
     self.setGAppInfoMonitor($monitor) if $monitor;
