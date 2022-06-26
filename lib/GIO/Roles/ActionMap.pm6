@@ -3,6 +3,7 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
+use GLib::Raw::Traits;
 use GIO::Raw::Types;
 
 use GLib::Roles::Object;
@@ -59,7 +60,7 @@ role GIO::Roles::ActionMap {
     g_action_map_add_action_entries($!actmap, $entries, $n, $user_data);
   }
 
-  method get_type is also<get-type> {
+  method get_gactionmap_type is also<get-type> {
     state ($n, $t);
 
     unstable_get_type( self.^name, &g_action_map_get_type, $n, $t );
@@ -78,7 +79,9 @@ role GIO::Roles::ActionMap {
 our subset GActionMapAncestry is export of Mu
   where GActionMap | GObject;
 
-class GIO::ActionMap  does GLib::Roles::Object  does GIO::Roles::ActionMap {
+class GIO::ActionMap {
+  also does GLib::Roles::Object;
+  also does GIO::Roles::ActionMap;
 
   submethod BUILD (:$action-map) {
     self.setGActionMap($action-map) if $action-map;
@@ -107,6 +110,10 @@ class GIO::ActionMap  does GLib::Roles::Object  does GIO::Roles::ActionMap {
     my $o = self.bless( :$action-map );
     $o.ref if $ref;
     $o;
+  }
+
+  method get_type is static {
+    self.get_gactionmap_type
   }
 }
 
