@@ -108,7 +108,9 @@ role GIO::Roles::Icon {
 our subset GIconAncestry is export of Mu
   where GIcon | GObject;
 
-class GIO::Icon does GLib::Roles::Object does GIO::Roles::Icon {
+class GIO::Icon {
+  also does GLib::Roles::Object;
+  also does GIO::Roles::Icon;
 
   method BUILD (:$icon) {
     self.setGIcon($icon) if $icon;
