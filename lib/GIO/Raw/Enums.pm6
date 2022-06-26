@@ -2,7 +2,7 @@ use v6.c;
 
 use GLib::Raw::Definitions;
 
-unit package GIO::Roles::Enums;
+unit package GIO::Raw::Enums;
 
 constant GApplicationFlags               is export := guint32;
 our enum GApplicationFlagsEnum           is export (
@@ -140,7 +140,7 @@ our enum GFileCopyFlagsEnum              is export (
   G_FILE_COPY_ALL_METADATA         => (1 +< 3),
   G_FILE_COPY_NO_FALLBACK_FOR_MOVE => (1 +< 4),
   G_FILE_COPY_TARGET_DEFAULT_PERMS => (1 +< 5)
-  );
+);
 
 constant GFileType                       is export := guint;
 our enum GFileTypeEnum                   is export (
