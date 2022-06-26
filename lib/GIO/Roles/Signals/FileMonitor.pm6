@@ -4,7 +4,6 @@ use NativeCall;
 
 use GIO::Raw::Types;
 
-
 role GIO::Roles::Signals::FileMonitor {
   has %signals-m;
 
@@ -38,10 +37,10 @@ role GIO::Roles::Signals::FileMonitor {
 # GFileMonitor, GFile, GFile, GFileMonitorEvent, gpointer
 sub g-connect-changed(
   Pointer $app,
-  Str $name,
-  &handler (GFileMonitor, GFile, GFile, GFileMonitorEvent, Pointer),
+  Str     $name,
+          &handler (GFileMonitor, GFile, GFile, GFileMonitorEvent, Pointer),
   Pointer $data,
-  uint32 $flags
+  uint32  $flags
 )
   returns uint64
   is native(gobject)

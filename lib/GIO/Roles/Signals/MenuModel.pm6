@@ -33,10 +33,10 @@ role GIO::Roles::Signals::MenuModel {
 
 sub g-connect-items-changed(
   Pointer $app,
-  Str $name,
-  &handler (Pointer, gint, gint, gint, Pointer),
+  Str     $name,
+          &handler (Pointer, gint, gint, gint, Pointer),
   Pointer $data,
-  uint32 $connect_flags
+  uint32  $connect_flags
 )
   returns uint64
   is native(gobject)
