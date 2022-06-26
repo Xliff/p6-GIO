@@ -153,10 +153,10 @@ class GIO::DataInputStream is GIO::BufferedInputStream {
     samewith($, $cancellable, $error, :all);
   }
   multi method read_line (
-                            $length      is rw,
-    GCancellable()          $cancellable =  GCancellable,
-    CArray[Pointer[GError]] $error       =  gerror,
-    :$all = False
+                             $length       is rw,
+    GCancellable()           $cancellable         =  GCancellable,
+    CArray[Pointer[GError]]  $error               =  gerror,
+                            :$all = False
   ) {
     my gsize $l = 0;
 
@@ -165,7 +165,7 @@ class GIO::DataInputStream is GIO::BufferedInputStream {
     set_error($error);
     $length = $l;
 
-    $all ?? $v !! ($v, $length);
+    $all.not ?? $v !! ($v, $length);
   }
 
   proto method read_line_async (
@@ -217,7 +217,7 @@ class GIO::DataInputStream is GIO::BufferedInputStream {
     set_error($error);
     $length = $l;
 
-    $all ?? $v !! ($v, $length);
+    $all.not ?? $v !! ($v, $length);
   }
 
   proto method read_line_finish_utf8 (|)
@@ -226,15 +226,15 @@ class GIO::DataInputStream is GIO::BufferedInputStream {
 
   multi method read_line_finish_utf8 (
     GAsyncResult()          $result,
-    CArray[Pointer[GError]] $error = gerror,
+    CArray[Pointer[GError]] $error   = gerror,
   ) {
     samewith($result, $, $error, :all);
   }
   multi method read_line_finish_utf8 (
-    GAsyncResult()          $result,
-                            $length  is rw,
-    CArray[Pointer[GError]] $error   = gerror,
-    :$all = False
+    GAsyncResult()           $result,
+                             $length  is rw,
+    CArray[Pointer[GError]]  $error          = gerror,
+                            :$all            = False
   ) {
     my gsize $l = 0;
 
@@ -248,7 +248,7 @@ class GIO::DataInputStream is GIO::BufferedInputStream {
     set_error($error);
     $length = $l;
 
-    $all ?? $v !! ($v, $length);
+    $all.not ?? $v !! ($v, $length);
   }
 
   proto method read_line_utf8 (|)
@@ -262,10 +262,10 @@ class GIO::DataInputStream is GIO::BufferedInputStream {
     samewith($cancellable, $, $error, :all);
   }
   multi method read_line_utf8 (
-                            $length      is rw,
-    GCancellable()          $cancellable =  GCancellable,
-    CArray[Pointer[GError]] $error       =  gerror,
-                            :$all        =  False
+                             $length      is rw,
+    GCancellable()           $cancellable        =  GCancellable,
+    CArray[Pointer[GError]]  $error              =  gerror,
+                            :$all                =  False
   ) {
     my gsize $l = 0;
 
@@ -279,7 +279,7 @@ class GIO::DataInputStream is GIO::BufferedInputStream {
     set_error($error);
     $length = $l;
 
-    $all ?? $v !! ($v, $length);
+    $all.not ?? $v !! ($v, $length);
   }
 
   method read_uint16 (
@@ -334,9 +334,9 @@ class GIO::DataInputStream is GIO::BufferedInputStream {
     Str()                   $stop_chars,
     Int()                   $stop_chars_len,
                             $length          is rw,
-    GCancellable()          $cancellable     =  GCancellable,
-    CArray[Pointer[GError]] $error           =  gerror,
-                            :$all            =  False
+    GCancellable()          $cancellable            =  GCancellable,
+    CArray[Pointer[GError]] $error                  =  gerror,
+                            :$all                   =  False
   ) {
     my gssize $stl = $stop_chars_len;
     my gsize $l = 0;
@@ -353,7 +353,7 @@ class GIO::DataInputStream is GIO::BufferedInputStream {
     set_error($error);
     $length = $l;
 
-    $all ?? $v !! ($v, $length);
+    $all.not ?? $v !! ($v, $length);
   }
 
   method read_upto_async (
@@ -362,7 +362,7 @@ class GIO::DataInputStream is GIO::BufferedInputStream {
     Int()          $io_priority,
     GCancellable() $cancellable,
                    &callback,
-    gpointer       $user_data = gerror
+    gpointer       $user_data        = gerror
   )
     is also<read-upto-async>
   {
@@ -391,10 +391,10 @@ class GIO::DataInputStream is GIO::BufferedInputStream {
     samewith($result, $, $error, :all);
   }
   multi method read_upto_finish (
-    GAsyncResult()          $result,
-                            $length  is rw,
-    CArray[Pointer[GError]] $error   =  gerror,
-                            :$all    =  False
+    GAsyncResult()           $result,
+                             $length  is rw,
+    CArray[Pointer[GError]]  $error          =  gerror,
+                            :$all            =  False
   ) {
     my gsize $l = 0;
 
@@ -403,7 +403,7 @@ class GIO::DataInputStream is GIO::BufferedInputStream {
     set_error($error);
     $length = $l;
 
-    $all ?? $v !! ($v, $length);
+    $all.not ?? $v !! ($v, $length);
   }
 
 }
