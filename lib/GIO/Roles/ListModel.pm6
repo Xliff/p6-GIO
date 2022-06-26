@@ -13,7 +13,7 @@ role GIO::Roles::ListModel {
 
   has GListModel $!lm;
 
-  method roleInit-ListModel {
+  method roleInit-GListModel {
     return if $!lm;
 
     my \i = findProperImplementor(self.^attributes);
@@ -84,7 +84,9 @@ role GIO::Roles::ListModel {
 our subset GListModelAncestry is export of Mu
   where GListModel | GObject;
 
-class GIO::ListModel does GLib::Roles::Object does GIO::Roles::ListModel {
+class GIO::ListModel {
+  also does GLib::Roles::Object;
+  also does GIO::Roles::ListModel;
 
   submethod BUILD (:$model) {
     self.setGListModel($model) if $model;
