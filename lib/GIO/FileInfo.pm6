@@ -2,6 +2,7 @@ use v6.c;
 
 use Method::Also;
 
+use GLib::Raw::Traits;
 use GIO::Raw::Types;
 use GIO::Raw::FileInfo;
 
@@ -28,7 +29,7 @@ class GIO::FileInfo {
   multi method new (GFileInfo $info, :$ref = True) {
     return Nil unless $info;
 
-    my $o = self.bless( :$ref );
+    my $o = self.bless( :$info );
     $o.ref if $ref;
     $o;
   }
@@ -38,7 +39,7 @@ class GIO::FileInfo {
     $info ?? self.bless( :$info ) !! Nil;
   }
 
-  method content_type is rw is also<content-type> {
+  method content_type is rw is g-property is also<content-type> {
     Proxy.new(
       FETCH => sub ($) {
         g_file_info_get_content_type($!fi);
@@ -49,7 +50,7 @@ class GIO::FileInfo {
     );
   }
 
-  method display_name is rw is also<display-name> {
+  method display_name is rw is g-property is also<display-name> {
     Proxy.new(
       FETCH => sub ($) {
         g_file_info_get_display_name($!fi);
@@ -60,7 +61,7 @@ class GIO::FileInfo {
     );
   }
 
-  method edit_name is rw is also<edit-name> {
+  method edit_name is rw is g-property is also<edit-name> {
     Proxy.new(
       FETCH => sub ($) {
         g_file_info_get_edit_name($!fi);
@@ -71,7 +72,7 @@ class GIO::FileInfo {
     );
   }
 
-  method file_type is rw is also<file-type> {
+  method file_type is rw is g-property is also<file-type> {
     Proxy.new(
       FETCH => sub ($) {
         GFileTypeEnum( g_file_info_get_file_type($!fi) );
@@ -84,7 +85,7 @@ class GIO::FileInfo {
     );
   }
 
-  method icon (:$raw = False) is rw {
+  method icon (:$raw = False) is rw is g-property {
     Proxy.new(
       FETCH => sub ($) {
         my $i = g_file_info_get_icon($!fi);
@@ -100,7 +101,7 @@ class GIO::FileInfo {
     );
   }
 
-  method is_hidden is rw is also<is-hidden> {
+  method is_hidden is rw is g-property is also<is-hidden> {
     Proxy.new(
       FETCH => sub ($) {
         so g_file_info_get_is_hidden($!fi);
@@ -113,7 +114,7 @@ class GIO::FileInfo {
     );
   }
 
-  method is_symlink is rw is also<is-symlink> {
+  method is_symlink is rw is g-property is also<is-symlink> {
     Proxy.new(
       FETCH => sub ($) {
         so g_file_info_get_is_symlink($!fi);
@@ -126,7 +127,7 @@ class GIO::FileInfo {
     );
   }
 
-  method name is rw {
+  method name is rw is g-property {
     Proxy.new(
       FETCH => sub ($) {
         g_file_info_get_name($!fi);
@@ -137,7 +138,7 @@ class GIO::FileInfo {
     );
   }
 
-  method size is rw {
+  method size is rw is g-property {
     Proxy.new(
       FETCH => sub ($) {
         g_file_info_get_size($!fi);
@@ -150,7 +151,7 @@ class GIO::FileInfo {
     );
   }
 
-  method sort_order is rw is also<sort-order> {
+  method sort_order is rw is g-property is also<sort-order> {
     Proxy.new(
       FETCH => sub ($) {
         g_file_info_get_sort_order($!fi);
@@ -163,7 +164,11 @@ class GIO::FileInfo {
     );
   }
 
-  method symbolic_icon (:$raw = False) is rw is also<symbolic-icon> {
+  method symbolic_icon (:$raw = False)
+    is rw
+    is g-property
+    is also<symbolic-icon>
+  {
     Proxy.new(
       FETCH => sub ($) {
         my $i = g_file_info_get_symbolic_icon($!fi);
@@ -179,7 +184,7 @@ class GIO::FileInfo {
     );
   }
 
-  method symlink_target is rw is also<symlink-target> {
+  method symlink_target is rw is g-property is also<symlink-target> {
     Proxy.new(
       FETCH => sub ($) {
         g_file_info_get_symlink_target($!fi);
@@ -237,15 +242,15 @@ class GIO::FileInfo {
     $rv[0] ?? $rv.skip(1) !! Nil;
   }
   multi method get_attribute_data (
-    Str() $attribute,
-    $type     is rw,
-    $value_pp is rw,
-    $status   is rw,
-    :$all = False;
+    Str()  $attribute,
+           $type       is rw,
+           $value_pp   is rw,
+           $status     is rw,
+          :$all               = False;
   ) {
-    my GFileAttributeType $t = $type;
+    my GFileAttributeType   $t = $type;
     my GFileAttributeStatus $s = $status;
-    my gpointer $p = gpointer.new;
+    my gpointer             $p = gpointer.new;
 
     my $rv = so g_file_info_get_attribute_data($!fi, $attribute, $t, $p, $s);
     ($type, $value_pp, $status) = ($t, $p, $s);
