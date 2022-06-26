@@ -9,13 +9,13 @@ use GIO::Raw::ListStore;
 
 use GLib::Value;
 
-use GLib::Roles::Properties;
+use GLib::Roles::Object;
 
 our subset GListStoreAncestry is export of Mu
   where GListStore | GObject;
 
 class GIO::ListStore {
-  also does GLib::Roles::Properties;
+  also does GLib::Roles::Object;
 
   has GListStore $!ls is implementor;
 
