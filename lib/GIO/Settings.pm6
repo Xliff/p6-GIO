@@ -266,7 +266,7 @@ class GIO::Settings {
     g_settings_apply($!s);
   }
 
-  method bind (
+  multi method bind (
     Str()     $key,
     GObject() $object,
     Str()     $property,
