@@ -10,6 +10,7 @@ use GIO::Roles::Signals::ListModel;
 
 role GIO::Roles::ListModel {
   also does GIO::Roles::Signals::ListModel;
+  also does Positional;
 
   has GListModel $!lm;
 
@@ -40,13 +41,12 @@ role GIO::Roles::ListModel {
     GTypeEnum( g_list_model_get_item_type($!lm) );
   }
 
-  method get_n_items
-    is also<
-      get-n-items
-      elems
-    >
-  {
+  method get_n_items is also<get-n-items> {
     g_list_model_get_n_items($!lm);
+  }
+
+  method elems {
+    self.get_n_items;
   }
 
   method get_object (
@@ -65,6 +65,22 @@ role GIO::Roles::ListModel {
       $raw,
       |$type.getTypePair
     )
+  }
+
+  method to_array ($raw, \P, $O?) is also<to-array> {
+    die 'Cannot use to_array with <$raw> and no object type!'
+      if $raw.not and $O =:= (Nil, Mu).any;
+
+    my @a;
+    for ^self.elems {
+      my $e = self.get_object($_, :raw);
+      @a.push: $raw ?? cast(P, $e) !! $O.new($e);
+    }
+    @a;
+  }
+
+  method AT-POS (\k) {
+    self.get_object(k);
   }
 
   method emit_items_changed (
