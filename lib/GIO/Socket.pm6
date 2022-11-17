@@ -222,7 +222,7 @@ class GIO::Socket {
       Nil
   }
 
-  method bind (
+  multi method bind (
     GSocketAddress()        $address,
     Int()                   $allow_reuse,
     CArray[Pointer[GError]] $error        = gerror
