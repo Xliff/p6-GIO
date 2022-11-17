@@ -11,6 +11,7 @@ use GIO::DBus::Raw::Connection;
 use GLib::Value;
 use GLib::Variant;
 use GIO::DBus::Message;
+use GIO::DBus::Utils;
 
 use GLib::Roles::Object;
 use GIO::Roles::AsyncInitable;
@@ -1239,23 +1240,39 @@ class GIO::DBus::Connection {
   }
 
   # Helper methods
-  method get_sync_system (GIO::DBus::Connection:U: ) is also<get-sync-system> {
+  method get_sync_system (GIO::DBus::Connection:U: ) 
+    is also<
+      get-sync-system
+      system
+    > 
+  {
     GIO::DBus::Connection.get_sync(G_BUS_TYPE_SYSTEM);
   }
 
   method get_sync_session (GIO::DBus::Connection:U: )
-    is also<get-sync-session>
+    is also<
+      get-sync-session
+      session
+    >
   {
     GIO::DBus::Connection.get_sync(G_BUS_TYPE_SESSION);
   }
 
   method get_sync_starter (GIO::DBus::Connection:U: )
-    is also<get-sync-starter>
+    is also<
+      get-sync-starter
+      starter
+    >
   {
     GIO::DBus::Connection.get_sync(G_BUS_TYPE_STARTER);
   }
 
-  method get_sync_none (GIO::DBus::Connection:U: ) is also<get-sync-none> {
+  method get_sync_none (GIO::DBus::Connection:U: ) 
+    is also<
+      get-sync-none
+      none
+    > 
+  {
     GIO::DBus::Connection.get_sync(G_BUS_TYPE_NONE);
   }
 
@@ -1710,6 +1727,25 @@ class GIO::DBus::Connection {
     my guint $e = $export_id;
 
     g_dbus_connection_unexport_action_group($!dc, $e);
+  }
+
+  method own_name (
+    Str()    $name,
+    Int()    $flags                  = 0,
+             &name_acquired_handler  = Callable,
+             &name_lost_handler      = Callable,
+    gpointer $user_data              = gpointer,
+             &user_data_free_func    = %DEFAULT-CALLBACKS<GDestroyNotify>
+  ) {
+    GIO::DBus::Utils.own_name_on_connection(
+      self,
+      $name,
+      $flags,
+      &name_acquired_handler,
+      &name_lost_handler,
+      $user_data,
+      &user_data_free_func
+    );
   }
 
 }
