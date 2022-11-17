@@ -2761,10 +2761,10 @@ role GIO::Roles::File {
   { * }
 
   multi method trash_async (
-    Int()          $io_priority,
-                   &callback,
-    gpointer       $user_data     = Pointer,
-    GCancellable() $cancellable   = GCancellable
+                    &callback,
+    gpointer        $user_data     = Pointer,
+    GCancellable() :$cancellable   = GCancellable,
+    Int()          :$io_priority   = G_PRIORITY_DEFAULT
   ) {
     samewith($io_priority, $cancellable, &callback, $user_data);
   }
@@ -2827,20 +2827,26 @@ role GIO::Roles::File {
   { * }
 
   multi method unmount_mountable_with_operation (
-    Int() $flags,
-    GMountOperation() $mount_operation,
-    GAsyncReadyCallback &callback,
-    gpointer $user_data         = Pointer,
-    GCancellable() $cancellable = GCancellable
+    GMountOperation()  $mount_operation,
+                       &callback,
+    gpointer           $user_data        = Pointer,
+    GCancellable()    :$cancellable      = GCancellable,
+    Int()             :$flags            = 0,
   ) {
-    samewith($flags, $mount_operation, $cancellable, &callback, $user_data);
+    samewith(
+      $flags,
+      $mount_operation,
+      $cancellable,
+      &callback,
+      $user_data
+    );
   }
   multi method unmount_mountable_with_operation (
-    Int() $flags,
+    Int()             $flags,
     GMountOperation() $mount_operation,
-    GCancellable() $cancellable,
-    GAsyncReadyCallback &callback,
-    gpointer $user_data = Pointer
+    GCancellable()    $cancellable,
+                      &callback,
+    gpointer          $user_data = Pointer
   ) {
     my GMountUnmountFlags $f = $flags;
 
