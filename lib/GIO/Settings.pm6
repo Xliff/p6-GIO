@@ -267,10 +267,11 @@ class GIO::Settings {
   }
 
   multi method bind (
-    Str()     $key,
-    GObject() $object,
-    Str()     $property,
-    Int()     $flags
+    Str()      $key,
+    GObject()  $object,
+    Str()      $property,
+    Int()      $flags,
+              :$settings is required
   ) {
     my GSettingsBindFlags $f = $flags;
 
