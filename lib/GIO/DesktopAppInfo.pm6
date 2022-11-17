@@ -4,29 +4,49 @@ use Method::Also;
 
 use NativeCall;
 
+use GLib::Raw::Traits;
 use GIO::Raw::Types;
 use GIO::Raw::DesktopAppInfo;
 
 use GIO::Roles::AppInfo;
 use GLib::Roles::Object;
 
+our subset GDesktopAppInfoAncestry is export of Mu
+  where GDesktopAppInfo | GObject;
+
 class GIO::DesktopAppInfo {
   also does GLib::Roles::Object;
 
   has GDesktopAppInfo $!dai is implementor;
 
-  submethod BUILD (:$desktop-info) {
-    $!dai = $desktop-info;
+  submethod BUILD ( :$desktop-info ) {
+    self.setGDesktopAppInfo($desktop-info) if $desktop-info
+  }
 
-    self.roleInit-Object;
+  method setGDesktopAppInfo (GDesktopAppInfoAncestry $_) {
+    my $to-parent;
+
+    $!dai = do {
+      when GDesktopAppInfo {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GDesktopAppInfo, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GDesktopAppInfo
     is also<GDesktopAppInfo>
   { $!dai }
 
-  multi method new (GDesktopAppInfo $desktop-info, :$ref = True) {
-    return Nil unless $desktop-info;
+
+  multi method new (GDesktopAppInfoAncestry $desktop-info, :$ref = True) {
+    return unless $desktop-info;
 
     my $o = self.bless( :$desktop-info );
     $o.ref if $ref;
@@ -143,7 +163,7 @@ class GIO::DesktopAppInfo {
   }
 
   proto method launch_uris_as_manager (|)
-      is also<launch-uris-as-manager>
+    is also<launch-uris-as-manager>
   { * }
 
   multi method launch_uris_as_manager (
@@ -211,7 +231,7 @@ class GIO::DesktopAppInfo {
   }
 
   proto method launch_uris_as_manager_with_fds (|)
-      is also<launch-uris-as-manager-with-fds>
+    is also<launch-uris-as-manager-with-fds>
   { * }
 
   multi method launch_uris_as_manager_with_fds (
@@ -369,10 +389,10 @@ class GIO::DesktopAppInfo {
   }
 
   method lookup_get_default_for_uri_scheme (
-    GIO::DesktopAppInfo:U:
-    Str() $uri_scheme,
-    :$raw = False
+    Str()  $uri_scheme,
+          :$raw = False
   )
+    is static
     is also<lookup-get-default-for-uri-scheme>
   {
     my $ai = g_desktop_app_info_lookup_get_default_for_uri_scheme($uri_scheme);
@@ -383,11 +403,11 @@ class GIO::DesktopAppInfo {
       Nil;
   }
 
-  method lookup_get_type (GIO::DesktopAppInfo:U: ) is also<lookup-get-type> {
+  method lookup_get_type is static is also<lookup-get-type> {
     g_desktop_app_info_lookup_get_type();
   }
 
-  method search (GIO::DesktopAppInfo:U: Str() $search_string) {
+  method search (Str() $search_string) is static {
     CStringArrayToArray( g_desktop_app_info_search($search_string) );
   }
 
