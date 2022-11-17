@@ -650,10 +650,12 @@ class GIO::DBus::Proxy {
       is also<call-async>
   { * }
 
+  # cw: Callback handling needs to be done like it is with the
+  #     *unix_fd_list_async multis!
   multi method call (
     Str()          $method_name,
-                   &callback      =  Callable,
-    gpointer       $user_data     =  gpointer,
+                   :&callback      =  Callable,
+    gpointer       :$user_data     =  gpointer,
                    :$async        is required,
     GVariant()     :$parameters   =  GVariant,
     Int()          :$flags        =  0,
@@ -674,8 +676,8 @@ class GIO::DBus::Proxy {
   }
   multi method call_async (
     Str()          $method_name,
-                   &callback              = Callable,
-    gpointer       $user_data             = gpointer,
+                   :&callback              = Callable,
+    gpointer       :$user_data             = gpointer,
     GVariant()     :$parameters           = GVariant,
     Int()          :$flags                = 0,
     Int()          :$timeout_msec         = 1,
@@ -698,10 +700,10 @@ class GIO::DBus::Proxy {
     GVariant()     $parameters,
     Int()          $flags,
     Int()          $timeout_msec,
-    GCancellable() $cancellable               = GCancellable,
-                   &callback                  = Callable,
-    gpointer       $user_data                 = gpointer,
-                   :$supply       is copy     = False,
+    GCancellable() :$cancellable               = GCancellable,
+                   :&callback                  = Callable,
+    gpointer       :$user_data                 = gpointer,
+                   :$supply       is copy      = False,
                    :$async        is required
   ) {
     self.call_async(
@@ -716,19 +718,19 @@ class GIO::DBus::Proxy {
     );
   }
   multi method call_async (
-    Str()          $method_name,
-    GVariant()     $parameters,
-    Int()          $flags,
-    Int()          $timeout_msec,
-    GCancellable() $cancellable           = GCancellable,
-                   &callback              = Callable,
-    gpointer       $user_data             = gpointer,
-                   :$supply       is copy = False,
+    Str()           $method_name,
+    GVariant()      $parameters,
+    Int()           $flags,
+    Int()           $timeout_msec,
+    GCancellable()  $cancellable           = GCancellable,
+                    &callback              = Callable,
+    gpointer        $user_data             = gpointer,
+                   :$supply       is copy  = False,
   ) {
     my GDBusCallFlags $f = $flags;
     my gint           $t = $timeout_msec;
 
-    prep-supply($supply, &callback, &?ROUTINE.^name);
+    my ($nc, $ns) = prep-supply($supply, &callback, &?ROUTINE.^name);
 
     g_dbus_proxy_call(
       $!dp,
@@ -737,10 +739,10 @@ class GIO::DBus::Proxy {
       $f,
       $t,
       $cancellable,
-      &callback,
+      $nc,
       $user_data
     );
-    $supply.Supply if $supply;
+    $ns.Supply if $supply;
   }
 
   multi method call (
