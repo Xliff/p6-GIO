@@ -138,32 +138,16 @@ class GIO::Permission {
     $rv;
   }
 
-  method get_allowed
-    is also<
-      get-allowed
-      allowed
-    >
-  {
+  method get_allowed is also<get-allowed> {
     so g_permission_get_allowed($!p);
   }
 
-  method get_can_acquire
-    is also<
-      get-can-acquire
-      can_acquire
-      can-acquire
-    >
+  method get_can_acquire is also<get-can-acquire>
   {
     so g_permission_get_can_acquire($!p);
   }
 
-  method get_can_release
-    is also<
-      get-can-release
-      can_relase
-      can-release
-    >
-  {
+  method get_can_release is also<get-can-release> {
     so g_permission_get_can_release($!p);
   }
 
