@@ -46,7 +46,7 @@ class GIO::Permission {
     $o;
   }
 
-  method GIO::Raw::Definitions::GPermission
+  method GIO::Raw::Structs::GPermission
     is also<GPermission>
   { $!p }
 
