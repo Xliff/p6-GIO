@@ -14,6 +14,12 @@ use GIO::Roles::Signals::Settings;
 our subset GSettingsAncestry is export of Mu
   where GSettings | GObject;
 
+class X::GIO::Settings::NoSchemaId is Exception {
+  method message {
+    'A GIO::Settings object cannot be created without a schema-id!'
+  }
+}
+
 class GIO::Settings {
   also does GLib::Roles::Object;
   also does GIO::Roles::Signals::Settings;
@@ -52,7 +58,17 @@ class GIO::Settings {
     $o.upref if $ref;
     $o;
   }
+  multi method new (*%a) {
+    my $schema-id   = %a<schema-id>:delete;
+    $schema-id    //= %a<schema_id>:delete;
 
+    %a{$_}:delete for <schema-id schema_id>;
+
+    X::GIO::Settings::NoSchemaId.new.throw unless $schema-id;
+    my $o = samewith($schema-id);
+    $o.setAttributes( |%a ) if $o && +%a;
+    $o;
+  }
   multi method new (Str() $schema_id) {
     my $s = g_settings_new($schema_id);
 
@@ -245,8 +261,11 @@ class GIO::Settings {
 
   # Is originally:
   # GSettings, Str, gpointer --> void
-  method changed {
-    self.connect-string($!s, 'changed');
+  method changed ($d?) {
+    my $signame = $d;
+    $signame = "{ $signame }::$d" if $d;
+
+    self.connect-string($!s, $signame);
   }
 
   # Is originally:
@@ -266,14 +285,121 @@ class GIO::Settings {
     g_settings_apply($!s);
   }
 
+  method processBindFlags (
+     $get,
+     $set,
+     $sensitivity,
+     $no_sensitivity,
+     $no_changes,
+     $invert_boolean,
+    :$flags           = 0;
+    :$pass            = False
+  ) {
+    return $flags if $pass;
+
+    my $f = $flags;
+    # cw: Should also handle unset if $flags
+    if $f {
+      $f +&= +^G_SETTINGS_BIND_GET            unless $get;
+      $f +&= +^G_SETTINGS_BIND_SET            unless $set;
+      $f +&= +^G_SETTINGS_BIND_NO_SENSITIVITY unless $no_sensitivity;
+      $f +&= +^G_SETTINGS_BIND_GET_NO_CHANGES unless $no_changes;
+      $f +&= +^G_SETTINGS_BIND_INVERT_BOOLEAN unless $invert_boolean;
+    }
+    $f +&= G_SETTINGS_BIND_GET             if $get;
+    $f +&= G_SETTINGS_BIND_SET             if $set;
+    $f +&= G_SETTINGS_BIND_NO_SENSITIVITY  if $no_sensitivity;
+    $f +&= G_SETTINGS_BIND_GET_NO_CHANGES  if $no_changes;
+    $f +&= G_SETTINGS_BIND_INVERT_BOOLEAN  if $invert_boolean;
+    $f;
+  }
+
+  proto method bind_setting (|)
+    is also<bind-setting>
+  { * }
+
+  multi method bind_setting (
+    Str()  $key,
+    Str()  $property,
+          :$get                                      = False,
+          :$set                                      = False,
+          :$sensitivity                              = True,
+          :no-sensitivity(:$no_sensitivity)          = $sensitivity.not,
+          :$changes                                  = True,
+          :no-changes(:$no_changes)                  = $changes.not,
+          :invert(:invert-boolean(:$invert_boolean)) = False,
+    Int() :$flags                                    = 0,
+          :$pass                                     = False
+  ) {
+    samewith(
+      $key,
+      self,
+      $property,
+      flags => self.processBindFlags(
+         $get,
+         $set,
+         $no_sensitivity,
+         $no_changes,
+         $invert_boolean,
+        :$flags,
+        :$pass
+      )
+    )
+  }
+  multi method bind_setting (
+    Str()      $key,
+    GObject()  $object,
+    Str()      $property,
+              :$get                                      = False,
+              :$set                                      = False,
+              :$sensitivity                              = True,
+              :no-sensitivity(:$no_sensitivity)          = $sensitivity.not,
+              :$changes                                  = True,
+              :no-changes(:$no_changes)                  = $changes.not,
+              :invert(:invert-boolean(:$invert_boolean)) = False,
+    Int()     :$flags                                    = 0,
+              :$pass                                     = False
+  ) {
+    self.bind(
+      $key,
+      $object,
+      $property,
+      flags => self.processBindFlags(
+         $get,
+         $set,
+         $no_sensitivity,
+         $no_changes,
+         $invert_boolean,
+        :$flags,
+        :$pass
+      );
+      :setting);
+  }
+
   multi method bind (
     Str()      $key,
     GObject()  $object,
     Str()      $property,
-    Int()      $flags,
+              :$get                                      = False,
+              :$set                                      = False,
+              :$sensitivity                              = True,
+              :no-sensitivity(:$no_sensitivity)          = $sensitivity.not,
+              :$changes                                  = True,
+              :no-changes(:$no_changes)                  = $changes.not,
+              :invert(:invert-boolean(:$invert_boolean)) = False,
+    Int()     :$flags                                    = 0,
+              :$pass                                     = False,
               :$settings is required
   ) {
-    my GSettingsBindFlags $f = $flags;
+    my GSettingsBindFlags $f = self.processBindFlags(
+       $get,
+       $set,
+       $no_sensitivity,
+       $no_changes,
+       $invert_boolean,
+      :$flags,
+      :$pass
+    );
 
     g_settings_bind($!s, $key, $object, $property, $f);
   }
