@@ -126,6 +126,12 @@ class GIO::MenuModel {
     g_menu_model_get_n_items($!mm);
   }
 
+  method get_type {
+    state ($n, $t);
+
+    unstable_get_type( self.^name, &g_menu_model_get_type, $n, $t);
+  }
+
   method is_mutable is also<is-mutable> {
     so g_menu_model_is_mutable($!mm);
   }
