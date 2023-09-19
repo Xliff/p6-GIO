@@ -117,15 +117,28 @@ role GIO::Roles::File {
     self.new_for_path($p);
   }
 
-  proto method new_for_path (|)
-    is also<new-for-path>
-  { * }
+  # proto method new_for_path (|)
+  #   is also<new-for-path>
+  # { * }
 
   multi method new_for_path (IO::Path $path) {
     self.new_for_path($path.absolute);
   }
-  multi method new_for_path (Str() $path)  {
-    my $file = g_file_new_for_path( explicitly-manage($path) );
+  multi method new_for_path (Str $path, :$encoding = 'utf8' )  {
+    say "String param...";
+    my $file = g_file_new_for_path(
+      CArray[uint8].new( $path.encode($encoding) )
+    );
+
+    $file ?? self.bless(:$file) !! Nil;
+  }
+  multi method new_for_path ($path where * ~~ Blob)  {
+    say "Blob param...";
+    samewith( CArray[uint8].new($path) );
+  }
+  multi method new_for_path (CArray[uint8] $path)  {
+    say "CArray param...";
+    my $file = g_file_new_for_path($path);
 
     $file ?? self.bless(:$file) !! Nil;
   }
@@ -144,35 +157,37 @@ role GIO::Roles::File {
   { * }
 
   multi method new (
-                            $iostream    is rw,
-    CArray[Pointer[GError]] $error       =  gerror,
+                             $iostream   is rw,
+    CArray[Pointer[GError]]  $error                   =  gerror,
                             :temp(:$tmp) is required,
-                            :$raw        =  False
+                            :$raw                     =  False
   ) {
     self.new_tmp(Str, $iostream, $error, :$raw);
   }
   multi method new_tmp (
-                            $iostream is rw,
-    CArray[Pointer[GError]] $error    =  gerror,
-                            :$raw     =  False
+                             $iostream is rw,
+    CArray[Pointer[GError]]  $error           =  gerror,
+                            :$raw             =  False
   ) {
     samewith(Str, $iostream, $error, :$raw);
   }
   multi method new (
-    Str()                   $tmpl,
-                            $iostream    is rw,
-    CArray[Pointer[GError]] $error       =  gerror,
+    Str()                    $tmpl,
+                             $iostream   is rw,
+    CArray[Pointer[GError]]  $error                    =  gerror,
                             :temp(:$tmp) is required,
-                            :$raw        =  False
+                            :$raw                      =  False
   ) {
     self.new_tmp($tmpl, $iostream, $error, :$raw);
   }
   multi method new_tmp (
-    Str()                   $tmpl,
-                            $iostream is rw,
-    CArray[Pointer[GError]] $error    =  gerror,
-                            :$raw     =  False
+    Str()                    $tmpl,
+                             $iostream is rw,
+    CArray[Pointer[GError]]  $error           = gerror,
+                            :$raw             = False,
+                            :$all             = False
   ) {
+
     my $i     = CArray[GFileIOStream].new;
        $i[0]  = GFileIOStream;
 
@@ -188,7 +203,9 @@ role GIO::Roles::File {
     $iostream = GIO::FileIOStream.new($iostream, :!ref) unless $raw;
     say "F: $file / I: $iostream" if $DEBUG;
 
-    $file ?? self.bless(:$file) !! Nil;
+    $file ?? self.bless( :$file ) !! Nil;
+    return $file if $file && $all.not;
+    ($file, $iostream);
   }
 
   method append_to (
