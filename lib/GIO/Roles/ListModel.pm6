@@ -14,11 +14,18 @@ role GIO::Roles::ListModel {
 
   has GListModel $!lm;
 
+  has $!items-are-objects;
+
   method roleInit-GListModel {
     return if $!lm;
 
     my \i = findProperImplementor(self.^attributes);
     $!lm = cast( GListModel, i.get_value(self) );
+
+    $!items-are-objects =
+      GLib::Object::Type.new( self.get_item_type ).fundamental( :raw )
+      ==
+      G_TYPE_OBJECT.Int;
   }
 
   method GIO::Raw::Definitions::GListModel
@@ -27,8 +34,12 @@ role GIO::Roles::ListModel {
 
   # Is originally:
   # GListModel, guint, guint, guint, gpointer --> void
-  method items-changed {
+  method Items-Changed {
     self.connect-items-changed($!lm);
+  }
+
+  method itemObjects (Bool() $o) {
+    $!items-are-objects = $o.so;
   }
 
   method get_item (Int() $position) is also<get-item> {
@@ -38,7 +49,7 @@ role GIO::Roles::ListModel {
   }
 
   method get_item_type is also<get-item-type> {
-    GTypeEnum( g_list_model_get_item_type($!lm) );
+    g_list_model_get_item_type($!lm);
   }
 
   method get_n_items is also<get-n-items> {
@@ -51,48 +62,54 @@ role GIO::Roles::ListModel {
 
   method get_object (
     Int() $position,
-          :$raw                               = False,
-          :object(
-            :obj-type(
-              :obj_type(:$type)
-            )
-          )                                   = GLib::Object
-  ) is also<get-object> {
+          :$raw                   = False,
+          :type-pair(:$type_pair) = GLib::Object.getTypePair
+  )
+    is also<get-object>
+  {
     my guint $p = $position;
 
     propReturnObject(
       g_list_model_get_object($!lm, $p),
       $raw,
-      |$type.getTypePair
+      |$type_pair
     )
   }
 
-  method to_array ($raw, \P, $O?) is also<to-array> {
-    die 'Cannot use to_array with <$raw> and no object type!'
-      if $raw.not and $O =:= (Nil, Mu).any;
+  # cw: Really now handled by GLib::Roles::TypedArray!
+  method to_array (\P, $O?) is also<to-array> {
+    my $raw = $O =:= (Nil, Mu).any;
 
     my @a;
     for ^self.elems {
-      my $e = self.get_object($_, :raw);
-      @a.push: $raw ?? cast(P, $e) !! $O.new($e);
+      my $e = $!items-are-objects ?? self.get_object($_, :$raw)
+                                  !! self.get_item($_);
+      $e = cast(P, $e);
+      @a.push: $raw ?? $e !! $O.new($e);
     }
     @a;
   }
 
   method AT-POS (\k) {
-    self.get_object(k);
+    $!items-are-objects ?? self.get_object(k) !! self.get_item(k);
   }
 
-  method emit_items_changed (
+  method items_changed (
     Int() $position,
     Int() $removed,
     Int() $added
   )
-    is also<emit-items-changed>
+    is also<items-changed>
   {
     my guint ($p, $r, $a) = ($position, $removed, $added);
 
     g_list_model_items_changed($!lm, $p, $r, $a);
+  }
+
+  method glistmodel_get_type {
+    state ($n, $t);
+
+    unstable_get_type( ::?CLASS.^name, &g_list_model_get_type, $n, $t );
   }
 
 }
@@ -133,6 +150,10 @@ class GIO::ListModel {
     my $o = self.bless( :$model );
     $o.ref if $ref;
     $o;
+  }
+
+  method get_type {
+    self.glistmodel_get_type
   }
 
 }
