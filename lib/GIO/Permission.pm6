@@ -35,6 +35,7 @@ class GIO::Permission {
         cast(GPermission, $_);
       }
     }
+    say "P: { $!p } / O: { $to-parent }";
     self!setObject($to-parent);
   }
 
@@ -44,6 +45,11 @@ class GIO::Permission {
     my $o = self.bless( :$permission );
     $o.ref if $ref;
     $o;
+  }
+  multi method new {
+    my $permission = GLib::Object.new-object-ptr( self.get_type );
+
+    $permission ?? self.bless( :$permission ) !! Nil;
   }
 
   method GIO::Raw::Structs::GPermission
