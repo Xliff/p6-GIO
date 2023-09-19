@@ -94,10 +94,7 @@ role GIO::Roles::Icon {
   }
 
   method to_string
-    is also<
-      to-string
-      Str
-    >
+    is also<to-string>
   {
     g_icon_to_string($!icon);
   }
@@ -140,6 +137,14 @@ class GIO::Icon {
     my $o = self.bless( :$icon );
     $o.ref if $ref;
     $o;
+  }
+
+  method get_type is also<get-type> {
+    self.icon_get_type;
+  }
+
+  method debug ($n) {
+    'NO OUTPUT';
   }
 
 }
