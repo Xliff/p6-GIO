@@ -34,7 +34,7 @@ role GIO::Roles::Signals::Application {
         },
         Pointer, 0
       );
-      [ $s.Supply, $obj, $hid ];
+      [ self.create-signal-supply($signal, $s), $obj, $hid ];
     };
     %!signals-a{$signal}[0].tap(&handler) with &handler;
     %!signals-a{$signal}[0];
@@ -61,7 +61,7 @@ role GIO::Roles::Signals::Application {
         },
         Pointer, 0
       );
-      [ $s.Supply, $obj, $hid ];
+      [ self.create-signal-supply($signal, $s), $obj, $hid ];
     };
     %!signals-a{$signal}[0].tap(&handler) with &handler;
     %!signals-a{$signal}[0];
@@ -86,7 +86,7 @@ role GIO::Roles::Signals::Application {
         },
         Pointer, 0
       );
-      [ 𝒮.Supply, $obj, $hid ];
+      [ self.create-signal-supply($signal, 𝒮), $obj, $hid ];
     };
     %!signals-a{$signal}[0].tap(&handler) with &handler;
     %!signals-a{$signal}[0];
