@@ -180,6 +180,14 @@ class GActionEntry is repr('CStruct') does GLib::Roles::Pointers is export {
     self.bless(:$name, :&activate, :$parameter_type, :$state, :&change_state);
   }
 
+  method gist {
+    "GActionEntry.new(\n{
+      self.^attributes.sort( *.name )
+                      .map({ "  { .name.substr(2) } => { .get_value(self) // '' }" })
+                      .join(",\n")
+     }\n)";
+  }
+
 }
 
 sub sprintf-SaVP (
