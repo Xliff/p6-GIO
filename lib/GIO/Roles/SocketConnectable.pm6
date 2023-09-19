@@ -26,6 +26,8 @@ role GIO::Roles::SocketConnectable {
   method enumerate (:$raw = False) {
     my $se = g_socket_connectable_enumerate($!sc);
 
+    return Nil unless $se;
+
     $raw ?? $se !! GIO::SocketAddressEnumerator.new($se);
   }
 
@@ -37,6 +39,8 @@ role GIO::Roles::SocketConnectable {
 
   method proxy_enumerate (:$raw = False) is also<proxy-enumerate> {
     my $se = g_socket_connectable_proxy_enumerate($!sc);
+
+    return Nil unless $se;
 
     $raw ?? $se !! GIO::SocketAddressEnumerator.new($se);
   }
@@ -55,12 +59,12 @@ role GIO::Roles::SocketConnectable {
 our subset GSocketConnectableAncestry is export of Mu
   where GSocketConnectable | GObject;
 
-class GIO::SocketConnectable does GLib::Roles::Object
-                             does GIO::Roles::SocketConnectable
-{
+class GIO::SocketConnectable {
+  also does GLib::Roles::Object;
+  also does GIO::Roles::SocketConnectable;
 
-  submethod BUILD (:$connectable) {
-    self.setGSocketConnectable($connectable) if $connectable;
+  submethod BUILD ( :$socket-connectable ) {
+    self.setGSocketConnectable($socket-connectable) if $socket-connectable;
   }
 
   method setGSocketConnectable (GSocketConnectableAncestry $_) {
@@ -80,18 +84,17 @@ class GIO::SocketConnectable does GLib::Roles::Object
     self!setObject($to-parent);
   }
 
-  method new (GSocketConnectableAncestry $connectable, :$ref = True) {
-    return Nil unless $connectable;
+  method new (GSocketConnectableAncestry $socket-connectable, :$ref = True) {
+    return Nil unless $socket-connectable;
 
-    my $o = self.bless( :$connectable );
+    my $o = self.bless( :$socket-connectable );
     $o.ref if $ref;
     $o;
   }
 
-
 }
 
-sub g_socket_connectable_enumerate (GSocketConnectable $connectable)
+sub g_socket_connectable_enumerate (GSocketConnectable $socket-connectable)
   returns GSocketAddressEnumerator
   is native(gio)
   is export
@@ -103,18 +106,26 @@ sub g_socket_connectable_get_type ()
   is export
 { * }
 
-sub g_socket_connectable_proxy_enumerate (GSocketConnectable $connectable)
+sub g_socket_connectable_proxy_enumerate (
+  GSocketConnectable $socket-connectable
+)
   returns GSocketAddressEnumerator
   is native(gio)
   is export
 { * }
 
-sub g_socket_connectable_to_string (GSocketConnectable $connectable)
+sub g_socket_connectable_to_string (GSocketConnectable $socket-connectable)
   returns Str
   is native(gio)
   is export
 { * }
 
+# cw: Hmmm... having all raw defs as introspectable objects at runtime?
+#     I can see the nifty-ness of it, but not much real utility.
+#
+#     I guess that would depend on the use case, and something like this
+#     could always be done externally.
+#
 # our %GIO::Roles::SocketConnection::RAW-DEFS;
 # for MY::.pairs {
 #   %GIO::Roles::SocketConncetion::RAW-DEFS{.key} := .value
