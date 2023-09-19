@@ -10,12 +10,14 @@ use GIO::Raw::ListStore;
 use GLib::Value;
 
 use GLib::Roles::Object;
+use GIO::Roles::ListModel;
 
 our subset GListStoreAncestry is export of Mu
-  where GListStore | GObject;
+  where GListStore | GListModel | GObject;
 
 class GIO::ListStore {
   also does GLib::Roles::Object;
+  also does GIO::Roles::ListModel;
 
   has GListStore $!ls is implementor;
 
@@ -32,12 +34,19 @@ class GIO::ListStore {
         $_;
       }
 
+      when GListModel {
+        $to-parent = cast(GObject, $_);
+        $!lm       = $_;
+        cast(GListStore, $_);
+      }
+
       default {
         $to-parent = $_;
         cast(GListStore, $_);
       }
     }
     self!setObject($to-parent);
+    self.roleInit-GListModel;
   }
 
   method GIO::Raw::Definitions::GListStore
@@ -53,6 +62,7 @@ class GIO::ListStore {
   }
   multi method new (Int() $type) {
     my GType $t = $type;
+
     my $store = g_list_store_new($t);
 
     $store ?? self.bless( :$store ) !! Nil;
@@ -97,8 +107,8 @@ class GIO::ListStore {
     unless self.item_type == do {
       when $signed     & $double     { G_TYPE_INT64 }
       when $signed.not & $double     { G_TYPE_UINT64 }
-      when $signed.not & $double.not { G_TYPE_INT32  }
-      when $signed     & $double.not { G_TYPE_INT32  }
+      when $signed.not & $double.not { G_TYPE_INT    }
+      when $signed     & $double.not { G_TYPE_INT    }
     }
 
     # cw: Should also perform basic checks on value limits for $item.
