@@ -8,6 +8,7 @@ use GIO::Raw::Application;
 
 use GLib::Roles::Object;
 
+use GIO::Resource;
 use GIO::DBus::Connection;
 
 use GIO::Roles::ActionMap;
@@ -85,7 +86,7 @@ class GIO::Application {
 
   # Is originally:
   # GApplication, gpointer --> void
-  method activate {
+  method activate is also<Activate> {
     say "activate: { $!a // '»NIL«' }" if $DEBUG // 0 > 2;
 
     self.connect($!a, 'activate');
@@ -93,38 +94,56 @@ class GIO::Application {
 
   # Is originally:
   # GApplication, GApplicationCommandLine, gpointer --> gint
-  method command-line is also<command_line> {
+  method command-line
+    is also<
+      command_line
+      Command-Line
+      Command_Line
+    >
+  {
     self.connect-command-line($!a);
   }
 
   # Is originally:
   # GApplication, GVariantDict, gpointer --> gint
-  method handle-local-options is also<handle_local_options> {
+  method handle-local-options
+    is also<
+      handle_local_options
+      Handle-Local-Options
+      Handle_Local_Options
+    >
+  {
     self.connect-handle-local-options($!a);
   }
 
   # Is originally:
   # GApplication, gpointer --> gboolean
-  method name-lost is also<name_lost> {
+  method name-lost
+    is also<
+      name_lost
+      Name-Lost
+      Name_Lost
+    >
+  {
     self.connect-rbool($!a, 'name-lost');
   }
 
   # Is originally:
   # GApplication, gpointer, gint, Str, gpointer --> void
   # Made multi so as to not conflict with below methods.
-  multi method open {
+  multi method open is also<Open> {
     self.connect-open($!a);
   }
 
   # Is originally:
   # GApplication, gpointer --> void
-  method shutdown {
+  method shutdown is also<Shutdown> {
     self.connect($!a, 'shutdown');
   }
 
   # Is originally:
   # GApplication, gpointer --> void
-  method startup {
+  method startup is also<Startup> {
     self.connect($!a, 'startup');
   }
 
@@ -140,7 +159,7 @@ class GIO::Application {
     Str()      $description,
     Str()      $arg_description
   )
-    is also<add-4-option>
+    is also<add-main-option>
   {
     my GOptionFlags $f = $flags;
 
@@ -244,6 +263,16 @@ class GIO::Application {
     my gint $n = $n_files;
 
     g_application_open($!a, $files, $n_files, $hint);
+  }
+
+  method postInit {
+    for $*PROGRAM.dirname.IO.dir.grep( *.extension eq 'gresource' ) {
+      print "Loading resources from { .absolute }...";
+      GIO::Resources.register(
+        GIO::Resource.load( .absolute )
+      );
+      say "done!";
+    }
   }
 
   proto method quit (|)
