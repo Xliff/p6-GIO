@@ -45,10 +45,15 @@ class GIO::Menu is GIO::MenuModel {
     $o.ref if $ref;
     $o;
   }
-  multi method new {
+  multi method new (@a) {
+    samewith( |@a );
+  }
+  multi method new ( *@a ) {
     my $menu = g_menu_new();
 
-    $menu ?? self.bless( :$menu ) !! Nil;
+    my $o = $menu ?? self.bless( :$menu ) !! Nil;
+    $o.append($_) for @a;
+    $o;
   }
 
 
@@ -62,7 +67,10 @@ class GIO::Menu is GIO::MenuModel {
   # ↑↑↑↑ PROPERTIES ↑↑↑↑
 
   # ↓↓↓↓ METHODS ↓↓↓↓
-  multi method append (Str() $detailed_action) {
+  multi method append (Str() $label) {
+    samewith($label, Str);
+  }
+  multi method append (Str() $detailed_action, :$action is required) {
     samewith(Str, $detailed_action);
   }
   multi method append (Str() $label, Str() $detailed_action) {
