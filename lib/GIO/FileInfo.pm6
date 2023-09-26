@@ -11,23 +11,41 @@ use GLib::DateTime;
 use GLib::Roles::Object;
 use GIO::Roles::Icon;
 
+our subset GFileInfoAncestry is export of Mu
+  where GFileInfo | GObject;
+
 class GIO::FileInfo {
   also does GLib::Roles::Object;
 
   has GFileInfo $!fi is implementor;
 
-  submethod BUILD (:$info) {
-    $!fi = $info;
+  submethod BUILD ( :$info ) {
+    self.setGFileInfo($info) if $info
+  }
 
-    self.roleInit-Object;
+  method setGFileInfo (GFileInfoAncestry $_) {
+    my $to-parent;
+
+    $!fi = do {
+      when GFileInfo {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GFileInfo, $_);
+      }
+    }
+    self!setObject($to-parent);
   }
 
   method GIO::Raw::Definitions::GFileInfo
     is also<GFileInfo>
   { $!fi }
 
-  multi method new (GFileInfo $info, :$ref = True) {
-    return Nil unless $info;
+  multi method new ($info where * ~~ GFileInfoAncestry , :$ref = True) {
+    return unless $info;
 
     my $o = self.bless( :$info );
     $o.ref if $ref;
@@ -39,7 +57,7 @@ class GIO::FileInfo {
     $info ?? self.bless( :$info ) !! Nil;
   }
 
-  method content_type is rw is g-property is also<content-type> {
+  method content-type is rw is g-property is also<content_type> {
     Proxy.new(
       FETCH => sub ($) {
         g_file_info_get_content_type($!fi);
@@ -50,7 +68,7 @@ class GIO::FileInfo {
     );
   }
 
-  method display_name is rw is g-property is also<display-name> {
+  method display-name is rw is g-property is also<display_name> {
     Proxy.new(
       FETCH => sub ($) {
         g_file_info_get_display_name($!fi);
@@ -61,7 +79,7 @@ class GIO::FileInfo {
     );
   }
 
-  method edit_name is rw is g-property is also<edit-name> {
+  method edit-name is rw is g-property is also<edit_name> {
     Proxy.new(
       FETCH => sub ($) {
         g_file_info_get_edit_name($!fi);
@@ -72,7 +90,7 @@ class GIO::FileInfo {
     );
   }
 
-  method file_type is rw is g-property is also<file-type> {
+  method file-type is rw is g-property is also<file_type> {
     Proxy.new(
       FETCH => sub ($) {
         GFileTypeEnum( g_file_info_get_file_type($!fi) );
@@ -101,7 +119,7 @@ class GIO::FileInfo {
     );
   }
 
-  method is_hidden is rw is g-property is also<is-hidden> {
+  method is-hidden is rw is g-property is also<is_hidden> {
     Proxy.new(
       FETCH => sub ($) {
         so g_file_info_get_is_hidden($!fi);
@@ -114,7 +132,7 @@ class GIO::FileInfo {
     );
   }
 
-  method is_symlink is rw is g-property is also<is-symlink> {
+  method is-symlink is rw is g-property is also<is_symlink> {
     Proxy.new(
       FETCH => sub ($) {
         so g_file_info_get_is_symlink($!fi);
@@ -151,7 +169,7 @@ class GIO::FileInfo {
     );
   }
 
-  method sort_order is rw is g-property is also<sort-order> {
+  method sort-order is rw is g-property is also<sort_order> {
     Proxy.new(
       FETCH => sub ($) {
         g_file_info_get_sort_order($!fi);
@@ -164,10 +182,10 @@ class GIO::FileInfo {
     );
   }
 
-  method symbolic_icon (:$raw = False)
+  method symbolic-icon (:$raw = False)
     is rw
     is g-property
-    is also<symbolic-icon>
+    is also<symbolic_icon>
   {
     Proxy.new(
       FETCH => sub ($) {
@@ -184,7 +202,7 @@ class GIO::FileInfo {
     );
   }
 
-  method symlink_target is rw is g-property is also<symlink-target> {
+  method symlink-target is rw is g-property is also<symlink_target> {
     Proxy.new(
       FETCH => sub ($) {
         g_file_info_get_symlink_target($!fi);
