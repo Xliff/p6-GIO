@@ -3,10 +3,11 @@ use v6;
 use GLib::Raw::Exports;
 use GIO::Raw::Exports;
 
-my constant forced = 240;
+my constant forced = 347;
 
 unit package GIO::Raw::Types;
 
+need GLib::Raw::Debug;
 need GLib::Raw::Definitions;
 need GLib::Raw::Enums;
 need GLib::Raw::Exceptions;
