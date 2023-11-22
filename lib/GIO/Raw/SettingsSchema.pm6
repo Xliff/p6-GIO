@@ -137,8 +137,8 @@ sub g_settings_schema_source_get_type ()
 sub g_settings_schema_source_list_schemas (
   GSettingsSchemaSource $source,
   gboolean              $recursive,
-  Str                   $non_relocatable,
-  Str                   $relocatable
+  CArray[CArray[Str]]   $non_relocatable,
+  CArray[CArray[Str]]   $relocatable
 )
   is native(gio)
   is export
