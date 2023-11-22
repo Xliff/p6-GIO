@@ -21,7 +21,12 @@ role GIO::Roles::NetworkMonitor {
 
   has GNetworkMonitor $!nm is implementor;
 
-  method roleInit-NetworkMonitor is also<roleInit_NetworkMonitor> {
+  method roleInit-GNetworkMonitor
+    is also<
+      roleInit_NetworkMonitor
+      roleInit-NetworkMonitor
+    >
+  {
     return if $!nm;
 
     my \i = findProperImplementor(self.^attributes);
@@ -30,6 +35,9 @@ role GIO::Roles::NetworkMonitor {
 
   method GIO::Raw::Definitions::GNetworkMonitor
     is also<GNetworkMonitor>
+  { $!nm }
+  # <also> not yet working for roles!
+  method GNetworkMonitor
   { $!nm }
 
   # Is originally:
