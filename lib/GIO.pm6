@@ -94,7 +94,6 @@ need GIO::TlsDatabase;
 need GIO::TlsInteraction;
 need GIO::TlsPassword;
 need GIO::TypeClass;
-need GIO::TypeOrigin;
 need GIO::UnixConnection;
 need GIO::UnixCredentialsMessage;
 need GIO::UnixFDList;
