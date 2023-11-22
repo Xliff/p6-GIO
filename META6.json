@@ -14,7 +14,7 @@
   "name": "GIO",
   "perl": "6.c",
   "api": "1",
-      "provides": {
+          "provides": {
     "GIO::Raw::Enums": "lib/GIO/Raw/Enums.pm6",
     "GIO::Raw::Distro": "lib/GIO/Raw/Distro.pm6",
     "GIO::Raw::Definitions": "lib/GIO/Raw/Definitions.pm6",
@@ -302,7 +302,8 @@
     "GIO::DataInputStream": "lib/GIO/DataInputStream.pm6",
     "GIO::FileEnumerator": "lib/GIO/FileEnumerator.pm6",
     "GIO::FileIcon": "lib/GIO/FileIcon.pm6",
-    "GIO::SocketClient": "lib/GIO/SocketClient.pm6"
+    "GIO::SocketClient": "lib/GIO/SocketClient.pm6",
+    "GIO": "lib/GIO.pm6"
     },
   "resources": [
   ],
