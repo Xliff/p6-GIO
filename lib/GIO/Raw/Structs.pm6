@@ -2,6 +2,7 @@ use v6.c;
 
 use NativeCall;
 
+use GLib::Raw::Debug;
 use GLib::Raw::Definitions;
 use GLib::Raw::Enums;
 use GLib::Raw::Object;
