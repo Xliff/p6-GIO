@@ -11,7 +11,7 @@ our subset GFileInputStreamAncestry is export of Mu
   where GFileInputStream | GInputStreamAncestry;
 
 class GIO::FileInputStream is GIO::InputStream {
-  has GFileInputStream $!fis;
+  has GFileInputStream $!fis is implementor;
 
   submethod BUILD (:$file-input) {
     self.setGFileInputStream($file-input) if $file-input;

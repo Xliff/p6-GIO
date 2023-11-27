@@ -74,8 +74,9 @@ class GIO::Cancellable {
     self.connect($!c, 'cancelled');
   }
 
-  multi method cancel (GIO::Cancellable:D:) {
-    GIO::Cancellable.cancel($!c);
+  multi method cancel (GIO::Cancellable:D: :$reset = False) {
+    ::?CLASS.cancel($!c);
+    self.reset;
   }
   multi method cancel (
     GIO::Cancellable:U:
@@ -88,7 +89,7 @@ class GIO::Cancellable {
              &callback,
     gpointer $data              = gpointer,
              &data_destroy_func = Callable
-  ) 
+  )
     is also<cancellable-connect>
   {
     g_cancellable_connect($!c, &callback, $data, &data_destroy_func);

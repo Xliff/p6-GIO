@@ -244,7 +244,7 @@ class GIO::SettingsSchema::Source {
     is also<list-schemas>
   { * }
 
-  multi method list_schemas (Int() $recursive) {
+  multi method list_schemas (Int() $recursive = False) {
     samewith($recursive, $, $)
   }
   multi method list_schemas (
@@ -252,9 +252,8 @@ class GIO::SettingsSchema::Source {
     $non_relocatable  is rw,
     $relocatable      is rw
   ) {
-    my gboolean $r = $recursive;
-    my ($na, $ra) = CArray[CArray[Str]].new xx 2;
-    ($na[0], $ra[0]) = CArray[Str] xx 2;
+    my gboolean  $r        = $recursive.so.Int;
+    my          ($na, $ra) = newCArray(CArray[Str]) xx 2;
 
     g_settings_schema_source_list_schemas(
       $!sss,
@@ -264,12 +263,16 @@ class GIO::SettingsSchema::Source {
     );
 
     ($non_relocatable, $relocatable) = (
-      $na[0] ?? CStringArrayToArray($na[0]) !! Nil,
-      $ra[0] ?? CStringArrayToArray($ra[0]) !! Nil
+      $na[0] ?? CStringArrayToArray( $na[0] ) !! Nil,
+      $ra[0] ?? CStringArrayToArray( $ra[0] ) !! Nil
     )
   }
 
-  method lookup (Str() $schema_id, Int() $recursive, :$raw = False) {
+  method lookup (
+    Str()  $schema_id,
+    Int()  $recursive  = False,  
+          :$raw        = False
+  ) {
     my gboolean $r = $recursive;
     my $ss = g_settings_schema_source_lookup($!sss, $schema_id, $r);
 

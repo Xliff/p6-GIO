@@ -40,10 +40,10 @@ role GIO::Roles::Signals::ThreadedSocketService {
 # GThreadedSocketService, GSocketConnection, GObject, gpointer --> gboolean
 sub g-connect-run(
   Pointer $app,
-  Str $name,
-  &handler (Pointer, GSocketConnection, GObject, Pointer --> gboolean),
+  Str     $name,
+          &handler (Pointer, GSocketConnection, GObject, Pointer --> gboolean),
   Pointer $data,
-  uint32 $flags
+  uint32  $flags
 )
   returns uint64
   is native(gobject)

@@ -69,18 +69,38 @@ class GIO::OutputStream {
   { * }
 
   multi method close_async (
-                   &callback,
-    gpointer       $user_data    = gpointer,
+                    &callback,
+    gpointer        $user_data    = gpointer,
     Int()          :$io_priority = 0,
-    GCancellable() :$cancellable = GCancellable,
+    GCancellable() :$cancellable = GCancellable
   ) {
-    samewith($io_priority, $cancellable, &callback, $user_data);
+    samewith(
+      $io_priority,
+      $cancellable,
+      &callback,
+      $user_data,
+    );
   }
   multi method close_async (
-    Int()          $io_priority,
-    GCancellable() $cancellable,
-                   &callback,
-    gpointer       $user_data    = gpointer
+    Int()           $io_priority,
+    GCancellable()  $cancellable,
+                    &callback,
+    gpointer        $user_data                = gpointer,
+                   :$promise      is required = False,
+                   :$promise-in               = 0
+  ) {
+    makePromise(
+      self,
+      &?ROUTINE.name,
+      in             => $promise-in,
+      args           => [ $io_priority, $cancellable, &callback ]
+    );
+  }
+  multi method close_async (
+    Int()           $io_priority,
+    GCancellable()  $cancellable,
+                    &callback,
+    gpointer        $user_data    = gpointer
   ) {
     my gint $io = $io_priority;
 
@@ -126,6 +146,21 @@ class GIO::OutputStream {
     GCancellable() :$cancellable = GCancellable,
   ) {
     samewith($io_priority, $cancellable, &callback, $user_data);
+  }
+  multi method flush_async (
+    Int()           $io_priority,
+    GCancellable()  $cancellable,
+                    &callback,
+    gpointer        $user_data                = gpointer,
+                   :$promise      is required = False,
+                   :$promise-in               = 0
+  ) {
+    makePromise(
+      self,
+      &?ROUTINE.name,
+      in             => $promise-in,
+      args           => [ $io_priority, $cancellable, &callback ]
+    );
   }
   multi method flush_async (
     Int()          $io_priority,
@@ -209,6 +244,29 @@ class GIO::OutputStream {
       $cancellable,
       &callback,
       $user_data
+    );
+  }
+  multi method splice_async (
+    GInputStream()  $source,
+    Int()           $io_priority,
+    GCancellable()  $cancellable,
+                    &callback,
+    gpointer        $user_data                = gpointer,
+    Int()          :$flags                    = 0,
+                   :$promise      is required = False,
+                   :$promise-in               = 0
+  ) {
+    makePromise(
+      self,
+      &?ROUTINE.name,
+      in             => $promise-in,
+      args           => [
+        $source,
+        $flags,
+        $io_priority,
+        $cancellable,
+        &callback
+      ]
     );
   }
   multi method splice_async (
@@ -337,6 +395,29 @@ class GIO::OutputStream {
     );
   }
   multi method write_all_async (
+    Pointer         $buffer,
+    Int()           $count,
+    Int()           $io_priority,
+    GCancellable()  $cancellable,
+                    &callback,
+    gpointer        $user_data                = gpointer,
+                   :$promise      is required = False,
+                   :$promise-in               = 0
+  ) {
+    makePromise(
+      self,
+      &?ROUTINE.name,
+      in             => $promise-in,
+      args           => [
+        $buffer,
+        $count,
+        $io_priority,
+        $cancellable,
+        &callback
+      ]
+    );
+  }
+  multi method write_all_async (
     Pointer        $buffer,
     Int()          $count,
     Int()          $io_priority,
@@ -388,9 +469,9 @@ class GIO::OutputStream {
   { * }
 
   multi method write (
-    Str()          $buffer,
-                   &callback,
-    gpointer       $user_data    =  gpointer,
+    Str()           $buffer,
+                    &callback,
+    gpointer        $user_data    =  gpointer,
                    :$async       is required,
     Int()          :$count       =  $buffer.chars,
     GCancellable() :$cancellable =  GCancellable,
@@ -422,6 +503,30 @@ class GIO::OutputStream {
       $cancellable,
       &callback,
       $user_data
+    );
+  }
+  multi method write_async (
+                    $buffer,
+    Int()           $count,
+    Int()           $io_priority,
+    GCancellable()  $cancellable,
+                    &callback,
+    gpointer        $user_data                = gpointer,
+    Int()          :$flags                    = 0,
+                   :$promise      is required = False,
+                   :$promise-in               = 0
+  ) {
+    makePromise(
+      self,
+      &?ROUTINE.name,
+      in             => $promise-in,
+      args           => [
+        $buffer,
+        $count,
+        $io_priority,
+        $cancellable,
+        &callback
+      ]
     );
   }
   multi method write_async (
@@ -559,6 +664,28 @@ class GIO::OutputStream {
     GCancellable        :$cancellable = GCancellable
   ) {
     samewith($bytes, $io_priority, GCancellable, &callback, $user_data);
+  }
+  multi method write_bytes_async (
+    GBytes()        $bytes,
+    Int()           $io_priority,
+    GCancellable()  $cancellable,
+                    &callback,
+    gpointer        $user_data                = gpointer,
+    Int()          :$flags                    = 0,
+                   :$promise      is required = False,
+                   :$promise-in               = 0
+  ) {
+    makePromise(
+      self,
+      &?ROUTINE.name,
+      in             => $promise-in,
+      args           => [
+        $bytes,
+        $io_priority,
+        $cancellable,
+        &callback
+      ]
+    );
   }
   multi method write_bytes_async (
     GBytes()            $bytes,
@@ -712,6 +839,29 @@ class GIO::OutputStream {
     );
   }
   multi method writev_all_async (
+                    @vectors,
+    GCancellable()  $cancellable,
+                    &callback,
+    gpointer        $user_data                = gpointer,
+    Int()          :$io_priority              = 0,
+    Int()          :$flags                    = 0,
+                   :$promise      is required = False,
+                   :$promise-in               = 0
+  ) {
+    makePromise(
+      self,
+      &?ROUTINE.name,
+      in             => $promise-in,
+      args           => [
+        GLib::Roles::TypedBuffer[GOutputVector].new(@vectors).p,
+        @vectors.elems,
+        $io_priority,
+        $cancellable,
+        &callback
+      ]
+    );
+  }
+  multi method writev_all_async (
     Pointer             $vectors,
     Int()               $n_vectors,
     Int()               $io_priority,
@@ -776,6 +926,30 @@ class GIO::OutputStream {
       $cancellable,
       &callback,
       $user_data
+    );
+  }
+  multi method writev_async (
+                    @vectors,
+    GCancellable()  $cancellable,
+                    &callback,
+    gpointer        $user_data                = gpointer,
+    Int()          :$io_priority              = 0,
+    Int()          :$flags                    = 0,
+                   :$promise      is required = False,
+                   :$promise-in               = 0
+  ) {
+    makePromise(
+      self,
+      &?ROUTINE.name,
+      in             => $promise-in,
+      args           => [
+        ArrayToCArray(GOutputVector, @vectors),
+        @vectors.elems,
+        $io_priority,
+        $cancellable,
+        &callback,
+        &callback
+      ]
     );
   }
   multi method writev_async (

@@ -72,12 +72,13 @@ role GIO::Roles::AppInfo {
 
   method get_default_for_type (
     Str() $content-type,
-    Int() $must_support_uris,
-          :$raw               = False
+    Int() $must_support_uris = False,
+          :$raw              = False
   )
     is also<get-default-for-type>
   {
-    my gboolean $m = $must_support_uris;
+    my gboolean $m = $must_support_uris.so.Int;
+
     my $ai = g_app_info_get_default_for_type(
       $content-type,
       $must_support_uris

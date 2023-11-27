@@ -9,13 +9,15 @@ use GIO::Raw::ListStore;
 
 use GLib::Value;
 
-use GLib::Roles::Properties;
+use GLib::Roles::Object;
+use GIO::Roles::ListModel;
 
 our subset GListStoreAncestry is export of Mu
-  where GListStore | GObject;
+  where GListStore | GListModel | GObject;
 
 class GIO::ListStore {
-  also does GLib::Roles::Properties;
+  also does GLib::Roles::Object;
+  also does GIO::Roles::ListModel;
 
   has GListStore $!ls is implementor;
 
@@ -32,12 +34,19 @@ class GIO::ListStore {
         $_;
       }
 
+      when GListModel {
+        $to-parent = cast(GObject, $_);
+        $!lm       = $_;
+        cast(GListStore, $_);
+      }
+
       default {
         $to-parent = $_;
         cast(GListStore, $_);
       }
     }
     self!setObject($to-parent);
+    self.roleInit-GListModel;
   }
 
   method GIO::Raw::Definitions::GListStore
@@ -53,6 +62,7 @@ class GIO::ListStore {
   }
   multi method new (Int() $type) {
     my GType $t = $type;
+
     my $store = g_list_store_new($t);
 
     $store ?? self.bless( :$store ) !! Nil;
@@ -83,10 +93,50 @@ class GIO::ListStore {
     );
   }
 
+  # cw: This will need to be repeated for all basic item types.
+  multi method append (Str $item) {
+    die "Cannot append Str when ListStore is of type {
+         GTypeEnum( self.item-type ) }"
+    unless self.item_type == G_TYPE_STRING;
 
-  method append (gpointer $item) {
+    nextwith( cast(Pointer, $item) );
+  }
+  multi method Append (Int $item, :$double = False, :$signed = False) {
+    die "Cannot append Str when ListStore is of type {
+         GTypeEnum( self.item-type ) }"
+    unless self.item_type == do {
+      when $signed     & $double     { G_TYPE_INT64 }
+      when $signed.not & $double     { G_TYPE_UINT64 }
+      when $signed.not & $double.not { G_TYPE_INT    }
+      when $signed     & $double.not { G_TYPE_INT    }
+    }
+
+    # cw: Should also perform basic checks on value limits for $item.
+    #     Any fault here is NON fatal and clamped.
+
+    nextwith( toPointer($item, :$double, :$signed) )
+  }
+  multi method append (Num $item, :$double = True) {
+    die "Cannot append Str when ListStore is of type {
+         GTypeEnum( self.item-type ) }"
+    unless self.item_type == do {
+      when  $double     { G_TYPE_DOUBLE }
+      when  $double.not { G_TYPE_FLOAT  }
+    }
+
+    # cw: Should also perform basic checks on value limits for $item.
+    #     Any fault here is NON fatal and clamped.
+
+    nextwith( toPointer($item, :$double) )
+  }
+  multi method append (GLib::Roles::Object $item) {
+    samewith( $item.p );
+  }
+  multi method append (gpointer $item) {
     g_list_store_append($!ls, $item);
   }
+
+
 
   method insert (Int() $position, gpointer $item) {
     my guint $p = $position;

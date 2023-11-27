@@ -42,10 +42,10 @@ role GIO::Roles::Signals::TlsConnection {
 # GTlsConnection, GTlsCertificate, GTlsCertificateFlags, gpointer --> gboolean
 sub g-connect-accept-certificate(
   Pointer $app,
-  Str $name,
-  &handler (Pointer, GTlsCertificate, GTlsCertificateFlags, Pointer --> gboolean),
+  Str     $name,
+          &handler (Pointer, GTlsCertificate, GTlsCertificateFlags, Pointer --> gboolean),
   Pointer $data,
-  uint32 $flags
+  uint32  $flags
 )
   returns uint64
   is native(gobject)

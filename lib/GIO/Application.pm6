@@ -8,13 +8,16 @@ use GIO::Raw::Application;
 
 use GLib::Roles::Object;
 
+use GIO::Resource;
 use GIO::DBus::Connection;
 
 use GIO::Roles::ActionMap;
 use GIO::Roles::Signals::Application;
 
-our subset ApplicationAncestry is export of Mu
+our subset GApplicationAncestry is export of Mu
   where GApplication | GObject;
+
+constant ApplicationAncestry is export = GApplicationAncestry;
 
 class GIO::Application {
   also does GLib::Roles::Object;
@@ -23,23 +26,29 @@ class GIO::Application {
 
   has GApplication $!a is implementor;
 
-  submethod BUILD (:$application) {
-    return unless $application;
-
-    given $application {
-      when ApplicationAncestry { self.setApplication($application) }
-      when GIO::Application    { }
-      default                  { }
-    }
+  submethod BUILD ( :$gio-application ) {
+    self.setGApplication($gio-application) if $gio-application;
   }
 
-  method setApplication (ApplicationAncestry $_) {
-    $!a = do {
-      when GApplication { $_ }
-      default           { cast(GApplication, $_) }
-    }
+  method setGApplication (GApplicationAncestry $_) {
+    my $to-parent;
 
-    self.roleInit-Object;
+    say "set-GApp: { $_ }";
+
+    $!a = do {
+      when GApplication {
+        $to-parent = cast(GObject, $_);
+        $_
+      }
+
+      default {
+        $to-parent = $_;
+        cast(GApplication, $_)
+      }
+    }
+    say "GObject: { $to-parent }" if $DEBUG // 0 > 2;
+    say "Implementor: { $!a }"    if $DEBUG // 0 > 2;
+    self!setObject($to-parent);
     self.roleInit-ActionMap;
   }
 
@@ -47,18 +56,23 @@ class GIO::Application {
     is also<GApplication>
   { $!a }
 
-  multi method new (ApplicationAncestry $application, :$ref = True) {
-    return Nil unless $application;
+  multi method new (GApplicationAncestry $gio-application, :$ref = True) {
+    return Nil unless $gio-application;
 
-    my $a = self.bless(:$application);
+    my $a = self.bless( :$gio-application );
     $a.ref if $ref;
     $a;
   }
-  multi method new (Str() $app_id, Int() $flags) {
-    my GApplicationFlags $f = $flags;
-    my $application = g_application_new($app_id, $f);
+  multi method new (Str() $app_id, Int() $flags = 0) {
+    say 'using GIO::Application.new...';
 
-    $application ?? self.bless( :$application ) !! Nil;
+    my GApplicationFlags $f = $flags;
+
+    my $gio-application = g_application_new($app_id, $f);
+
+    say "G-App: { $gio-application // '»UNDEF«' }";
+
+    $gio-application ?? self.bless( :$gio-application ) !! Nil;
   }
 
   method get_default (GIO::Application:U: :$raw = False) is also<get-default> {
@@ -72,44 +86,64 @@ class GIO::Application {
 
   # Is originally:
   # GApplication, gpointer --> void
-  method activate {
+  method activate is also<Activate> {
+    say "activate: { $!a // '»NIL«' }" if $DEBUG // 0 > 2;
+
     self.connect($!a, 'activate');
   }
 
   # Is originally:
   # GApplication, GApplicationCommandLine, gpointer --> gint
-  method command-line is also<command_line> {
+  method command-line
+    is also<
+      command_line
+      Command-Line
+      Command_Line
+    >
+  {
     self.connect-command-line($!a);
   }
 
   # Is originally:
   # GApplication, GVariantDict, gpointer --> gint
-  method handle-local-options is also<handle_local_options> {
+  method handle-local-options
+    is also<
+      handle_local_options
+      Handle-Local-Options
+      Handle_Local_Options
+    >
+  {
     self.connect-handle-local-options($!a);
   }
 
   # Is originally:
   # GApplication, gpointer --> gboolean
-  method name-lost is also<name_lost> {
+  method name-lost
+    is also<
+      name_lost
+      Name-Lost
+      Name_Lost
+    >
+  {
     self.connect-rbool($!a, 'name-lost');
   }
 
   # Is originally:
   # GApplication, gpointer, gint, Str, gpointer --> void
   # Made multi so as to not conflict with below methods.
-  multi method open {
+  multi method open is also<Open> {
     self.connect-open($!a);
   }
 
   # Is originally:
   # GApplication, gpointer --> void
-  method shutdown {
+  method shutdown is also<Shutdown> {
     self.connect($!a, 'shutdown');
   }
 
   # Is originally:
   # GApplication, gpointer --> void
-  method startup {
+  method startup is also<Startup> {
     self.connect($!a, 'startup');
   }
 
@@ -125,7 +159,7 @@ class GIO::Application {
     Str()      $description,
     Str()      $arg_description
   )
-    is also<add-4-option>
+    is also<add-main-option>
   {
     my GOptionFlags $f = $flags;
 
@@ -231,6 +265,16 @@ class GIO::Application {
     g_application_open($!a, $files, $n_files, $hint);
   }
 
+  method postInit {
+    for $*PROGRAM.dirname.IO.dir.grep( *.extension eq 'gresource' ) {
+      print "Loading resources from { .absolute }...";
+      GIO::Resources.register(
+        GIO::Resource.load( .absolute )
+      );
+      say "done!";
+    }
+  }
+
   proto method quit (|)
     is also<exit>
   { * }
@@ -287,10 +331,10 @@ class GIO::Application {
     g_application_set_action_group($!a, $action_group);
   }
 
-  method set_application_id (Str() $application_id)
+  method set_application_id (Str() $gio-application_id)
     is also<set-application-id>
   {
-    g_application_set_application_id($!a, $application_id);
+    g_application_set_application_id($!a, $gio-application_id);
   }
 
   method set_default is also<set-default> {

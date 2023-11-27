@@ -124,7 +124,12 @@ sub g_bus_watch_name (
   GBusType             $bus_type,
   Str                  $name,
   GBusNameWatcherFlags $flags,
-                       &name_appeared_handler (GDBusConnection, Str, Str, Pointer),
+                       &name_appeared_handler (
+                         GDBusConnection,
+                         Str,
+                         Str,
+                         Pointer
+                       ),
                        &name_vanished_handler (GDBusConnection, Str, Pointer),
   gpointer             $user_data,
   GDestroyNotify       $user_data_free_func
@@ -138,7 +143,12 @@ sub g_bus_watch_name_on_connection (
   GDBusConnection      $connection,
   Str                  $name,
   GBusNameWatcherFlags $flags,
-                       &name_appeared_handler (GDBusConnection, Str, Str, Pointer),
+                       &name_appeared_handler (
+                         GDBusConnection,
+                         Str,
+                         Str,
+                         Pointer
+                       ),
                        &name_vanished_handler (GDBusConnection, Str, Pointer),
   gpointer             $user_data,
   GDestroyNotify       $user_data_free_func

@@ -30,6 +30,22 @@ sub prep-supply ($supply, $callback, $name) is export {
   ($new-callback // $callback, $new-supply);
 }
 
+# cw: The name "promisify" is LTA. (This ain't that much better)
+sub makePromise ( $o, $m, :$in = 0, :$args = @() ) is export {
+  my $p = Promise.new;
+
+  for $args {
+    .wrap({
+      nextsame;
+      $p.keep;
+    }) if Callable;
+  }
+
+  $o."$m"( |$args );
+
+  $p;
+}
+
 sub g_io_error_quark ()
   returns GQuark
   is export

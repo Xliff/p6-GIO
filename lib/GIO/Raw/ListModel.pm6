@@ -39,3 +39,9 @@ sub g_list_model_items_changed (
   is native(gio)
   is export
 { * }
+
+sub g_list_model_get_type
+  returns GType
+  is native(gio)
+  is export
+{ * }

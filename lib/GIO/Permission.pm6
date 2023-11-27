@@ -3,6 +3,7 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
+use GLib::Raw::Traits;
 use GIO::Raw::Types;
 use GIO::Raw::Permission;
 
@@ -34,6 +35,7 @@ class GIO::Permission {
         cast(GPermission, $_);
       }
     }
+    say "P: { $!p } / O: { $to-parent }";
     self!setObject($to-parent);
   }
 
@@ -44,8 +46,13 @@ class GIO::Permission {
     $o.ref if $ref;
     $o;
   }
+  multi method new {
+    my $permission = GLib::Object.new-object-ptr( self.get_type );
 
-  method GIO::Raw::Definitions::GPermission
+    $permission ?? self.bless( :$permission ) !! Nil;
+  }
+
+  method GIO::Raw::Structs::GPermission
     is also<GPermission>
   { $!p }
 
@@ -53,6 +60,47 @@ class GIO::Permission {
   # ↑↑↑↑ SIGNALS ↑↑↑↑
 
   # ↓↓↓↓ ATTRIBUTES ↓↓↓↓
+  # Type: boolean
+  method allowed is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_BOOLEAN );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('allowed', $gv);
+        $gv.boolean;
+      },
+      STORE => -> $, Int() $val is copy {
+        warn 'allowed does not allow writing'
+      }
+    );
+  }
+
+  # Type: boolean
+  method can-acquire is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_BOOLEAN );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('can-acquire', $gv);
+        $gv.boolean;
+      },
+      STORE => -> $, Int() $val is copy {
+        warn 'can-acquire does not allow writing'
+      }
+    );
+  }
+
+  # Type: boolean
+  method can-release is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_BOOLEAN );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('can-release', $gv);
+        $gv.boolean;
+      },
+      STORE => -> $, Int() $val is copy {
+        warn 'can-release does not allow writing'
+      }
+    );
+  }
   # ↑↑↑↑ ATTRIBUTES ↑↑↑↑
 
   # ↓↓↓↓ METHODS ↓↓↓↓
@@ -96,32 +144,16 @@ class GIO::Permission {
     $rv;
   }
 
-  method get_allowed
-    is also<
-      get-allowed
-      allowed
-    >
-  {
+  method get_allowed is also<get-allowed> {
     so g_permission_get_allowed($!p);
   }
 
-  method get_can_acquire
-    is also<
-      get-can-acquire
-      can_acquire
-      can-acquire
-    >
+  method get_can_acquire is also<get-can-acquire>
   {
     so g_permission_get_can_acquire($!p);
   }
 
-  method get_can_release
-    is also<
-      get-can-release
-      can_relase
-      can-release
-    >
-  {
+  method get_can_release is also<get-can-release> {
     so g_permission_get_can_release($!p);
   }
 

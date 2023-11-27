@@ -671,7 +671,7 @@ sub g_file_new_for_commandline_arg_and_cwd (Str $arg, Str $cwd)
   is export
 { * }
 
-sub g_file_new_for_path (Str $path)
+sub g_file_new_for_path (CArray[uint8] $path)
   returns GFile
   is native(gio)
   is export

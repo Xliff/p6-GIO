@@ -45,10 +45,10 @@ role GIO::Roles::Signals::Settings {
 # GSettings, gpointer, gint, gpointer --> gboolean
 sub g-connect-change-event(
   Pointer $app,
-  Str $name,
-  &handler (Pointer, gpointer, gint, Pointer --> gboolean),
+  Str     $name,
+          &handler (Pointer, gpointer, gint, Pointer --> gboolean),
   Pointer $data,
-  uint32 $flags
+  uint32  $flags
 )
   returns uint64
   is native(gobject)

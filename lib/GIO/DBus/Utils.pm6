@@ -153,7 +153,37 @@ class GIO::DBus::Utils {
     g_bus_unwatch_name($w);
   }
 
-  method watch_name (
+  proto method watch_name (|)
+  { * }
+
+  # cw: -XXX- Apply this treatment on all similar, please!
+  #     2022/09/16
+  multi method watch_name (
+    Int()          $bus_type,
+    Str()          $name,
+    gpointer       $user_data               = gpointer,
+    Int()          :$flags                  = 0,
+                   :name-appeared-handler(
+                      :&name_appeared_handler
+                    ) = Callable,
+                   :name-vanished-handler(
+                      :&name_vanished_handler
+                    ) = Callable,
+                   :user-data-free-func(
+                      :&user_data_free_func
+                    ) = Callable
+  ) {
+    samewith(
+      $bus_type,
+      $name,
+      $flags,
+      &name_appeared_handler,
+      &name_vanished_handler,
+      $user_data,
+      &user_data_free_func
+    );
+  }
+  multi method watch_name (
     Int()          $bus_type,
     Str()          $name,
     Int()          $flags                  = 0,

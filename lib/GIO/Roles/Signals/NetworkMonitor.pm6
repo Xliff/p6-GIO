@@ -41,10 +41,10 @@ role GIO::Roles::Signals::NetworkMonitor {
 # GNetworkMonitor, gboolean, gpointer
 sub g-connect-network-changed(
   Pointer $app,
-  Str $name,
-  &handler (Pointer, gboolean, Pointer),
+  Str     $name,
+          &handler (Pointer, gboolean, Pointer),
   Pointer $data,
-  uint32 $flags
+  uint32  $flags
 )
   returns uint64
   is native(gobject)

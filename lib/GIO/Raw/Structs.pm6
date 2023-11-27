@@ -2,6 +2,7 @@ use v6.c;
 
 use NativeCall;
 
+use GLib::Raw::Debug;
 use GLib::Raw::Definitions;
 use GLib::Raw::Enums;
 use GLib::Raw::Object;
@@ -178,6 +179,14 @@ class GActionEntry is repr('CStruct') does GLib::Roles::Pointers is export {
     &change_state   = Callable
   ) {
     self.bless(:$name, :&activate, :$parameter_type, :$state, :&change_state);
+  }
+
+  method gist {
+    "GActionEntry.new(\n{
+      self.^attributes.sort( *.name )
+                      .map({ "  { .name.substr(2) } => { .get_value(self) // '' }" })
+                      .join(",\n")
+     }\n)";
   }
 
 }

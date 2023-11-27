@@ -37,10 +37,10 @@ role GIO::Roles::Signals::ListModel {
 # GListModel, guint, guint, guint, gpointer
 sub g-connect-items-changed(
   Pointer $app,
-  Str $name,
-  &handler (Pointer, guint, guint, guint, Pointer),
+  Str     $name,
+          &handler (Pointer, guint, guint, guint, Pointer),
   Pointer $data,
-  uint32 $flags
+  uint32  $flags
 )
   returns uint64
   is native(gobject)

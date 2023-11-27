@@ -5,7 +5,7 @@ use NativeCall;
 
 use GIO::Raw::Structs;
 
-plan 7;
+plan 8;
 
 require ::($_ = "GIO::Raw::Structs");
 for ::($_ ~ "::EXPORT::DEFAULT").WHO

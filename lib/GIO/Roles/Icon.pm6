@@ -94,10 +94,7 @@ role GIO::Roles::Icon {
   }
 
   method to_string
-    is also<
-      to-string
-      Str
-    >
+    is also<to-string>
   {
     g_icon_to_string($!icon);
   }
@@ -108,7 +105,9 @@ role GIO::Roles::Icon {
 our subset GIconAncestry is export of Mu
   where GIcon | GObject;
 
-class GIO::Icon does GLib::Roles::Object does GIO::Roles::Icon {
+class GIO::Icon {
+  also does GLib::Roles::Object;
+  also does GIO::Roles::Icon;
 
   method BUILD (:$icon) {
     self.setGIcon($icon) if $icon;
@@ -138,6 +137,14 @@ class GIO::Icon does GLib::Roles::Object does GIO::Roles::Icon {
     my $o = self.bless( :$icon );
     $o.ref if $ref;
     $o;
+  }
+
+  method get_type is also<get-type> {
+    self.icon_get_type;
+  }
+
+  method debug ($n) {
+    'NO OUTPUT';
   }
 
 }

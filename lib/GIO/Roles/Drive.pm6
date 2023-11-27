@@ -81,27 +81,27 @@ role GIO::Roles::Drive {
   { * }
 
   multi method eject_with_operation (
-    Int()               $flags,
-    Int()               $mount_operation,
-                        &callback,
-    gpointer            $user_data        = gpointer
+    Int()                $flags,
+                         &callback,
+    gpointer             $user_data        = gpointer,
+    GMountOperation()   :$mount_operation  = GMountOperation,
+    GCancellable()      :$cancellable      = GCancellable
   ) {
-    samewith($flags, $mount_operation, GCancellable, &callback, $user_data);
+    samewith($flags, $mount_operation, $cancellable, &callback, $user_data);
   }
   multi method eject_with_operation (
     Int()               $flags,
-    Int()               $mount_operation,
+    GMountOperation()   $mount_operation,
     GCancellable()      $cancellable,
                         &callback,
     gpointer            $user_data        = gpointer
   ) {
     my GMountUnmountFlags $f = $flags;
-    my GMountOperation    $m = $mount_operation;
 
     g_drive_eject_with_operation(
       $!d,
       $f,
-      $m,
+      $mount_operation,
       $cancellable,
       &callback,
       $user_data
@@ -230,10 +230,11 @@ role GIO::Roles::Drive {
   { * }
 
   multi method poll_for_media (
-             &callback,
-    gpointer $user_data = gpointer
+                    &callback,
+    gpointer        $user_data   = gpointer,
+    GCancellable() :$cancellable = GCancellable
   ) {
-    samewith(GCancellable, &callback, $user_data);
+    samewith($cancellable, &callback, $user_data);
   }
   multi method poll_for_media (
     GCancellable() $cancellable,
@@ -256,24 +257,31 @@ role GIO::Roles::Drive {
   }
 
   multi method start (
-    Int()    $flags,
-    Int()    $mount_operation,
-             &callback,
-    gpointer $user_data        = gpointer
+    Int()              $flags,
+                       &callback,
+    gpointer           $user_data       = gpointer,
+    GMountOperation() :$mount_operation = GMountOperation,
+    GCancellable()    :$cancellable     = GCancellable
   ) {
-    samewith($flags, $mount_operation, GCancellable, &callback, $user_data);
+    samewith($flags, $mount_operation, $cancellable, &callback, $user_data);
   }
   multi method start (
-    Int()          $flags,
-    Int()          $mount_operation,
-    GCancellable() $cancellable,
-                   &callback,
-    gpointer       $user_data        = gpointer
+    Int()             $flags,
+    GMountOperation() $mount_operation,
+    GCancellable()    $cancellable,
+                      &callback,
+    gpointer          $user_data        = gpointer
   ) {
     my GDriveStartFlags $f = $flags;
-    my GMountOperation  $m = $mount_operation;
 
-    g_drive_start($!d, $f, $m, $cancellable, &callback, $user_data);
+    g_drive_start(
+      $!d,
+      $f,
+      $mount_operation,
+      $cancellable,
+      &callback,
+      $user_data
+    );
   }
 
   method start_finish (
@@ -290,23 +298,30 @@ role GIO::Roles::Drive {
 
   multi method stop (
     Int()               $flags,
-    Int()               $mount_operation,
                         &callback,
-    gpointer            $user_data = gpointer
+    gpointer            $user_data       = gpointer,
+    GMountOperation()  :$mount_operation = GMountOperation,
+    GCancellable()     :$cancellable     = GCancellable
   ) {
-    samewith($flags, $mount_operation, GCancellable, &callback, $user_data);
+    samewith($flags, $mount_operation, $cancellable, &callback, $user_data);
   }
   multi method stop (
     Int()               $flags,
-    Int()               $mount_operation,
+    GMountOperation()   $mount_operation,
     GCancellable()      $cancellable,
                         &callback,
     gpointer            $user_data = gpointer
   ) {
     my GMountUnmountFlags $f = $flags;
-    my GMountOperation    $m = $mount_operation;
 
-    g_drive_stop($!d, $f, $m, $cancellable, &callback, $user_data);
+    g_drive_stop(
+      $!d,
+      $f,
+      $mount_operation,
+      $cancellable,
+      &callback,
+      $user_data
+    );
   }
 
   method stop_finish (

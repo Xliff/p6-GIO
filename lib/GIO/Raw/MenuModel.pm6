@@ -129,3 +129,9 @@ sub g_menu_model_iterate_item_links (
   is native(gio)
   is export
   { * }
+
+sub g_menu_model_get_type
+  returns GType
+  is      native(gio)
+  is      export
+{ * }
