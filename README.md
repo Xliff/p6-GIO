@@ -1,4 +1,4 @@
-# p6-GIO - GNOME libgio bindings for Perl6
+# p6-GIO - GNOME libgio bindings for Raku
 
 ## Installation
 
