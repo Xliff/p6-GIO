@@ -9,6 +9,7 @@ use GLib::Raw::Structs;
 use GLib::Raw::Subs;
 use GLib::Raw::Struct_Subs;
 use GIO::Raw::Definitions;
+use GIO::Raw::Enums;
 
 unit package GIO::Raw::Subs;
 
@@ -28,6 +29,26 @@ sub prep-supply ($supply, $callback, $name) is export {
   }
 
   ($new-callback // $callback, $new-supply);
+}
+
+sub resolveSettingBindFlags (
+  :$default     = False,
+  :$get         = False,
+  :$set         = False,
+  :$sensitivity = True,
+  :$changes     = True,
+  :$invert      = False
+) {
+  my $f = 0;
+
+  return if $default;
+
+  $f +|= G_SETTINGS_BIND_GET            if     $get;
+  $f +|= G_SETTINGS_BIND_SET            if     $set;
+  $f +|= G_SETTINGS_BIND_NO_SENSITIVITY unless $sensitivity;
+  $f +|= G_SETTINGS_BIND_GET_NO_CHANGES unless $changes;
+  $f +|= G_SETTINGS_BIND_INVERT_BOOLEAN if     $invert;
+  $f;
 }
 
 # cw: The name "promisify" is LTA. (This ain't that much better)
