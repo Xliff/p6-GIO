@@ -1122,8 +1122,8 @@ class GIO::DBus::Connection {
   }
 
   multi method close (
-    GCancellable() $cancellable    = GCancellable,
-    CArray[Pointer[GError]] $error = gerror
+    GCancellable()          $cancellable = GCancellable,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     g_dbus_connection_close_sync($!dc, $cancellable, $error);
   }
@@ -1134,7 +1134,7 @@ class GIO::DBus::Connection {
     Str()                   $interface_name,
     Str()                   $signal_name,
     GVariant()              $parameters,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error                 = gerror
   )
     is also<emit-signal>
   {
@@ -1240,11 +1240,11 @@ class GIO::DBus::Connection {
   }
 
   # Helper methods
-  method get_sync_system (GIO::DBus::Connection:U: ) 
+  method get_sync_system (GIO::DBus::Connection:U: )
     is also<
       get-sync-system
       system
-    > 
+    >
   {
     GIO::DBus::Connection.get_sync(G_BUS_TYPE_SYSTEM);
   }
@@ -1267,11 +1267,11 @@ class GIO::DBus::Connection {
     GIO::DBus::Connection.get_sync(G_BUS_TYPE_STARTER);
   }
 
-  method get_sync_none (GIO::DBus::Connection:U: ) 
+  method get_sync_none (GIO::DBus::Connection:U: )
     is also<
       get-sync-none
       none
-    > 
+    >
   {
     GIO::DBus::Connection.get_sync(G_BUS_TYPE_NONE);
   }
@@ -1599,8 +1599,8 @@ class GIO::DBus::Connection {
   { * }
 
   multi method signal_subscribe (
-                   &callback            = Callable,
-    gpointer       $user_data           = gpointer,
+                    &callback            = Callable,
+    gpointer        $user_data           = gpointer,
     Str()          :$sender              = Str,
     Str()          :$interface_name      = Str,
     Str()          :$member              = Str,
@@ -1688,7 +1688,7 @@ class GIO::DBus::Connection {
   method export_menu_model (
     Str()                   $object_path,
     GMenuModel()            $menu,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error        = gerror
   ) {
     clear_error;
     my $r = g_dbus_connection_export_menu_model(
