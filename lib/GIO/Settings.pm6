@@ -586,13 +586,13 @@ class GIO::Settings {
     Str() $key,
           @value
   ) {
-    samewith( $key, resolve-gstrv(@value) );
+    samewith( $key, ArrayToCArray(@value, :null) );
   }
   multi method set_strv (
     Str()       $key,
     CArray[Str] $value
   ) {
-    so g_settings_set_strv($!s, $key, $value)
+    so g_settings_set_strv($!s, $key, resolve-gstrv($value) )
   }
 
   method set_int (Str() $key, Int() $value) is also<set-int> {
