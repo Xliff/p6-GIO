@@ -361,7 +361,7 @@ our enum GSettingsBindFlagsEnum          is export (
   G_SETTINGS_BIND_NO_SENSITIVITY => 1 +<2,
   G_SETTINGS_BIND_GET_NO_CHANGES => 1 +<3,
   G_SETTINGS_BIND_INVERT_BOOLEAN => 1 +<4
-  );
+);
 
 constant GSocketProtocol                 is export := gint;
 our enum GSocketProtocolEnum             is export (
