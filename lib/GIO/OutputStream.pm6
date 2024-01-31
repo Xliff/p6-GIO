@@ -38,7 +38,7 @@ class GIO::OutputStream {
     self!setObject($to-parent);
   }
 
-  method GIO::Raw::Definitions::GOutputStream
+  method GIO::Raw::Structs::GOutputStream
     is also<GOutputStream>
   { $!os }
 

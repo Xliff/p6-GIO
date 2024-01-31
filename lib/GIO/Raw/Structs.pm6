@@ -191,6 +191,16 @@ class GActionEntry is repr('CStruct') does GLib::Roles::Pointers is export {
 
 }
 
+class GInputStream is repr<CStruct> does GLib::Roles::Pointers is export {
+  HAS GObject  $!parent;
+  has gpointer $!private;
+}
+
+class GOutputStream is repr<CStruct> does GLib::Roles::Pointers is export {
+  HAS GObject  $!parent;
+  has gpointer $!private;
+}
+
 sub sprintf-SaVP (
   Blob,
   Str,

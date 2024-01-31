@@ -30,7 +30,7 @@ class GIO::InputStream {
     self.roleInit-Object;
   }
 
-  method GIO::Raw::Definitions::GInputStream
+  method GIO::Raw::Structs::GInputStream
     is also<GInputStream>
   { $!is }
 

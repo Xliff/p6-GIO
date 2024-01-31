@@ -86,7 +86,6 @@ class GInetAddress             is repr<CPointer> is export does GLib::Roles::Poi
 class GInetAddressMask         is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GInetSocketAddress       is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GInitable                is repr<CPointer> is export does GLib::Roles::Pointers                      { }
-class GInputStream             is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GIOStream                is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GListModel               is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GListStore               is repr<CPointer> is export does GLib::Roles::Pointers                      { }
@@ -107,7 +106,6 @@ class GNetworkService          is repr<CPointer> is export does GLib::Roles::Poi
 class GNotification            is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 #class GOptionEntry             is repr<CPointer> is export does GLib::Roles::Pointers { } --- Now defined in GLib::Raw::Structs
 #class GOptionGroup             is repr<CPointer> is export does GLib::Roles::Pointers { } --- Now defined in GLib::Raw::Definitions
-class GOutputStream            is repr<CPointer> is export does GLib::Roles::Pointers does NativeSized[32] { }
 class GPollableInputStream     is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GPollableOutputStream    is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GPropertyAction          is repr<CPointer> is export does GLib::Roles::Pointers                      { }
