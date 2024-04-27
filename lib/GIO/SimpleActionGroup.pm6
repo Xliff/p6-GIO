@@ -4,6 +4,7 @@ use Method::Also;
 use NativeCall;
 
 use GIO::Raw::Types;
+use GIO::Raw::SimpleActionGroup;
 
 use GLib::Roles::Object;
 use GIO::Roles::ActionGroup;
@@ -17,7 +18,7 @@ class GIO::SimpleActionGroup {
   also does GIO::Roles::ActionGroup;
   also does GIO::Roles::ActionMap;
 
-  has GSimpleActionGroup $!sag is implementor;
+  has GSimpleActionGroup $!gsag is implementor;
 
   submethod BUILD (:$group) {
     self.setGSimpleActionGroup($group) if $group;
@@ -26,7 +27,7 @@ class GIO::SimpleActionGroup {
   method setGSimpleActionGroup (GSimpleActionGroupAncestry $_) {
     my $to-parent;
 
-    $!sag = do {
+    $!gsag = do {
       when GSimpleActionGroup {
           $to-parent = cast(GObject, $_);
           $_
@@ -51,8 +52,12 @@ class GIO::SimpleActionGroup {
     }
     self!setObject($to-parent);
     self.roleInit-ActionMap;
-    self.roleInit-ActionGroup;
+    self.roleInit-GActionGroup;
   }
+
+  method GIO::Raw::Definitions::GSimpleActionGroup
+    is also<GSimpleActionGroup>
+  { $!gsag }
 
   multi method new (GSimpleActionGroupAncestry $group, :$ref = True) {
     return Nil unless $group;
@@ -66,7 +71,50 @@ class GIO::SimpleActionGroup {
 
     $group ?? self.bless( :$group ) !! Nil;
   }
+  multi method new (*@entries where *.elems >= 1) {
+    samewith(@entries);
+  }
+  multi method new (@entries, :$entries = False) {
+    say "E: { @entries.gist }";
+    my $o = samewith;
+    $entries ?? $o.add_entries(@entries) !! $o.insert(@entries);
+    $o;
+  }
 
+  multi method add_entries (@entries, gpointer $user_data = gpointer) {
+    samewith(
+      GLib::Roles::TypedBuffer[GActionEntry].new(
+        @entries,
+        typed => GActionEntry
+      ).p,
+      @entries.elems,
+      $user_data
+    )
+  }
+  multi method add_entries (
+    gpointer $entries,
+    Int()    $n_entries,
+    gpointer $user_data = gpointer
+  ) {
+    my gint $n = $n_entries;
+
+    g_simple_action_group_add_entries($!gsag, $entries, $n, $user_data);
+  }
+
+  multi method insert (@actions) {
+    self.insert($_) for @actions;
+  }
+  multi method insert (GAction() $action) {
+    g_simple_action_group_insert($!gsag, $action);
+  }
+
+  method lookup (Str() $action_name) {
+    g_simple_action_group_lookup($!gsag, $action_name);
+  }
+
+  method remove (Str() $action_name) {
+    g_simple_action_group_remove($!gsag, $action_name);
+  }
 
   method get_type is also<get-type> {
     state ($n, $t);
@@ -75,21 +123,3 @@ class GIO::SimpleActionGroup {
   }
 
 }
-
-sub g_simple_action_group_get_type ()
-  returns GType
-  is native(gio)
-  is export
-  { * }
-
-sub g_simple_action_group_new ()
-  returns GSimpleActionGroup
-  is native(gio)
-  is export
-  { * }
-
-# our %GIO::SimpleActionGroup::RAW-DEFS;
-# for MY::.pairs {
-#   %GIO::SimpleActionGroup::RAW-DEFS{.key} := .value
-#     if .key.starts-with('&g_simple_action_group_');
-# }
