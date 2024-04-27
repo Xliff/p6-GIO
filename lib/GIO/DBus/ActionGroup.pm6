@@ -12,6 +12,7 @@ our subset GDBusActionGroupAncestry is export of Mu
   where GDBusActionGroup | GRemoteActionGroup | GActionGroup | GObject;
 
 class GIO::DBus::ActionGroup {
+  also does GLib::Roles::Object;
   also does GIO::Roles::RemoteActionGroup;
 
   has GDBusActionGroup $!dag is implementor;
@@ -42,7 +43,11 @@ class GIO::DBus::ActionGroup {
     self.roleInit-RemoteActionGroup;
   }
 
-  multi method new (GDBusActionGroupAncestry $dbus-action-group, :$ref = True) {
+  multi method new (
+    GDBusActionGroupAncestry $dbus-action-group,
+
+    :$ref = True
+  ) {
     return Nil unless $dbus-action-group;
 
     my $o = self.bless( :$dbus-action-group );
@@ -76,8 +81,8 @@ class GIO::DBus::ActionGroup {
 
 sub g_dbus_action_group_get (
   GDBusConnection $connection,
-  Str $bus_name,
-  Str $object_path
+  Str             $bus_name,
+  Str             $object_path
 )
   returns GDBusActionGroup
   is native(gio)
@@ -86,12 +91,6 @@ sub g_dbus_action_group_get (
 
 sub g_dbus_action_group_get_type ()
   returns GType
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
-
-# our %GIO::DBus::ActionGroup::RAW-DEFS;
-# for MY::.pairs {
-#   %GIO::DBus::ActionGroup::RAW-DEFS{.key} := .value
-#     if .key.starts-with('&g_dbus_action_group_');
-# }

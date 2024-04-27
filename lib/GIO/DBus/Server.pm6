@@ -11,14 +11,14 @@ use GIO::DBus::Raw::Server;
 use GLib::Value;
 use GIO::DBus::AuthObserver;
 
-use GLib::Roles::Properties;
+use GLib::Roles::Object;
 use GIO::DBus::Roles::Signals::Server;
 
 our subset GDBusServerAncestry is export of Mu
   where GDBusServer | GObject;
 
 class GIO::DBus::Server {
-  also does GLib::Roles::Properties;
+  also does GLib::Roles::Object;
   also does GIO::DBus::Roles::Signals::Server;
 
   has GDBusServer $!ds is implementor;

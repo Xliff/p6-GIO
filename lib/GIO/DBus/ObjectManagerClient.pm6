@@ -12,20 +12,18 @@ use GIO::DBus::Raw::ObjectManagerClient;
 use GLib::Value;
 use GIO::DBus::Connection;
 
-use GLib::Roles::Properties;
+use GLib::Roles::Object;
 
 our subset GDBusObjectManagerClientAncestry is export of Mu
   where GDBusObjectManagerClient | GObject;
 
 class GIO::DBus::ObjectManagerClient {
-  also does GLib::Roles::Properties;
+  also does GLib::Roles::Object;
 
   has GDBusObjectManagerClient $!domc is implementor;
 
   submethod BUILD (:$client) {
-    $!domc = $client;
-
-    self.roleInit-Object;
+    self.setGDBusObjectManagerClient($client) if $client;
   }
 
   method setGDBusObjectManagerClient (GDBusObjectManagerClientAncestry $_) {
@@ -46,6 +44,7 @@ class GIO::DBus::ObjectManagerClient {
   }
 
   method GIO::Raw::Definitions::GDBusObjectManagerClient
+    is also<GDBusObjectManagerClient>
   { $!domc }
 
   multi method new (GDBusObjectManagerClientAncestry $client, :$ref = True) {
