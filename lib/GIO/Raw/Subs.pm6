@@ -38,7 +38,9 @@ sub resolveSettingBindFlags (
   :$sensitivity = True,
   :$changes     = True,
   :$invert      = False
-) {
+)
+  is export
+{
   my $f = 0;
 
   return if $default;
