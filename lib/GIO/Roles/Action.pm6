@@ -19,6 +19,9 @@ role GIO::Roles::Action {
     my \i = findProperImplementor(self.^attributes);
     $!a = cast( GAction, i.get_value(self) );
   }
+  method roleInit-GAction {
+    self!roleInit-Action;
+  }
 
   method GIO::Raw::Definitions::GAction
     is also<

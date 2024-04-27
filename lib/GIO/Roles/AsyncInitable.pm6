@@ -72,8 +72,8 @@ role GIO::Roles::AsyncInitable {
     );
   }
   multi method init_async (
-                   &callback,
-    gpointer       $user_data    = gpointer,
+                    &callback,
+    gpointer        $user_data    = gpointer,
     Int()          :$io_priority  = G_PRIORITY_DEFAULT,
     GCancellable() :$cancellable  = GCancellable
   ) {

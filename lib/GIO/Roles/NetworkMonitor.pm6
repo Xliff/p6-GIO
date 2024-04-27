@@ -69,10 +69,10 @@ role GIO::Roles::NetworkMonitor {
   { * }
 
   multi method can_reach_async (
-    GSocketConnectable() $connectable,
-                         &callback,
-    gpointer             $user_data    = gpointer,
-    GCancellable()       :$cancellable = GCancellable
+     $connectable,
+     &callback,
+     $user_data    = gpointer,
+    :$cancellable  = GCancellable
   ) {
     samewith($connectable, $cancellable, &callback, $user_data);
   }

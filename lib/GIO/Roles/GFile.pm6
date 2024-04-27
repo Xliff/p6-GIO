@@ -127,14 +127,14 @@ role GIO::Roles::File {
   multi method new_for_path (Str $path, :$encoding = 'utf8' )  {
     say "String param...";
     my $file = g_file_new_for_path(
-      CArray[uint8].new( $path.encode($encoding) )
+      CArray[uint8].new( |$path.encode($encoding), 0 )
     );
 
     $file ?? self.bless(:$file) !! Nil;
   }
   multi method new_for_path ($path where * ~~ Blob)  {
     say "Blob param...";
-    samewith( CArray[uint8].new($path) );
+    samewith( CArray[uint8].new( |$path, 0 ) );
   }
   multi method new_for_path (CArray[uint8] $path)  {
     say "CArray param...";
@@ -203,7 +203,7 @@ role GIO::Roles::File {
     $iostream = GIO::FileIOStream.new($iostream, :!ref) unless $raw;
     say "F: $file / I: $iostream" if $DEBUG;
 
-    $file ?? self.bless( :$file ) !! Nil;
+    $file = $file ?? self.bless( :$file ) !! Nil;
     return $file if $file && $all.not;
     ($file, $iostream);
   }
@@ -930,6 +930,7 @@ role GIO::Roles::File {
   {
     g_file_get_uri($!file);
   }
+  method uri { self.get_uri }
 
   method get_uri_scheme
     is also<
