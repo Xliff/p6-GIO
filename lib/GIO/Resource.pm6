@@ -8,8 +8,12 @@ use GIO::Raw::Resource;
 
 use GLib::Bytes;
 
+use GLib::Roles::Implementor;
+
 # BOXED
 class GIO::Resource {
+  also does GLib::Roles::Implementor;
+  
   has GResource $!r is implementor;
 
   submethod BUILD (:$resource) {

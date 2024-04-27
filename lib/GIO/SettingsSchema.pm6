@@ -6,10 +6,14 @@ use NativeCall;
 use GIO::Raw::Types;
 use GIO::Raw::SettingsSchema;
 
+use GLib::Roles::Implementor;
+
 class GIO::SettingsSchema::Key { ... }
 
 # BOXED
 class GIO::SettingsSchema {
+  also does GLib::Roles::Implementor;
+  
   has GSettingsSchema $!ss is implementor;
 
   submethod BUILD (:$schema) {
@@ -270,7 +274,7 @@ class GIO::SettingsSchema::Source {
 
   method lookup (
     Str()  $schema_id,
-    Int()  $recursive  = False,  
+    Int()  $recursive  = False,
           :$raw        = False
   ) {
     my gboolean $r = $recursive;

@@ -5,8 +5,12 @@ use Method::Also;
 use GIO::Raw::Types;
 use GIO::Raw::FileInfo;
 
+use GLib::Roles::Implementor;
+
 # BOXED!
 class GIO::FileAttributeMatcher {
+  also does GLib::Roles::Implementor;
+
   has GFileAttributeMatcher $!fam is implementor;
 
   method BUILD (:$matcher) {
@@ -19,7 +23,7 @@ class GIO::FileAttributeMatcher {
 
   multi method new (GFileAttributeMatcher $matcher, :$ref = True) {
     return Nil unless $matcher;
-    
+
     my $o = self.bless( :$matcher );
     $o.ref if $ref;
     $o;
