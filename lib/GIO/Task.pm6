@@ -289,7 +289,7 @@ class GIO::Task {
     );
     set_error($error);
   }
-
+  
   method report_new_error (
     GIO::Task:U:
     GObject()           $source_object,
