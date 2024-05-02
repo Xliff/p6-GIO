@@ -77,6 +77,7 @@ class GFileInfo                is repr<CPointer> is export does GLib::Roles::Poi
 class GFileInputStream         is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GFileIOStream            is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GFileMonitor             is repr<CPointer> is export does GLib::Roles::Pointers                      { }
+class GFileMonitorSource       is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GFilenameCompleter       is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GFileOutputStream        is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GFilterInputStream       is repr<CPointer> is export does GLib::Roles::Pointers                      { }
@@ -90,6 +91,7 @@ class GIOStream                is repr<CPointer> is export does GLib::Roles::Poi
 class GListModel               is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GListStore               is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GLoadableIcon            is repr<CPointer> is export does GLib::Roles::Pointers                      { }
+class GLocalFileMonitor        is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GMemoryInputStream       is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GMemoryOutputStream      is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GMenu                    is repr<CPointer> is export does GLib::Roles::Pointers                      { }
