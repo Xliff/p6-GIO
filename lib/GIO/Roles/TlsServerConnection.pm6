@@ -51,8 +51,9 @@ role GIO::Roles::TlsServerConnection {
 our subset GTlsServerConnectionAncestry is export of Mu
   where GTlsServerConnection | GObject;
 
-class GIO::TlsServerConnection does GLib::Roles::Object
-                               does GIO::Roles::TlsServerConnection
+class GIO::TlsServerConnection
+  does GLib::Roles::Object
+  does GIO::Roles::TlsServerConnection
 {
 
   submethod BUILD (:$server-connection) {
@@ -101,6 +102,8 @@ class GIO::TlsServerConnection does GLib::Roles::Object
     $server-connection ?? self.bless( :$server-connection ) !! Nil;
   }
 }
+
+### /usr/src/glib/gio/gtlsserverconnection.h
 
 sub g_tls_server_connection_get_type ()
   returns GType
