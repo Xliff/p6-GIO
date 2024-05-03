@@ -51,9 +51,6 @@ class GIO::FileMonitor {
     $o.ref if $ref;
     $o;
   }
-  multi method new {
-    self.bless( monitor => GFileMonitor );
-  }
 
   # Type: gint
   method rate-limit is rw  is also<rate_limit> {
