@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::UnixCredentialsMessage;
 
+### /usr/src/glib/gio/gunixcredentialsmessage.h
+
 sub g_unix_credentials_message_get_credentials (GUnixCredentialsMessage $message)
   returns GCredentials
   is native(gio)

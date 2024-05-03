@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::UnixFDMessage;
 
+### /usr/src/glib/gio/gunixfdmessage.h
+
 sub g_unix_fd_message_append_fd (
   GUnixFDMessage          $message,
   gint                    $fd,
