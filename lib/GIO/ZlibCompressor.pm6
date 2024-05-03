@@ -34,7 +34,7 @@ class GIO::ZlibCompressor {
 
       when GConverter {
         $to-parent = cast(GObject, $_);
-        $!c = $_;
+        $!c        = $_;
         cast(GZlibCompressor, $_);
       }
 
@@ -123,22 +123,24 @@ class GIO::ZlibCompressor {
 
 }
 
+### /usr/src/glib/gio/gzlibcompressor.h
+
 sub g_zlib_compressor_get_type ()
   returns GType
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_zlib_compressor_new (GZlibCompressorFormat $format, gint $level)
   returns GZlibCompressor
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_zlib_compressor_get_file_info (GZlibCompressor $compressor)
   returns GFileInfo
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_zlib_compressor_set_file_info (
@@ -148,9 +150,3 @@ sub g_zlib_compressor_set_file_info (
   is native(gio)
   is export
 { * }
-
-# our %GIO::ZlibCompressor::RAW-DEFS;
-# for MY::.pairs {
-#   %GIO::ZlibCompressor::RAW-DEFS{.key} := .value
-#     if .key.starts-with('&g_zlib_compressor_');
-# }
