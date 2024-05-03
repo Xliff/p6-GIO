@@ -32,6 +32,12 @@ class GIO::ZlibDecompressor {
         $_;
       }
 
+      when GConverter {
+        $to-parent = cast(GObject, $_);
+        $!c        = $_;
+        cast(GZlibDecompressor, $_);
+      }
+
       default {
         $to-parent = $_;
         cast(GZlibDecompressor, $_);
@@ -94,16 +100,18 @@ class GIO::ZlibDecompressor {
 
 }
 
+### /usr/src/glib/gio/gzlibdecompressor.h
+
 sub g_zlib_decompressor_get_file_info (GZlibDecompressor $decompressor)
   returns GFileInfo
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_zlib_decompressor_get_type ()
   returns GType
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_zlib_decompressor_new (GZlibCompressorFormat $format)
