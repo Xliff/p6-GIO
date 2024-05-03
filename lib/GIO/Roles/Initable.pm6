@@ -143,10 +143,12 @@ class GIO::Initable does GLib::Roles::Object does GIO::Roles::Initable {
 
 }
 
+### /usr/src/glib/gio/ginitable.h
+
 sub g_initable_get_type ()
   returns GType
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_initable_new (
@@ -156,8 +158,8 @@ sub g_initable_new (
   Str
 )
   returns GObject
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_initable_init (
@@ -166,12 +168,6 @@ sub g_initable_init (
   CArray[Pointer[GError]] $error
 )
   returns uint32
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
-
-# our %GIO::Roles::Initable::RAW-DEFS;
-# for MY::.pairs {
-#   %GIO::Roles::Initable::RAW-DEFS{.key} := .value
-#     if .key.starts-with('&g_initable_');
-# }
