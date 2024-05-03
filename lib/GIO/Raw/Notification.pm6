@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::Notification;
 
+### /usr/src/glib/gio/gnotification.h
+
 sub g_notification_add_button (
   GNotification $notification,
   Str           $label,

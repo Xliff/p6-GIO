@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::TlsDatabase;
 
+### /usr/src/glib/gio/gtlsdatabase.h
+
 sub g_tls_database_create_certificate_handle (
   GTlsDatabase    $self,
   GTlsCertificate $certificate

@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::NetworkAddress;
 
+### /usr/src/glib/gio/gnetworkaddress.h
+
 sub g_network_address_get_hostname (GNetworkAddress $addr)
   returns Str
   is native(gio)

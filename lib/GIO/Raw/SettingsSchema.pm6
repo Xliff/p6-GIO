@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::SettingsSchema;
 
+### /usr/src/glib/gio/gsettingsschema.h
+
 sub g_settings_schema_get_id (GSettingsSchema $schema)
   returns Str
   is native(gio)

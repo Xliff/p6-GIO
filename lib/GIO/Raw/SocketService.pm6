@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::SocketService;
 
+### /usr/src/glib/gio/gsocketservice.h
+
 sub g_socket_service_get_type ()
   returns GType
   is native(gio)

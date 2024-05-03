@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::Raw::ListStore;
 
+### /usr/src/glib/gio/gliststore.h
+
 sub g_list_store_append (GListStore $store, gpointer $item)
   is native(gio)
   is export

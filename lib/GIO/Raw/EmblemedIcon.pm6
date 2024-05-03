@@ -11,6 +11,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::EmblemedIcon;
 
+### /usr/src/glib/gio/gemblemedicon.h
+
 sub g_emblemed_icon_add_emblem (GEmblemedIcon $emblemed, GEmblem $emblem)
   is native(gio)
   is export

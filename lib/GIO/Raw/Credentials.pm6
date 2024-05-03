@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::Raw::Credentials;
 
+### /usr/src/glib/gio/gcredentials.h
+
 sub g_credentials_get_native (
   GCredentials     $credentials,
   GCredentialsType $native_type

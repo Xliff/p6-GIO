@@ -166,6 +166,7 @@ class GIO::LoadableIcon does GLib::Roles::Object does GIO::Roles::LoadableIcon {
 
 }
 
+### /usr/src/glib/gio/gloadableicon.h
 
 sub g_loadable_icon_get_type ()
   returns GType

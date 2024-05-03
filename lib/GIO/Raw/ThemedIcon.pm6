@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::ThemedIcon;
 
+### /usr/src/glib/gio/gthemedicon.h
+
 sub g_themed_icon_append_name (GThemedIcon $icon, Str $iconname)
   is native(gio)
   is export

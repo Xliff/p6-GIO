@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::Raw::CharsetConverter;
 
+### /usr/src/glib/gio/gcharsetconverter.h
+
 sub g_charset_converter_get_num_fallbacks (GCharsetConverter $converter)
   returns guint
   is native(gio)

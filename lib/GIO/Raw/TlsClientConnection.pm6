@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::TlsClientConnection;
 
+### /usr/src/glib/gio/gtlsclientconnection.h
+
 sub g_tls_client_connection_copy_session_state (
   GTlsClientConnection $conn,
   GTlsClientConnection $source

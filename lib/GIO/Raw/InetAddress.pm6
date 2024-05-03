@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::Raw::InetAddress;
 
+### /usr/src/glib/gio/ginetaddress.h
+
 sub g_inet_address_equal (GInetAddress $address, GInetAddress $other_address)
   returns uint32
   is native(gio)

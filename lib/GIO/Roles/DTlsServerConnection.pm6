@@ -100,6 +100,8 @@ class GIO::DtlsServerConnection does GLib::Roles::Object
 
 }
 
+### /usr/src/glib/gio/gdtlsserverconnection.h
+
 sub g_dtls_server_connection_get_type ()
   returns GType
   is native(gio)

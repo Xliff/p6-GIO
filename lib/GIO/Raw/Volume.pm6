@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::Volume;
 
+### /usr/src/glib/gio/gvolume.h
+
 sub g_volume_can_eject (GVolume $volume)
   returns uint32
   is native(gio)

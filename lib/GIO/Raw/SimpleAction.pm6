@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::SimpleAction;
 
+### /usr/src/glib/gio/gsimpleaction.h
+
 sub g_simple_action_get_type ()
   returns GType
   is native(gio)

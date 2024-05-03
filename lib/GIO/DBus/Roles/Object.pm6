@@ -119,6 +119,8 @@ class GIO::DBus::Object  does GLib::Roles::Object
 
 }
 
+### /usr/src/glib/gio/gdbusobject.h
+
 sub g_dbus_object_get_interface (GDBusObject $object, Str $interface_name)
   returns GDBusInterface
   is native(gio)

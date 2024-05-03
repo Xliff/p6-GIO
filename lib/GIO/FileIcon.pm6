@@ -97,6 +97,8 @@ class GIO::FileIcon {
 
 }
 
+### /usr/src/glib/gio/gfileicon.h
+
 sub g_file_icon_get_file (GFileIcon $icon)
   returns GFile
   is native(gio)

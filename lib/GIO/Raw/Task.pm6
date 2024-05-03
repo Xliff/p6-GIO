@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::Task;
 
+### /usr/src/glib/gio/gtask.h
+
 sub g_task_attach_source (
   GTask   $task,
   GSource $source,

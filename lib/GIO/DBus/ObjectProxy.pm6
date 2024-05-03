@@ -103,6 +103,8 @@ class GIO::DBus::ObjectProxy {
 
 }
 
+### /usr/src/glib/gio/gdbusobjectproxy.h
+
 sub g_dbus_object_proxy_get_connection (GDBusObjectProxy $proxy)
   returns GDBusConnection
   is native(gio)

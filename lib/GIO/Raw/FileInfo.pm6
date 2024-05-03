@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::FileInfo;
 
+### /usr/src/glib/gio/gfileinfo.h
+
 sub g_file_info_clear_status (GFileInfo $info)
   is native(gio)
   is export

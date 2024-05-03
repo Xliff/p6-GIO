@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::TlsCertificate;
 
+### /usr/src/glib/gio/gtlscertificate.h
+
 sub g_tls_certificate_get_issuer (GTlsCertificate $cert)
   returns GTlsCertificate
   is native(gio)

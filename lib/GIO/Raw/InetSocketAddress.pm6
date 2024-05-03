@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::Raw::InetSocketAddress;
 
+### /usr/src/glib/gio/ginetsocketaddress.h
+
 sub g_inet_socket_address_get_address (GInetSocketAddress $address)
   returns GInetAddress
   is native(gio)

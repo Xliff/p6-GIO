@@ -10,6 +10,8 @@ use GIO::Raw::Definitions;
 use GIO::Raw::Enums;
 use GIO::Raw::Structs;
 
+### /usr/src/glib/gio/gproxyresolver.h
+
 unit package GIO::Raw::ProxyResolver;
 
 sub g_proxy_resolver_get_default ()

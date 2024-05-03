@@ -4,6 +4,8 @@ use NativeCall;
 
 use GIO::Raw::Types;
 
+### /usr/src/glib/gio/gappinfo.h
+
 unit package GIO::Raw::AppInfo;
 
 sub g_app_info_add_supports_type (

@@ -245,6 +245,8 @@ class GIO::PropertyAction {
 
 }
 
+### /usr/src/glib/gio/gpropertyaction.h
+
 sub g_property_action_get_type ()
   returns GType
   is native(gio)

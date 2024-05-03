@@ -4,6 +4,8 @@ use NativeCall;
 
 use GIO::Raw::Types;
 
+### /usr/src/glib/gio/gseekable.h
+
 unit package GIO::Raw::Seekable;
 
 sub g_seekable_can_seek (GSeekable $seekable)

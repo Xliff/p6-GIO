@@ -10,6 +10,8 @@ use GIO::Raw::Definitions;
 use GIO::Raw::Enums;
 use GIO::Raw::Structs;
 
+### /usr/src/glib/gio/gresolver.h
+
 unit package GIO::Raw::Resolver;
 
 sub g_resolver_error_quark ()

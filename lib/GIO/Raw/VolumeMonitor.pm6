@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::VolumeMonitor;
 
+### /usr/src/glib/gio/gvolumemonitor.h
+
 sub g_volume_monitor_adopt_orphan_mount (GMount $mount)
   returns GVolume
   is native(gio)

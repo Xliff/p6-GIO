@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::Permission;
 
+### /usr/src/glib/gio/gpermission.h
+
 sub g_permission_acquire (
   GPermission             $permission,
   GCancellable            $cancellable,

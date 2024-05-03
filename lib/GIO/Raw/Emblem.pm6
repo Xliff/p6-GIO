@@ -11,6 +11,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::Emblem;
 
+### /usr/src/glib/gio/gemblem.h
+
 sub g_emblem_get_icon (GEmblem $emblem)
   returns GIcon
   is native(gio)

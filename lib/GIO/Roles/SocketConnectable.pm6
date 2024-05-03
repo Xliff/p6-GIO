@@ -94,6 +94,8 @@ class GIO::SocketConnectable {
 
 }
 
+### /usr/src/glib/gio/gsocketconnectable.h
+
 sub g_socket_connectable_enumerate (GSocketConnectable $socket-connectable)
   returns GSocketAddressEnumerator
   is native(gio)

@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::Raw::Cancellable;
 
+### /usr/src/glib/gio/gcancellable.h
+
 sub g_cancellable_cancel (GCancellable $cancellable)
   is native(gio)
   is export

@@ -11,6 +11,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::DataOutputStream;
 
+### /usr/src/glib/gio/gdataoutputstream.h
+
 sub g_data_output_stream_get_type ()
   returns GType
   is native(gio)

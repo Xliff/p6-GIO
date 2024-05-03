@@ -75,6 +75,8 @@ class GIO::TcpWrapperConnection is GIO::TcpConnection {
 
 }
 
+### /usr/src/glib/gio/gtcpwrapperconnection.h
+
 sub g_tcp_wrapper_connection_get_base_io_stream (GTcpWrapperConnection $conn)
   returns GIOStream
   is native(gio)

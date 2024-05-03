@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::MountOperation;
 
+### /usr/src/glib/gio/gmountoperation.h
+
 sub g_mount_operation_get_type ()
   returns GType
   is native(gio)

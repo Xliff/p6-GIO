@@ -7,6 +7,8 @@ use GIO::DBus::Raw::Types;
 
 unit package GIO::DBus::Raw::MethodInvocation;
 
+### /usr/src/glib/gio/gdbusmethodinvocation.h
+
 sub g_dbus_method_invocation_get_connection (
   GDBusMethodInvocation $invocation
 )

@@ -17,7 +17,6 @@ role GIO::Roles::ActionMap {
 
   method GActionMap { $!actmap }
 
-
   method roleInit-GActionMap {
     return if $!actmap;
 
@@ -138,6 +137,8 @@ class GIO::ActionMap {
     self.get_gactionmap_type
   }
 }
+
+### /usr/src/glib/gio/gactionmap.h
 
 sub g_action_map_add_action (
   GActionMap $action_map,

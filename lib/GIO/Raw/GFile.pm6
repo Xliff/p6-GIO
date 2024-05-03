@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::Raw::GFile;
 
+### /usr/src/glib/gio/gfile.h
+
 sub g_file_append_to (
   GFile                   $file,
   guint                   $flags,										       # GFileCreateFlags

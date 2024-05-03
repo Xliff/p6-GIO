@@ -9,7 +9,7 @@ use GIO::Raw::Enums;
 
 unit package GIO::Raw::FileMonitor::Local;
 
-### /usr/src/glib/gio/gio.h
+### /usr/src/glib/gio/glocalfilemonitor.h
 
 sub g_file_monitor_source_handle_event (
   GFileMonitorSource $fms,

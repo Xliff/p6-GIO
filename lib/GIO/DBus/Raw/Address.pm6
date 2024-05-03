@@ -7,6 +7,8 @@ use GIO::DBus::Raw::Types;
 
 unit package GIO::DBus::Raw::Addresses;
 
+### /usr/src/glib/gio/gdbusaddress.h
+
 sub g_dbus_address_escape_value (Str $string)
   returns Str
   is native(gio)

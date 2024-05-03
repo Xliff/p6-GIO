@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::Raw::InetAddressMask;
 
+### /usr/src/glib/gio/ginetaddressmask.h
+
 sub g_inet_address_mask_equal (GInetAddressMask $mask, GInetAddressMask $mask2)
   returns uint32
   is native(gio)

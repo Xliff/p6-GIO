@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::Mount;
 
+### /usr/src/glib/gio/gmount.h
+
 sub g_mount_can_eject (GMount $mount)
   returns uint32
   is native(gio)

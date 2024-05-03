@@ -7,6 +7,8 @@ use GIO::DBus::Raw::Types;
 
 unit package GIO::DBus::Raw::Utils;
 
+### /usr/src/glib/gio/gdbusutils.h
+
 sub g_dbus_generate_guid ()
   returns Str
   is native(gio)

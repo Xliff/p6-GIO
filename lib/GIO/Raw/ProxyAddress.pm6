@@ -10,6 +10,8 @@ use GIO::Raw::Definitions;
 use GIO::Raw::Enums;
 use GIO::Raw::Structs;
 
+### /usr/src/glib/gio/gproxyaddress.h
+
 unit package GIO::Raw::ProxyAddress;
 
 sub g_proxy_address_get_destination_hostname (GProxyAddress $proxy)

@@ -4,6 +4,8 @@ use NativeCall;
 
 use GIO::Raw::Types;
 
+### /usr/src/glib/gio/gmenumodel.h
+
 # va_list...
 sub g_menu_model_get_item_attribute (
   GMenuModel      $model,

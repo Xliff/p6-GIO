@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::Raw::Stream;
 
+### /usr/src/glib/gio/giostream.h
+
 sub g_io_stream_clear_pending (GIOStream $stream)
   is native(gio)
   is export

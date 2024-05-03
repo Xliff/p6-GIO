@@ -4,7 +4,7 @@ use NativeCall;
 
 use GIO::Raw::Types;
 
-class GIO::Enums::ActionFlags {
+class GIO::Enums::ApplicationFlags {
 
   method get_type {
     state ($n, $t);
@@ -13,6 +13,7 @@ class GIO::Enums::ActionFlags {
   }
 
 }
+
 
 sub g_application_flags_get_type
   returns GType

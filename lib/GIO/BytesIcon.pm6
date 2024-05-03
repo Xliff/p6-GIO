@@ -97,6 +97,8 @@ class GIO::BytesIcon {
 
 }
 
+### /usr/src/glib/gio/gbytesicon.h
+
 sub g_bytes_icon_get_bytes (GBytesIcon $icon)
   returns GBytes
   is native(gio)

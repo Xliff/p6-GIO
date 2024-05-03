@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::Raw::DataInputStream;
 
+### /usr/src/glib/gio/gdatainputstream.h
+
 sub g_data_input_stream_get_byte_order (GDataInputStream $stream)
   returns GDataStreamByteOrder
   is native(gio)

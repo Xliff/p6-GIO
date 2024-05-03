@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::SocketControlMessage;
 
+### /usr/src/glib/gio/gsocketcontrolmessage.h
+
 sub g_socket_control_message_deserialize (
   gint     $level,
   gint     $type,

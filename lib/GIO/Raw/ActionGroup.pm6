@@ -10,6 +10,8 @@ use GIO::Raw::Definitions;
 use GIO::Raw::Enums;
 use GIO::Raw::Structs;
 
+### /usr/src/glib/gio/gactiongroup.h
+
 unit package GIO::Raw::ActionGroup;
 
 sub g_action_group_action_added (GActionGroup $action_group, Str $action_name)

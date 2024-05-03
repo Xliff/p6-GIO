@@ -10,6 +10,8 @@ use GIO::Raw::Definitions;
 use GIO::Raw::Enums;
 use GIO::Raw::Structs;
 
+### /usr/src/glib/gio/gaction.h
+
 unit package GIO::Raw::Action;
 
 sub g_action_activate (GAction $action, GVariant $parameter)
