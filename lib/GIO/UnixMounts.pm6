@@ -4,7 +4,7 @@ use Method::Also;
 
 use GIO::Raw::Types;
 
-use GIO::Raw::UnixMount;
+use GIO::Raw::UnixMounts;
 
 use GLib::Roles::Object;
 use GIO::Roles::Icon;
