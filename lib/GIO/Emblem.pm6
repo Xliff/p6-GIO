@@ -16,8 +16,8 @@ class GIO::Emblem {
 
   has GEmblem $!e is implementor;
 
-  submethod BUILD (:$emblem) {
-    self.setGEmblem($emblem) if $emblem;
+  submethod BUILD ( :$gio-emblem ) {
+    self.setGEmblem($gio-emblem) if $gio-emblem;
   }
 
   method setGEmblem (GEmblemAncestry $_) {
@@ -41,28 +41,28 @@ class GIO::Emblem {
     is also<GEmblem>
   { $!e }
 
-  multi method new (GEmblem $emblem, :$ref = True) {
+  multi method new (GEmblem $gio-emblem, :$ref = True) {
     return Nil unless $emblem;
 
-    my $o = $emblem ?? self.bless( :$emblem ) !! Nil;
+    my $o = $emblem ?? self.bless( :gio-$emblem ) !! Nil;
     $o.ref if $ref;
     $o;
   }
   multi method new (GIcon() $icon) {
-    my $emblem = g_emblem_new($icon);
+    my $gio-emblem = g_emblem_new($icon);
 
-    $emblem ?? self.bless( :$emblem ) !! Nil;
+    $gio-emblem ?? self.bless( :$gio-emblem ) !! Nil;
   }
 
   multi method new_with_origin (GIcon() $icon, Int() $origin)
     is also<new-with-origin>
   {
-    my GEmblemOrigin $o      = $origin;
-    my               $emblem = g_emblem_new_with_origin($icon, $o);
+    my GEmblemOrigin $o          = $origin;
+    my               $gio-emblem = g_emblem_new_with_origin($icon, $o);
 
     #say "E: $emblem";
 
-    $emblem ?? self.bless( :$emblem ) !! Nil;
+    $gio-mblem ?? self.bless( :$gio-emblem ) !! Nil;
   }
 
   method get_icon (:$raw = False)
