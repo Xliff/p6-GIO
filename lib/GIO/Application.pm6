@@ -66,6 +66,7 @@ class GIO::Application {
     self!setObject($to-parent);
     self.roleInit-ActionMap;
     self.roleInit-GActionGroup;
+    self.registerClasses;
   }
 
   method GIO::Raw::Definitions::GApplication
@@ -143,7 +144,7 @@ class GIO::Application {
 
   # Type: GApplicationFlags
   method flags ( :set(:$flags) = True ) is rw  is g-property {
-    my $gv = GLib::Value.new( GIO::Enums::ActionFlags.get_type );
+    my $gv = GLib::Value.new( GIO::Enums::ApplicationFlags.get_type );
     Proxy.new(
       FETCH => sub ($) {
         self.prop_get('flags', $gv);
@@ -453,7 +454,11 @@ class GIO::Application {
   multi method run (@args) {
     samewith( @args.elems, ArrayToCArray(Str, @args) );
   }
-  multi method run (Int() $argc = 0, CArray[Str] $argv = CArray[Str]) {
+  multi method run (
+    Int()       $argc = 0,
+    CArray[Str] $argv = CArray[Str],
+                $gc   = 1200
+  ) {
     my gint $ac = $argc;
 
     if $argc {
@@ -461,7 +466,21 @@ class GIO::Application {
         if !$argv || $argv.elems == 0;
     }
 
-    say "Run -- \$!a: {$!a.&p} / a: { $ac } / \$argv: { $argv ?? $argv.&p !! '»UNDEF«' }";
+    say "Run -- \$!a: {$!a.&p} / a: { $ac } / \$argv: {
+        $argv ?? $argv.&p !! '»UNDEF«' }";
+
+    if $gc {
+      say "Garbage collection every { $gc } seconds...";
+
+      $*SCHEDULER.cue(
+        in    => $gc,
+        every => $gc,
+        {
+          VM.request-garbage-collection;
+          say("Garbage collection done in: { now - ENTER now }s")
+        }
+      );
+    }
 
     g_application_run($!a, $ac, $argv);
   }
