@@ -2,6 +2,7 @@ use v6.c;
 
 use NativeCall;
 
+use GLib::Raw::Definitions;
 use GLib::Raw::Subs;
 use GLib::Raw::Distro;
 use GIO::Raw::Distro;
@@ -9,6 +10,10 @@ use GIO::Raw::Distro;
 use GLib::Roles::Pointers;
 
 unit package GIO::Raw::Definitions;
+
+sub GIO-Distribution is export is DistributionProvider {
+  $?DISTRIBUTION;
+}
 
 # GIO
 constant gio is export  = version-by-distro('gio');
