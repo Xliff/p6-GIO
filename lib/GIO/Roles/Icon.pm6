@@ -37,6 +37,9 @@ role GIO::Roles::Icon {
     my \i = findProperImplementor(self.^attributes);
     $!icon = cast( GIcon, i.get_value(self) );
   }
+  method roleInit-GIcon {
+    self.roleInit-Icon;
+  }
 
   method GIcon { $!icon }
   method GIO::Raw::Definitions::GIcon

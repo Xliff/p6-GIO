@@ -18,6 +18,9 @@ role GIO::Roles::LoadableIcon {
     my \i = findProperImplementor(self.^attributes);
     $!li = cast( GLoadableIcon, i.get_value(self) );
   }
+  method roleInit-GLoadableIcon {
+    self.roleInit-LoadableIcon;
+  }
 
   method GIO::Raw::Definitions::GLoadableIcon
     is also<GLoadableIcon>
