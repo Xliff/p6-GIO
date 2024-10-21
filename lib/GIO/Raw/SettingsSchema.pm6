@@ -16,74 +16,74 @@ unit package GIO::Raw::SettingsSchema;
 
 sub g_settings_schema_get_id (GSettingsSchema $schema)
   returns Str
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_get_key (GSettingsSchema $schema, Str $name)
   returns GSettingsSchemaKey
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_get_path (GSettingsSchema $schema)
   returns Str
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_get_type ()
   returns GType
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_has_key (GSettingsSchema $schema, Str $name)
   returns uint32
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_key_get_default_value (GSettingsSchemaKey $key)
   returns GVariant
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_key_get_description (GSettingsSchemaKey $key)
   returns Str
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_key_get_name (GSettingsSchemaKey $key)
   returns Str
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_key_get_range (GSettingsSchemaKey $key)
   returns GVariant
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_key_get_summary (GSettingsSchemaKey $key)
   returns Str
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_key_get_type ()
   returns GType
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_key_get_value_type (GSettingsSchemaKey $key)
-  returns GVariantType
-  is native(gio)
-  is export
+  returns Str
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_key_range_check (
@@ -91,14 +91,14 @@ sub g_settings_schema_key_range_check (
   GVariant           $value
 )
   returns uint32
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_key_ref (GSettingsSchemaKey $key)
   returns GSettingsSchemaKey
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_key_unref (GSettingsSchemaKey $key)
@@ -108,32 +108,32 @@ sub g_settings_schema_key_unref (GSettingsSchemaKey $key)
 
 sub g_settings_schema_list_children (GSettingsSchema $schema)
   returns CArray[Str]
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_list_keys (GSettingsSchema $schema)
   returns CArray[Str]
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_ref (GSettingsSchema $schema)
   returns GSettingsSchema
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_source_get_default ()
   returns GSettingsSchemaSource
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_source_get_type ()
   returns GType
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_source_list_schemas (
@@ -152,8 +152,8 @@ sub g_settings_schema_source_lookup (
   gboolean              $recursive
 )
   returns GSettingsSchema
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_source_new_from_directory (
@@ -163,14 +163,14 @@ sub g_settings_schema_source_new_from_directory (
   CArray[Pointer[GError]] $error
 )
   returns GSettingsSchemaSource
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_source_ref (GSettingsSchemaSource $source)
   returns GSettingsSchemaSource
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_settings_schema_source_unref (GSettingsSchemaSource $source)
