@@ -98,7 +98,6 @@ need GIO::UnixCredentialsMessage;
 need GIO::UnixFDList;
 need GIO::UnixFDMessage;
 need GIO::UnixInputStream;
-need GIO::UnixMount;
 need GIO::UnixOutputStream;
 need GIO::UnixSocketAddress;
 need GIO::VFS;
