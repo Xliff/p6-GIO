@@ -889,6 +889,42 @@ role GIO::Roles::File {
       Nil;
   }
 
+  sub get-file-contents (
+    Str()  $filename,
+           $error     = gerror,
+          :$sized     = True
+  ) {
+    my       $c = newCArray( CArray[uint8] );
+    my gsize $l = 0;
+
+    clear_error;
+    my $r = g_file_get_contents($filename, $c, $l, $error);
+    set_error($error);
+    return Nil unless $r;
+
+    my ($contents, $length) = ( ppr($c), $l );
+    return ($contents, $length) unless $sized;
+    SizedCArray.new($contents, $length);
+  }
+
+  proto method get_contents (|)
+  { * }
+
+  multi method get_contents ($filename) {
+    get-file-contents($filename, gerror, :sized);
+  }
+  multi method get_contents (
+    Str()                    $filename,
+                             $contents  is rw,
+                             $length    is rw,
+    CArray[Pointer[GError]]  $error            = gerror,
+                            :$sized            = True
+  ) {
+    ($contents, $length) = get-file-contents($filename, $error, :!sized);
+    return ($contents, $length) unless $sized;
+    SizedCArray($contents, $length);
+  }
+
   method parent (:$raw = False) {
     self.get_parent(:$raw);
   }

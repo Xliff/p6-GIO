@@ -311,6 +311,17 @@ sub g_file_get_child_for_display_name (
   is export
 { * }
 
+sub g_file_get_contents (
+  Str                     $file,
+  CArray[CArray[uint8]]   $contents,
+  gsize                   $length     is rw,
+  CArray[Pointer[GError]] $error
+)
+  returns gboolean
+  is      native(gio)
+  is      export
+{ * }
+
 sub g_file_get_parent (GFile $file)
   returns GFile
   is native(gio)
