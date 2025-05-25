@@ -7,6 +7,7 @@ use GIO::Raw::Types;
 use GIO::Raw::Settings;
 
 use GLib::Value;
+use GIO::Settings::Schema;
 
 use GLib::Roles::Object;
 use GIO::Roles::Signals::Settings;
@@ -23,6 +24,7 @@ class X::GIO::Settings::NoSchemaId is Exception {
 class GIO::Settings {
   also does GLib::Roles::Object;
   also does GIO::Roles::Signals::Settings;
+  also does Associative;
 
   has GSettings $!s is implementor;
 
@@ -148,13 +150,12 @@ class GIO::Settings {
         $gv = GLib::Value.new(
           self.prop_get('backend', $gv)
         );
-        my $o = $gv.object;
-        return Nil unless $o;
 
-        $o = cast(GSettingsBackend, $o);
-        return $o if $raw;
-
-        GIO::SettingsBackend.new($o) unless $raw;
+        propReturnObject(
+          $gv.object,
+          $raw,
+          |GIO::Settings::Backend.getTypePair
+        );
       },
       STORE => -> $,  $val is copy {
         warn "{ &?ROUTINE.name } can not be modified after creation!"
@@ -231,20 +232,18 @@ class GIO::Settings {
 
   # Type: GSettingsSchema
   method settings-schema (:$raw = False) is rw  is also<settings_schema> {
-    my GLib::Value $gv .= new( G_TYPE_OBJECT );
+    my GLib::Value $gv .= new( G_TYPE_POINTER );
     Proxy.new(
       FETCH => -> $ {
         $gv = GLib::Value.new(
           self.prop_get('settings-schema', $gv)
         );
 
-        my $o = $gv.object;
-        return Nil unless $o;
-
-        $o = cast(GSettingsSchema, $o);
-        return $o if $raw;
-
-        GIO::Settings::Schema.new($o);
+        propReturnObject(
+          $gv.boxed,
+          $raw,
+          |GIO::Settings::Schema.getTypePair
+        );
       },
       STORE => -> $, GSettingsSchema() $val is copy {
         warn "{ &?ROUTINE.name } can not be modified after creation!"
@@ -595,29 +594,55 @@ class GIO::Settings {
     so g_settings_set_strv($!s, $key, resolve-gstrv($value) )
   }
 
-  method set_int (Str() $key, Int() $value) is also<set-int> {
+  method set_int (Str() $key, $value is copy) is also<set-int> {
+    if $value !~~ (Int, Num).any {
+      $*ERR.say: "Warning! Coering «{ $value }» to Int when {
+                  '' }setting '{ $key }'";
+      $value .= Int;
+    }
     my gint $v = $value;
 
     so g_settings_set_int($!s, $key, $v);
   }
 
-  method set_int64 (Str() $key, Int() $value) is also<set-int64> {
+  method set_int64 (Str() $key, $value is copy) is also<set-int64> {
+    if $value !~~ (Int, Num).any {
+      $*ERR.say: "Warning! Coering «{ $value }» to Int when {
+                  '' }setting '{ $key }'";
+      $value .= Int;
+    }
     my gint64 $v = $value;
 
     so g_settings_set_int64($!s, $key, $v);
   }
 
-  method set_string (Str() $key, Str() $value) is also<set-string> {
+  method set_string (Str() $key, $value is copy) is also<set-string> {
+    if $value !~~ Str {
+      $*ERR.say: "Warning! Coering «{ $value }» to Str when {
+                  '' }setting '{ $key }'";
+      $value .= Str;
+    }
+
     so g_settings_set_string($!s, $key, $value);
   }
 
-  method set_uint (Str() $key, Int() $value) is also<set-uint> {
+  method set_uint (Str() $key, $value is copy) is also<set-uint> {
+    if $value !~~ (Int, Num).any {
+      $*ERR.say: "Warning! Coering «{ $value }» to Int when {
+                  '' }setting '{ $key }'";
+      $value .= Int;
+    }
     my guint $v = $value;
 
     so g_settings_set_uint($!s, $key, $v);
   }
 
-  method set_uint64 (Str() $key, Int() $value) is also<set-uint64> {
+  method set_uint64 (Str() $key, $value is copy) is also<set-uint64> {
+    if $value !~~ (Int, Num).any {
+      $*ERR.say: "Warning! Coering «{ $value }» to Int when {
+                  '' }setting '{ $key }'";
+      $value .= Int;
+    }
     my guint64 $v = $value;
 
     so g_settings_set_uint64($!s, $key, $v);
@@ -637,6 +662,57 @@ class GIO::Settings {
     Str()            $property
   ) {
     g_settings_unbind($object, $property);
+  }
+
+  # Associative methods
+
+  method keys {
+    state $keys = self.settings-schema.list-keys;
+    $keys;
+  }
+
+  method AT-KEY (Str() $k) is rw {
+    return Nil without self.keys.first($k);
+
+    my $t = self.settings-schema.get-key($k).value-type;
+
+    sub getKeyValue ($_) {
+      when 'b'               { self.get_boolean($k) }
+      when 'y' | 'q' | 'i' |
+           'h'               { self.get_uint($k)    }
+      when 'd'               { self.get_double($k)  }
+      when 's' | 'g'         { self.get_string($k)  }
+
+      default {
+        X::GLib::Error.new(
+          message => "Do not know how to handle single value variant type {
+                      ''} '{ $_ }'"
+        ).throw
+      }
+    }
+
+    sub setKeyValue ($_, \v) {
+      when 'b'               { self.set_boolean($k, v) }
+      when 'y' | 'q' | 'i' |
+           'h'               { self.set_uint($k, v)    }
+      when 'd'               { self.set_double($k, v)  }
+      when 's' | 'g'         { self.set_string($k, v)  }
+
+      default {
+        X::GLib::Error.new(
+          message => "Do not know how to handle single value variant type {
+                      ''} '{ $_ }'"
+        ).throw
+      }
+    }
+
+    Proxy.new:
+      FETCH => -> $     { getKeyValue($t)    },
+      STORE => -> $, \v { setKeyValue($t, v) }
+  }
+
+  method EXISTS-KEY (\k) {
+    self.AT-KEY(k).defined;
   }
 
 }

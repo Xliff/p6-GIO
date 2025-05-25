@@ -11,6 +11,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::FileEnumerator;
 
+### /usr/src/glib/gio/gfileenumerator.h
+
 sub g_file_enumerator_close (
   GFileEnumerator         $enumerator,
   GCancellable            $cancellable,

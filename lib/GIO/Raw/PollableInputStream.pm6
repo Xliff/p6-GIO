@@ -10,6 +10,8 @@ use GIO::Raw::Definitions;
 use GIO::Raw::Enums;
 use GIO::Raw::Structs;
 
+### /usr/src/glib/gio/gpollableinputstream.h
+
 unit package GIO::Raw::PollableInputStream;
 
 sub g_pollable_input_stream_can_poll (GPollableInputStream $stream)

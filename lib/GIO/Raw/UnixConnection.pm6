@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::UnixConnection;
 
+### /usr/src/glib/gio/gunixconnection.h
+
 sub g_unix_connection_get_type ()
   returns GType
   is native(gio)

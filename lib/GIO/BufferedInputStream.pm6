@@ -44,7 +44,7 @@ class GIO::BufferedInputStream is GIO::FilterInputStream {
         cast(GBufferedInputStream, $_);
       }
     }
-    self.setFilterInputStream($to-parent);
+    self.setGFilterInputStream($to-parent);
     self.roleInit-Seekable;
   }
 
@@ -99,7 +99,7 @@ class GIO::BufferedInputStream is GIO::FilterInputStream {
     GCancellable()          $cancellable = GCancellable,
     CArray[Pointer[GError]] $error       = gerror
   ) {
-    my gsize $c = $count;
+    my gssize $c = $count;
 
     clear_error;
     my $rv = g_buffered_input_stream_fill($!bis, $c, $cancellable, $error);

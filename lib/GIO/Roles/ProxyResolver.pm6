@@ -126,4 +126,8 @@ class GIO::ProxyResolver does GLib::Roles::Object
     GIO::ProxyResolver.new( g_proxy_resolver_get_default(), :!ref );
   }
 
+  method get_type {
+    self.get_proxyresolver_type
+  }
+
 }

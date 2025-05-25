@@ -7,6 +7,8 @@ use GIO::DBus::Raw::Types;
 
 unit package GIO::DBus::Raw::InterfaceSkeleton;
 
+### /usr/src/glib/gio/gdbusinterfaceskeleton.h
+
 sub g_dbus_interface_skeleton_export (
   GDBusInterfaceSkeleton  $interface,
   GDBusConnection         $connection,

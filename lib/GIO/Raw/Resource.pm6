@@ -10,6 +10,8 @@ use GIO::Raw::Definitions;
 use GIO::Raw::Enums;
 use GIO::Raw::Structs;
 
+### /usr/src/glib/gio/gresource.h
+
 unit package GIO::Raw::Resource;
 
 sub g_resource_enumerate_children (

@@ -671,17 +671,17 @@ class GIO::DBus::Connection {
     )
   }
   multi method call_sync (
-    Str()                   $object_path,
-    Str()                   $interface_name,
-    Str()                   $method_name,
-    GCancellable()          $cancellable      = GCancellable,
-    CArray[Pointer[GError]] $error            = gerror,
-    Str()                   :$bus_name        = Str,
-    GVariant()              :$parameters      = GVariant,
-    Int()                   :$flags           = 0,
-    Int()                   :$timeout_msec    = -1,
-    Int()                   :$reply_type      = GVariant,
-    :$raw = False
+    Str()                    $method_name,
+    CArray[Pointer[GError]]  $error                                 = gerror,
+    Str()                   :object-path(:$object_path)             = Str,
+    Str()                   :interface-name(:$interface_name)       = Str,
+    GCancellable()          :$cancellable                           = GCancellable,
+    Str()                   :bus-name(:$bus_name)                   = Str,
+    GVariant()              :$parameters                            = GVariant,
+    Int()                   :$flags                                 = 0,
+    Int()                   :timeout(:timeout-msec(:$timeout_msec)) = -1,
+    Int()                   :reply-type(:$reply_type)               = GVariant,
+                            :$raw                                   = False
   ) {
     samewith(
       $bus_name,
@@ -1227,7 +1227,7 @@ class GIO::DBus::Connection {
   }
   method get_sync (
     GIO::DBus::Connection:U:
-    Int()                    $bus_type,
+    Int()                    $bus_type     = G_BUS_TYPE_SESSION,
     GCancellable()           $cancellable  = GCancellable,
     CArray[Pointer[GError]]  $error        = gerror
   )
@@ -1738,13 +1738,34 @@ class GIO::DBus::Connection {
              &user_data_free_func    = %DEFAULT-CALLBACKS<GDestroyNotify>
   ) {
     GIO::DBus::Utils.own_name_on_connection(
-      self,
+      $!dc,
       $name,
       $flags,
       &name_acquired_handler,
       &name_lost_handler,
       $user_data,
       &user_data_free_func
+    );
+  }
+
+  method watch_name (
+    Str()    $name,
+    Int()    $flags,
+             &name_appeared_handler,
+             &name_vanished_handler,
+    gpointer $user_data,
+             &data_notify            = %DEFAULT-CALLBACKS<GDestroyNotify>
+  ) {
+    my GBusNameWatcherFlags $f = $flags;
+
+    so g_bus_watch_name_on_connection(
+      $!dc,
+      $name,
+      $f,
+      &name_appeared_handler,
+      &name_vanished_handler,
+      $user_data,
+      &data_notify
     );
   }
 

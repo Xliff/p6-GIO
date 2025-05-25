@@ -2,6 +2,7 @@ use v6.c;
 
 use NativeCall;
 
+use GLib::Raw::Definitions;
 use GLib::Raw::Subs;
 use GLib::Raw::Distro;
 use GIO::Raw::Distro;
@@ -9,6 +10,10 @@ use GIO::Raw::Distro;
 use GLib::Roles::Pointers;
 
 unit package GIO::Raw::Definitions;
+
+sub GIO-Distribution is export is DistributionProvider {
+  $?DISTRIBUTION;
+}
 
 # GIO
 constant gio is export  = version-by-distro('gio');
@@ -77,6 +82,7 @@ class GFileInfo                is repr<CPointer> is export does GLib::Roles::Poi
 class GFileInputStream         is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GFileIOStream            is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GFileMonitor             is repr<CPointer> is export does GLib::Roles::Pointers                      { }
+class GFileMonitorSource       is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GFilenameCompleter       is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GFileOutputStream        is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GFilterInputStream       is repr<CPointer> is export does GLib::Roles::Pointers                      { }
@@ -90,6 +96,7 @@ class GIOStream                is repr<CPointer> is export does GLib::Roles::Poi
 class GListModel               is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GListStore               is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GLoadableIcon            is repr<CPointer> is export does GLib::Roles::Pointers                      { }
+class GLocalFileMonitor        is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GMemoryInputStream       is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GMemoryOutputStream      is repr<CPointer> is export does GLib::Roles::Pointers                      { }
 class GMenu                    is repr<CPointer> is export does GLib::Roles::Pointers                      { }

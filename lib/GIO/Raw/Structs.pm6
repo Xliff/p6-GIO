@@ -38,12 +38,12 @@ sub resolve-pointer ($_, $cn = '') is raw {
 
   return Pointer if $_ =:= Any || .^shortname eq 'Any';
 
-  when $_ =:= Pointer   { Pointer                                      }
-  when Array            { cast( Pointer, CArray[uint8].new( $_ ) )     }
-  when Blob             { cast( Pointer, CArray[uint8].new( .Array ) ) }
-  when CArray           { cast( Pointer, $_ )                          }
-  when Pointer          { Pointer.new(+$_)                             }
-  when Str              { cast( Pointer, explicitly-manage($_) )       }
+  when $_ =:= Pointer   { Pointer                                          }
+  when Array            { cast( Pointer, CArray[uint8].new( |$_,     0 ) ) }
+  when Blob             { cast( Pointer, CArray[uint8].new( |.Array, 0 ) ) }
+  when CArray           { cast( Pointer, $_ )                              }
+  when Pointer          { Pointer.new(+$_)                                 }
+  when Str              { cast( Pointer, explicitly-manage($_) )           }
 
   default      { die "Unknown type '{ .^name }' used for { $cn }.buffer!" }
 }
@@ -123,15 +123,15 @@ class GActionEntry is repr('CStruct') does GLib::Roles::Pointers is export {
   submethod BUILD (
     :$name,
     :&activate,
-    :$parameter_type = '',
-    :$state          = '',
+    :$parameter_type,
+    :$state,
     :&change_state
   ) {
     self.name           = $name;
-    self.activate       = &activate     if &activate.defined;
-    self.parameter_type = $parameter_type;
-    self.state          = $state;
-    self.change_state   = &change_state if &change_state.defined
+    self.activate       = &activate        if &activate.defined;
+    self.parameter_type = $parameter_type  if $parameter_type;
+    self.state          = $state           if $state;
+    self.change_state   = &change_state    if &change_state.defined
   }
 
   method name is rw {
@@ -171,7 +171,10 @@ class GActionEntry is repr('CStruct') does GLib::Roles::Pointers is export {
       };
   }
 
-  method new (
+  method parameter-type is rw { self.parameter_type }
+  method change-state   is rw { self.change_state   }
+
+  multi method new (
     $name,
     &activate       = Callable,
     $state          = Str,

@@ -7,6 +7,8 @@ use GIO::DBus::Raw::Types;
 
 unit package GIO::DBus::Raw::Connection;
 
+### /usr/src/glib/gio/gdbusconnection.h
+
 sub g_dbus_connection_add_filter (
   GDBusConnection $connection,
                   &filter (
@@ -531,4 +533,27 @@ sub g_dbus_connection_unexport_action_group (
 )
   is native(gio)
   is export
+{ * }
+
+sub g_bus_watch_name_on_connection (
+  GDBusConnection       $connection,
+  Str                   $name,
+  GBusNameWatcherFlags  $flags,
+                        &name_appeared_handler (
+                          GDBusConnection,
+                          Str,
+                          Str,
+                          gpointer
+                        ),
+                        &name_vanished_handler (
+                          GDBusConnection,
+                          Str,
+                          gpointer
+                        ),
+  gpointer              $user_data,
+                        &user_data_free_func (gpointer)
+)
+  returns guint
+  is      native(gio)
+  is      export
 { * }

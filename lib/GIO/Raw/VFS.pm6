@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::VFS;
 
+### /usr/src/glib/gio/gvfs.h
+
 sub g_vfs_get_default ()
   returns GVfs
   is native(gio)

@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::Raw::Menu;
 
+### /usr/src/glib/gio/gmenu.h
+
 sub g_menu_append (GMenu $menu, Str $label, Str $detailed_action)
   is native(gio)
   is export

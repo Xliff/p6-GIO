@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::TlsInteraction;
 
+### /usr/src/glib/gio/gtlsinteraction.h
+
 sub g_tls_interaction_ask_password (
   GTlsInteraction         $interaction,
   GTlsPassword            $password,

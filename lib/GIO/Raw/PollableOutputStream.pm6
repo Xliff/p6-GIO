@@ -4,6 +4,8 @@ use NativeCall;
 
 use GIO::Raw::Types;
 
+### /usr/src/glib/gio/gpollableoutputstream.h
+
 unit package GIO::Raw::PollableOutputStream;
 
 sub g_pollable_output_stream_can_poll (GPollableOutputStream $stream)

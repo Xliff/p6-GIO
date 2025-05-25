@@ -11,6 +11,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::FileAttributeInfoList;
 
+### /usr/src/glib/gio/gfileattribute.h
+
 sub g_file_attribute_info_list_add (
   GFileAttributeInfoList  $list,
   Str                     $name,

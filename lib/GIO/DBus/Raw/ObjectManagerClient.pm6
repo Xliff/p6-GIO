@@ -7,6 +7,8 @@ use GIO::DBus::Raw::Types;
 
 unit package GIO::DBus::Raw::ObjectManagerClient;
 
+### /usr/src/glib/gio/gdbusobjectmanagerclient.h
+
 sub g_dbus_object_manager_client_get_connection (
   GDBusObjectManagerClient $manager
 )

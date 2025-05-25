@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::UnixOutputStream;
 
+### /usr/src/glib/gio/gunixoutputstream.h
+
 sub g_unix_output_stream_get_fd (GUnixOutputStream $stream)
   returns gint
   is native(gio)

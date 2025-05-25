@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::TlsPassword;
 
+### /usr/src/glib/gio/gtlspassword.h
+
 sub g_tls_password_get_type ()
   returns GType
   is native(gio)

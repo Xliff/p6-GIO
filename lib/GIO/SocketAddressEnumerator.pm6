@@ -118,6 +118,8 @@ class GIO::SocketAddressEnumerator {
 
 }
 
+### /usr/src/glib/gio/gsocketaddressenumerator.h
+
 sub g_socket_address_enumerator_get_type ()
   returns GType
   is native(gio)

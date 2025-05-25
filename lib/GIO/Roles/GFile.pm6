@@ -121,20 +121,24 @@ role GIO::Roles::File {
   #   is also<new-for-path>
   # { * }
 
+  method new-for-path ( |c ) {
+    self.new_for_path( |c );
+  }
+
   multi method new_for_path (IO::Path $path) {
     self.new_for_path($path.absolute);
   }
   multi method new_for_path (Str $path, :$encoding = 'utf8' )  {
     say "String param...";
     my $file = g_file_new_for_path(
-      CArray[uint8].new( $path.encode($encoding) )
+      CArray[uint8].new( |$path.encode($encoding), 0 )
     );
 
     $file ?? self.bless(:$file) !! Nil;
   }
   multi method new_for_path ($path where * ~~ Blob)  {
     say "Blob param...";
-    samewith( CArray[uint8].new($path) );
+    samewith( CArray[uint8].new( |$path, 0 ) );
   }
   multi method new_for_path (CArray[uint8] $path)  {
     say "CArray param...";
@@ -203,7 +207,7 @@ role GIO::Roles::File {
     $iostream = GIO::FileIOStream.new($iostream, :!ref) unless $raw;
     say "F: $file / I: $iostream" if $DEBUG;
 
-    $file ?? self.bless( :$file ) !! Nil;
+    $file = $file ?? self.bless( :$file ) !! Nil;
     return $file if $file && $all.not;
     ($file, $iostream);
   }
@@ -553,6 +557,14 @@ role GIO::Roles::File {
     is also<delete-async>
   { * }
 
+  multi method delete_async {
+    samewith(
+      0,
+      sub ($, $r, $) {
+        self.delete_finish($r);
+      }
+    );
+  }
   multi method delete_async (
     Int()          $io_priority,
                    &callback,
@@ -776,9 +788,9 @@ role GIO::Roles::File {
   }
 
   method find_enclosing_mount (
-    GCancellable()          $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error       = gerror,
-                            :$raw        = False
+    GCancellable()           $cancellable = GCancellable,
+    CArray[Pointer[GError]]  $error       = gerror,
+                            :$raw         = False
   )
     is also<find-enclosing-mount>
   {
@@ -822,9 +834,9 @@ role GIO::Roles::File {
   }
 
   method find_enclosing_mount_finish (
-    GAsyncResult()          $res,
-    CArray[Pointer[GError]] $error = gerror,
-                            :$raw  = False
+    GAsyncResult()           $res,
+    CArray[Pointer[GError]]  $error = gerror,
+                            :$raw   = False
   )
     is also<find-enclosing-mount-finish>
   {
@@ -875,6 +887,42 @@ role GIO::Roles::File {
       ( $raw ?? $f !! GIO::File.new($f, :!ref) )
       !!
       Nil;
+  }
+
+  sub get-file-contents (
+    Str()  $filename,
+           $error     = gerror,
+          :$sized     = True
+  ) {
+    my       $c = newCArray( CArray[uint8] );
+    my gsize $l = 0;
+
+    clear_error;
+    my $r = g_file_get_contents($filename, $c, $l, $error);
+    set_error($error);
+    return Nil unless $r;
+
+    my ($contents, $length) = ( ppr($c), $l );
+    return ($contents, $length) unless $sized;
+    SizedCArray.new($contents, $length);
+  }
+
+  proto method get_contents (|)
+  { * }
+
+  multi method get_contents ($filename) {
+    get-file-contents($filename, gerror, :sized);
+  }
+  multi method get_contents (
+    Str()                    $filename,
+                             $contents  is rw,
+                             $length    is rw,
+    CArray[Pointer[GError]]  $error            = gerror,
+                            :$sized            = True
+  ) {
+    ($contents, $length) = get-file-contents($filename, $error, :!sized);
+    return ($contents, $length) unless $sized;
+    SizedCArray($contents, $length);
   }
 
   method parent (:$raw = False) {
@@ -930,6 +978,7 @@ role GIO::Roles::File {
   {
     g_file_get_uri($!file);
   }
+  method uri { self.get_uri }
 
   method get_uri_scheme
     is also<
@@ -962,9 +1011,9 @@ role GIO::Roles::File {
   }
 
   method load_bytes (
-    GCancellable()          $cancellable  = GCancellable,
-    Str()                   $etag_out     = Str,
-    CArray[Pointer[GError]] $error        = gerror,
+    GCancellable()           $cancellable = GCancellable,
+    Str()                    $etag_out    = Str,
+    CArray[Pointer[GError]]  $error       = gerror,
                             :$raw         = False
   )
     is also<load-bytes>
@@ -984,8 +1033,8 @@ role GIO::Roles::File {
   { * }
 
   multi method load_bytes_async (
-                   &callback,
-    gpointer       $user_data    = Pointer,
+                    &callback,
+    gpointer        $user_data   = Pointer,
     GCancellable() :$cancellable = GCancellable
   ) {
     samewith($cancellable, &callback, $user_data);
@@ -1001,9 +1050,9 @@ role GIO::Roles::File {
   }
 
   method load_bytes_finish (
-    GAsyncResult()          $result,
-    Str()                   $etag_out  = Str,
-    CArray[Pointer[GError]] $error     = gerror,
+    GAsyncResult()           $result,
+    Str()                    $etag_out = Str,
+    CArray[Pointer[GError]]  $error    = gerror,
                             :$raw      = False
   )
     is also<load-bytes-finish>
@@ -1101,8 +1150,8 @@ role GIO::Roles::File {
   { * }
 
   multi method load_contents_async (
-                   &callback,
-    gpointer       $user_data    = Pointer,
+                    &callback,
+    gpointer        $user_data   = Pointer,
     GCancellable() :$cancellable = GCancellable
   ) {
     samewith($cancellable, &callback, $user_data);
@@ -1305,10 +1354,10 @@ role GIO::Roles::File {
     )
   }
   multi method measure_disk_usage (
-    Int()                   $flags,
-                            &progress_callback,
-    gpointer                $progress_data      = gpointer,
-    CArray[Pointer[GError]] :$error             = gerror,
+    Int()                    $flags,
+                             &progress_callback,
+    gpointer                 $progress_data      = gpointer,
+    CArray[Pointer[GError]] :$error              = gerror,
   ) {
     my $rv = samewith(
       $flags,
@@ -1324,15 +1373,15 @@ role GIO::Roles::File {
     $rv[0] ?? $rv.skip(1) !! Nil;
   }
   multi method measure_disk_usage (
-    Int()                   $flags,
-    GCancellable()          $cancellable,
-                            &progress_callback,
-    gpointer                $progress_data,
-                            $disk_usage         is rw,
-                            $num_dirs           is rw,
-                            $num_files          is rw,
-    CArray[Pointer[GError]] $error              =  gerror,
-                            :$all               =  False
+    Int()                    $flags,
+    GCancellable()           $cancellable,
+                             &progress_callback,
+    gpointer                 $progress_data,
+                             $disk_usage         is rw,
+                             $num_dirs           is rw,
+                             $num_files          is rw,
+    CArray[Pointer[GError]]  $error                     =  gerror,
+                            :$all                       =  False
   )
 
   {
@@ -1391,6 +1440,7 @@ role GIO::Roles::File {
   ) {
     my GFileMeasureFlags $f  = $flags;
     my gint              $io = $io_priority;
+
     g_file_measure_disk_usage_async(
       $!file,
       $f,
@@ -1415,12 +1465,12 @@ role GIO::Roles::File {
     samewith($result, $, $, $, $error, :all);
   }
   multi method measure_disk_usage_finish (
-    GAsyncResult()          $result,
-                            $disk_usage is rw,
-                            $num_dirs   is rw,
-                            $num_files  is rw,
-    CArray[Pointer[GError]] $error      =  gerror,
-                            :$all       =  False
+    GAsyncResult()           $result,
+                             $disk_usage is rw,
+                             $num_dirs   is rw,
+                             $num_files  is rw,
+    CArray[Pointer[GError]]  $error             =  gerror,
+                            :$all               =  False
   ) {
     my guint64 ($du, $nd, $nf) = 0 xx 3;
 
@@ -1457,10 +1507,10 @@ role GIO::Roles::File {
   }
 
   method monitor_directory (
-    Int()                   $flags,
-    GCancellable()          $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error       = gerror,
-                            :$raw        = False
+    Int()                    $flags,
+    GCancellable()           $cancellable = GCancellable,
+    CArray[Pointer[GError]]  $error       = gerror,
+                            :$raw         = False
   )
     is also<monitor-directory>
   {
@@ -1477,10 +1527,10 @@ role GIO::Roles::File {
   }
 
   method monitor_file (
-    Int()                   $flags       = 0,
-    GCancellable()          $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error       = gerror,
-                            :$raw        = False
+    Int()                    $flags       = 0,
+    GCancellable()           $cancellable = GCancellable,
+    CArray[Pointer[GError]]  $error       = gerror,
+                            :$raw         = False
   )
     is also<monitor-file>
   {
@@ -1578,8 +1628,8 @@ role GIO::Roles::File {
   }
 
   multi method move (
-    GFile()                 $destination,
-    CArray[Pointer[GError]] $error                   = gerror,
+    GFile()                  $destination,
+    CArray[Pointer[GError]]  $error                  = gerror,
     Int()                   :$flags                  = G_FILE_COPY_NONE,
     GCancellable()          :$cancellable            = GCancellable,
                             :&progress_callback      = Callable,
@@ -1619,9 +1669,9 @@ role GIO::Roles::File {
   }
 
   method open_readwrite (
-    GCancellable()          $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error       = gerror,
-                            :$raw        = False
+    GCancellable()           $cancellable = GCancellable,
+    CArray[Pointer[GError]]  $error       = gerror,
+                            :$raw         = False
   )
     is also<open-readwrite>
   {
@@ -1665,9 +1715,9 @@ role GIO::Roles::File {
   }
 
   method open_readwrite_finish (
-    GAsyncResult()          $res,
-    CArray[Pointer[GError]] $error = gerror,
-                            :$raw  = False
+    GAsyncResult()           $res,
+    CArray[Pointer[GError]]  $error = gerror,
+                            :$raw   = False
   )
     is also<open-readwrite-finish>
   {
@@ -1717,9 +1767,9 @@ role GIO::Roles::File {
   }
 
   method query_default_handler (
-    GCancellable()          $cancellable,
-    CArray[Pointer[GError]] $error        = gerror,
-                            :$raw         = False
+    GCancellable()           $cancellable,
+    CArray[Pointer[GError]]  $error        = gerror,
+                            :$raw          = False
   )
     is also<query-default-handler>
   {
@@ -1751,10 +1801,10 @@ role GIO::Roles::File {
   }
 
   method query_filesystem_info (
-    Str()                   $attributes,
-    GCancellable()          $cancellable = GCancellable,
-    CArray[Pointer[GError]] $error       = gerror,
-                            :$raw        = False
+    Str()                    $attributes,
+    GCancellable()           $cancellable = GCancellable,
+    CArray[Pointer[GError]]  $error       = gerror,
+                            :$raw         = False
   )
     is also<query-filesystem-info>
   {
@@ -1793,9 +1843,9 @@ role GIO::Roles::File {
   }
 
   method query_filesystem_info_finish (
-    GAsyncResult()          $res,
-    CArray[Pointer[GError]] $error = gerror,
-                            :$raw  = False
+    GAsyncResult()           $res,
+    CArray[Pointer[GError]]  $error = gerror,
+                            :$raw   = False
   )
     is also<query-filesystem-info-finish>
   {
@@ -1810,11 +1860,11 @@ role GIO::Roles::File {
   }
 
   method query_info (
-    Str()                   $attributes   = G_FILE_ATTRIBUTE_ALL,
-    GFileQueryInfoFlags     $flags        = 0,
-    GCancellable()          $cancellable  = GCancellable,
-    CArray[Pointer[GError]] $error        = gerror,
-                            :$raw         = False
+    Str()                    $attributes   = G_FILE_ATTRIBUTE_ALL,
+    GFileQueryInfoFlags      $flags        = 0,
+    GCancellable()           $cancellable  = GCancellable,
+    CArray[Pointer[GError]]  $error        = gerror,
+                            :$raw          = False
   )
     is also<query-info>
   {
@@ -1875,9 +1925,9 @@ role GIO::Roles::File {
   }
 
   method query_info_finish (
-    GAsyncResult()          $res,
-    CArray[Pointer[GError]] $error = gerror,
-                            :$raw  = False
+    GAsyncResult()           $res,
+    CArray[Pointer[GError]]  $error = gerror,
+                            :$raw   = False
   )
     is also<query-info-finish>
   {
@@ -1892,9 +1942,9 @@ role GIO::Roles::File {
   }
 
   method query_settable_attributes (
-    GCancellable()          $cancellable,
-    CArray[Pointer[GError]] $error        = gerror,
-                            :$raw         = False
+    GCancellable()           $cancellable,
+    CArray[Pointer[GError]]  $error        = gerror,
+                            :$raw          = False
   )
     is also<query-settable-attributes>
   {
@@ -2198,10 +2248,10 @@ role GIO::Roles::File {
   }
 
   method replace_contents_finish (
-    GAsyncResult()          $res,
-    Str()                   $new_etag,
-    CArray[Pointer[GError]] $error     = gerror,
-                            :$raw      = False
+    GAsyncResult()           $res,
+    Str()                    $new_etag,
+    CArray[Pointer[GError]]  $error     = gerror,
+                            :$raw       = False
   )
     is also<replace-contents-finish>
   {
@@ -2216,9 +2266,9 @@ role GIO::Roles::File {
   }
 
   method replace_finish (
-    GAsyncResult()          $res,
-    CArray[Pointer[GError]] $error = gerror,
-                            :$raw  = False
+    GAsyncResult()           $res,
+    CArray[Pointer[GError]]  $error = gerror,
+                            :$raw   = False
   )
     is also<replace-finish>
   {
@@ -2233,12 +2283,12 @@ role GIO::Roles::File {
   }
 
   method replace_readwrite (
-    Str()                   $etag,
-    Int()                   $make_backup,
-    Int()                   $flags,
-    GCancellable()          $cancellable,
-    CArray[Pointer[GError]] $error        = gerror,
-                            :$raw         = False
+    Str()                    $etag,
+    Int()                    $make_backup,
+    Int()                    $flags,
+    GCancellable()           $cancellable,
+    CArray[Pointer[GError]]  $error        = gerror,
+                            :$raw          = False
   )
     is also<replace-readwrite>
   {
@@ -2290,9 +2340,9 @@ role GIO::Roles::File {
   }
 
   method replace_readwrite_finish (
-    GAsyncResult()          $res,
-    CArray[Pointer[GError]] $error = gerror,
-                            :$raw  = False
+    GAsyncResult()           $res,
+    CArray[Pointer[GError]]  $error = gerror,
+                            :$raw   = False
   )
     is also<replace-readwrite-finish>
   {
@@ -2317,8 +2367,8 @@ role GIO::Roles::File {
   { * }
 
   multi method set_attribute (
-    Str()                   $attribute,
-                            $value_p,
+    Str()                    $attribute,
+                             $value_p,
     Int()                   :$flags        = 0,
     GCancellable()          :$cancellable  = GCancellable,
     CArray[Pointer[GError]] :$error        = gerror
@@ -2349,7 +2399,7 @@ role GIO::Roles::File {
     GCancellable()          $cancellable  = GCancellable,
     CArray[Pointer[GError]] $error        = gerror
   ) {
-    my GFileAttributeType $t = $type,
+    my GFileAttributeType  $t = $type,
     my GFileQueryInfoFlags $f = $flags;
 
     clear_error;
@@ -2626,11 +2676,11 @@ role GIO::Roles::File {
   { * }
 
   multi method set_display_name_async (
-    Str()          $display_name,
-    Int()          $io_priority,
-                   &callback,
-    gpointer       $user_data     = Pointer,
-                   :$cancellable  = GCancellable
+    Str()      $display_name,
+    Int()      $io_priority,
+               &callback,
+    gpointer   $user_data     = Pointer,
+              :$cancellable   = GCancellable
   ) {
     samewith($display_name, $io_priority, $cancellable, &callback, $user_data);
   }
@@ -2654,9 +2704,9 @@ role GIO::Roles::File {
   }
 
   method set_display_name_finish (
-    GAsyncResult()          $res,
-    CArray[Pointer[GError]] $error = gerror,
-                            :$raw  = False
+    GAsyncResult()           $res,
+    CArray[Pointer[GError]]  $error = gerror,
+                            :$raw   = False
   )
     is also<set-display-name-finish>
   {
@@ -2675,11 +2725,11 @@ role GIO::Roles::File {
   { * }
 
   multi method start_mountable (
-    Int()             $flags,
-    GMountOperation() $start_operation,
-                      &callback,
-    gpointer          $user_data         = Pointer,
-    GCancellable()    :$cancellable      = GCancellable
+    Int()              $flags,
+    GMountOperation()  $start_operation,
+                       &callback,
+    gpointer           $user_data         = Pointer,
+    GCancellable()    :$cancellable       = GCancellable
   ) {
     samewith($flags, $start_operation, $cancellable, &callback, $user_data);
   }
@@ -2863,7 +2913,7 @@ role GIO::Roles::File {
     GMountOperation() $mount_operation,
     GCancellable()    $cancellable,
                       &callback,
-    gpointer          $user_data = Pointer
+    gpointer          $user_data        = Pointer
   ) {
     my GMountUnmountFlags $f = $flags;
 

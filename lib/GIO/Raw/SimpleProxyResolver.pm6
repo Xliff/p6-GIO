@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::SimpleProxyResolver;
 
+### /usr/src/glib/gio/gsocketoutputstream.h
+
 sub g_simple_proxy_resolver_get_type ()
   returns GType
   is native(gio)

@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::Raw::ListModel;
 
+### /usr/src/glib/gio/glistmodel.h
+
 sub g_list_model_get_item (GListModel $list, guint $position)
   returns Pointer
   is native(gio)

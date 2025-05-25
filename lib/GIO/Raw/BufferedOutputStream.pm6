@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::Raw::BufferedOutputStream;
 
+### /usr/src/glib/gio/gbufferedoutputstream.h
+
 sub g_buffered_output_stream_get_type ()
   returns GType
   is native(gio)

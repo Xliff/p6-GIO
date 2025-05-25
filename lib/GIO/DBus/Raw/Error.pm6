@@ -7,6 +7,8 @@ use GIO::DBus::Raw::Types;
 
 unit package GIO::DBus::Raw::Error;
 
+### /usr/src/glib/gio/gdbuserror.h
+
 sub g_dbus_error_encode_gerror (GError $error)
   returns Str
   is native(gio)

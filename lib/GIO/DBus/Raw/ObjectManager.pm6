@@ -7,10 +7,12 @@ use GIO::DBus::Raw::Types;
 
 unit package GIO::DBus::Raw::ObjectManager;
 
+### /usr/src/glib/gio/gdbusobjectmanager.h
+
 sub g_dbus_object_manager_get_interface (
   GDBusObjectManager $manager,
-  Str $object_path,
-  Str $interface_name
+  Str                $object_path,
+  Str                $interface_name
 )
   returns GDBusInterface
   is native(glib)
@@ -19,7 +21,7 @@ sub g_dbus_object_manager_get_interface (
 
 sub g_dbus_object_manager_get_object (
   GDBusObjectManager $manager,
-  Str $object_path
+  Str                $object_path
 )
   returns GDBusObject
   is native(glib)

@@ -11,6 +11,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::DtlsClientConnection;
 
+### /usr/src/glib/gio/gdtlsclientconnection.h
+
 sub g_dtls_client_connection_get_accepted_cas (GDtlsClientConnection $conn)
   returns GList
   is native(gio)

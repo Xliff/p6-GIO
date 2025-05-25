@@ -11,6 +11,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::Drive;
 
+### /usr/src/glib/gio/gdrive.h
+
 sub g_drive_can_eject (GDrive $drive)
   returns uint32
   is native(gio)

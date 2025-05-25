@@ -8,20 +8,23 @@ use GIO::Raw::Application;
 
 use GLib::Roles::Object;
 
-use GIO::Resource;
+use GIO::Enums;
 use GIO::DBus::Connection;
+use GIO::Resource;
 
 use GIO::Roles::ActionMap;
+use GIO::Roles::ActionGroup;
 use GIO::Roles::Signals::Application;
 
 our subset GApplicationAncestry is export of Mu
-  where GApplication | GObject;
+  where GApplication | GActionGroup | GActionMap | GObject;
 
 constant ApplicationAncestry is export = GApplicationAncestry;
 
 class GIO::Application {
   also does GLib::Roles::Object;
   also does GIO::Roles::ActionMap;
+  also does GIO::Roles::ActionGroup;
   also does GIO::Roles::Signals::Application;
 
   has GApplication $!a is implementor;
@@ -41,6 +44,18 @@ class GIO::Application {
         $_
       }
 
+      when GActionGroup {
+        $to-parent = cast(GObject, $_);
+        $!ag       = $_;
+        cast(GApplication, $_)
+      }
+
+      when GActionMap {
+        $to-parent = cast(GObject, $_);
+        $!actmap   = $_;
+        cast(GApplication, $_)
+      }
+
       default {
         $to-parent = $_;
         cast(GApplication, $_)
@@ -50,6 +65,8 @@ class GIO::Application {
     say "Implementor: { $!a }"    if $DEBUG // 0 > 2;
     self!setObject($to-parent);
     self.roleInit-ActionMap;
+    self.roleInit-GActionGroup;
+    self.registerClasses;
   }
 
   method GIO::Raw::Definitions::GApplication
@@ -74,6 +91,17 @@ class GIO::Application {
 
     $gio-application ?? self.bless( :$gio-application ) !! Nil;
   }
+  multi method new ( *%a ) {
+    my ($app-id, $flags) = %a<application-id flags>:delete;
+
+    die 'Cannot initialize application without an <application-id>'
+      unless $app-id;
+
+    %a<resource-base-path> //= '.';
+
+    my $o = samewith($app-id, $flags // 0);
+    $o.setAttributes(%a);
+  }
 
   method get_default (GIO::Application:U: :$raw = False) is also<get-default> {
     my $a = g_application_get_default();
@@ -83,6 +111,126 @@ class GIO::Application {
       !!
       Nil;
   }
+
+  # Type: GActionGroup
+  method action-group is rw  is g-property {
+    my $gv = GLib::Value.new( GIO::ActionGroup.get_type );
+    Proxy.new(
+      FETCH => sub ($) {
+        warn 'action-group does not allow reading' if $DEBUG;
+        0;
+      },
+      STORE => -> $, GActionGroup() $val is copy {
+        $gv.pointer = $val;
+        self.prop_set('action-group', $gv);
+      }
+    );
+  }
+
+  # Type: string
+  method application-id is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_STRING );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('application-id', $gv);
+        $gv.string;
+      },
+      STORE => -> $, Str() $val is copy {
+        $gv.string = $val;
+        self.prop_set('application-id', $gv);
+      }
+    );
+  }
+
+  # Type: GApplicationFlags
+  method flags ( :set(:$flags) = True ) is rw  is g-property {
+    my $gv = GLib::Value.new( GIO::Enums::ApplicationFlags.get_type );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('flags', $gv);
+        my $f = $gv.flags;
+        return $f unless $flags;
+        getFlags(GApplicationFlags, $f);
+      },
+      STORE => -> $, Int() $val is copy {
+        $gv.valueFromEnum(GApplicationFlags) = $val;
+        self.prop_set('flags', $gv);
+      }
+    );
+  }
+
+  # Type: uint
+  method inactivity-timeout is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_UINT );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('inactivity-timeout', $gv);
+        $gv.uint;
+      },
+      STORE => -> $, Int() $val is copy {
+        $gv.uint = $val;
+        self.prop_set('inactivity-timeout', $gv);
+      }
+    );
+  }
+
+  # Type: boolean
+  method is-busy is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_BOOLEAN );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('is-busy', $gv);
+        $gv.boolean;
+      },
+      STORE => -> $, Int() $val is copy {
+        warn 'is-busy does not allow writing'
+      }
+    );
+  }
+
+  # Type: boolean
+  method is-registered is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_BOOLEAN );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('is-registered', $gv);
+        $gv.boolean;
+      },
+      STORE => -> $, Int() $val is copy {
+        warn 'is-registered does not allow writing'
+      }
+    );
+  }
+
+  # Type: boolean
+  method is-remote is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_BOOLEAN );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('is-remote', $gv);
+        $gv.boolean;
+      },
+      STORE => -> $, Int() $val is copy {
+        warn 'is-remote does not allow writing'
+      }
+    );
+  }
+
+  # Type: string
+  method resource-base-path is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_STRING );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('resource-base-path', $gv);
+        $gv.string;
+      },
+      STORE => -> $, Str() $val is copy {
+        $gv.string = $val;
+        self.prop_set('resource-base-path', $gv);
+      }
+    );
+  }
+
 
   # Is originally:
   # GApplication, gpointer --> void
@@ -306,7 +454,11 @@ class GIO::Application {
   multi method run (@args) {
     samewith( @args.elems, ArrayToCArray(Str, @args) );
   }
-  multi method run (Int() $argc = 0, CArray[Str] $argv = CArray[Str]) {
+  multi method run (
+    Int()       $argc = 0,
+    CArray[Str] $argv = CArray[Str],
+                $gc   = 1200
+  ) {
     my gint $ac = $argc;
 
     if $argc {
@@ -314,7 +466,21 @@ class GIO::Application {
         if !$argv || $argv.elems == 0;
     }
 
-    say "Run -- \$!a: {$!a.&p} / a: { $ac } / \$argv: { $argv ?? $argv.&p !! '»UNDEF«' }";
+    say "Run -- \$!a: {$!a.&p} / a: { $ac } / \$argv: {
+        $argv ?? $argv.&p !! '»UNDEF«' }";
+
+    if $gc {
+      say "Garbage collection every { $gc } seconds...";
+
+      $*SCHEDULER.cue(
+        in    => $gc,
+        every => $gc,
+        {
+          VM.request-garbage-collection;
+          say("Garbage collection done in: { now - ENTER now }s")
+        }
+      );
+    }
 
     g_application_run($!a, $ac, $argv);
   }

@@ -10,6 +10,8 @@ use GIO::Raw::Definitions;
 use GIO::Raw::Enums;
 use GIO::Raw::Structs;
 
+### /usr/src/glib/gio/gsocketconnection.h
+
 unit package GIO::Raw::SocketConnection;
 
 sub g_socket_connection_connect (

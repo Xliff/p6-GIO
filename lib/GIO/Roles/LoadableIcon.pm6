@@ -18,6 +18,9 @@ role GIO::Roles::LoadableIcon {
     my \i = findProperImplementor(self.^attributes);
     $!li = cast( GLoadableIcon, i.get_value(self) );
   }
+  method roleInit-GLoadableIcon {
+    self.roleInit-LoadableIcon;
+  }
 
   method GIO::Raw::Definitions::GLoadableIcon
     is also<GLoadableIcon>
@@ -166,6 +169,7 @@ class GIO::LoadableIcon does GLib::Roles::Object does GIO::Roles::LoadableIcon {
 
 }
 
+### /usr/src/glib/gio/gloadableicon.h
 
 sub g_loadable_icon_get_type ()
   returns GType

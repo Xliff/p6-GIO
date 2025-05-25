@@ -766,13 +766,13 @@ class GIO::DBus::Proxy {
   { * }
 
   multi method call (
-    Str()                   $method_name,
-    CArray[Pointer[GError]] $error         =  gerror,
+    Str()                    $method_name,
+    CArray[Pointer[GError]]  $error         =  gerror,
                             :$sync         is required,
-    GVariant()              :$parameters   =  GVariant,
-    Int()                   :$flags        =  0,
-    Int()                   :$timeout_msec =  -1,
-    GCancellable()          :$cancellable  =  GCancellable,
+    GVariant()              :$parameters                =  GVariant,
+    Int()                   :$flags                     =  0,
+    Int()                   :$timeout_msec              =  -1,
+    GCancellable()          :$cancellable               =  GCancellable,
   ) {
     self.call_sync(
       $method_name,
@@ -784,20 +784,22 @@ class GIO::DBus::Proxy {
     );
   }
   multi method call_sync (
-    Str()                   $method_name,
-    CArray[Pointer[GError]] $error         = gerror,
+    Str()                    $method_name,
+    CArray[Pointer[GError]]  $error        = gerror,
     GVariant()              :$parameters   = GVariant,
     Int()                   :$flags        = 0,
     Int()                   :$timeout_msec = -1,
     GCancellable()          :$cancellable  = GCancellable,
+                            :$raw          = False
   ) {
     samewith(
-      $method_name,
-      $parameters,
-      $flags,
-      $timeout_msec,
-      $cancellable,
-      $error
+       $method_name,
+       $parameters,
+       $flags,
+       $timeout_msec,
+       $cancellable,
+       $error,
+      :$raw
     );
   }
   multi method call (
@@ -819,24 +821,29 @@ class GIO::DBus::Proxy {
     );
   }
   multi method call_sync (
-    Str()                   $method_name,
-    GVariant()              $parameters   = GVariant,
-    Int()                   $flags        = 0,
-    Int()                   $timeout_msec = -1,
-    GCancellable()          $cancellable  = GCancellable,
-    CArray[Pointer[GError]] $error        = gerror
+    Str()                    $method_name,
+    GVariant()               $parameters   = GVariant,
+    Int()                    $flags        = 0,
+    Int()                    $timeout_msec = -1,
+    GCancellable()           $cancellable  = GCancellable,
+    CArray[Pointer[GError]]  $error        = gerror,
+                            :$raw          = False
   ) {
     my GDBusCallFlags $f = $flags;
     my gint           $t = $timeout_msec;
 
-    g_dbus_proxy_call_sync(
-      $!dp,
-      $method_name,
-      $parameters,
-      $f,
-      $t,
-      $cancellable,
-      $error
+    propReturnObject(
+      g_dbus_proxy_call_sync(
+        $!dp,
+        $method_name,
+        $parameters,
+        $f,
+        $t,
+        $cancellable,
+        $error
+      ),
+      $raw,
+      |GLib::Variant.getTypePair
     );
   }
 

@@ -94,6 +94,8 @@ class GIO::ThreadedSocketService is GIO::SocketService {
 
 }
 
+### /usr/src/glib/gio/gthreadedsocketservice.h
+
 sub g_threaded_socket_service_get_type ()
   returns GType
   is native(gio)

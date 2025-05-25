@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::UnixSocketAddress;
 
+### /usr/src/glib/gio/gunixsocketaddress.h
+
 sub g_unix_socket_address_abstract_names_supported ()
   returns uint32
   is native(gio)

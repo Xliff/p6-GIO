@@ -11,6 +11,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::DesktopAppInfo;
 
+### /usr/src/glib/gio/gdesktopappinfo.h
+
 sub g_desktop_app_info_get_action_name (
   GDesktopAppInfo $info,
   Str             $action_name

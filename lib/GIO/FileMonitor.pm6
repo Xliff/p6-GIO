@@ -51,9 +51,6 @@ class GIO::FileMonitor {
     $o.ref if $ref;
     $o;
   }
-  multi method new {
-    self.bless( monitor => GFileMonitor );
-  }
 
   # Type: gint
   method rate-limit is rw  is also<rate_limit> {
@@ -110,52 +107,4 @@ class GIO::FileMonitor {
     g_file_monitor_set_rate_limit($!m, $l);
   }
 
-  method signal-data {
-    state ( %signal-data, %signal-object );
-    my $self = self;
-    unless %signal-data{ self.WHERE } {
-      %signal-data{ self.WHERE } = (
-        changed => sub { $self.connect-changed($!m) }
-      ).Hash;
-    }
-
-    unless %signal-object{ self.WHERE } {
-      state @keys;
-
-      unless @keys {
-        @keys = self.GLib::Roles::Object::signal-data.keys;
-        @keys.append: %signal-data{ self.WHERE }.keys;
-      }
-
-      %signal-object{ self.WHERE } = (class :: does Associative {
-
-        method !getData (\k) {
-          %signal-data{ $self.WHERE }{k}
-            ?? %signal-data{ $self.WHERE }{k}
-            !! $self.GLib::Roles::Object::signal-data{k};
-        }
-
-        method AT-KEY (\k) {
-          self!getData(k);
-        }
-
-        method EXISTS-KEY (\k) {
-          self!getData(k).defined;
-        }
-
-        method keys {
-          @keys;
-        }
-
-      }).new;
-    }
-
-    %signal-object{ self.WHERE };
-  }
-
-  method signal-names {
-    state @signal-names = self.signal-data.keys;
-
-    @signal-names;
-  }
 }

@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::TlsBackend;
 
+### /usr/src/glib/gio/gtlsbackend.h
+
 sub g_tls_backend_get_certificate_type (GTlsBackend $backend)
   returns GType
   is native(gio)

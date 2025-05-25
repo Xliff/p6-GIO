@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::UnixFDList;
 
+### /usr/src/glib/gio/gunixfdlist.h
+
 sub g_unix_fd_list_append (
   GUnixFDList             $list,
   gint                    $fd,

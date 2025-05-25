@@ -70,6 +70,8 @@ class GIO::TcpConnection is GIO::SocketConnection {
 
 }
 
+### /usr/src/glib/gio/gtcpconnection.h
+
 sub g_tcp_connection_get_type ()
   returns GType
   is native(gio)

@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::Raw::ContentType;
 
+### /usr/src/glib/gio/gcontenttype.h
+
 sub g_content_type_can_be_executable (Str $type)
   returns uint32
   is native(gio)

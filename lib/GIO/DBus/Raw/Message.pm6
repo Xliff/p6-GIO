@@ -7,6 +7,8 @@ use GIO::DBus::Raw::Types;
 
 unit package GIO::DBus::Raw::Message;
 
+### /usr/src/glib/gio/gdbusmessage.h
+
 sub g_dbus_message_bytes_needed (
   Blob                    $blob,
   gsize                   $blob_len,

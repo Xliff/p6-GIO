@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::AsyncInitable;
 
+### /usr/src/glib/gio/gasyncinitable.h
+
 sub g_async_initable_get_type ()
   returns GType
   is native(gio)

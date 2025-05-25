@@ -1,10 +1,11 @@
 use v6.c;
 
-use Method::Also;
 use NativeCall;
 
 use GLib::Raw::Traits;
 use GIO::Raw::Types;
+
+use GIO::SimpleAction;
 
 use GLib::Roles::Object;
 use GLib::Roles::TypedBuffer;
@@ -12,25 +13,25 @@ use GLib::Roles::TypedBuffer;
 role GIO::Roles::ActionMap {
   has GActionMap $!actmap;
 
-  method GIO::Raw::Definitions::GActionMap
-    is also<GActionMap>
-  { $!actmap }
+  method GIO::Raw::Definitions::GActionMap { $!actmap }
 
-  method roleInit-ActionMap {
+  method GActionMap { $!actmap }
+
+  method roleInit-GActionMap {
     return if $!actmap;
 
     my \i = findProperImplementor(self.^attributes);
     $!actmap = cast( GActionMap, i.get_value(self) );
   }
+  method roleInit-ActionMap {
+    self.roleInit-GActionMap;
+  }
 
-  method add_action (GAction() $action)
-    is also<add-action>
-  {
+  method add_action (GAction() $action) {
     g_action_map_add_action($!actmap, $action);
   }
 
   proto method add_action_entries (|)
-    is also<add-action-entries>
   { * }
 
   multi method add_action_entries (
@@ -60,18 +61,38 @@ role GIO::Roles::ActionMap {
     g_action_map_add_action_entries($!actmap, $entries, $n, $user_data);
   }
 
-  method get_gactionmap_type is also<get-type> {
+  method get_gactionmap_type {
     state ($n, $t);
 
     unstable_get_type( self.^name, &g_action_map_get_type, $n, $t );
   }
 
-  method lookup_action (Str() $action_name) is also<lookup-action> {
-    self.new( g_action_map_lookup_action($!actmap, $action_name) );
+  method lookup_action (Str() $action_name, :$raw = False) {
+    propReturnObject(
+      g_action_map_lookup_action($!actmap, $action_name),
+      $raw,
+      |GIO::SimpleAction.getTypePair
+    );
   }
 
-  method remove_action (Str() $action_name) is also<remove-action> {
+  method remove_action (Str() $action_name) {
     g_action_map_remove_action($!actmap, $action_name);
+  }
+
+  method add-action (|c) {
+    self.add_action(|c)
+  }
+
+  method add-action-entries (|c) {
+    self.add_action_entries(|c)
+  }
+
+  method lookup-action (|c) {
+    self.lookup_action(|c)
+  }
+
+  method remove-action (|c) {
+    self.remove_action(|c)
   }
 
 }
@@ -117,6 +138,8 @@ class GIO::ActionMap {
   }
 }
 
+### /usr/src/glib/gio/gactionmap.h
+
 sub g_action_map_add_action (
   GActionMap $action_map,
   GAction    $action
@@ -137,8 +160,8 @@ sub g_action_map_add_action_entries (
 
 sub g_action_map_get_type ()
   returns GType
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
   { * }
 
 sub g_action_map_lookup_action (
@@ -146,8 +169,8 @@ sub g_action_map_lookup_action (
   Str        $action_name
 )
   returns GAction
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
   { * }
 
 sub g_action_map_remove_action (

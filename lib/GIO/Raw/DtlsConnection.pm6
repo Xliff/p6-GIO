@@ -11,6 +11,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::DtlsConnection;
 
+### /usr/src/glib/gio/gdtlsconnection.h
+
 sub g_dtls_connection_close (
   GDtlsConnection         $conn,
   GCancellable            $cancellable,

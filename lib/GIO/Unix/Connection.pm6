@@ -13,7 +13,7 @@ use GIO::SocketConnection;
 our subset GUnixConnectionAncestry is export of Mu
   where GUnixConnection | GSocketConnectionAncestry;
 
-class GIO::UnixConnection is GIO::SocketConnection {
+class GIO::Unix::Connection is GIO::SocketConnection {
   has GUnixConnection $!uc is implementor;
 
   submethod BUILD (:$unix-connection) {

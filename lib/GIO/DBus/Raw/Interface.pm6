@@ -7,6 +7,8 @@ use GIO::DBus::Raw::Types;
 
 unit package GIO::DBus::Raw::Interface;
 
+### /usr/src/glib/gio/gdbusinterface.h
+
 sub g_dbus_interface_dup_object (GDBusInterface $interface)
   returns GDBusObject
   is native(gio)

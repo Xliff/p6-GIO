@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::DBus::Raw::GDBusObjectManagerServer;
 
+### /usr/src/glib/gio/gdbusobjectmanagerserver.h
+
 sub g_dbus_object_manager_server_export (
   GDBusObjectManagerServer $manager,
   GDBusObjectSkeleton      $object

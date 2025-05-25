@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::TlsConnection;
 
+### /usr/src/glib/gio/gtlsconnection.h
+
 sub g_tls_connection_emit_accept_certificate (
   GTlsConnection       $conn,
   GTlsCertificate      $peer_cert,

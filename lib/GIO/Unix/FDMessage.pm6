@@ -8,12 +8,12 @@ use GIO::Raw::Types;
 use GIO::Raw::UnixFDMessage;
 
 use GIO::SocketControlMessage;
-use GIO::UnixFDList;
+use GIO::Unix::FDList;
 
 our subset GUnixFDMessageAncestry is export of Mu
   where GUnixFDMessage | GSocketControlMessageAncestry;
 
-class GIO::UnixFDMessage is GIO::SocketControlMessage {
+class GIO::Unix::FDMessage is GIO::SocketControlMessage {
   has GUnixFDMessage $!fdm is implementor;
 
   submethod BUILD (:$fd-message) {
@@ -66,7 +66,7 @@ class GIO::UnixFDMessage is GIO::SocketControlMessage {
   ) {
     self.new_with_fd_list($list);
   }
-  
+
   method new_with_fd_list (GUnixFDList() $list) is also<new-with-fd-list> {
     my $fd-message = g_unix_fd_message_new_with_fd_list($list);
 

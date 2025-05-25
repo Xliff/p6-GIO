@@ -10,6 +10,8 @@ use GIO::Raw::Definitions;
 use GIO::Raw::Enums;
 use GIO::Raw::Structs;
 
+### /usr/src/glib/gio/gasyncresult.h
+
 unit package GIO::Raw::AsyncResult;
 
 sub g_async_result_get_source_object (GAsyncResult $res)

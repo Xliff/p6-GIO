@@ -12,6 +12,8 @@ use GIO::Raw::Definitions;
 use GIO::Raw::Enums;
 use GIO::Raw::Structs;
 
+### /usr/src/glib/gio/gsocket.h
+
 sub g_socket_accept (
   GSocket                 $socket,
   GCancellable            $cancellable,

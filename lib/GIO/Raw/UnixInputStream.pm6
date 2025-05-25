@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::UnixInputStream;
 
+### /usr/src/glib/gio/gunixinputstream.h
+
 sub g_unix_input_stream_get_close_fd (GUnixInputStream $stream)
   returns uint32
   is native(gio)

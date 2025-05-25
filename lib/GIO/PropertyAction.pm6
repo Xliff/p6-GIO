@@ -44,7 +44,7 @@ class GIO::PropertyAction {
       }
     }
     self!setObject($to-parent);
-    self.roleInit-Action;
+    self.roleInit-GAction;
   }
 
   method GIO::Raw::Definitions::GPropertyAction
@@ -80,7 +80,9 @@ class GIO::PropertyAction {
     GObjectOrPointer $object         is copy,
     Str()            $property_name
   ) {
-    $object .= GObject if $object ~~ GLib::Roles::Object;
+    $object  = $object.GObject if $object ~~ GLib::Roles::Object;
+    $object .= p               if $object ~~ GObject;
+
     my $action = g_property_action_new($name, $object, $property_name);
 
     $action ?? self.bless( :$action ) !! Nil;
@@ -242,6 +244,8 @@ class GIO::PropertyAction {
   }
 
 }
+
+### /usr/src/glib/gio/gpropertyaction.h
 
 sub g_property_action_get_type ()
   returns GType

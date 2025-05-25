@@ -11,7 +11,7 @@ use GLib::Roles::Object;
 our subset GSettingsBackendAncestry is export of Mu
   where GSettingsBackend | GObject;
 
-class GIO::SettingsBackend {
+class GIO::Settings::Backend {
   also does GLib::Roles::Object;
 
   has GSettingsBackend $!sb is implementor;
@@ -139,14 +139,14 @@ class GIO::SettingsBackend {
   { * }
 
   multi method flatten_tree (
-    GIO::SettingsBackend:U:
+    GIO::Settings::Backend:U:
     GTree()                 $tree,
                             :$raw = False
   ) {
-    GIO::SettingsBackend.flatten_tree($tree, $, $, $, :$raw);
+    GIO::Settings::Backend.flatten_tree($tree, $, $, $, :$raw);
   }
   multi method flatten_tree (
-    GIO::SettingsBackend:U:
+    GIO::Settings::Backend:U:
     GTree()                 $tree,
                             $path   is rw,
                             $keys   is rw,

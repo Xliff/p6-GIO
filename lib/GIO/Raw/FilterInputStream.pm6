@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::Raw::FilterInputStream;
 
+### /usr/src/glib/gio/gfilterinputstream.h
+
 sub g_filter_input_stream_get_base_stream (GFilterInputStream $stream)
   returns GInputStream
   is native(gio)

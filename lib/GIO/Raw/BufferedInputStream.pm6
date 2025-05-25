@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::Raw::BufferedInputStream;
 
+### /usr/src/glib/gio/gbufferedinputstream.h
+
 sub g_buffered_input_stream_fill (
   GBufferedInputStream    $stream,
   gssize                  $count,

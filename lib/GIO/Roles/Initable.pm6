@@ -15,7 +15,7 @@ role GIO::Roles::Initable {
     # cw: No early return since self.init call must be conditionally made
     unless $!i {
       my \i = findProperImplementor(self.^attributes, :rev);
-      $!i = cast(GInitable, i.get_value(self) );
+      $!i   = cast(GInitable, i.get_value(self) );
     }
     self.init($cancellable) if $init;
   }
@@ -33,7 +33,12 @@ role GIO::Roles::Initable {
     :$initable    is required,
     *%options
   ) {
-    self.new_initable(:$init, :$cancellable, |%options);
+    self.new_initable(
+       TYPE => ::?CLASS.get_type,
+      :$init,
+      :$cancellable,
+      |%options
+    );
   }
   method new_initable (
     :$init        = True,
@@ -42,7 +47,11 @@ role GIO::Roles::Initable {
   )
     is also<new-initable>
   {
-    my $initable-object = self.new_object_with_properties( |%options, :RAW );
+    my $initable-object = self.new_object_with_properties(
+       TYPE => ::?CLASS.get_type,
+      |%options,
+      :RAW
+    );
 
     $initable-object ?? self.bless( :$initable-object, :$init, :$cancellable)
                      !! Nil;
@@ -134,10 +143,12 @@ class GIO::Initable does GLib::Roles::Object does GIO::Roles::Initable {
 
 }
 
+### /usr/src/glib/gio/ginitable.h
+
 sub g_initable_get_type ()
   returns GType
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_initable_new (
@@ -147,8 +158,8 @@ sub g_initable_new (
   Str
 )
   returns GObject
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_initable_init (
@@ -157,12 +168,6 @@ sub g_initable_init (
   CArray[Pointer[GError]] $error
 )
   returns uint32
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
-
-# our %GIO::Roles::Initable::RAW-DEFS;
-# for MY::.pairs {
-#   %GIO::Roles::Initable::RAW-DEFS{.key} := .value
-#     if .key.starts-with('&g_initable_');
-# }

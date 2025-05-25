@@ -7,8 +7,12 @@ use GIO::Raw::FileAttributeInfoList;
 
 use GIO::FileInfo;
 
+use GLib::Roles::Implementor;
+
 # BOXED!
 class GIO::FileAttributeInfoList {
+  also does GLib::Roles::Implementor;
+
   has GFileAttributeInfoList $!fail is implementor;
 
   submethod BUILD (:$list) {
@@ -21,7 +25,7 @@ class GIO::FileAttributeInfoList {
 
   multi method new (GFileAttributeInfoList $list, :$ref = True) {
     return Nil unless $list;
-    
+
     my $o = $list ?? self.bless( :$list ) !! Nil;
     $o.ref if $ref;
     $o;

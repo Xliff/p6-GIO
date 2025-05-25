@@ -21,7 +21,7 @@ class GIO::SimpleAction {
   has GSimpleAction $!sa is implementor;
 
   submethod BUILD (:$simple-action) {
-    self.setGSimpleACtion($simple-action) if $simple-action;
+    self.setGSimpleAction($simple-action) if $simple-action;
   }
 
   method setGSimpleAction (GSimpleActionAncestry $_) {
@@ -45,12 +45,15 @@ class GIO::SimpleAction {
     }
 
     self!setObject($to-parent);
-    self.roleInit-Action;
+    self.roleInit-GAction;
   }
 
   method GIO::Raw::Definitions::GSimpleAction
     is also<GSimpleAction>
   { $!sa }
+
+  proto method new (|)
+  { * }
 
   multi method new (GSimpleActionAncestry $simple-action, :$ref = True) {
     return Nil unless $simple-action;
@@ -59,8 +62,10 @@ class GIO::SimpleAction {
     $o.ref if $ref;
     $o;
   }
-  multi method new (GVariantType() $parameter_type) {
-    my $simple-action = g_simple_action_new($$parameter_type);
+  multi method new (Str $parameter_type) {
+    my $p = ( CArray[uint8].allocate(1) )[0] = $parameter_type.substr(0, 1);
+
+    my $simple-action = g_simple_action_new($p);
 
     $simple-action ?? self.bless( :$simple-action ) !! Nil;
   }
@@ -128,23 +133,16 @@ class GIO::SimpleAction {
 
   # Type: GVariant
   method state (:$raw = False) is rw  {
-    my GLib::Value $gv .= new( G_TYPE_OBJECT );
+    my GLib::Value $gv .= new( G_TYPE_VARIANT );
     Proxy.new(
       FETCH => -> $ {
         $gv = GLib::Value.new(
           self.prop_get('state', $gv)
         );
-
-        my $o = $gv.object;
-        return Nil unless $o;
-
-        $o = cast(GVariant, $o);
-        return $o if $raw;
-
-        GLib::Variant.new($o, :!ref);
+        propReturnObject($gv.variant, $raw, |GLib::Variant.getTypePair);
       },
       STORE => -> $, GVariant() $val is copy {
-        $gv.object = $val;
+        $gv.variant = $val;
         self.prop_set('state', $gv);
       }
     );
@@ -152,20 +150,13 @@ class GIO::SimpleAction {
 
   # Type: GVariantType
   method state-type (:$raw = False) is rw is also<state_type> {
-    my GLib::Value $gv .= new( G_TYPE_OBJECT );
+    my GLib::Value $gv .= new( G_TYPE_VARIANT );
     Proxy.new(
       FETCH => -> $ {
         $gv = GLib::Value.new(
           self.prop_get('state-type', $gv)
         );
-
-        my $o = $gv.object;
-        return Nil unless $o;
-
-        $o = cast(GVariant, $o);
-        return $o if $raw;
-
-        GLib::Variant.new($o, :!ref);
+        propReturnObject($gv.variant, $raw, GLib::Variant.getTypePair);
       },
       STORE => -> $, $val is copy {
         warn "state-type does not allow writing"

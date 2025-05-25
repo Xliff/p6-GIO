@@ -111,6 +111,8 @@ class GIO::Converter  does GLib::Roles::Object does GIO::Roles::Converter {
 
 }
 
+### /usr/src/glib/gio/gconverter.h
+
 sub g_converter_convert (
   GConverter              $converter,
   Pointer                 $inbuf,

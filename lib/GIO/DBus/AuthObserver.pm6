@@ -89,6 +89,8 @@ class GIO::DBus::AuthObserver {
 
 }
 
+### /usr/src/glib/gio/gdbusauthobserver.h
+
 sub g_dbus_auth_observer_allow_mechanism (GDBusAuthObserver $observer, Str $mechanism)
   returns uint32
   is native(gio)

@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::Raw::FilenameCompleter;
 
+### /usr/src/glib/gio/gfilenamecompleter.h
+
 sub g_filename_completer_get_completion_suffix (
   GFilenameCompleter $completer,
   Str                $initial_text

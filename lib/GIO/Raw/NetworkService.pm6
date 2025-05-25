@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::NetworkService;
 
+### /usr/src/glib/gio/gnetworkservice.h
+
 sub g_network_service_get_domain (GNetworkService $srv)
   returns Str
   is native(gio)

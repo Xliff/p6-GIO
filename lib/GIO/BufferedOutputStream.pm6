@@ -44,7 +44,7 @@ class GIO::BufferedOutputStream is GIO::FilterOutputStream {
         cast(GBufferedOutputStream, $_);
       }
     }
-    self.setFilterOutputStream($to-parent);
+    self.setGFilterOutputStream($to-parent);
     self.roleInit-Seekable;
   }
 

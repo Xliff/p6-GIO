@@ -7,6 +7,8 @@ use GIO::DBus::Raw::Types;
 
 unit package GIO::DBus::Raw::ObjectSkeleton;
 
+### /usr/src/glib/gio/gdbusobjectskeleton.h
+
 sub g_dbus_object_skeleton_add_interface (
   GDBusObjectSkeleton    $object,
   GDBusInterfaceSkeleton $interface

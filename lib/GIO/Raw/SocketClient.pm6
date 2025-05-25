@@ -10,6 +10,8 @@ use GIO::Raw::Definitions;
 use GIO::Raw::Enums;
 use GIO::Raw::Structs;
 
+### /usr/src/glib/gio/gsocketclient.h
+
 unit package GIO::Raw::SocketClient;
 
 sub g_socket_client_add_application_proxy (

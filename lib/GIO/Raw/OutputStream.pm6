@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::OutputStream;
 
+### /usr/src/glib/gio/goutputstream.h
+
 sub g_output_stream_clear_pending (GOutputStream $stream)
   is native(gio)
   is export

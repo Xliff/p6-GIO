@@ -74,6 +74,7 @@ class GIO::FileDescriptorBased does GLib::Roles::Object
 
 }
 
+### /usr/src/glib/gio/gfiledescriptorbased.h
 
 sub g_file_descriptor_based_get_fd (GFileDescriptorBased $fd_based)
   returns gint

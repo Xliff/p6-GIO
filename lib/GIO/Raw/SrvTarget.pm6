@@ -12,6 +12,8 @@ use GIO::Raw::Structs;
 
 unit package GIO::Raw::SrvTarget;
 
+### /usr/src/glib/gio/gsrvtarget.h
+
 sub g_srv_target_copy (GSrvTarget $target)
   returns GSrvTarget
   is native(gio)

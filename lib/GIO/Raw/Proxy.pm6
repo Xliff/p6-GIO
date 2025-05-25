@@ -10,6 +10,8 @@ use GIO::Raw::Definitions;
 use GIO::Raw::Enums;
 use GIO::Raw::Structs;
 
+### s/usr/src/glib/gio/gproxy.h
+
 unit package GIO::Raw::Proxy;
 
 sub g_proxy_connect (
@@ -20,8 +22,8 @@ sub g_proxy_connect (
   CArray[Pointer[GError]] $error
 )
   returns GIOStream
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_proxy_connect_async (
@@ -42,24 +44,24 @@ sub g_proxy_connect_finish (
   CArray[Pointer[GError]] $error
 )
   returns GIOStream
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_proxy_get_default_for_protocol (Str $protocol)
   returns GProxy
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_proxy_get_type ()
   returns GType
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }
 
 sub g_proxy_supports_hostname (GProxy $proxy)
   returns uint32
-  is native(gio)
-  is export
+  is      native(gio)
+  is      export
 { * }

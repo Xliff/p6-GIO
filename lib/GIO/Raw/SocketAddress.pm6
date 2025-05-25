@@ -10,6 +10,8 @@ use GIO::Raw::Definitions;
 use GIO::Raw::Enums;
 use GIO::Raw::Structs;
 
+### /usr/src/glib/gio/gsocketaddress.h
+
 unit package GIO::Raw::SocketAddress;
 
 sub g_socket_address_get_family (GSocketAddress $address)

@@ -7,10 +7,13 @@ use GIO::Raw::SrvTarget;
 
 use GLib::GList;
 
+use GLib::Roles::Implementor;
 use GLib::Roles::ListData;
 
 # BOXED
 class GIO::SrvTarget {
+  also does GLib::Roles::Implementor;
+  
   has GSrvTarget $!st is implementor;
 
   submethod BUILD (:$srv) {

@@ -539,7 +539,7 @@ class GIO::OutputStream {
     Str()          :$encoding    = 'utf8'
   ) {
     samewith(
-      CArray[uint8].new( $buffer.encode($encoding) ),
+      BufToStrArray( $buffer.encode($encoding) ),
       $count,
       $io_priority,
       $cancellable,

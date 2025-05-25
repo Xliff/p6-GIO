@@ -12,16 +12,15 @@ use GLib::Roles::Object;
 role GIO::Roles::ActionGroup {
   has GActionGroup $!ag;
 
-  method !roleInit-ActionGroup is also<!roleInit_ActionGroup> {
+  method roleInit-GActionGroup is also<!roleInit_ActionGroup> {
     return if $!ag;
 
     my \i = findProperImplementor(self.^attributes);
     $!ag = cast( GActionGroup, i.get_value(self) );
   }
 
-  method GIO::Raw::Definitions::GActionGroup
-    is also<GActionGroup>
-  { $!ag }
+  method GIO::Raw::Definitions::GActionGroup { $!ag }
+  method GActionGroup                        { $!ag }
 
   # Is originally:
   # GActionGroup, Str, gpointer --> void

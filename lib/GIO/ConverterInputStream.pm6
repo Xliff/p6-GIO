@@ -84,10 +84,17 @@ class GIO::ConverterInputStream is GIO::FilterInputStream {
   method get_type is also<get-type> {
     state ($n, $t);
 
-    unstable_get_type( self.^name; &g_converter_input_stream_get_type, $n, $t );
+    unstable_get_type(
+      self.^name,
+      &g_converter_input_stream_get_type,
+      $n,
+      $t
+    );
   }
 
 }
+
+### /usr/src/glib/gio/gconverterinputstream.h
 
 sub g_converter_input_stream_get_converter (
   GConverterInputStream $converter_stream

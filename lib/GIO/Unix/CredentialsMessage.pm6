@@ -11,7 +11,7 @@ use GIO::Credentials;
 our subset GUnixCredentialsMessageAncestry is export of Mu
   where GUnixCredentialsMessage | GSocketControlMessageAncestry;
 
-class GIO::UnixCredentialsMessage is GIO::SocketControlMessage {
+class GIO::Unix::CredentialsMessage is GIO::SocketControlMessage {
   has GUnixCredentialsMessage $!cm is implementor;
 
   submethod BUILD (:$cred-message) {

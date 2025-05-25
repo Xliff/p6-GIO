@@ -6,6 +6,8 @@ use GIO::Raw::Types;
 
 unit package GIO::Raw::DatagramBased;
 
+### /usr/src/glib/gio/gdatagrambased.h
+
 sub g_datagram_based_condition_check (
   GDatagramBased $datagram_based,
   GIOCondition   $condition

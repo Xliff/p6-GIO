@@ -6,10 +6,14 @@ use NativeCall;
 use GIO::Raw::Types;
 use GIO::Raw::SettingsSchema;
 
-class GIO::SettingsSchema::Key { ... }
+use GLib::Roles::Implementor;
+
+class GIO::Settings::Schema::Key { ... }
 
 # BOXED
-class GIO::SettingsSchema {
+class GIO::Settings::Schema {
+  also does GLib::Roles::Implementor;
+
   has GSettingsSchema $!ss is implementor;
 
   submethod BUILD (:$schema) {
@@ -37,7 +41,7 @@ class GIO::SettingsSchema {
     my $sk = g_settings_schema_get_key($!ss, $name);
 
     $sk ??
-      ( $raw ?? $sk !! GIO::SettingsSchema::Key.new($sk, :!ref) )
+      ( $raw ?? $sk !! GIO::Settings::Schema::Key.new($sk, :!ref) )
       !!
       Nil;
   }
@@ -79,7 +83,7 @@ class GIO::SettingsSchema {
 
 }
 
-class GIO::SettingsSchema::Key {
+class GIO::Settings::Schema::Key {
   has GSettingsSchemaKey $!ssk;
 
   submethod BUILD (:$key) {
@@ -174,7 +178,7 @@ class GIO::SettingsSchema::Key {
 }
 
 # BOXED
-class GIO::SettingsSchema::Source {
+class GIO::Settings::Schema::Source {
   has GSettingsSchemaSource $!sss;
 
   submethod BUILD (:$source) {
@@ -249,8 +253,8 @@ class GIO::SettingsSchema::Source {
   }
   multi method list_schemas (
     Int() $recursive,
-    $non_relocatable  is rw,
-    $relocatable      is rw
+          $non_relocatable  is rw,
+          $relocatable      is rw
   ) {
     my gboolean  $r        = $recursive.so.Int;
     my          ($na, $ra) = newCArray(CArray[Str]) xx 2;
@@ -270,7 +274,7 @@ class GIO::SettingsSchema::Source {
 
   method lookup (
     Str()  $schema_id,
-    Int()  $recursive  = False,  
+    Int()  $recursive  = False,
           :$raw        = False
   ) {
     my gboolean $r = $recursive;
