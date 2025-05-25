@@ -2,7 +2,7 @@ use v6;
 
 use Test;
 
-use lib <. scripts>;
+use lib <. scripts release-scripts>;
 
 use ScriptConfig;
 use GLib::Raw::Traits;
