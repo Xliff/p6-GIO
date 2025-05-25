@@ -3,7 +3,7 @@ use v6;
 use GLib::Raw::Exports;
 use GIO::Raw::Exports;
 
-my constant forced = 347;
+my constant forced = 374;
 
 unit package GIO::Raw::Types;
 
