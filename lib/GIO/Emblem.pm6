@@ -42,9 +42,9 @@ class GIO::Emblem {
   { $!e }
 
   multi method new (GEmblem $gio-emblem, :$ref = True) {
-    return Nil unless $emblem;
+    return Nil unless $gio-emblem;
 
-    my $o = $emblem ?? self.bless( :gio-$emblem ) !! Nil;
+    my $o = $gio-emblem ?? self.bless( :$gio-emblem ) !! Nil;
     $o.ref if $ref;
     $o;
   }
@@ -62,7 +62,7 @@ class GIO::Emblem {
 
     #say "E: $emblem";
 
-    $gio-mblem ?? self.bless( :$gio-emblem ) !! Nil;
+    $gio-emblem ?? self.bless( :$gio-emblem ) !! Nil;
   }
 
   method get_icon (:$raw = False)
