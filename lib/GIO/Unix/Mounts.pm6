@@ -10,7 +10,7 @@ use GLib::Roles::Object;
 use GIO::Roles::Icon;
 use GLib::Roles::Signals::Generic;
 
-class GIO::UnixMountMonitor { ... }
+class GIO::Unix::Mount::Monitor { ... }
 
 our subset GUnixMountEntryAncestry is export of Mu
   where GUnixMountEntry | GObject;
@@ -54,14 +54,16 @@ class GIO::Unix::Mount {
   }
 
   multi method at (
-    GIO::UnixMount:U:
+    ::?CLASS:U:
+
     Str() $path,
           :$raw = False
   ) {
     GIO::UnixMount.at($path, $, :all, :$raw);
   }
   multi method at (
-    GIO::UnixMount:U:
+    ::?CLASS:U:
+
     Str() $path,
           $time-read is rw,
           :$all      =  False;
@@ -94,7 +96,8 @@ class GIO::Unix::Mount {
   }
 
   multi method for (
-    GIO::UnixMount:U:
+    ::?CLASS:U:
+
     Str() $path,
           :$raw = False
   ) {
@@ -123,7 +126,8 @@ class GIO::Unix::Mount {
   }
 
   method is_mount_path_system_internal (
-    GIO::UnixMount:U:
+    ::?CLASS:U:
+
     Str()             $path
   )
     is also<is-mount-path-system-internal>
@@ -132,7 +136,8 @@ class GIO::Unix::Mount {
   }
 
   method is_system_device_path (
-    GIO::UnixMount:U:
+    ::?CLASS:U:
+
     Str()             $path
   )
     is also<is-system-device-path>
@@ -141,7 +146,8 @@ class GIO::Unix::Mount {
   }
 
   method is_system_fs_type (
-    GIO::UnixMount:U:
+    ::?CLASS:U:
+
     Str()             $path
   )
     is also<is-system-fs-type>
@@ -171,7 +177,8 @@ class GIO::Unix::Mount {
     samewith($, :$glist, :$all, :$raw);
   }
   multi method mounts_get (
-    GIO::UnixMount:U:
+    ::?CLASS:U:
+
     $time-read        is rw,
     :$glist           =  False,
     :$all             =  False,
@@ -299,7 +306,9 @@ class GIO::Unix::Mount {
 }
 
 # BOXED
-class GIO::UnixMountPoint {
+class GIO::Unix::Mount::Point {
+  also does GLib::Roles::Implementor;
+
   has GUnixMountPoint $!mp;
 
   submethod BUILD (:$mount-point) {
@@ -315,7 +324,7 @@ class GIO::UnixMountPoint {
   }
 
   multi method compare (GUnixMountPoint() $point2) {
-    GIO::UnixMount.compare($!mp, $point2);
+    GIO::Unix::Mount.compare($!mp, $point2);
   }
   multi method compare (
     GUnixMountPoint() $point1,
@@ -420,11 +429,47 @@ class GIO::UnixMountPoint {
     so g_unix_mount_point_is_user_mountable($!mp);
   }
 
-  method changed_since (GIO::UnixMountPoint:U:) is also<changed-since> {
-    g_unix_mount_points_changed_since($!mp);
+}
+
+class GIO::Unix::Mount::Points {
+  also does GLib::Roles::StaticClass;
+
+  proto method changed_since (|)
+    is also<changed-since>
+  { * }
+
+  multi method changed_since (
+    ::?CLASS:U
+
+    $_
+  ) {
+    when .^can('DateTime') { samewith( .DateTime ) }
+    when .^can('Int')      { samewith( .Int      ) }
+
+    default {
+      X::GLib::InvalidType.new(
+        message => 'Parameter must be DateTime or Int compatible!'
+      ).throw;
+    }
+  }
+  multi method changed_since (
+    ::?CLASS:U:
+
+    DateTime $since
+  ) {
+    samewith($since.posix);
+  }
+  multi method changed_since (
+    ::?CLASS:U:
+
+    Int $since
+  ) {
+    my guint64 $s = $since;
+
+    so g_unix_mount_points_changed_since($s);
   }
 
-  proto method points_get(|)
+  proto method get (|)
     is also<
       points-get
       get_points
@@ -432,22 +477,24 @@ class GIO::UnixMountPoint {
     >
   { * }
 
-  multi method points_get (
-    GIO::UnixMount:U:
+  multi method get (
+    ::?CLASS:U:
+
     :$glist           = False,
     :$raw             = False
   ) {
     samewith($, :$glist, :all, :$raw);
   }
-  multi method points_get (
-    GIO::UnixMount:U:
+  multi method get (
+    ::?CLASS:U:
+
     $time-read        is rw,
     :$glist           =  False,
     :$all             =  False,
     :$raw             =  False
   ) {
     my guint64 $tr = 0;
-    my $pl         = g_unix_mount_points_get($tr);
+    my         $pl = g_unix_mount_points_get($tr);
 
     $time-read = $tr;
     return Nil unless $pl;
@@ -469,7 +516,7 @@ class GIO::UnixMountPoint {
 our subset GUnixMountMonitorAncestry is export of Mu
   where GUnixMountMonitor | GObject;
 
-class GIO::UnixMountMonitor {
+class GIO::Unix::Mount::Monitor {
   also does GLib::Roles::Object;
   also does GLib::Roles::Signals::Generic;
 
