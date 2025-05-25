@@ -3,7 +3,48 @@ Revision history for GIO
 0.0.1  2023-11-22T17:01:12-05:00
     - Initial version
 
-{{$NEXT}}
-
 0.0.2  2023-11-27T12:45:51-05:00
     - Use the proper language name in the description
+
+{{$NEXT}}
+
+      - ::SetingsBackend is now ::Settings::Backend
+      - Major changes and cleanup on ::Resource
+      - Minor fixes made to ::Emblem
+      - Remove ::DBus::Raw::DBusNodeInfo as the issues that necessitated its creation are
+        now fixed in ::DBus::Raw::Types
+      - Adds t/dbus/01-dbus-client.e example
+      - Type fixes for GDBusNodeInfo in ::DBus::Raw::Types
+      - Adds .return_null_variant to ::DBus::MethodInvocation
+      - Put all ::Unix* objects into the ::Unix:: namespace
+      - Adds errata for 2024 tests.
+      - Update initialization logic in ::Emblem
+      - Adds missing .roleInit-* methods for ::Emblem and ::LoadableIcon
+      - Fixes missing use statements in ::Raw::Definition
+      - Remove ::UnixMount from GIO
+      - Minor fixes for ::Application
+      - Fixes .settings-schema, also adds Associative interface for ::Settings
+      - GIO::SettingsBackend => GIO::Settings::Backend
+      - GIO::SettingsSchema => GIO::Settings::Schema
+      - ::Raw::UnixMount => ::Raw::UnixMounts in ::UnixMounts
+      - Fixes some return types in ::Raw::MemoryOutputStream
+      - Remove Blob as a parameter type in ::Raw::OutputStrea
+      - Adds GIO::Raw::Traps
+      - Adds GIO::MiscTypes for those objects that just hold a .get_type
+      - Removes untanted .new method in ::FileMonitor
+      - Removes GIO::TypeClass
+      - Adds GIO::FileMonitor::Local with raw compunit and type declarations
+      - Removal of unnecessary signal code (in light of Supplyish) in ::FileMonitor
+      - Initialization logic fixes for ::SimpleAction
+      - Fixes for GActionEntry in ::Raw::Structs
+      - ::Raw added and ancestry fixes for ::SimpleActionGroup
+      - Fixes for ::PropertyAction
+      - A parameter fix for ::OutputStream
+      - Adds GIO::Enums
+      - Adds GIO::Builder
+      - Adds GIO::TypeManifest
+      - Fixes parent setters in ::Input and ::OutputStream
+      - Minor fixes to ::Settings
+      - Adds resolveSettingBindFlags to ::Raw::Subs
+      - GInputStream and GOutputStream are now CStructs
+
