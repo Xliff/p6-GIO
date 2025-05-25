@@ -210,6 +210,10 @@ class GIO::DBus::MethodInvocation {
     g_dbus_method_invocation_return_gerror($!dmi, $error);
   }
 
+  method return_null_variant is also<return-null-variant> {
+    self.return_value(GVariant);
+  }
+
   method return_value (GVariant() $parameters) is also<return-value> {
     g_dbus_method_invocation_return_value($!dmi, $parameters);
   }
