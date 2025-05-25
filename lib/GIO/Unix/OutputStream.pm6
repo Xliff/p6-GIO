@@ -14,7 +14,7 @@ our subset GUnixOutputStreamAncestry is export of Mu
   where GUnixOutputStream | GFileDescriptorBased | GPollableOutputStream |
         GOutputStream;
 
-class GIO::UnixOutputStream is GIO::OutputStream {
+class GIO::Unix::OutputStream is GIO::OutputStream {
   also does GIO::Roles::FileDescriptorBased;
   also does GIO::Roles::PollableOutputStream;
 

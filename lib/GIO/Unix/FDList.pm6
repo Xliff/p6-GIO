@@ -12,7 +12,7 @@ use GLib::Roles::Object;
 our subset GUnixFDListAncestry is export of Mu
   where GUnixFDList | GObject;
 
-class GIO::UnixFDList {
+class GIO::Unix::FDList {
   also does GLib::Roles::Object;
 
   has GUnixFDList $!fd is implementor;

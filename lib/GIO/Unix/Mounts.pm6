@@ -15,7 +15,7 @@ class GIO::UnixMountMonitor { ... }
 our subset GUnixMountEntryAncestry is export of Mu
   where GUnixMountEntry | GObject;
 
-class GIO::UnixMount {
+class GIO::Unix::Mount {
   also does GLib::Roles::Object;
 
   has GUnixMountEntry $!um is implementor;

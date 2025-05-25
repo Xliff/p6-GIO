@@ -7,7 +7,7 @@ use GIO::DBus::Raw::Types;
 use GIO::DBus::Raw::Message;
 
 use GLib::Variant;
-use GIO::UnixFDList;
+use GIO::Unix::FDList;
 
 use GLib::Roles::Object;
 

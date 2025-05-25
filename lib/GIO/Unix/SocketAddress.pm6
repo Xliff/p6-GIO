@@ -10,7 +10,7 @@ use GIO::SocketAddress;
 our subset GUnixSocketAddressAncestry is export of Mu
   where GUnixSocketAddress | GSocketAddressAncestry;
 
-class GIO::UnixSocketAddress is GIO::SocketAddress {
+class GIO::Unix::SocketAddress is GIO::SocketAddress {
   has GUnixSocketAddress $!us is implementor;
 
   submethod BUILD (:$unix-socket) {
