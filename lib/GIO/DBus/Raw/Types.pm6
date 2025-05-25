@@ -209,7 +209,12 @@ role Annotations {
   }
 }
 
-class GDBusAnnotationInfo is export is repr<CStruct> does GLib::Roles::Pointers does Annotations {
+class GDBusAnnotationInfo
+  is   export
+  is   repr<CStruct>
+  does GLib::Roles::Pointers
+  does Annotations
+{
   has gint     $!ref_count;
   has Str      $!key;
   has Str      $!value;
@@ -266,7 +271,12 @@ class GDBusAnnotationInfo is export is repr<CStruct> does GLib::Roles::Pointers 
   }
 }
 
-class GDBusArgInfo is export is repr<CStruct> does GLib::Roles::Pointers does Annotations {
+class GDBusArgInfo
+  is   export
+  is   repr<CStruct>
+  does GLib::Roles::Pointers
+  does Annotations
+{
   has gint                                  $!ref_count;
   has Str                                   $!name;
   has Str                                   $!signature;
@@ -308,7 +318,9 @@ class GDBusArgInfo is export is repr<CStruct> does GLib::Roles::Pointers does An
   }
 
   method get_type {
-    g_dbus_arg_info_get_type();
+    state ($n, $t);
+
+    unstable_get_type( self.^name, &g_dbus_arg_info_get_type, $n, $t );
   }
 
   method ref {
@@ -321,7 +333,12 @@ class GDBusArgInfo is export is repr<CStruct> does GLib::Roles::Pointers does An
   }
 }
 
-class GDBusErrorEntry is export is repr<CStruct> does GLib::Roles::Pointers does Annotations {
+class GDBusErrorEntry
+  is   export
+  is   repr<CStruct>
+  does GLib::Roles::Pointers
+  does Annotations
+{
   has gint $!error-code;
   has Str  $!dbus-error-name;
 
@@ -349,7 +366,12 @@ class GDBusErrorEntry is export is repr<CStruct> does GLib::Roles::Pointers does
   }
 }
 
-class GDBusMethodInfo is export is repr<CStruct> does GLib::Roles::Pointers does Annotations {
+class GDBusMethodInfo
+  is   export
+  is   repr<CStruct>
+  does GLib::Roles::Pointers
+  does Annotations
+{
   has gint                                  $!ref_count;
   has Str                                   $!name;
   has CArray[Pointer[GDBusArgInfo]]         $!in_args;
@@ -416,7 +438,12 @@ class GDBusMethodInfo is export is repr<CStruct> does GLib::Roles::Pointers does
   }
 }
 
-class GDBusPropertyInfo is export is repr<CStruct> does GLib::Roles::Pointers does Annotations {
+class GDBusPropertyInfo
+  is   export
+  is   repr<CStruct>
+  does GLib::Roles::Pointers
+  does Annotations
+{
   has gint                                 $!ref_count;
   has Str                                  $!name;
   has Str                                  $!signature;
@@ -480,7 +507,12 @@ class GDBusPropertyInfo is export is repr<CStruct> does GLib::Roles::Pointers do
   }
 }
 
-class GDBusSignalInfo is export is repr<CStruct> does GLib::Roles::Pointers does Annotations {
+class GDBusSignalInfo
+  is   export
+  is   repr<CStruct>
+  does GLib::Roles::Pointers
+  does Annotations
+{
   has gint                                 $!ref_count;
   has Str                                  $!name;
   has CArray[Pointer[GDBusArgInfo]]        $!args;
@@ -537,7 +569,12 @@ class GDBusSignalInfo is export is repr<CStruct> does GLib::Roles::Pointers does
   }
 }
 
-class GDBusInterfaceInfo is export is repr<CStruct> does GLib::Roles::Pointers does Annotations {
+class GDBusInterfaceInfo
+  is   export
+  is   repr<CStruct>
+  does GLib::Roles::Pointers
+  does Annotations
+{
   has gint                                 $!ref_count;
   has Str                                  $!name;
   has CArray[Pointer[GDBusMethodInfo]]     $!methods;
@@ -640,15 +677,17 @@ class GDBusInterfaceInfo is export is repr<CStruct> does GLib::Roles::Pointers d
   }
 }
 
-class GDBusNodeInfo is export is repr<CStruct> does GLib::Roles::Pointers {
-  has gint                                 $!ref_count;
-  has Str                                  $!path;
-  has CArray[Pointer[GDBusInterfaceInfo]]  $!interfaces;
-  # GDBusNodeInfo ** -- I see this as a bug in rakudo.
-  # I can't use CArray[Pointer[GDBusNodeInfo]] here because
-  # it's currently being defined!
-  has Pointer                              $!nodes;
-  has CArray[Pointer[GDBusAnnotationInfo]] $!annotations;
+class GDBusNodeInfo
+  is   export
+  is   repr<CStruct>
+  does GLib::Roles::Pointers
+  does Annotations
+{
+  has gint                                  $!ref_count;
+  has Str                                   $!path;
+  has CArray[Pointer[  GDBusInterfaceInfo]] $!interfaces;
+  has CArray[Pointer[ ::('GDBusNodeInfo')]] $!nodes;
+  has CArray[Pointer[ GDBusAnnotationInfo]] $!annotations;
 
   method path is rw {
     Proxy.new:
@@ -659,7 +698,33 @@ class GDBusNodeInfo is export is repr<CStruct> does GLib::Roles::Pointers {
       };
   }
 
-  multi method nodes { $!nodes }
+  method nodes (:$method is required, :$raw = False) {
+    my $outer-nodes     = $!nodes;
+    my $outer-attribute = self.^attributes(:local)[3];
+
+    Proxy.new:
+      FETCH => -> $ {
+        (
+          class :: does Positional {
+            method AT-POS (Int() $k) {
+              $outer-nodes[$k].deref;
+            }
+
+            method EXISTS-POS (Int() $k) {
+              $outer-nodes[$k].defined;
+            }
+
+            method STORE {
+              warn 'Cannot set GDBusNodeInfo.nodes!';
+            }
+          }
+        ).new
+      },
+
+      STORE => -> $, \val {
+        $outer-attribute.set_value(self, val)
+      };
+  }
 
   method interfaces (:$raw = False) is rw {
     my $outer-interfaces = $!interfaces;
@@ -685,23 +750,10 @@ class GDBusNodeInfo is export is repr<CStruct> does GLib::Roles::Pointers {
         }).new
       },
 
-      # cw: -XXX- -TODO-
-      # Since Raku-ish array is offered for FETCH, should be supported for
-      # STORE. Currently NYI!
-      STORE => -> $, CArray[Pointer[GDBusInterfaceInfo]] $val {
-        $outer-attribute.set_value(self, $val)
+      STORE => -> $, \val {
+        $outer-attribute.set_value(self, val)
       };
   }
-
-  # Due to above implementation, this must wait for an augment.
-  # method nodes is rw {
-  #   Proxy.new:
-  #     FETCH => -> $ { $!nodes }
-  #
-  #     STORE => -> $, Pointer $val {
-  #       self.^attributes(:local)[3].set_value(self, $val)
-  #     };
-  # }
 
   method annotations (:$raw = False) is rw {
     my $outer-annotations = $!annotations;
