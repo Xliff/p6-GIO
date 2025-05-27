@@ -1,3 +1,11 @@
+use v6.c;
+
+use NativeCall;
+
+use GLib::Raw::Definitions;
+use GLib::Raw::Subs;
+use GIO::Raw::Definitions;
+
 class GIO::Inotify::File::Monitor {
 
   method get_type {
