@@ -6,8 +6,6 @@ Revision history for GIO
 0.0.2  2023-11-27T12:45:51-05:00
     - Use the proper language name in the description
 
-{{$NEXT}}
-
 0.0.3  2025-05-25T15:46:50-04:00
 
       - Adds t/00-get-type.t test
@@ -51,4 +49,8 @@ Revision history for GIO
       - Minor fixes to ::Settings
       - Adds resolveSettingBindFlags to ::Raw::Subs
       - GInputStream and GOutputStream are now CStructs
+
+{{$NEXT}}
+
+	- Fixes dependency errors in ::MiscTypes
 
